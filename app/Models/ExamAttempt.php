@@ -11,7 +11,9 @@ class ExamAttempt extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $table        = 'exam_attempts';
+    protected $primaryKey   = 'id';
+    protected $fillable     = [
         'exam_id',
         'user_id',
         'score',

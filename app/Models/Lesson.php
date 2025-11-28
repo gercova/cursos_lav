@@ -11,7 +11,9 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $table        = 'lessons';
+    protected $primaryKey   = 'id';
+    protected $fillable     = [
         'course_section_id',
         'title',
         'description',
@@ -23,7 +25,7 @@ class Lesson extends Model
     ];
 
     protected $casts = [
-        'is_free' => 'boolean',
+        'is_free'   => 'boolean',
         'is_active' => 'boolean',
     ];
 

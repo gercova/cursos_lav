@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Course;
+use App\Models\Enrollment;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CoursesController extends Controller
 {
-    public function index(Request $request)
-    {
+    public function index(Request $request): View {
         $query = Course::with('category')
             ->where('is_active', true);
 
@@ -49,8 +51,7 @@ class CoursesController extends Controller
         return view('student.home', compact('courses', 'categories'));
     }
 
-    public function show($id)
-    {
+    public function show($id): View {
         $course = Course::with(['sections.lessons', 'category', 'instructor', 'documents'])
             ->where('is_active', true)
             ->findOrFail($id);

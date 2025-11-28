@@ -10,7 +10,9 @@ class ExamQuestion extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $table        = 'exam_questions';
+    protected $primaryKey   = 'id';
+    protected $fillable     = [
         'exam_id',
         'question',
         'type',

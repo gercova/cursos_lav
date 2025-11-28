@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Certificate extends Model
 {
@@ -21,32 +22,27 @@ class Certificate extends Model
     ];
 
     protected $casts = [
-        'issue_date' => 'datetime',
-        'expiry_date' => 'datetime',
+        'issue_date'    => 'datetime',
+        'expiry_date'   => 'datetime',
     ];
 
-    public function user()
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
-    public function course()
-    {
+    public function course(): BelongsTo {
         return $this->belongsTo(Course::class);
     }
 
-    public function examAttempt()
-    {
+    public function examAttempt(): BelongsTo {
         return $this->belongsTo(ExamAttempt::class);
     }
 
-    public static function generateVerificationCode()
-    {
+    public static function generateVerificationCode() {
         return 'CERT-' . strtoupper(uniqid()) . '-' . date('Ymd');
     }
 
-    public function getVerificationUrlAttribute()
-    {
+    public function getVerificationUrlAttribute() {
         return url('/verify-certificate/' . $this->certificate_code);
     }
 }

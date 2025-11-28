@@ -35,48 +35,39 @@ class Course extends Model
         'what_you_learn'    => 'array',
     ];
 
-    public function category(): BelongsTo
-    {
+    public function category(): BelongsTo {
         return $this->belongsTo(Category::class);
     }
 
-    public function instructor(): BelongsTo
-    {
+    public function instructor(): BelongsTo {
         return $this->belongsTo(User::class, 'instructor_id');
     }
 
-    public function sections(): HasMany
-    {
+    public function sections(): HasMany {
         return $this->hasMany(CourseSection::class)->orderBy('order');
     }
 
-    public function enrollments(): HasMany
-    {
+    public function enrollments(): HasMany {
         return $this->hasMany(Enrollment::class);
     }
 
-    public function documents(): HasMany
-    {
+    public function documents(): HasMany {
         return $this->hasMany(Document::class);
     }
 
-    public function exam(): HasMany
-    {
+    public function exam(): HasMany {
         return $this->hasMany(Exam::class);
     }
 
-    public function getIsOnPromotionAttribute(): bool
-    {
+    public function getIsOnPromotionAttribute(): bool {
         return !is_null($this->promotion_price) && $this->promotion_price < $this->price;
     }
 
-    public function getFinalPriceAttribute(): float
-    {
+    public function getFinalPriceAttribute(): float {
         return $this->promotion_price ?? $this->price;
     }
 
-    public function getStudentsCountAttribute(): int
-    {
+    public function getStudentsCountAttribute(): int {
         return $this->enrollments()->count();
     }
 }

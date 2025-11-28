@@ -10,7 +10,9 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $tables       = 'categories';
+    protected $primaryKey   = 'id';
+    protected $fillable     = [
         'name',
         'slug',
         'description',

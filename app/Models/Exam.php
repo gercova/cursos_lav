@@ -11,7 +11,9 @@ class Exam extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $table        = 'exams';
+    protected $primaryKey   = 'id';
+    protected $fillable     = [
         'course_id',
         'title',
         'description',

@@ -2,13 +2,13 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoriesAdminController;
-use App\Http\Controllers\Admin\CoursesController;
+use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
-use App\Http\Controllers\Student\CoursesController as StudentCoursesController;
+use App\Http\Controllers\Student\CoursesController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -23,13 +23,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 // Rutas públicas
-// Route::get('/', [CourseController::class, 'index'])->name('home');
-Route::get('/course/{id}',      [StudentCoursesController::class, 'show'])->name('course.show');
+Route::get('/',                 [CoursesController::class, 'index'])->name('home');
+Route::get('/course/{id}',      [CoursesController::class, 'show'])->name('course.show');
 
 // Autenticación estudiantes
 Route::get('/register',         [AuthController::class, 'showRegister'])->name('register');
@@ -68,19 +64,18 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         // CRUD Categorías
-        Route::resource('categories',   CategoriesAdminController::class);
-
+        Route::resource('categories',                           CategoriesAdminController::class);
         // CRUD Cursos
-        Route::resource('courses', CoursesController::class);
+        Route::resource('courses',                              CoursesAdminController::class);
         Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('courses.sections.add');
         Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('courses.sections.update');
         Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('courses.sections.delete');
 
         // CRUD Documentos
-        Route::resource('documents', DocumentsAdminController::class);
+        Route::resource('documents',                            DocumentsAdminController::class);
 
         // CRUD Exámenes
-        Route::resource('exams', ExamsAdminController::class);
+        Route::resource('exams',                                ExamsAdminController::class);
         Route::post('/exams/{exam}/questions',                  [ExamsAdminController::class, 'addQuestion'])->name('exams.questions.add');
         Route::put('/exams/{exam}/questions/{question}',        [ExamsAdminController::class, 'updateQuestion'])->name('exams.questions.update');
         Route::delete('/exams/{exam}/questions/{question}',     [ExamsAdminController::class, 'deleteQuestion'])->name('exams.questions.delete');

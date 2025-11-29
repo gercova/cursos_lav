@@ -114,10 +114,10 @@
                 <div>
                     <h4 class="text-md font-semibold mb-4">Enlaces Rápidos</h4>
                     <ul class="space-y-2">
-                        <li><a href="{{ route('/') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Inicio</a></li>
-                        <li><a href="{{ route('/cursos') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Cursos</a></li>
-                        <li><a href="{{ route('/nosotros') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Nosotros</a></li>
-                        <li><a href="{{ route('/contacto') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Contacto</a></li>
+                        <li><a href="{{ url('/') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Inicio</a></li>
+                        <li><a href="{{ route('cursos') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Cursos</a></li>
+                        <li><a href="{{ route('nosotros') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Nosotros</a></li>
+                        <li><a href="{{ route('contacto') }}" class="text-gray-300 hover:text-white transition-colors duration-200">Contacto</a></li>
                     </ul>
                 </div>
                 <div>

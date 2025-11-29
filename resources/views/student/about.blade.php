@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Nosotros - Plataforma de Educación')
+@section('title', 'IPF Consultores - Nosotros')
 
 @section('content')
 <!-- Hero Section -->

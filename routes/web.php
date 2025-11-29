@@ -72,7 +72,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/login',   [AdminController::class, 'login']);
 
     Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
         // CRUD Categorías
         Route::resource('categories', CategoriesAdminController::class);

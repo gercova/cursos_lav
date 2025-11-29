@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Enterprise;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,20 +20,16 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
+    public function boot(): void {
+
         View::composer('layouts.app', function ($view) {
-            $categories = Category::where('is_active', true)
-                ->orderBy('name')
-                ->get();
-            $view->with('categories', $categories);
+            $enterprise = Enterprise::find(1);
+            $view->with(['enterprise' => $enterprise]);
         });
 
         View::composer('student.home', function ($view) {
-            $categories = Category::where('is_active', true)
-                ->orderBy('name')
-                ->get();
-            $view->with('categories', $categories);
+            $enterprise = Enterprise::find(1);
+            $view->with(['enterprise' => $enterprise]);
         });
     }
 }

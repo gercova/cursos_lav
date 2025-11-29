@@ -1,0 +1,28 @@
+.sidebar-transition {
+    transition: all 0.3s ease;
+}
+.card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+/* Estilos para header fijo */
+.header-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+}
+.content-with-fixed-header {
+    margin-top: 4rem; /* Ajusta según la altura del header */
+}
+.sidebar-fixed {
+    position: fixed;
+    top: 4rem; /* Altura del header */
+    left: 0;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+}

@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\CategoriesAdminController;
 use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
@@ -25,7 +27,17 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/',                 [CoursesController::class, 'index'])->name('home');
-Route::get('/course/{id}',      [CoursesController::class, 'show'])->name('course.show');
+Route::get('/cursos',           [CoursesController::class, 'courses'])->name('cursos');
+Route::get('/nosotros', function () {
+    return view('student.about');
+})->name('nosotros');
+Route::get('/contacto', function () {
+    return view('student.contact');
+})->name('contacto');
+// Ruta para el formulario de contacto
+Route::post('/contact/send',    [ContactController::class, 'sendMessage'])->name('contact.send');
+
+Route::get('/curso/{id}',       [CoursesController::class, 'show'])->name('course.show');
 
 // Autenticación estudiantes
 Route::get('/register',         [AuthController::class, 'showRegister'])->name('register');
@@ -55,33 +67,29 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/certificate/{certificateId}/download', [CertificatesController::class, 'download'])->name('certificate.download');
 });
 
-// Rutas administrativas
 Route::prefix('admin')->group(function () {
-    Route::get('/login',                        [AdminController::class, 'showLogin'])->name('admin.login');
-    Route::post('/login',                       [AdminController::class, 'login']);
+    Route::get('/login',    [AdminController::class, 'showLogin'])->name('admin.login');
+    Route::post('/login',   [AdminController::class, 'login']);
 
     Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-        Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         // CRUD Categorías
-        Route::resource('categories',                           CategoriesAdminController::class);
+        Route::resource('categories', CategoriesAdminController::class);
+
         // CRUD Cursos
-        Route::resource('courses',                              CoursesAdminController::class);
-        Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('courses.sections.add');
-        Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('courses.sections.delete');
+        Route::resource('courses', CategoriesAdminController::class);
+        Route::post('/courses/{course}/sections', [CategoriesAdminController::class, 'addSection'])->name('courses.sections.add');
+        Route::put('/courses/{course}/sections/{section}', [CategoriesAdminController::class, 'updateSection'])->name('courses.sections.update');
+        Route::delete('/courses/{course}/sections/{section}', [CategoriesAdminController::class, 'deleteSection'])->name('courses.sections.delete');
 
         // CRUD Documentos
-        Route::resource('documents',                            DocumentsAdminController::class);
+        Route::resource('documents', DocumentsAdminController::class);
 
         // CRUD Exámenes
-        Route::resource('exams',                                ExamsAdminController::class);
-        Route::post('/exams/{exam}/questions',                  [ExamsAdminController::class, 'addQuestion'])->name('exams.questions.add');
-        Route::put('/exams/{exam}/questions/{question}',        [ExamsAdminController::class, 'updateQuestion'])->name('exams.questions.update');
-        Route::delete('/exams/{exam}/questions/{question}',     [ExamsAdminController::class, 'deleteQuestion'])->name('exams.questions.delete');
+        Route::resource('exams', ExamsAdminController::class);
+        Route::post('/exams/{exam}/questions', [ExamsAdminController::class, 'addQuestion'])->name('exams.questions.add');
+        Route::put('/exams/{exam}/questions/{question}', [ExamsAdminController::class, 'updateQuestion'])->name('exams.questions.update');
+        Route::delete('/exams/{exam}/questions/{question}', [ExamsAdminController::class, 'deleteQuestion'])->name('exams.questions.delete');
     });
 });
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

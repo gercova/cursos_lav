@@ -7,14 +7,14 @@ use App\Models\Cart;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartsController extends Controller
 {
-    public function index()
-    {
+    public function index(): View {
         $cartItems = Cart::with('course.category')
             ->where('user_id', Auth::id())
             ->get();
@@ -64,8 +64,7 @@ class CartsController extends Controller
         ]);
     }
 
-    public function remove($courseId)
-    {
+    public function remove($courseId): JsonResponse {
         Cart::where('user_id', Auth::id())
             ->where('course_id', $courseId)
             ->delete();
@@ -76,8 +75,7 @@ class CartsController extends Controller
         ]);
     }
 
-    public function checkout(Request $request)
-    {
+    public function checkout(Request $request) {
         $cartItems = Cart::with('course')->where('user_id', Auth::id())->get();
 
         if ($cartItems->isEmpty()) {
@@ -118,8 +116,7 @@ class CartsController extends Controller
             ->with('success', '¡Pago procesado exitosamente! Ya puedes acceder a tus cursos.');
     }
 
-    public function getCartCount()
-    {
+    public function getCartCount() {
         $count = Cart::where('user_id', Auth::id())->count();
 
         return response()->json([

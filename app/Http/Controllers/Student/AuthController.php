@@ -8,27 +8,26 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function showRegister()
-    {
+    public function showRegister(): View {
         return view('student.auth.register');
     }
 
-    public function register(Request $request)
-    {
+    public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'dni' => 'required|string|max:20|unique:users',
-            'names' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'country_code' => 'required|string|max:5',
-            'phone' => 'required|string|max:20',
-            'nationality' => 'required|string|max:100',
-            'ubigeo' => 'required|string|max:10',
-            'address' => 'required|string|max:500',
-            'profession' => 'required|string|max:255',
+            'dni'           => 'required|string|max:20|unique:users',
+            'names'         => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:8|confirmed',
+            'country_code'  => 'required|string|max:5',
+            'phone'         => 'required|string|max:20',
+            'nationality'   => 'required|string|max:100',
+            'ubigeo'        => 'required|string|max:10',
+            'address'       => 'required|string|max:500',
+            'profession'    => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator)->withInput();
@@ -48,7 +47,6 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
-
         return redirect()->route('dashboard')->with('success', '¡Registro exitoso!');
     }
 
@@ -56,8 +54,7 @@ class AuthController extends Controller
         return view('student.auth.login');
     }
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $credentials = $request->validate([
             'email'     => 'required|email',
             'password'  => 'required',
@@ -80,10 +77,8 @@ class AuthController extends Controller
 
     public function logout(Request $request) {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('/');
     }
 }

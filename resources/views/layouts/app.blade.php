@@ -3,40 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - Plataforma de Cursos</title>
+    <title>@yield('title')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <style>
-        .sidebar-transition {
-            transition: all 0.3s ease;
-        }
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        /* Estilos para header fijo */
-        .header-fixed {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 40;
-        }
-        .content-with-fixed-header {
-            margin-top: 4rem; /* Ajusta según la altura del header */
-        }
-        .sidebar-fixed {
-            position: fixed;
-            top: 4rem; /* Altura del header */
-            left: 0;
-            height: calc(100vh - 4rem);
-            overflow-y: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="bg-gray-50">
     <!-- Header Fijo -->
@@ -44,14 +15,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('home') }}" class="flex-shrink-0">
-                        <img class="h-8 w-auto" src="/images/logo.png" alt="Logo">
+                    <a href="{{ url('/') }}" class="flex-shrink-0">
+                        <img class="h-8 w-auto" src="{{ asset('storage/photos/ipf-logo.png') }}" alt="Logo">
                     </a>
                     <nav class="hidden md:ml-6 md:flex space-x-4">
-                        <a href="{{ route('home') }}" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Inicio</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Cursos</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Nosotros</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contacto</a>
+                        <a href="{{ url('/') }}" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Inicio</a>
+                        <a href="{{ route('cursos') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Cursos</a>
+                        <a href="{{ url('nosotros') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Nosotros</a>
+                        <a href="{{ url('contacto') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contacto</a>
                     </nav>
                 </div>
 
@@ -127,7 +98,7 @@
         </div>
 
         <!-- Main Content -->
-        <main class="flex-1 lg:ml-64"> <!-- ml-64 para compensar el sidebar fijo -->
+        <main class="flex-1 lg:ml-0"> <!-- ml-64 para compensar el sidebar fijo -->
             @yield('content')
         </main>
     </div>

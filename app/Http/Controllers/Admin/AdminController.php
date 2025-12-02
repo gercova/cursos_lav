@@ -51,7 +51,6 @@ class AdminController extends Controller {
             $this->logActivity('Inició sesión en el panel administrativo');
 
             return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido al panel administrativo!');
-            //return redirect()->route('admin.dashboard')->with('success', '¡Bienvenido al panel administrativo!');
         }
 
         return back()->withErrors([
@@ -63,6 +62,7 @@ class AdminController extends Controller {
      * Dashboard principal del administrador
      */
     public function dashboard(): View {
+        $this->middleware(['auth:sanctum', 'admin']);
         $stats              = $this->getDashboardStats();
         $recentEnrollments  = $this->getRecentEnrollments();
         $popularCourses     = $this->getPopularCourses();

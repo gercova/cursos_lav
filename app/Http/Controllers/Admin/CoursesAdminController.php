@@ -84,9 +84,9 @@ class CoursesAdminController extends Controller {
                 $query->orderBy('created_at', 'desc');
         }
 
-        $courses = $query->paginate(15);
-        $categories = Category::where('is_active', true)->get();
-        $instructors = User::where('role', 'instructor')->get();
+        $courses        = $query->paginate(15);
+        $categories     = Category::where('is_active', true)->get();
+        $instructors    = User::where('role', 'instructor')->get();
 
         return view('admin.courses.index', compact('courses', 'categories', 'instructors'));
     }
@@ -95,9 +95,8 @@ class CoursesAdminController extends Controller {
      * Show the form for creating a new course.
      */
     public function create(): View {
-        $categories = Category::where('is_active', true)->get();
-        $instructors = User::where('role', 'instructor')->get();
-
+        $categories     = Category::where('is_active', true)->get();
+        $instructors    = User::where('role', 'instructor')->get();
         return view('admin.courses.create', compact('categories', 'instructors'));
     }
 
@@ -197,9 +196,8 @@ class CoursesAdminController extends Controller {
      */
     public function edit(Course $course) {
         $course->load(['sections.lessons', 'documents', 'exam.questions']);
-        $categories = Category::where('is_active', true)->get();
-        $instructors = User::where('role', 'instructor')->get();
-
+        $categories     = Category::where('is_active', true)->get();
+        $instructors    = User::where('role', 'instructor')->get();
         return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
     }
 
@@ -247,9 +245,9 @@ class CoursesAdminController extends Controller {
             $validated['image_url'] = $request->file('image')->store('courses', 'public');
         }
 
-        $validated['is_active'] = $request->has('is_active');
-        $validated['requirements'] = $validated['requirements'] ? array_filter($validated['requirements']) : null;
-        $validated['what_you_learn'] = $validated['what_you_learn'] ? array_filter($validated['what_you_learn']) : null;
+        $validated['is_active']         = $request->has('is_active');
+        $validated['requirements']      = $validated['requirements'] ? array_filter($validated['requirements']) : null;
+        $validated['what_you_learn']    = $validated['what_you_learn'] ? array_filter($validated['what_you_learn']) : null;
 
         $course->update($validated);
 
@@ -275,7 +273,6 @@ class CoursesAdminController extends Controller {
         }
 
         $course->delete();
-
         $this->logActivity("Eliminó el curso: {$courseTitle}");
         return redirect()->route('admin.courses.index')->with('success', 'Curso eliminado exitosamente.');
     }
@@ -506,9 +503,9 @@ class CoursesAdminController extends Controller {
         $this->logActivity("{$status} lección '{$lesson->title}' de la sección '{$section->title}'");
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $lesson->is_active,
-            'message' => 'Estado de la lección actualizado.'
+            'message'   => 'Estado de la lección actualizado.'
         ]);
     }
 
@@ -517,30 +514,30 @@ class CoursesAdminController extends Controller {
      */
     public function uploadDocument(Request $request, Course $course) {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'document' => 'required|file|max:10240', // 10MB max
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'document'      => 'required|file|max:10240', // 10MB max
         ]);
 
-        $file = $request->file('document');
-        $filePath = $file->store('documents', 'public');
+        $file       = $request->file('document');
+        $filePath   = $file->store('documents', 'public');
 
         $document = Document::create([
-            'course_id' => $course->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'file_path' => $filePath,
-            'file_type' => $file->getClientMimeType(),
-            'file_size' => $file->getSize(),
-            'is_active' => true,
+            'course_id'     => $course->id,
+            'title'         => $validated['title'],
+            'description'   => $validated['description'],
+            'file_path'     => $filePath,
+            'file_type'     => $file->getClientMimeType(),
+            'file_size'     => $file->getSize(),
+            'is_active'     => true,
         ]);
 
         $this->logActivity("Subió documento '{$document->title}' al curso: {$course->title}");
 
         return response()->json([
-            'success' => true,
-            'document' => $document,
-            'message' => 'Documento subido exitosamente.'
+            'success'   => true,
+            'document'  => $document,
+            'message'   => 'Documento subido exitosamente.'
         ]);
     }
 
@@ -564,20 +561,20 @@ class CoursesAdminController extends Controller {
     public function statistics(Course $course): View {
         $course->load(['enrollments.user', 'enrollments.payments']);
         $stats = [
-            'total_enrollments' => $course->enrollments()->count(),
-            'active_enrollments' => $course->enrollments()->where('status', 'active')->count(),
+            'total_enrollments'     => $course->enrollments()->count(),
+            'active_enrollments'    => $course->enrollments()->where('status', 'active')->count(),
             'completed_enrollments' => $course->enrollments()->where('status', 'completed')->count(),
-            'total_revenue' => $course->enrollments()
+            'total_revenue'         => $course->enrollments()
                 ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
                 ->where('payments.status', 'completed')
                 ->sum('payments.amount'),
-            'completion_rate' => $this->calculateCourseCompletionRate($course),
-            'average_progress' => $course->enrollments()->avg('progress') ?? 0,
+            'completion_rate'       => $this->calculateCourseCompletionRate($course),
+            'average_progress'      => $course->enrollments()->avg('progress') ?? 0,
         ];
 
         // Datos para gráficos
-        $enrollmentTrends = $this->getEnrollmentTrends($course);
-        $revenueByMonth = $this->getRevenueByMonth($course);
+        $enrollmentTrends   = $this->getEnrollmentTrends($course);
+        $revenueByMonth     = $this->getRevenueByMonth($course);
 
         return view('admin.courses.statistics', compact('course', 'stats', 'enrollmentTrends', 'revenueByMonth'));
     }
@@ -587,9 +584,9 @@ class CoursesAdminController extends Controller {
      */
     public function bulkActions(Request $request): JsonResponse {
         $request->validate([
-            'action' => 'required|in:activate,deactivate,delete',
-            'course_ids' => 'required|array',
-            'course_ids.*' => 'exists:courses,id',
+            'action'        => 'required|in:activate,deactivate,delete',
+            'course_ids'    => 'required|array',
+            'course_ids.*'  => 'exists:courses,id',
         ]);
 
         $courseIds = $request->course_ids;
@@ -639,8 +636,8 @@ class CoursesAdminController extends Controller {
     private function reorderSections(Course $course) {
         $sections = $course->sections()->orderBy('order')->get();
 
-        foreach ($sections as $index => $section) {
-            $section->update(['order' => $index + 1]);
+        foreach ($sections as $index    => $section) {
+            $section->update(['order'   => $index + 1]);
         }
     }
 
@@ -653,8 +650,8 @@ class CoursesAdminController extends Controller {
     }
 
     private function calculateCourseCompletionRate(Course $course) {
-        $totalEnrollments = $course->enrollments()->count();
-        $completedEnrollments = $course->enrollments()->where('status', 'completed')->count();
+        $totalEnrollments       = $course->enrollments()->count();
+        $completedEnrollments   = $course->enrollments()->where('status', 'completed')->count();
 
         return $totalEnrollments > 0 ? ($completedEnrollments / $totalEnrollments) * 100 : 0;
     }

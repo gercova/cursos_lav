@@ -7,20 +7,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class AdminMiddleware
+class Admin
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response {
+    public function handle(Request $request, Closure $next)
+    {
         if (!Auth::check() || !Auth::user()->isAdmin()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            return redirect()->route('admin.login')->with('error', 'No tienes permisos para acceder a esta sección.');
+            return redirect()->route('admin.login')->withErrors('Acceso denegado. Solo administradores.');
         }
 
         return $next($request);

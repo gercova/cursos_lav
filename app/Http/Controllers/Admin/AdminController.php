@@ -20,42 +20,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller {
-    /**
-     * Mostrar formulario de login para administradores
-     */
-    public function showLogin(): View {
-        return view('admin.auth.login');
-    }
 
-    /**
-     * Procesar login de administradores
-     */
-    public function login(Request $request) {
-        $credentials = $request->validate([
-            'email'     => 'required|email',
-            'password'  => 'required',
-        ]);
-
-        // Verificar si el usuario es administrador
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !$user->isAdmin()) {
-            return back()->withErrors([
-                'email' => 'No tienes permisos para acceder al panel administrativo.',
-            ])->onlyInput('email');
-        }
-
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            // Registrar actividad
-            $this->logActivity('Inició sesión en el panel administrativo');
-
-            return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido al panel administrativo!');
-        }
-
-        return back()->withErrors([
-            'email' => 'Las credenciales proporcionadas no son correctas.',
-        ])->onlyInput('email');
+    public function __construct() {
+        $this->middleware(['auth:sanctum', 'admin']);
     }
 
     /**
@@ -571,17 +538,5 @@ class AdminController extends Controller {
         $this->logActivity("Actualizó su perfil de administrador");
 
         return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
-    }
-
-    /**
-     * Cerrar sesión
-     */
-    public function logout(Request $request) {
-        $this->logActivity('Cerró sesión del panel administrativo');
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('admin.login')->with('success', 'Sesión cerrada exitosamente.');
     }
 }

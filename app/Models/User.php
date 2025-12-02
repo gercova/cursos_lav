@@ -39,6 +39,10 @@ class User extends Authenticatable {
         'password' => 'hashed',
     ];
 
+    public function isAdmin(): bool {
+        return $this->role === 'admin';
+    }
+
     public function enrollments() {
         return $this->hasMany(Enrollment::class);
     }
@@ -57,10 +61,6 @@ class User extends Authenticatable {
 
     public function cartItems() {
         return $this->hasMany(Cart::class);
-    }
-
-    public function isAdmin() {
-        return $this->role === 'admin';
     }
 
     public function isStudent() {

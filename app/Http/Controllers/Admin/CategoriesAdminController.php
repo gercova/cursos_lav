@@ -5,14 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoriesAdminController extends Controller {
 
+    public function __construct() {
+        $this->middleware(['auth', 'admin']);
+    }
+
     public function index(): View {
         $categories = Category::orderBy('name')->get();
         return view('admin.categories.index', compact('categories'));
+    }
+
+    public function show(Category $category): JsonResponse {
+        return response()->json($category);
     }
 
     public function create(): View {

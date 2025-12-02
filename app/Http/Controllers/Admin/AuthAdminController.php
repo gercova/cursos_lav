@@ -62,7 +62,6 @@ class AuthAdminController extends Controller {
      */
     public function logout(Request $request) {
         $this->logActivity('Cerró sesión del panel administrativo');
-
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

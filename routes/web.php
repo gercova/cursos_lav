@@ -124,6 +124,9 @@ Route::prefix('admin')->group(function () {
         // Rutas adicionales para categorías
         Route::get('/categories/home',                          [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
         Route::get('/categories/create',                        [CategoriesAdminController::class, 'create'])->name('admin.categories.create');
+        Route::get('/categories/show/{category}',               [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
+        Route::patch('/categories/{category}',                  [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
+        Route::post('/categories/store',                        [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');

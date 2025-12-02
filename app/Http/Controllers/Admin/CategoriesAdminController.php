@@ -15,8 +15,12 @@ class CategoriesAdminController extends Controller {
         $this->middleware(['auth', 'admin']);
     }
 
-    public function index(): View {
-        $categories = Category::orderBy('name')->get();
+    public function index(Request $request): View {
+        $categories = Category::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
+                return $query->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -29,52 +33,56 @@ class CategoriesAdminController extends Controller {
     }
 
     public function store(Request $request) {
-        $request->validate([
-            'name'          => 'required|string|max:255|unique:categories',
-            'description'   => 'nullable|string',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
 
-        Category::create([
-            'name'          => $request->name,
-            'slug'          => Str::slug($request->name),
-            'description'   => $request->description,
-        ]);
+        $category = Category::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'category' => $category
+            ]);
+        }
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Categoría creada exitosamente.');
-    }
-
-    public function edit(Category $category): View {
-        return view('admin.categories.edit', compact('category'));
+            ->with('success', 'Categoría creada exitosamente');
     }
 
     public function update(Request $request, Category $category) {
-        $request->validate([
-            'name'          => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'description'   => 'nullable|string',
-            'is_active'     => 'boolean',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
 
-        $category->update([
-            'name'          => $request->name,
-            'slug'          => Str::slug($request->name),
-            'description'   => $request->description,
-            'is_active'     => $request->has('is_active'),
-        ]);
+        $category->update($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'category' => $category->fresh()
+            ]);
+        }
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Categoría actualizada exitosamente.');
+            ->with('success', 'Categoría actualizada exitosamente');
     }
 
     public function destroy(Category $category) {
-        if ($category->courses()->exists()) {
-            return redirect()->back()
-                ->with('error', 'No se puede eliminar la categoría porque tiene cursos asociados.');
-        }
-
         $category->delete();
 
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Categoría eliminada'
+            ]);
+        }
+
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Categoría eliminada exitosamente.');
+            ->with('success', 'Categoría eliminada exitosamente');
     }
 }

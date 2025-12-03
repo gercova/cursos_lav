@@ -12,8 +12,7 @@ class UserSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         // Usuario Administrador
         User::create([
             'dni'           => '12345678',

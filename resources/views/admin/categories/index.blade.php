@@ -22,7 +22,6 @@
                         Nueva Categoría
                     </button>
                 </x-slot>
-
                 @include('admin.categories.partials.form')
             </x-modal>
         </div>
@@ -120,7 +119,7 @@
                         </select>
 
                         <button @click="resetFilters()"
-                                class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                            class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Limpiar
                         </button>
                     </div>
@@ -367,7 +366,7 @@
 
 @section('scripts')
 <script>
-    function categoryManager() {
+    /*function categoryManager() {
         return {
             searchQuery: '{{ request('search') }}',
             statusFilter: '{{ request('status', '') }}',
@@ -392,6 +391,132 @@
                 });
             },
 
+            // Función modificada para recibir parámetros adicionales
+            async submitForm(event, modalComponent = null, isSubmittingState = null) {
+                event.preventDefault();
+
+                const form = event.target;
+
+                // Si se pasó el estado de submitting, actualizarlo
+                if (isSubmittingState) {
+                    isSubmittingState.isSubmitting = true;
+                }
+
+                try {
+                    const formData = new FormData(form);
+
+                    // Determinar URL y método
+                    let url = form.action;
+                    let method = form.method;
+
+                    // Si no tiene action, usar la ruta store
+                    if (!url) {
+                        url = '{{ route("admin.categories.store") }}';
+                        method = 'POST';
+                    }
+
+                    // Si es un formulario de edición pero no tiene method="PUT", agregarlo
+                    if (form.querySelector('input[name="_method"]')) {
+                        const methodInput = form.querySelector('input[name="_method"]');
+                        method = methodInput.value;
+                    }
+
+                    const response = await axios({
+                        method: method,
+                        url: url,
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    // Cerrar modal si existe
+                    if (modalComponent) {
+                        const modalData = modalComponent.__x.$data;
+                        if (modalData && typeof modalData.open !== 'undefined') {
+                            modalData.open = false;
+                        }
+                    }
+
+                    // Resetear estado de submitting
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    // Determinar si es creación o actualización
+                    const isCreation = method === 'POST';
+
+                    // Mostrar notificación
+                    this.showNotification(
+                        isCreation ? 'Categoría creada exitosamente' : 'Categoría actualizada exitosamente',
+                        'success'
+                    );
+
+                    // Emitir evento correspondiente
+                    const eventName = isCreation ? 'category-saved' : 'category-updated';
+                    window.dispatchEvent(new CustomEvent(eventName, {
+                        detail: response.data.category
+                    }));
+
+                    // Recargar la página después de un breve delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+
+                } catch (error) {
+                    // Resetear estado de submitting en caso de error
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    if (error.response && error.response.status === 422) {
+                        // Manejar errores de validación
+                        this.showValidationErrors(error.response.data.errors);
+                        this.showNotification('Por favor corrige los errores en el formulario', 'error');
+                    } else {
+                        console.error('Error:', error);
+                        this.showNotification('Error al guardar la categoría', 'error');
+                    }
+                }
+            },
+
+            showValidationErrors(errors) {
+                // Limpiar errores anteriores
+                document.querySelectorAll('.text-red-600').forEach(el => el.remove());
+
+                // Mostrar nuevos errores
+                for (const [field, messages] of Object.entries(errors)) {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        // Crear elemento de error
+                        const errorDiv = document.createElement('p');
+                        errorDiv.className = 'mt-1 text-sm text-red-600';
+                        errorDiv.textContent = messages[0];
+
+                        // Insertar después del input
+                        input.parentNode.appendChild(errorDiv);
+
+                        // Resaltar el input con error
+                        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.remove('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                        // Remover clases de error cuando el usuario empiece a escribir
+                        input.addEventListener('input', function() {
+                            this.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                            this.classList.add('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                            // Remover mensaje de error
+                            const errorMsg = this.parentNode.querySelector('.text-red-600');
+                            if (errorMsg) {
+                                errorMsg.remove();
+                            }
+                        }, { once: true });
+                    }
+                }
+            },
+
+            // ... resto de las funciones se mantienen igual ...
             async performSearch() {
                 this.loading = true;
 
@@ -401,10 +526,6 @@
                     if (this.statusFilter) params.append('status', this.statusFilter);
 
                     const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
-                    const response = await axios.get(url);
-
-                    // Aquí podrías actualizar solo la tabla en lugar de recargar toda la página
-                    // Para simplificar, recargamos la página
                     window.location.href = url;
                 } catch (error) {
                     console.error('Error en búsqueda:', error);
@@ -416,11 +537,6 @@
                 this.searchQuery = '';
                 this.statusFilter = '';
                 this.performSearch();
-            },
-
-            sortBy(column) {
-                console.log('Ordenar por:', column);
-                // Implementar lógica de ordenamiento
             },
 
             handleCategorySaved(category) {
@@ -452,7 +568,7 @@
             showNotification(message, type = 'success') {
                 // Crear notificación flotante
                 const notification = document.createElement('div');
-                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 translate-y-0 opacity-100 ${
+                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${
                     type === 'success'
                     ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
                     : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
@@ -488,8 +604,687 @@
             },
 
             updateStats() {
-                // Actualizar estadísticas después de cambios
-                // Podrías hacer una petición AJAX para obtener estadísticas actualizadas
+                // Podrías hacer una petición AJAX para actualizar estadísticas
+            }
+        };
+    }*/
+
+    /*function categoryManager() {
+        return {
+            searchQuery: '{{ request('search') }}',
+            statusFilter: '{{ request('status', '') }}',
+            loading: false,
+
+            init() {
+                // Escuchar eventos
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                window.addEventListener('category-saved', (e) => {
+                    this.handleCategorySaved(e.detail);
+                });
+
+                window.addEventListener('category-updated', (e) => {
+                    this.handleCategoryUpdated(e.detail);
+                });
+
+                window.addEventListener('category-deleted', (e) => {
+                    this.handleCategoryDeleted(e.detail);
+                });
+            },
+
+            // Función para manejar el submit del formulario
+            async submitForm(event, modalComponent = null, isSubmittingState = null) {
+                event.preventDefault();
+
+                const form = event.target;
+
+                // Si se pasó el estado de submitting, actualizarlo
+                if (isSubmittingState) {
+                    isSubmittingState.isSubmitting = true;
+                }
+
+                try {
+                    const formData = new FormData(form);
+
+                    // Determinar URL y método
+                    let url = form.getAttribute('action');
+                    let method = form.getAttribute('method') || 'POST';
+
+                    // Si no tiene action, usar la ruta store
+                    if (!url) {
+                        url = '{{ route("admin.categories.store") }}';
+                        method = 'POST';
+                    }
+
+                    const response = await axios({
+                        method: method,
+                        url: url,
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        }
+                    });
+
+                    // Cerrar modal si existe
+                    if (modalComponent && modalComponent.open !== undefined) {
+                        modalComponent.open = false;
+                    }
+
+                    // Resetear estado de submitting
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    // Determinar si es creación o actualización
+                    const isCreation = method === 'POST' || method.toLowerCase() === 'post';
+
+                    // Mostrar notificación
+                    this.showNotification(
+                        isCreation ? 'Categoría creada exitosamente' : 'Categoría actualizada exitosamente',
+                        'success'
+                    );
+
+                    // Emitir evento correspondiente
+                    const eventName = isCreation ? 'category-saved' : 'category-updated';
+                    window.dispatchEvent(new CustomEvent(eventName, {
+                        detail: response.data.category || response.data
+                    }));
+
+                    // Recargar la página después de un breve delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+
+                } catch (error) {
+                    // Resetear estado de submitting en caso de error
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    if (error.response && error.response.status === 422) {
+                        // Manejar errores de validación
+                        this.showValidationErrors(error.response.data.errors);
+                        this.showNotification('Por favor corrige los errores en el formulario', 'error');
+                    } else {
+                        console.error('Error:', error);
+                        this.showNotification('Error al guardar la categoría', 'error');
+                    }
+                }
+            },
+
+            // ... resto de tus funciones siguen igual ...
+            showValidationErrors(errors) {
+                // Limpiar errores anteriores
+                document.querySelectorAll('.text-red-600').forEach(el => el.remove());
+
+                // Mostrar nuevos errores
+                for (const [field, messages] of Object.entries(errors)) {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        // Crear elemento de error
+                        const errorDiv = document.createElement('p');
+                        errorDiv.className = 'mt-1 text-sm text-red-600';
+                        errorDiv.textContent = messages[0];
+
+                        // Insertar después del input
+                        input.parentNode.appendChild(errorDiv);
+
+                        // Resaltar el input con error
+                        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.remove('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                        // Remover clases de error cuando el usuario empiece a escribir
+                        input.addEventListener('input', function() {
+                            this.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                            this.classList.add('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                            // Remover mensaje de error
+                            const errorMsg = this.parentNode.querySelector('.text-red-600');
+                            if (errorMsg) {
+                                errorMsg.remove();
+                            }
+                        }, { once: true });
+                    }
+                }
+            },
+
+            // ... resto de tus funciones ...
+            async performSearch() {
+                this.loading = true;
+
+                try {
+                    const params = new URLSearchParams();
+                    if (this.searchQuery) params.append('search', this.searchQuery);
+                    if (this.statusFilter) params.append('status', this.statusFilter);
+
+                    const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
+                    window.location.href = url;
+                } catch (error) {
+                    console.error('Error en búsqueda:', error);
+                    this.loading = false;
+                }
+            },
+
+            resetFilters() {
+                this.searchQuery = '';
+                this.statusFilter = '';
+                this.performSearch();
+            },
+
+            handleCategorySaved(category) {
+                this.showNotification('Categoría creada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryUpdated(category) {
+                this.showNotification('Categoría actualizada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryDeleted(categoryId) {
+                const row = document.getElementById(`category-row-${categoryId}`);
+                if (row) {
+                    row.classList.add('opacity-0', 'translate-x-4');
+                    setTimeout(() => {
+                        row.remove();
+                        this.showNotification('Categoría eliminada exitosamente', 'success');
+                        this.updateStats();
+                    }, 300);
+                }
+            },
+
+            showNotification(message, type = 'success') {
+                // Crear notificación flotante
+                const notification = document.createElement('div');
+                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${
+                    type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                }`;
+
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${type === 'success'
+                                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                            }
+                        </svg>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                // Animar entrada
+                setTimeout(() => {
+                    notification.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-0', 'opacity-100');
+                    notification.classList.add('-translate-y-2', 'opacity-0');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            },
+
+            updateStats() {
+                // Podrías hacer una petición AJAX para actualizar estadísticas
+            }
+        };
+    }*/
+
+    /*function categoryManager() {
+        return {
+            searchQuery: '{{ request('search') }}',
+            statusFilter: '{{ request('status', '') }}',
+            loading: false,
+
+            init() {
+                // Escuchar eventos
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                window.addEventListener('category-saved', (e) => {
+                    this.handleCategorySaved(e.detail);
+                });
+
+                window.addEventListener('category-updated', (e) => {
+                    this.handleCategoryUpdated(e.detail);
+                });
+
+                window.addEventListener('category-deleted', (e) => {
+                    this.handleCategoryDeleted(e.detail);
+                });
+            },
+
+            // Función para manejar el submit del formulario
+            async submitForm(event, modalComponent = null, isSubmittingState = null) {
+                event.preventDefault();
+
+                const form = event.target;
+
+                // Si se pasó el estado de submitting, actualizarlo
+                if (isSubmittingState) {
+                    isSubmittingState.isSubmitting = true;
+                }
+
+                try {
+                    const formData = new FormData(form);
+
+                    // Obtener la URL y método del formulario
+                    const action = form.getAttribute('action');
+                    const method = form.getAttribute('method') || 'POST';
+
+                    const response = await axios({
+                        method: method,
+                        url: action,
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        }
+                    });
+
+                    // Cerrar modal si existe
+                    if (modalComponent && typeof modalComponent.close === 'function') {
+                        modalComponent.open = false;
+                    } else {
+                        // Si no se puede acceder directamente al modal, buscarlo
+                        const modal = document.querySelector('[x-data*="modal()"]');
+                        if (modal && modal.__x && modal.__x.$data) {
+                            modal.__x.$data.open = false;
+                        }
+                    }
+
+                    // Resetear estado de submitting
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    // Determinar si es creación o actualización
+                    const isCreation = method.toUpperCase() === 'POST';
+
+                    // Mostrar notificación
+                    this.showNotification(
+                        isCreation ? 'Categoría creada exitosamente' : 'Categoría actualizada exitosamente',
+                        'success'
+                    );
+
+                    // Emitir evento correspondiente
+                    const eventName = isCreation ? 'category-saved' : 'category-updated';
+                    window.dispatchEvent(new CustomEvent(eventName, {
+                        detail: response.data.category || response.data
+                    }));
+
+                    // Recargar la página después de un breve delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+
+                } catch (error) {
+                    // Resetear estado de submitting en caso de error
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    if (error.response && error.response.status === 422) {
+                        // Manejar errores de validación
+                        this.showValidationErrors(error.response.data.errors);
+                        this.showNotification('Por favor corrige los errores en el formulario', 'error');
+                    } else {
+                        console.error('Error:', error);
+                        this.showNotification('Error al guardar la categoría', 'error');
+                    }
+                }
+            },
+
+            // ... resto de tus funciones siguen igual ...
+            showValidationErrors(errors) {
+                // Limpiar errores anteriores
+                document.querySelectorAll('.text-red-600').forEach(el => el.remove());
+
+                // Mostrar nuevos errores
+                for (const [field, messages] of Object.entries(errors)) {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        // Crear elemento de error
+                        const errorDiv = document.createElement('p');
+                        errorDiv.className = 'mt-1 text-sm text-red-600';
+                        errorDiv.textContent = messages[0];
+
+                        // Insertar después del input
+                        input.parentNode.appendChild(errorDiv);
+
+                        // Resaltar el input con error
+                        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.remove('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                        // Remover clases de error cuando el usuario empiece a escribir
+                        input.addEventListener('input', function() {
+                            this.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                            this.classList.add('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                            // Remover mensaje de error
+                            const errorMsg = this.parentNode.querySelector('.text-red-600');
+                            if (errorMsg) {
+                                errorMsg.remove();
+                            }
+                        }, { once: true });
+                    }
+                }
+            },
+
+            // ... resto de tus funciones ...
+            async performSearch() {
+                this.loading = true;
+
+                try {
+                    const params = new URLSearchParams();
+                    if (this.searchQuery) params.append('search', this.searchQuery);
+                    if (this.statusFilter) params.append('status', this.statusFilter);
+
+                    const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
+                    window.location.href = url;
+                } catch (error) {
+                    console.error('Error en búsqueda:', error);
+                    this.loading = false;
+                }
+            },
+
+            resetFilters() {
+                this.searchQuery = '';
+                this.statusFilter = '';
+                this.performSearch();
+            },
+
+            handleCategorySaved(category) {
+                this.showNotification('Categoría creada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryUpdated(category) {
+                this.showNotification('Categoría actualizada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryDeleted(categoryId) {
+                const row = document.getElementById(`category-row-${categoryId}`);
+                if (row) {
+                    row.classList.add('opacity-0', 'translate-x-4');
+                    setTimeout(() => {
+                        row.remove();
+                        this.showNotification('Categoría eliminada exitosamente', 'success');
+                        this.updateStats();
+                    }, 300);
+                }
+            },
+
+            showNotification(message, type = 'success') {
+                // Crear notificación flotante
+                const notification = document.createElement('div');
+                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${
+                    type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                }`;
+
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${type === 'success'
+                                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                            }
+                        </svg>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                // Animar entrada
+                setTimeout(() => {
+                    notification.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+
+                // Remover después de 3 segundos
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-0', 'opacity-100');
+                    notification.classList.add('-translate-y-2', 'opacity-0');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            },
+
+            updateStats() {
+                // Podrías hacer una petición AJAX para actualizar estadísticas
+            }
+        };
+    }*/
+
+    function categoryManager() {
+        return {
+            searchQuery: '{{ request('search') }}',
+            statusFilter: '{{ request('status', '') }}',
+            loading: false,
+
+            init() {
+                // Escuchar eventos de modal
+                window.addEventListener('modal-submit', (e) => {
+                    this.handleModalSubmit(e.detail);
+                });
+
+                // Escuchar otros eventos
+                this.setupEventListeners();
+            },
+
+            setupEventListeners() {
+                window.addEventListener('category-saved', (e) => {
+                    this.handleCategorySaved(e.detail);
+                });
+
+                window.addEventListener('category-updated', (e) => {
+                    this.handleCategoryUpdated(e.detail);
+                });
+
+                window.addEventListener('category-deleted', (e) => {
+                    this.handleCategoryDeleted(e.detail);
+                });
+            },
+
+            async handleModalSubmit(detail) {
+                const { formData, form, isSubmittingState, closeModal } = detail;
+
+                // Activar estado de submitting
+                if (isSubmittingState) {
+                    isSubmittingState.isSubmitting = true;
+                }
+
+                try {
+                    const action = form.getAttribute('action');
+                    const method = form.getAttribute('method') || 'POST';
+
+                    const response = await axios({
+                        method: method,
+                        url: action,
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        }
+                    });
+
+                    // Cerrar modal
+                    closeModal();
+
+                    // Resetear estado de submitting
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    // Determinar si es creación o actualización
+                    const isCreation = method.toUpperCase() === 'POST';
+
+                    // Mostrar notificación
+                    this.showNotification(
+                        isCreation ? 'Categoría creada exitosamente' : 'Categoría actualizada exitosamente',
+                        'success'
+                    );
+
+                    // Emitir evento correspondiente
+                    const eventName = isCreation ? 'category-saved' : 'category-updated';
+                    window.dispatchEvent(new CustomEvent(eventName, {
+                        detail: response.data.category || response.data
+                    }));
+
+                    // Recargar la página después de un breve delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+
+                } catch (error) {
+                    // Resetear estado de submitting en caso de error
+                    if (isSubmittingState) {
+                        isSubmittingState.isSubmitting = false;
+                    }
+
+                    if (error.response && error.response.status === 422) {
+                        this.showValidationErrors(error.response.data.errors);
+                        this.showNotification('Por favor corrige los errores en el formulario', 'error');
+                    } else {
+                        console.error('Error:', error);
+                        this.showNotification('Error al guardar la categoría', 'error');
+                    }
+                }
+            },
+
+            showValidationErrors(errors) {
+                // Limpiar errores anteriores
+                document.querySelectorAll('.text-red-600').forEach(el => el.remove());
+
+                // Mostrar nuevos errores
+                for (const [field, messages] of Object.entries(errors)) {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        const errorDiv          = document.createElement('p');
+                        errorDiv.className      = 'mt-1 text-sm text-red-600';
+                        errorDiv.textContent    = messages[0];
+                        input.parentNode.appendChild(errorDiv);
+
+                        input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                        input.classList.remove('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+
+                        input.addEventListener('input', function() {
+                            this.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                            this.classList.add('border-gray-300', 'focus:border-blue-500', 'focus:ring-blue-500');
+                            const errorMsg = this.parentNode.querySelector('.text-red-600');
+                            if (errorMsg) errorMsg.remove();
+                        }, { once: true });
+                    }
+                }
+            },
+
+            // ... resto de tus funciones ...
+            async performSearch() {
+                this.loading = true;
+
+                try {
+                    const params = new URLSearchParams();
+                    if (this.searchQuery) params.append('search', this.searchQuery);
+                    if (this.statusFilter) params.append('status', this.statusFilter);
+
+                    const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
+                    window.location.href = url;
+                } catch (error) {
+                    console.error('Error en búsqueda:', error);
+                    this.loading = false;
+                }
+            },
+
+            resetFilters() {
+                this.searchQuery = '';
+                this.statusFilter = '';
+                this.performSearch();
+            },
+
+            handleCategorySaved(category) {
+                this.showNotification('Categoría creada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryUpdated(category) {
+                this.showNotification('Categoría actualizada exitosamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            },
+
+            handleCategoryDeleted(categoryId) {
+                const row = document.getElementById(`category-row-${categoryId}`);
+                if (row) {
+                    row.classList.add('opacity-0', 'translate-x-4');
+                    setTimeout(() => {
+                        row.remove();
+                        this.showNotification('Categoría eliminada exitosamente', 'success');
+                        this.updateStats();
+                    }, 300);
+                }
+            },
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${
+                    type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                }`;
+
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${type === 'success'
+                                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                            }
+                        </svg>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+                setTimeout(() => notification.classList.add('translate-y-0', 'opacity-100'), 10);
+
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-0', 'opacity-100');
+                    notification.classList.add('-translate-y-2', 'opacity-0');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            },
+
+            updateStats() {
+                // Podrías hacer una petición AJAX para actualizar estadísticas
             }
         };
     }
@@ -501,7 +1296,7 @@
         }
 
         try {
-            const response = await axios.delete(`{{ route('admin.categories.index') }}/${categoryId}`);
+            const response = await axios.delete(`{{ route('admin.categories.destroy', '') }}/${categoryId}`);
             window.dispatchEvent(new CustomEvent('category-deleted', {
                 detail: categoryId
             }));
@@ -510,10 +1305,28 @@
         }
     }
 
-    // Función para ver detalles (puedes implementar otro modal)
+    // Función para cambiar estado
+    async function toggleStatus(categoryId) {
+        if (!confirm('¿Cambiar estado de la categoría?')) {
+            return;
+        }
+
+        try {
+            // /admin/categories/{category}/toggle-status
+            const response = await axios.post(`{{ route(['admin.categories.toggleStatus', '']) }}/${categoryId}`);
+            if (response.data.success) {
+                // Recargar para ver cambios
+                window.location.reload();
+            }
+        } catch (error) {
+            alert('Error al cambiar el estado');
+        }
+    }
+
+    // Función para ver detalles
     function viewCategory(categoryId) {
         console.log('Ver categoría:', categoryId);
-        // Implementar vista de detalles
+        // Implementar vista de detalles si la necesitas
     }
 </script>
 

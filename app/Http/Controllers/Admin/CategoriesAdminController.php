@@ -15,13 +15,31 @@ class CategoriesAdminController extends Controller {
         $this->middleware(['auth', 'admin']);
     }
 
-    public function index(Request $request): View {
-        $categories = Category::query()
-            ->when($request->filled('search'), function ($query) use ($request) {
-                return $query->where('name', 'like', '%' . $request->search . '%');
-            })
-            ->paginate(10);
+    public function index(): View {
+        $query = Category::query();
+        // Búsqueda
+        if ($search = request('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtro por estado
+        if (request()->has('status') && request('status') !== '') {
+            $query->where('is_active', request('status'));
+        }
+
+        $categories = $query->orderBy('name')->paginate(10);
         return view('admin.categories.index', compact('categories'));
+    }
+
+    public function toggleStatus(Category $category): JsonResponse {
+        $category->update(['is_active' => !$category->is_active]);
+        return response()->json([
+            'success' => true,
+            'is_active' => $category->is_active
+        ]);
     }
 
     public function show(Category $category): JsonResponse {

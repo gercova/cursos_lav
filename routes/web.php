@@ -122,17 +122,27 @@ Route::prefix('admin')->group(function () {
         // Route::resource('exams',                    ExamsAdminController::class);
 
         // Rutas adicionales para categorías
+
+        /*Route::prefix('categories')->name('categories.')->group(function () {
+            Route::get('/home',                         [CategoriesAdminController::class, 'index'])->name('index');
+            Route::post('/store',                       [CategoriesAdminController::class, 'store'])->name('store');
+            Route::put('/{category}',                   [CategoriesAdminController::class, 'update'])->name('update');
+            Route::delete('/{category}',                [CategoriesAdminController::class, 'destroy'])->name('destroy');
+            Route::post('/{category}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('toggle-status');
+        });*/
         Route::get('/categories/home',                          [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
         Route::get('/categories/create',                        [CategoriesAdminController::class, 'create'])->name('admin.categories.create');
         Route::get('/categories/{category}/edit',               [CategoriesAdminController::class, 'edit'])->name('admin.categories.edit');
         Route::get('/categories/show/{category}',               [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
         Route::patch('/categories/{category}',                  [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
+        Route::post('/admin/categories/{category}/toggle-status', [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
         Route::post('/categories/store',                        [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
         Route::delete('/categories/{category}',                 [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');
         Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
+        Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
         Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
         Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
         Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');

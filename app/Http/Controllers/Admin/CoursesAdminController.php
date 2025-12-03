@@ -95,6 +95,95 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.index', compact('courses', 'categories', 'instructors'));
     }
 
+    /*public function index(Request $request): View {
+        $query = Course::with(['category', 'sections'])
+            ->withCount(['enrollments as students_count'])
+            ->withCount('sections');
+
+        // Búsqueda
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtro por estado
+        if ($status = $request->input('status')) {
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            } elseif ($status === 'promotion') {
+                $query->whereNotNull('promotion_price')->whereColumn('promotion_price', '<', 'price');
+            }
+        }
+
+        // Filtro por categoría
+        if ($category = $request->input('category')) {
+            $query->where('category_id', $category);
+        }
+
+        // Ordenar
+        $query->orderBy('created_at', 'desc');
+        $courses    = $query->paginate(10);
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        return view('admin.courses.index', compact('courses', 'categories'));
+    }*/
+
+    // Método para cambiar estado del curso
+    /*public function toggleStatus(Course $course): JsonResponse {
+        $course->update(['is_active' => !$course->is_active]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $course->is_active
+        ]);
+    }*/
+
+    // Métodos para secciones (ya tienes las rutas)
+    /*public function addSection(Request $request, Course $course): JsonResponse {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer'
+        ]);
+
+        $section = $course->sections()->create($validated);
+
+        return response()->json([
+            'success' => true,
+            'section' => $section
+        ]);
+    }*/
+
+    /*public function updateSection(Request $request, Course $course, $sectionId): JsonResponse {
+        $section = $course->sections()->findOrFail($sectionId);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer'
+        ]);
+
+        $section->update($validated);
+
+        return response()->json(['success' => true]);
+    }*/
+
+    /*public function deleteSection(Course $course, $sectionId): JsonResponse {
+        $section = $course->sections()->findOrFail($sectionId);
+        $section->delete();
+
+        return response()->json(['success' => true]);
+    }*/
+
+    // Método para obtener secciones (API)
+    public function getSections(Course $course): JsonResponse {
+        $sections = $course->sections()->orderBy('order')->get();
+
+        return response()->json($sections);
+    }
+
     /**
      * Show the form for creating a new course.
      */

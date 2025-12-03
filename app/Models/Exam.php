@@ -35,7 +35,11 @@ class Exam extends Model
         return $this->hasMany(ExamQuestion::class);
     }
 
-    public function attempts(): HasMany {
+    /*public function attempts(): HasMany {
+        return $this->hasMany(ExamAttempt::class);
+    }*/
+
+    public function examAttempts(): HasMany {
         return $this->hasMany(ExamAttempt::class);
     }
 

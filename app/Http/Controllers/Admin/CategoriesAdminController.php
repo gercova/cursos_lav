@@ -37,7 +37,7 @@ class CategoriesAdminController extends Controller {
     public function toggleStatus(Category $category): JsonResponse {
         $category->update(['is_active' => !$category->is_active]);
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $category->is_active
         ]);
     }

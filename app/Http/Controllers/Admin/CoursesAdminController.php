@@ -26,7 +26,7 @@ class CoursesAdminController extends Controller {
     /**
      * Display a listing of the courses.
      */
-    public function index(Request $request): View {
+    /*public function index(Request $request): View {
         $query = Course::with(['category', 'instructor', 'enrollments']);
         // Filtros
         if ($request->has('category_id') && $request->category_id) {
@@ -93,9 +93,9 @@ class CoursesAdminController extends Controller {
         $instructors    = User::where('role', 'instructor')->get();
 
         return view('admin.courses.index', compact('courses', 'categories', 'instructors'));
-    }
+    }*/
 
-    /*public function index(Request $request): View {
+    public function index(Request $request): View {
         $query = Course::with(['category', 'sections'])
             ->withCount(['enrollments as students_count'])
             ->withCount('sections');
@@ -128,7 +128,7 @@ class CoursesAdminController extends Controller {
         $courses    = $query->paginate(10);
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         return view('admin.courses.index', compact('courses', 'categories'));
-    }*/
+    }
 
     // Método para cambiar estado del curso
     /*public function toggleStatus(Course $course): JsonResponse {
@@ -184,85 +184,113 @@ class CoursesAdminController extends Controller {
         return response()->json($sections);
     }
 
-    /**
-     * Show the form for creating a new course.
-     */
     public function create(): View {
-        $categories     = Category::where('is_active', true)->get();
-        $instructors    = User::where('role', 'instructor')->get();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $instructors = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
+
         return view('admin.courses.create', compact('categories', 'instructors'));
     }
 
-    /**
-     * Store a newly created course.
-     */
+    public function edit(Course $course): View {
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $instructors = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
+
+        // Cargar relaciones necesarias
+        $course->loadCount(['sections', 'enrollments']);
+
+        // Convertir arrays JSON a arrays PHP para los campos de formulario
+        $course->what_you_learn = $course->what_you_learn ?? [];
+        $course->requirements = $course->requirements ?? [];
+
+        return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
+    }
+
     public function store(Request $request) {
         $validated = $request->validate([
-            'title'             => 'required|string|max:255',
-            'description'       => 'required|string',
-            'short_description' => 'nullable|string|max:500',
-            'category_id'       => 'required|exists:categories,id',
-            'instructor_id'     => 'required|exists:users,id',
-            'level'             => 'required|in:beginner,intermediate,advanced',
-            'price'             => 'required|numeric|min:0',
-            'promotion_price'   => 'nullable|numeric|min:0|lt:price',
-            'duration'          => 'nullable|integer|min:1',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'requirements'      => 'nullable|array',
-            'requirements.*'    => 'string|max:255',
-            'what_you_learn'    => 'nullable|array',
-            'what_you_learn.*'  => 'string|max:255',
-            'is_active'         => 'boolean',
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:courses,slug',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'promotion_price' => 'nullable|numeric|min:0|lt:price',
+            'category_id' => 'required|exists:categories,id',
+            'instructor_id' => 'required|exists:users,id',
+            'level' => 'required|in:beginner,intermediate,advanced,all',
+            'duration' => 'required|numeric|min:0',
+            'is_active' => 'boolean',
+            'requirements' => 'nullable|array',
+            'requirements.*' => 'string|max:255',
+            'what_you_learn' => 'required|array',
+            'what_you_learn.*' => 'string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
-
-        // Generar slug único
-        $slug = Str::slug($validated['title']);
-        $originalSlug = $slug;
-        $counter = 1;
-
-        while (Course::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
-            $counter++;
-        }
 
         // Procesar imagen
-        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('courses', 'public');
+            $path = $request->file('image')->store('courses', 'public');
+            $validated['image_url'] = $path;
         }
 
-        // Crear curso
-        $course = Course::create([
-            'title'             => $validated['title'],
-            'slug'              => $slug,
-            'description'       => $validated['description'],
-            'short_description' => $validated['short_description'],
-            'category_id'       => $validated['category_id'],
-            'instructor_id'     => $validated['instructor_id'],
-            'level'             => $validated['level'],
-            'price'             => $validated['price'],
-            'promotion_price'   => $validated['promotion_price'],
-            'duration'          => $validated['duration'],
-            'image_url'         => $imagePath,
-            'requirements'      => $validated['requirements'] ? array_filter($validated['requirements']) : null,
-            'what_you_learn'    => $validated['what_you_learn'] ? array_filter($validated['what_you_learn']) : null,
-            'is_active'         => $request->has('is_active'),
+        // Filtrar elementos vacíos de los arrays
+        if (isset($validated['requirements'])) {
+            $validated['requirements'] = array_filter($validated['requirements']);
+        }
+        if (isset($validated['what_you_learn'])) {
+            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
+        }
+
+        // Crear slug si no se proporcionó
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        $course = Course::create($validated);
+
+        return redirect()->route('admin.courses.edit', $course)
+            ->with('success', 'Curso creado exitosamente');
+    }
+
+    public function update(Request $request, Course $course) {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:courses,slug,' . $course->id,
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'promotion_price' => 'nullable|numeric|min:0|lt:price',
+            'category_id' => 'required|exists:categories,id',
+            'instructor_id' => 'required|exists:users,id',
+            'level' => 'required|in:beginner,intermediate,advanced,all',
+            'duration' => 'required|numeric|min:0',
+            'is_active' => 'boolean',
+            'requirements' => 'nullable|array',
+            'requirements.*' => 'string|max:255',
+            'what_you_learn' => 'required|array',
+            'what_you_learn.*' => 'string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        // Crear examen por defecto
-        Exam::create([
-            'course_id'     => $course->id,
-            'title'         => "Examen Final - {$course->title}",
-            'description'   => "Examen de certificación para el curso {$course->title}",
-            'duration'      => 60,
-            'passing_score' => 14.00,
-            'max_attempts'  => 3,
-            'is_active'     => true,
-        ]);
+        // Procesar imagen
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($course->image_url) {
+                Storage::disk('public')->delete($course->image_url);
+            }
 
-        $this->logActivity("Creó el curso: {$course->title}");
-        return redirect()->route('admin.courses.edit', $course->id)
-            ->with('success', 'Curso creado exitosamente. Ahora puedes agregar secciones y lecciones.');
+            $path = $request->file('image')->store('courses', 'public');
+            $validated['image_url'] = $path;
+        }
+
+        // Filtrar elementos vacíos de los arrays
+        if (isset($validated['requirements'])) {
+            $validated['requirements'] = array_filter($validated['requirements']);
+        }
+        if (isset($validated['what_you_learn'])) {
+            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
+        }
+
+        $course->update($validated);
+
+        return redirect()->route('admin.courses.edit', $course)
+            ->with('success', 'Curso actualizado exitosamente');
     }
 
     /**
@@ -285,19 +313,9 @@ class CoursesAdminController extends Controller {
     }
 
     /**
-     * Show the form for editing the specified course.
-     */
-    public function edit(Course $course) {
-        $course->load(['sections.lessons', 'documents', 'exam.questions']);
-        $categories     = Category::where('is_active', true)->get();
-        $instructors    = User::where('role', 'instructor')->get();
-        return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
-    }
-
-    /**
      * Update the specified course.
      */
-    public function update(Request $request, Course $course) {
+    /*public function update(Request $request, Course $course) {
         $validated = $request->validate([
             'title'             => 'required|string|max:255',
             'description'       => 'required|string',
@@ -346,7 +364,7 @@ class CoursesAdminController extends Controller {
 
         $this->logActivity("Actualizó el curso: {$course->title}");
         return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente.');
-    }
+    }*/
 
     /**
      * Remove the specified course.

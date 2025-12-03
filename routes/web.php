@@ -115,12 +115,6 @@ Route::prefix('admin')->group(function () {
         // Logout
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
-        // CRUDs existentes
-        // Route::resource('categories',               CategoriesAdminController::class);
-        // Route::resource('courses',                  CoursesAdminController::class);
-        // Route::resource('documents',                DocumentsAdminController::class);
-        // Route::resource('exams',                    ExamsAdminController::class);
-
         // Rutas adicionales para categorías
 
         /*Route::prefix('categories')->name('categories.')->group(function () {
@@ -141,8 +135,12 @@ Route::prefix('admin')->group(function () {
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');
+        Route::get('/api/courses/{course}/sections',            [CoursesAdminController::class, 'getSections']);
+        Route::post('/admin/courses/{course}/toggle-status',    [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
         Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
+        Route::post('/courses/store',                           [CoursesAdminController::class, 'store'])->name('admin.courses.store');
         Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
+        Route::post('/courses/update',                          [CoursesAdminController::class, 'update'])->name('admin.courses.update');
         Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
         Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
         Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');
@@ -152,7 +150,13 @@ Route::prefix('admin')->group(function () {
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');
+        Route::get('/exams/{exam}/show',                        [ExamsAdminController::class, 'show'])->name('admin.exams.show');
+        Route::put('/exams/{exam}',                             [ExamsAdminController::class, 'update'])->name('admin.exams.update');
+        Route::get('/exams/{exam}/results',                     [ExamsAdminController::class, 'results'])->name('admin.exams.results');
+        Route::get('/exams/{exam}/questions',                   [ExamsAdminController::class, 'questions'])->name('admin.exams.questions');
         Route::post('/exams/{exam}/questions',                  [ExamsAdminController::class, 'addQuestion'])->name('admin.exams.questions.add');
+        Route::post('/exams/store',                             [ExamsAdminController::class, 'store'])->name('admin.exams.store');
+        Route::post('/exams/{exam}/toggle-status',              [ExamsAdminController::class, 'toggleStatus'])->name('admin.exams.toggle-status');
         Route::put('/exams/{exam}/questions/{question}',        [ExamsAdminController::class, 'updateQuestion'])->name('admin.exams.questions.update');
         Route::delete('/exams/{exam}/questions/{question}',     [ExamsAdminController::class, 'deleteQuestion'])->name('admin.exams.questions.delete');
     });

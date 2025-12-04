@@ -56,19 +56,68 @@ class ExamsAdminController extends Controller {
         return view('admin.exams.index', compact('exams', 'courses'));
     }
 
-    public function store(Request $request)
-    {
+    public function create(): View {
+        $courses = Course::where('is_active', true)
+            ->with('category')
+            ->orderBy('title')
+            ->get();
+
+        return view('admin.exams.create', compact('courses'));
+    }
+
+    public function edit(Exam $exam): View {
+        $courses = Course::where('is_active', true)
+            ->with('category')
+            ->orderBy('title')
+            ->get();
+
+        // Cargar estadísticas
+        $exam->loadCount(['questions', 'examAttempts']);
+        $exam->passed_count = $exam->examAttempts()->where('passed', true)->count();
+        $exam->attempts_count = $exam->examAttempts()->count();
+
+        return view('admin.exams.edit', compact('exam', 'courses'));
+    }
+
+    public function duplicate(Exam $exam): JsonResponse {
+        try {
+            // Duplicar examen
+            $newExam = $exam->replicate();
+            $newExam->title = $exam->title . ' (Copia)';
+            $newExam->save();
+
+            // Duplicar preguntas
+            foreach ($exam->questions as $question) {
+                $newQuestion = $question->replicate();
+                $newQuestion->exam_id = $newExam->id;
+                $newQuestion->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Examen duplicado exitosamente',
+                'new_exam_id' => $newExam->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al duplicar el examen'
+            ], 500);
+        }
+    }
+
+    public function store(Request $request): JsonResponse {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'course_id'     => 'required|exists:courses,id',
             'passing_score' => 'required|integer|min:0|max:100',
-            'time_limit' => 'nullable|integer|min:0',
-            'max_attempts' => 'nullable|integer|min:0',
-            'is_final' => 'boolean',
-            'show_results' => 'boolean',
+            'time_limit'    => 'nullable|integer|min:0',
+            'max_attempts'  => 'nullable|integer|min:0',
+            'is_final'      => 'boolean',
+            'show_results'  => 'boolean',
             'randomize_questions' => 'boolean',
-            'is_active' => 'boolean',
+            'is_active'     => 'boolean',
         ]);
 
         $exam = Exam::create($validated);
@@ -80,8 +129,7 @@ class ExamsAdminController extends Controller {
         ]);
     }
 
-    public function update(Request $request, Exam $exam)
-    {
+    public function update(Request $request, Exam $exam): JsonResponse {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',

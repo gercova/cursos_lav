@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'prevent.cache' => \App\Http\Middleware\PreventBrowserCacheAfterLogout::class,
         'prevent.back' => \App\Http\Middleware\PreventBackHistory::class,
         'admin' => \App\Http\Middleware\Admin::class,
+        'student' => \App\Http\Middleware\Student::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,

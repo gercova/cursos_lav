@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class AuthController extends Controller
-{
+class AuthController extends Controller {
+
     public function showRegister(): View {
         return view('student.auth.register');
     }
@@ -62,12 +62,9 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            if (Auth::user()->isAdmin()) {
-                return redirect()->route('admin.dashboard');
+            if (Auth::user()->role == 'student') {
+                return redirect()->intended('dashboard');
             }
-
-            return redirect()->intended('dashboard');
         }
 
         return back()->withErrors([

@@ -11,6 +11,12 @@ use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
+use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Student\StudentExamsController;
+use App\Http\Controllers\Student\StudentNotificationController;
+use App\Http\Controllers\Student\StudentProfileController;
+use App\Http\Controllers\Student\StudentProgressController;
+use App\Http\Controllers\Student\StudentSettingsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -47,9 +53,9 @@ Route::post('/login',           [AuthController::class, 'login']);
 Route::post('/logout',          [AuthController::class, 'logout'])->name('logout');
 
 // Rutas protegidas para estudiantes
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/dashboard',    [CoursesAdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/my-courses',   [CoursesAdminController::class, 'myCourses'])->name('my-courses');
+Route::middleware(['auth:sanctum', 'student'])->group(function () {
+    Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('dashboard');
+    Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('my-courses');
 
     // Carrito de compras
     Route::get('/cart',                         [CartsController::class, 'index'])->name('cart');
@@ -58,13 +64,36 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
 
     // Exámenes
-    Route::get('/exam/{courseId}',              [ExamsAdminController::class, 'show'])->name('exam.show');
-    Route::post('/exam/{courseId}/start',       [ExamsAdminController::class, 'start'])->name('exam.start');
-    Route::post('/exam/{courseId}/submit',      [ExamsAdminController::class, 'submit'])->name('exam.submit');
+    Route::get('/exam',                         [StudentExamsController::class, 'index'])->name('student.exams');
+    //Route::get('/exam/{courseId}',              [ExamsAdminController::class, 'show'])->name('exam.show');
+    //Route::post('/exam/{courseId}/start',       [ExamsAdminController::class, 'start'])->name('exam.start');
+    //Route::post('/exam/{courseId}/submit',      [ExamsAdminController::class, 'submit'])->name('exam.submit');
 
     // Certificados
-    Route::get('/certificate/{certificateId}',  [CertificatesController::class, 'show'])->name('certificate.show');
+    Route::get('/certificate',                  [CertificatesController::class, 'index'])->name('student.certificates');
+    Route::get('/certificate/{certificateId}',  [CertificatesController::class, 'show'])->name('student.certificate.show');
     Route::get('/certificate/{certificateId}/download', [CertificatesController::class, 'download'])->name('certificate.download');
+
+    // Rutas nuevas
+    // Dashboard principal
+    Route::get('/dashboard',                    [DashboardController::class, 'index'])->name('student.dashboard');
+
+    // Perfil del estudiante
+    Route::get('/profile',                      [StudentProfileController::class, 'show'])->name('student.profile');
+    Route::put('/profile',                      [StudentProfileController::class, 'update'])->name('student.profile.update');
+
+    // Mis cursos
+    Route::get('/courses',                      [CoursesController::class, 'index'])->name('student.courses.index');
+
+    // Progreso
+    Route::get('/progress',                     [StudentProgressController::class, 'index'])->name('student.progress');
+
+    // Configuración
+    Route::get('/settings',                     [StudentSettingsController::class, 'index'])->name('student.settings');
+    Route::put('/settings',                     [StudentSettingsController::class, 'update'])->name('student.settings.update');
+
+    // Notificaciones
+    Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
 });
 
 Route::prefix('admin')->group(function () {

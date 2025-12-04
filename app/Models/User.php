@@ -43,6 +43,14 @@ class User extends Authenticatable {
         return $this->role === 'admin';
     }
 
+    public function isStudent() {
+        return $this->role === 'student';
+    }
+
+    public function isInstructor() {
+        return $this->role === 'instructor';
+    }
+
     public function enrollments() {
         return $this->hasMany(Enrollment::class);
     }
@@ -61,13 +69,5 @@ class User extends Authenticatable {
 
     public function cartItems() {
         return $this->hasMany(Cart::class);
-    }
-
-    public function isStudent() {
-        return $this->role === 'student';
-    }
-
-    public function isInstructor() {
-        return $this->role === 'instructor';
     }
 }

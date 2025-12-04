@@ -11,8 +11,16 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ExamsController extends Controller
-{
+class StudentExamsController extends Controller {
+
+    public  function __construct() {
+        $this->middleware(['auth']);
+    }
+
+    public function index(): View {
+        return view('student.exams.index');
+    }
+
     public function show($courseId): View {
         $enrollment = Enrollment::where('user_id', Auth::id())
             ->where('course_id', $courseId)

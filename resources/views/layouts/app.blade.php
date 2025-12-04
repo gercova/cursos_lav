@@ -112,16 +112,6 @@
     </header>
 
     <div class="flex content-with-fixed-header">
-        <!-- Sidebar Fijo en desktop -->
-        <!--<aside class="hidden lg:block w-64 bg-white shadow-sm min-h-screen sidebar-transition sidebar-fixed">
-            <div class="p-4">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorías</h3>
-                <ul class="space-y-2" id="categories-list">
-                    Las categorías se cargarán via JavaScript
-                </ul>
-            </div>
-        </aside>-->
-
         <!-- Mobile sidebar toggle -->
         <div class="lg:hidden fixed bottom-4 right-4 z-40">
             <button id="sidebar-toggle" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200">

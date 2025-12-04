@@ -132,7 +132,9 @@ Route::prefix('admin')->group(function () {
 
         // Rutas para documentos
         Route::get('/documents/home',                           [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
+        Route::get('/documents/create',                         [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
         Route::post('/documents/store',                         [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
+        Route::post('/documents/{document}/duplicate',          [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
         Route::get('/documents/{document}',                     [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
         Route::put('/documents/{document}',                     [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
         Route::delete('/documents/{document}',                  [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');

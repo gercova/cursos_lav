@@ -23,7 +23,7 @@ class DocumentsAdminController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -67,11 +67,11 @@ class DocumentsAdminController extends Controller
 
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',
-            'file' => 'required|file|max:51200', // 50MB
-            'is_active' => 'boolean',
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'course_id'     => 'required|exists:courses,id',
+            'file'          => 'required|file|max:51200', // 50MB
+            'is_active'     => 'boolean',
         ]);
 
         // Procesar archivo
@@ -124,6 +124,26 @@ class DocumentsAdminController extends Controller
             'message' => 'Documento actualizado exitosamente',
             'document' => $document
         ]);
+    }
+
+    public function duplicate(Document $document): JsonResponse {
+        try {
+            // Crear copia del documento
+            $newDocument = $document->replicate();
+            $newDocument->title = $document->title . ' (Copia)';
+            $newDocument->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento duplicado exitosamente',
+                'new_document_id' => $newDocument->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al duplicar el documento'
+            ], 500);
+        }
     }
 
     public function destroy(Document $document): JsonResponse {

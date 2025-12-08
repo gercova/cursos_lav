@@ -318,10 +318,10 @@
 
         // Funciones del sidebar
         function initSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
-            const toggleBtn = document.getElementById('sidebar-toggle-btn');
-            const sidebarTexts = document.querySelectorAll('.sidebar-text');
+            const sidebar       = document.getElementById('sidebar');
+            const mainContent   = document.getElementById('main-content');
+            const toggleBtn     = document.getElementById('sidebar-toggle-btn');
+            const sidebarTexts  = document.querySelectorAll('.sidebar-text');
 
             // Estado inicial del sidebar (expandido)
             let isCollapsed = false;

@@ -22,18 +22,6 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-green-500">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-green-100 p-3 rounded-lg">
-                    <i class="fas fa-tasks text-green-600 text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Tareas Pendientes</h3>
-                    <p class="text-2xl font-bold text-gray-900" id="stats-assignments">0</p>
-                </div>
-            </div>
-        </div>
-
         <div class="bg-white rounded-xl shadow-sm p-6 card-hover border-l-4 border-purple-500">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-purple-100 p-3 rounded-lg">

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/tailwindcss.js') }}"></script>
+    <script src="{{ asset('js/alpine.js') }}" defer></script>
+    <script src="{{ asset('js/axios.min.js') }}"></script>
 </head>
 <body class="bg-gray-50">
     <!-- Header Fijo -->
@@ -147,115 +147,50 @@
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white">
-        <!-- ... (footer se mantiene igual) ... -->
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Plataforma de Cursos</h3>
+                    <p class="text-gray-300">Ofrecemos los mejores cursos online para tu desarrollo profesional.</p>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Inicio</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Cursos</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Nosotros</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contacto</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Contacto</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>Email: info@plataforma.com</li>
+                        <li>Teléfono: +51 123 456 789</li>
+                        <li>Dirección: Lima, Perú</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-md font-semibold mb-4">Síguenos</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
+                <p>&copy; 2024 Plataforma de Cursos. Todos los derechos reservados.</p>
+            </div>
+        </div>
     </footer>
-
-    <script>
-        // Cargar categorías
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCategories();
-            updateCartCount();
-
-            // Sidebar móvil
-            const sidebarToggle = document.getElementById('sidebar-toggle');
-            const mobileSidebar = document.getElementById('mobile-sidebar');
-            const closeSidebar = document.getElementById('close-sidebar');
-            const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    mobileSidebar.classList.remove('hidden');
-                    setTimeout(() => {
-                        mobileSidebar.querySelector('div').classList.remove('-translate-x-full');
-                    }, 50);
-                });
-            }
-
-            if (closeSidebar) {
-                closeSidebar.addEventListener('click', closeMobileSidebar);
-            }
-
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener('click', closeMobileSidebar);
-            }
-
-            function closeMobileSidebar() {
-                mobileSidebar.querySelector('div').classList.add('-translate-x-full');
-                setTimeout(() => {
-                    mobileSidebar.classList.add('hidden');
-                }, 300);
-            }
-
-            // Cerrar menú móvil al hacer clic en un enlace
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    Alpine.store('mobileMenuOpen', false);
-                });
-            });
-
-            // Efecto de scroll en header
-            window.addEventListener('scroll', function() {
-                const header = document.querySelector('.header-fixed');
-                if (window.scrollY > 10) {
-                    header.classList.add('shadow-lg');
-                } else {
-                    header.classList.remove('shadow-lg');
-                }
-            });
-        });
-
-        async function loadCategories() {
-            try {
-                const response = await axios.get('/api/categories');
-                const categories = response.data;
-
-                const categoriesList = document.getElementById('categories-list');
-                const mobileCategoriesList = document.getElementById('mobile-categories-list');
-
-                if (categoriesList) {
-                    categoriesList.innerHTML = categories.map(category => `
-                        <li>
-                            <a href="/?category=${category.id}" class="text-gray-600 hover:text-blue-600 block px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-200">
-                                ${category.name}
-                            </a>
-                        </li>
-                    `).join('');
-                }
-
-                if (mobileCategoriesList) {
-                    mobileCategoriesList.innerHTML = categories.map(category => `
-                        <li>
-                            <a href="/?category=${category.id}" class="text-gray-600 hover:text-blue-600 block px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-200" onclick="closeMobileSidebar()">
-                                ${category.name}
-                            </a>
-                        </li>
-                    `).join('');
-                }
-            } catch (error) {
-                console.error('Error loading categories:', error);
-            }
-        }
-
-        async function updateCartCount() {
-            try {
-                const response = await axios.get('/api/cart/count');
-                const cartCount = document.getElementById('cart-count');
-                if (cartCount) {
-                    cartCount.textContent = response.data.count;
-                    // Efecto de animación cuando cambia el count
-                    if (response.data.count > 0) {
-                        cartCount.classList.add('animate-pulse');
-                        setTimeout(() => {
-                            cartCount.classList.remove('animate-pulse');
-                        }, 1000);
-                    }
-                }
-            } catch (error) {
-                console.error('Error updating cart count:', error);
-            }
-        }
-    </script>
-
+    <script src="{{ asset('js/app.js') }}"></script>
     @yield('scripts')
 </body>
 </html>

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class StudentExamsController extends Controller {
 
     public  function __construct() {
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'student']);
     }
 
     public function index(): View {

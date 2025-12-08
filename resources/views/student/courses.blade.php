@@ -23,9 +23,9 @@
             <div class="w-full lg:w-96">
                 <div class="relative">
                     <input type="text"
-                        id="search-input"
-                        placeholder="Buscar cursos..."
-                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                           id="search-input"
+                           placeholder="Buscar cursos..."
+                           class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -38,7 +38,8 @@
             <div class="flex flex-wrap gap-4 w-full lg:w-auto">
                 <!-- Filtro por Categoría -->
                 <div class="relative">
-                    <select id="category-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
+                    <select id="category-filter"
+                            class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
                         <option value="">Todas las categorías</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -51,9 +52,26 @@
                     </div>
                 </div>
 
+                <!-- Filtro por Nivel -->
+                <div class="relative">
+                    <select id="level-filter"
+                            class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-40">
+                        <option value="">Todos los niveles</option>
+                        <option value="beginner">Principiante</option>
+                        <option value="intermediate">Intermedio</option>
+                        <option value="advanced">Avanzado</option>
+                    </select>
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </div>
+
                 <!-- Ordenar por -->
                 <div class="relative">
-                    <select id="sort-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
+                    <select id="sort-filter"
+                            class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
                         <option value="newest">Más recientes primero</option>
                         <option value="oldest">Más antiguos primero</option>
                         <option value="popular">Más populares</option>
@@ -71,7 +89,8 @@
                 </div>
 
                 <!-- Botón Limpiar Filtros -->
-                <button id="clear-filters" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-all duration-200 font-medium">
+                <button id="clear-filters"
+                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-all duration-200 font-medium">
                     Limpiar
                 </button>
             </div>
@@ -177,7 +196,8 @@
                                             <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                         @endif
                                     </div>
-                                    <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
+                                    <button onclick="addToCart({{ $course->id }})"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
                                         Agregar
                                     </button>
                                 </div>
@@ -195,8 +215,8 @@
                             <div class="flex flex-col md:flex-row">
                                 <div class="md:w-64 md:flex-shrink-0">
                                     <img src="{{ $course->image_url ?: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                        alt="{{ $course->title }}"
-                                        class="w-full h-48 md:h-full object-cover">
+                                         alt="{{ $course->title }}"
+                                         class="w-full h-48 md:h-full object-cover">
                                 </div>
                                 <div class="p-6 flex-1">
                                     <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
@@ -293,7 +313,15 @@
 </section>
 
 <!-- CTA Section -->
-@include('student.partials.cta-section')
+<section class="bg-gray-900 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-white mb-4">¿No encuentras lo que buscas?</h2>
+        <p class="text-xl text-gray-300 mb-8">Contáctanos y te ayudaremos a encontrar el curso perfecto para ti</p>
+        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+            Contactar Asesor
+        </a>
+    </div>
+</section>
 <script src="{{ asset('js/courses.js') }}"></script>
 <style>
     .card-hover {

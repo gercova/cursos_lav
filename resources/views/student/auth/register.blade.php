@@ -88,8 +88,8 @@
                                 Contraseña *
                             </label>
                             <input id="password" name="password" type="password" autocomplete="new-password" required
-                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('password') border-red-500 @enderror"
-                                   placeholder="Mínimo 8 caracteres">
+                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('password') border-red-500 @enderror"
+                                placeholder="Mínimo 8 caracteres">
                             @error('password')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -101,8 +101,8 @@
                                 Confirmar Contraseña *
                             </label>
                             <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required
-                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
-                                   placeholder="Repite tu contraseña">
+                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200"
+                                placeholder="Repite tu contraseña">
                         </div>
                     </div>
 
@@ -115,7 +115,7 @@
                                     Código País *
                                 </label>
                                 <select id="country_code" name="country_code" required
-                                        class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200">
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200">
                                     <option value="+51" {{ old('country_code', '+51') == '+51' ? 'selected' : '' }}>+51 Perú</option>
                                     <option value="+1" {{ old('country_code') == '+1' ? 'selected' : '' }}>+1 USA</option>
                                     <option value="+52" {{ old('country_code') == '+52' ? 'selected' : '' }}>+52 México</option>
@@ -130,8 +130,8 @@
                                     Celular *
                                 </label>
                                 <input id="phone" name="phone" type="tel" required
-                                       class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('phone') border-red-500 @enderror"
-                                       placeholder="987654321" value="{{ old('phone') }}">
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('phone') border-red-500 @enderror"
+                                    placeholder="987654321" value="{{ old('phone') }}">
                                 @error('phone')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -169,9 +169,9 @@
                             <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
                                 Dirección Completa *
                             </label>
-                            <textarea id="address" name="address" rows="2" required
-                                      class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('address') border-red-500 @enderror"
-                                      placeholder="Av. Principal 123, Ciudad, Departamento">{{ old('address') }}</textarea>
+                            <textarea id="address" name="address" rows="1" required
+                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors duration-200 @error('address') border-red-500 @enderror"
+                                placeholder="Av. Principal 123, Ciudad, Departamento">{{ old('address') }}</textarea>
                             @error('address')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -224,7 +224,7 @@
                 </a>
 
                 <button type="submit"
-                        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 transform hover:scale-105">
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 transform hover:scale-105">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>

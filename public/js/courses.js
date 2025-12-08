@@ -1,4 +1,3 @@
-
 class CoursesPage {
     constructor() {
         this.currentView = 'grid';

@@ -126,34 +126,6 @@ function categoryManager() {
             }
         },
 
-        /*async performSearch(page = 1) {
-            this.loading = true;
-            this.currentPage = page;
-
-            try {
-                const params = new URLSearchParams();
-                if (this.searchQuery) params.append('search', this.searchQuery);
-                if (this.statusFilter) params.append('status', this.statusFilter);
-                if (page > 1) params.append('page', page);
-
-                const response = await axios.get(`/admin/categories/search?${params.toString()}`);
-
-                if (response.data.success) {
-                    // Actualizar el contenedor de la tabla
-                    document.getElementById('categories-table-container').innerHTML = response.data.html;
-
-                    // Scroll suave hacia arriba
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-
-            } catch (error) {
-                console.error('Error en búsqueda:', error);
-                alert('Hubo un error al buscar. Por favor intenta de nuevo.');
-            } finally {
-                this.loading = false;
-            }
-        },*/
-
         async performSearch(page = 1) {
             this.loading = true;
             this.currentPage = page;

@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/photos/ipf-logo.png') }}">
-    <link href="{{ asset('css/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
     <title>@yield('title') - Admin</title>
+    <link href="{{ asset('css/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.all.min.css') }}">
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script src="{{ asset('js/alpine.js') }}" defer></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>

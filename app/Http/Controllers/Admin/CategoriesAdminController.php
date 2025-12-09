@@ -75,7 +75,7 @@ class CategoriesAdminController extends Controller {
             $query->where('is_active', request('status'));
         }
 
-        $categories = $query->orderBy('name')->paginate(10);
+        $categories = $query->orderBy('name')->paginate(5);
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -96,7 +96,7 @@ class CategoriesAdminController extends Controller {
             $query->where('is_active', $request->input('status'));
         }
 
-        $categories = $query->orderBy('name')->paginate(10);
+        $categories = $query->orderBy('name')->paginate(5);
 
         // Renderizar solo la tabla
         $html = view('admin.categories.partials.table', compact('categories'))->render();

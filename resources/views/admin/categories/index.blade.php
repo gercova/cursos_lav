@@ -129,15 +129,15 @@
             </div>
         </div>
 
-        <!-- Tabla Container -->
-        <div id="categories-table-container" class="bg-white rounded-lg shadow-md overflow-hidden">
-            @include('admin.categories.partials.table')
-        </div>
-
         <!-- Loading state -->
         <div x-show="loading" class="py-16 text-center">
             <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
             <p class="text-gray-600">Cargando categorías...</p>
+        </div>
+
+        <!-- Tabla Container -->
+        <div id="categories-table-container" class="bg-white rounded-lg shadow-md overflow-hidden">
+            @include('admin.categories.partials.table')
         </div>
 
         <!-- Paginación mejorada -->

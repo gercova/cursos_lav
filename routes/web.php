@@ -54,8 +54,8 @@ Route::post('/logout',          [AuthController::class, 'logout'])->name('logout
 
 // Rutas protegidas para estudiantes
 Route::middleware(['auth:sanctum', 'student'])->group(function () {
-    Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('dashboard');
-    Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('my-courses');
+    Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
+    Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
 
     // Carrito de compras
     Route::get('/cart',                         [CartsController::class, 'index'])->name('cart');
@@ -139,13 +139,10 @@ Route::prefix('admin')->group(function () {
 
         // Rutas para categorias
         Route::get('/categories/home',                          [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
-        Route::get('/categories/create',                        [CategoriesAdminController::class, 'create'])->name('admin.categories.create');
-        Route::get('/categories/{category}/edit',               [CategoriesAdminController::class, 'edit'])->name('admin.categories.edit');
+        Route::get('/categories/search',                        [CategoriesAdminController::class, 'search'])->name('admin.categories.search');
         Route::get('/categories/show/{category}',               [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
-        Route::patch('/categories/{category}',                  [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
-        Route::post('/categories/{category}/toggle-status',     [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+        Route::post('/categories/toggle-status/{categoryId}',   [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
         Route::post('/categories/store',                        [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
-        Route::delete('/categories/{category}',                 [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');

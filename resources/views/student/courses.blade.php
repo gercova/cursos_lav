@@ -89,8 +89,7 @@
                 </div>
 
                 <!-- Botón Limpiar Filtros -->
-                <button id="clear-filters"
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-all duration-200 font-medium">
+                <button id="clear-filters" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-all duration-200 font-medium">
                     Limpiar
                 </button>
             </div>

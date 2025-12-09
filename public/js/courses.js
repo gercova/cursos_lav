@@ -18,8 +18,7 @@ class CoursesPage {
 
     setupEventListeners() {
         // Filtros
-        document.getElementById('search-input').addEventListener('input',
-            this.debounce(() => this.applyFilters(), 500));
+        document.getElementById('search-input').addEventListener('input', this.debounce(() => this.applyFilters(), 500));
 
         document.getElementById('category-filter').addEventListener('change', () => this.applyFilters());
         document.getElementById('level-filter').addEventListener('change', () => this.applyFilters());

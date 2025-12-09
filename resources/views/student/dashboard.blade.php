@@ -115,7 +115,7 @@
                             <i class="fas fa-search text-xl mb-2"></i>
                             <span class="text-sm font-medium">Buscar Cursos</span>
                         </a>
-                        <a href="{{ route('my-courses') }}" class="bg-green-50 hover:bg-green-100 text-green-700 rounded-lg p-4 flex flex-col items-center justify-center transition-colors duration-200">
+                        <a href="{{ route('student.my-courses') }}" class="bg-green-50 hover:bg-green-100 text-green-700 rounded-lg p-4 flex flex-col items-center justify-center transition-colors duration-200">
                             <i class="fas fa-play text-xl mb-2"></i>
                             <span class="text-sm font-medium">Continuar</span>
                         </a>

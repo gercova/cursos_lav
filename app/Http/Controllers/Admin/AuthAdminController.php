@@ -26,7 +26,7 @@ class AuthAdminController extends Controller {
         // Verificar si el usuario es administrador
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !$user->isAdmin()) {
+        if (!$user || !$user->isAdmin() || !$user->isInstructor()) {
             return back()->withErrors([
                 'email' => 'No tienes permisos para acceder al panel administrativo.',
             ])->onlyInput('email');

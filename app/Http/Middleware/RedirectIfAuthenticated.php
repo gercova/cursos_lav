@@ -22,7 +22,7 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 // Si es admin, redirigir al dashboard del admin
-                if (Auth::user()->isAdmin()) {
+                if (Auth::user()->isAdmin() || Auth::user()->isInstructor() ) {
                     return redirect()->route('admin.dashboard');
                 }
                 if (Auth::user()->isStudent()) {

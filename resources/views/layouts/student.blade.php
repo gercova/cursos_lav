@@ -6,6 +6,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/photos/ipf-logo.png') }}">
     <title>Dashboard Estudiante - @yield('title')</title>
     <link href="{{ asset('css/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/font-awesome.all.min.css') }}">
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script src="{{ asset('js/alpine.js') }}" defer></script>
@@ -120,31 +121,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 transform scale-100" x-transition:leave-end="opacity-0 transform scale-95" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
-                            <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-sm font-medium text-gray-900">{{ auth()->user()->names }}</p>
-                                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
-                            </div>
-                            <a href="{{ route('student.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                                <i class="fas fa-user mr-2"></i>Mi Perfil
-                            </a>
-                            <a href="{{ route('my-courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                                <i class="fas fa-book mr-2"></i>Mis Cursos
-                            </a>
-                            <a href="{{ route('student.certificates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                                <i class="fas fa-certificate mr-2"></i>Certificados
-                            </a>
-                            <a href="{{ route('student.progress') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                                <i class="fas fa-chart-line mr-2"></i>Mi Progreso
-                            </a>
-                            <div class="border-t border-gray-100"></div>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
-                                </button>
-                            </form>
-                        </div>
+                        @include('layouts.partials.student-profile')
                     </div>
                     @endauth
                 </div>
@@ -162,7 +139,7 @@
                         <a href="{{ route('student.dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
                             <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                         </a>
-                        <a href="{{ route('my-courses') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
+                        <a href="{{ route('student.my-courses') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
                             <i class="fas fa-book mr-2"></i>Mis Cursos
                         </a>
                         <a href="{{ route('student.profile') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
@@ -205,7 +182,7 @@
                         <span class="sidebar-text">Dashboard</span>
                     </a>
 
-                    <a href="{{ route('my-courses') }}" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200 group">
+                    <a href="{{ route('student.my-courses') }}" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 transition-colors duration-200 group">
                         <i class="fas fa-book mr-3 text-green-600"></i>
                         <span class="sidebar-text">Mis Cursos</span>
                         <span id="active-courses-badge" class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"></span>

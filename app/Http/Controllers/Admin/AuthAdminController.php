@@ -17,6 +17,7 @@ class AuthAdminController extends Controller {
     }
 
     public function login(Request $request) {
+
         $credentials = $request->validate([
             'email'     => 'required|email',
             'password'  => 'required',
@@ -65,6 +66,7 @@ class AuthAdminController extends Controller {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        // return redirect()->route('/')->with('success', 'Sesión cerrada exitosamente.');
         return redirect()->route('admin.login')->with('success', 'Sesión cerrada exitosamente.');
     }
 }

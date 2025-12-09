@@ -25,6 +25,9 @@ class RedirectIfAuthenticated
                 if (Auth::user()->isAdmin()) {
                     return redirect()->route('admin.dashboard');
                 }
+                if (Auth::user()->isStudent()) {
+                    return redirect()->route('student.dashboard');
+                }
                 return redirect(RouteServiceProvider::HOME);
             }
         }

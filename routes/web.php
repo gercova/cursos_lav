@@ -53,7 +53,7 @@ Route::post('/login',           [AuthController::class, 'login']);
 Route::post('/logout',          [AuthController::class, 'logout'])->name('logout');
 
 // Rutas protegidas para estudiantes
-Route::middleware(['auth:sanctum', 'student'])->group(function () {
+Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
     Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
 
@@ -97,10 +97,10 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login');
-    Route::post('/login',   [AuthAdminController::class, 'login'])->name('admin.login');
+    Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
+    Route::post('/login',   [AuthAdminController::class, 'login'])->middleware('guest');
 
-    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
         // Gestión de Usuarios

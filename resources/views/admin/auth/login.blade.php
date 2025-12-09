@@ -74,7 +74,6 @@
 
                 <!-- Formulario -->
                 <form class="space-y-6" action="{{ route('login') }}" method="POST">
-                    @method('post')
                     @csrf
                     <!-- Campo Email -->
                     <div class="space-y-2">

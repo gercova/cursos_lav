@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Gestión de Cursos')
-
 @section('content')
 <div class="container mx-auto px-4 py-6" x-data="courseManager()" x-init="init()">
     <!-- Header con estadísticas -->
@@ -11,7 +9,6 @@
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Cursos</h1>
                 <p class="text-gray-600 mt-2">Gestiona todos los cursos de tu plataforma</p>
             </div>
-
             <!-- Botón para crear nuevo curso -->
             <a href="{{ route('admin.courses.create') }}"
                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
@@ -21,7 +18,6 @@
                 Nuevo Curso
             </a>
         </div>
-
         <!-- Tarjetas de estadísticas -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <!-- Total de cursos -->
@@ -81,9 +77,7 @@
                         </p>
                     </div>
                     <div class="bg-orange-600 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0H21m-4.5 0H15m4.5 0h.008v.008h-.008V15zm0 0h.008v.008h-.008V15z"></path>
-                        </svg>
+                        <i class="fa-solid fa-users"></i>
                     </div>
                 </div>
             </div>
@@ -281,9 +275,7 @@
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-2">
                                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0H21m-4.5 0H15m4.5 0h.008v.008h-.008V15zm0 0h.008v.008h-.008V15z"></path>
-                                            </svg>
+                                            <i class="bi bi-people"></i>
                                         </div>
                                         <div>
                                             <div class="text-lg font-bold text-gray-900">
@@ -312,14 +304,14 @@
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-end gap-2">
                                         <!-- Ver detalles -->
-                                        <a href="#"
+                                        <!--<a href="#"
                                            class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 group/view"
                                            title="Ver detalles">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                             </svg>
-                                        </a>
+                                        </a>-->
 
                                         <!-- Editar -->
                                         <a href="{{ route('admin.courses.edit', $course) }}"
@@ -331,13 +323,15 @@
                                         </a>
 
                                         <!-- Gestión de secciones (modal) -->
-                                        <button onclick="showSectionsModal({{ $course->id }})"
-                                                class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/sections"
-                                                title="Gestionar secciones">
+                                        <!--<button onclick="showSectionsModal({{ $course->id }})"-->
+                                        <a href="#"
+                                            class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/sections"
+                                            title="Gestionar secciones">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                             </svg>
-                                        </button>
+                                        </a>
+                                        <!--</button>-->
 
                                         <!-- Documentos -->
                                         <a href="#"
@@ -349,13 +343,13 @@
                                         </a>
 
                                         <!-- Eliminar -->
-                                        <button onclick="deleteCourse({{ $course->id }})"
+                                        <!--<button onclick="deleteCourse({{ $course->id }})"
                                                 class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200 group/delete"
                                                 title="Eliminar">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
-                                        </button>
+                                        </button>-->
                                     </div>
                                 </td>
                             </tr>
@@ -397,24 +391,24 @@
     <div x-data="{ showSections: false, courseId: null, sections: [], loadingSections: false }" x-cloak>
         <!-- Modal overlay -->
         <div x-show="showSections"
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-             @click.self="showSections = false">
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+            @click.self="showSections = false">
 
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div x-show="showSections"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
 
                     <!-- Header del modal -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -568,11 +562,11 @@
 
     // Función para mostrar modal de secciones
     async function showSectionsModal(courseId) {
-        const modal = document.querySelector('[x-data]');
-        const modalData = modal.__x.$data;
-        modalData.courseId = courseId;
-        modalData.showSections = true;
-        modalData.loadingSections = true;
+        const modal                 = document.querySelector('[x-data]');
+        const modalData             = modal.__x.$data;
+        modalData.courseId          = courseId;
+        modalData.showSections      = true;
+        modalData.loadingSections   = true;
 
         try {
             // Cargar secciones del curso

@@ -393,31 +393,7 @@ function myCoursesApp() {
     return {
         search: '',
         filter: 'all',
-        courses: @json($enrollments->map(function($enrollment) {
-            $course = $enrollment->course;
-            $progress = $enrollment->progress ?: 0;
-
-            return [
-                'id' => $enrollment->id,
-                'course_id' => $course->id,
-                'title' => $course->title,
-                'description' => $course->description,
-                'category' => $course->category ? $course->category->name : 'Sin categoría',
-                'image' => $course->image_url ?: null,
-                'progress' => $progress,
-                'status' => $progress >= 100 ? 'completed' : 'in_progress',
-                'modules' => $course->sections ? $course->sections->count() : 0,
-                'lessons' => $course->sections ? $course->sections->sum(function($section) {
-                    return $section->lessons ? $section->lessons->count() : 0;
-                }) : 0,
-                'duration' => $course->duration ?: '0 horas',
-                'enrolled_date' => $enrollment->created_at->format('d/m/Y'),
-                'last_accessed' => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : null,
-                'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
-                'total_lessons' => $course->total_lessons ?: 0,
-                'continue_url' => route('course.learn', $course->slug)
-            ];
-        })),
+        courses: @json($coursesData),
         stats: {
             totalCourses: 0,
             inProgress: 0,
@@ -431,6 +407,7 @@ function myCoursesApp() {
         itemsPerPage: 5,
         currentPage: 1,
 
+        // ... resto del código ALPINE
         get filteredCourses() {
             let filtered = this.courses;
 
@@ -498,7 +475,8 @@ function myCoursesApp() {
             this.recentCourses = [...this.courses]
                 .sort((a, b) => {
                     if (a.last_accessed && b.last_accessed) {
-                        return new Date(b.last_accessed) - new Date(a.last_accessed);
+                        return new Date(b.last_accessed.split('/').reverse().join('-')) -
+                               new Date(a.last_accessed.split('/').reverse().join('-'));
                     }
                     return b.id - a.id;
                 })

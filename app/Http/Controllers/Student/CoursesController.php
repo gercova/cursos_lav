@@ -127,6 +127,39 @@ class CoursesController extends Controller {
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('student.my-courses', compact('enrollments'));
+        // Preparar los datos para la vista
+        $coursesData = $enrollments->map(function($enrollment) {
+            $course = $enrollment->course;
+            $progress = $enrollment->progress ?: 0;
+            $totalLessons = 0;
+
+            // Calcular total de lecciones
+            if ($course->sections) {
+                $totalLessons = $course->sections->sum(function($section) {
+                    return $section->lessons ? $section->lessons->count() : 0;
+                });
+            }
+
+            return [
+                'id'            => $enrollment->id,
+                'course_id'     => $course->id,
+                'title'         => $course->title,
+                'description'   => $course->description,
+                'category'      => $course->category ? $course->category->name : 'Sin categoría',
+                'image'         => $course->image_url ?: null,
+                'progress'      => $progress,
+                'status'        => $progress >= 100 ? 'completed' : 'in_progress',
+                'modules'       => $course->sections ? $course->sections->count() : 0,
+                'lessons'       => $totalLessons,
+                'duration'      => $course->duration ?: '0 horas',
+                'enrolled_date' => $enrollment->created_at->format('d/m/Y'),
+                'last_accessed' => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : null,
+                'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
+                'total_lessons' => $totalLessons,
+                'continue_url'  => route('course.learn', $course->slug)
+            ];
+        });
+
+        return view('student.my-courses', compact('enrollments', 'coursesData'));
     }
 }

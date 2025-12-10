@@ -23,9 +23,9 @@
             <div class="w-full lg:w-96">
                 <div class="relative">
                     <input type="text"
-                           id="search-input"
-                           placeholder="Buscar cursos..."
-                           class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                        id="search-input"
+                        placeholder="Buscar cursos..."
+                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -196,7 +196,7 @@
                                         @endif
                                     </div>
                                     <button onclick="addToCart({{ $course->id }})"
-                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
+                                            class="bg-blue-600 hover:bg-blue-700 text-white py-1 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
                                         Agregar
                                     </button>
                                 </div>

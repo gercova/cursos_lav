@@ -229,8 +229,7 @@
                                         <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                     @endif
                                 </div>
-                                <button onclick="addToCart({{ $course->id }})"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
+                                <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
                                     Agregar al Carrito
                                 </button>
                             </div>

@@ -14,7 +14,9 @@ class Course extends Model
     protected $primaryKey   = 'id';
     protected $fillable = [
         'title',
+        'slug',
         'description',
+        'short_description',
         'image_url',
         'price',
         'promotion_price',

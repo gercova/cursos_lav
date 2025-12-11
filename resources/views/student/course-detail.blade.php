@@ -78,39 +78,39 @@
                         <div class="p-4">
                             <div class="grid grid-cols-2 gap-2 mb-4">
                                 <div class="col-span-2">
-                                    <img src="{{ $course->cover_image ? asset('storage/' . $course->cover_image) : asset('storage/photos/default-course.jpg') }}"
-                                         alt="{{ $course->title }}"
-                                         class="w-full h-48 object-cover rounded-lg">
+                                    <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
+                                        alt="{{ $course->title }}"
+                                        class="w-full h-48 object-cover rounded-lg">
                                 </div>
                                 @if($course->documents->where('type', 'image')->count() > 0)
                                     @foreach($course->documents->where('type', 'image')->take(4) as $image)
                                         <div>
-                                            <img src="{{ asset('storage/' . $image->file_path) }}"
-                                                 alt="Imagen del curso"
-                                                 class="w-full h-24 object-cover rounded-lg">
+                                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
+                                            alt="Imagen del curso"
+                                            class="w-full h-24 object-cover rounded-lg">
                                         </div>
                                     @endforeach
                                 @else
                                     <!-- Imágenes placeholder si no hay imágenes adicionales -->
                                     <div>
                                         <img src="{{ asset('storage/photos/course-placeholder-1.jpg') }}"
-                                             alt="Curso"
-                                             class="w-full h-24 object-cover rounded-lg bg-gray-200">
+                                            alt="Curso"
+                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
                                     </div>
                                     <div>
                                         <img src="{{ asset('storage/photos/course-placeholder-2.jpg') }}"
-                                             alt="Curso"
-                                             class="w-full h-24 object-cover rounded-lg bg-gray-200">
+                                            alt="Curso"
+                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
                                     </div>
                                     <div>
                                         <img src="{{ asset('storage/photos/course-placeholder-3.jpg') }}"
-                                             alt="Curso"
-                                             class="w-full h-24 object-cover rounded-lg bg-gray-200">
+                                            alt="Curso"
+                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
                                     </div>
                                     <div>
                                         <img src="{{ asset('storage/photos/course-placeholder-4.jpg') }}"
-                                             alt="Curso"
-                                             class="w-full h-24 object-cover rounded-lg bg-gray-200">
+                                            alt="Curso"
+                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
                                     </div>
                                 @endif
                             </div>
@@ -306,12 +306,12 @@
                         <!-- Contenedor del carousel -->
                         <div class="overflow-hidden rounded-lg">
                             <div class="flex transition-transform duration-300 ease-in-out"
-                                 :style="`transform: translateX(-${currentIndex * 100}%)`">
+                                :style="`transform: translateX(-${currentIndex * 100}%)`">
                                 <!-- Imagen principal del curso -->
                                 <div class="w-full flex-shrink-0">
                                     <img src="{{ $course->cover_image ? asset('storage/' . $course->cover_image) : asset('storage/photos/default-course.jpg') }}"
-                                         alt="{{ $course->title }}"
-                                         class="w-full h-48 object-cover rounded-lg">
+                                        alt="{{ $course->title }}"
+                                        class="w-full h-48 object-cover rounded-lg">
                                 </div>
 
                                 <!-- Imágenes adicionales del curso -->
@@ -319,8 +319,8 @@
                                     @foreach($course->documents->where('type', 'image') as $image)
                                         <div class="w-full flex-shrink-0">
                                             <img src="{{ asset('storage/' . $image->file_path) }}"
-                                                 alt="Imagen del curso - {{ $loop->iteration }}"
-                                                 class="w-full h-48 object-cover rounded-lg">
+                                                alt="Imagen del curso - {{ $loop->iteration }}"
+                                                class="w-full h-48 object-cover rounded-lg">
                                         </div>
                                     @endforeach
                                 @else
@@ -328,8 +328,8 @@
                                     @foreach([1, 2, 3] as $placeholder)
                                         <div class="w-full flex-shrink-0">
                                             <img src="{{ asset('storage/photos/course-placeholder-' . $placeholder . '.jpg') }}"
-                                                 alt="Imagen del curso - {{ $placeholder }}"
-                                                 class="w-full h-48 object-cover rounded-lg bg-gray-200">
+                                                alt="Imagen del curso - {{ $placeholder }}"
+                                                class="w-full h-48 object-cover rounded-lg bg-gray-200">
                                         </div>
                                     @endforeach
                                 @endif
@@ -357,8 +357,8 @@
                                 <div class="flex justify-center space-x-2 mt-4">
                                     <template x-for="i in totalSlides" :key="i">
                                         <button @click="goToSlide(i - 1)"
-                                                class="w-3 h-3 rounded-full transition-all duration-200"
-                                                :class="i - 1 === currentIndex ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'">
+                                            class="w-3 h-3 rounded-full transition-all duration-200"
+                                            :class="i - 1 === currentIndex ? 'bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'">
                                         </button>
                                     </template>
                                 </div>

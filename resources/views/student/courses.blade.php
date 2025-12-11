@@ -139,9 +139,9 @@
                     @foreach($courses as $course)
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
                             <div class="relative">
-                                <img src="{{ $course->image_url ?: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                     alt="{{ $course->title }}"
-                                     class="w-full h-48 object-cover">
+                                <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
+                                    alt="{{ $course->title }}"
+                                    class="w-full h-48 object-cover">
                                 @if($course->promotion_price)
                                     <span class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
                                         -{{ number_format((($course->price - $course->promotion_price) / $course->price) * 100, 0) }}%

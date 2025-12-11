@@ -6,6 +6,7 @@
 
 <div class="space-y-6 mb-6 p-4">
     <!-- Información Básica -->
+    <input type="hidden" name="id" id="id" value="{{ $course->id ?? '' }}">
     <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -15,11 +16,11 @@
                     Título del Curso *
                 </label>
                 <input type="text"
-                       name="title"
-                       id="title"
-                       value="{{ old('title', $course->title ?? '') }}"
-                       required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    name="title"
+                    id="title"
+                    value="{{ old('title', $course->title ?? '') }}"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                 @error('title')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -31,11 +32,11 @@
                     Slug (URL amigable)
                 </label>
                 <input type="text"
-                       name="slug"
-                       id="slug"
-                       value="{{ old('slug', $course->slug ?? '') }}"
-                       placeholder="Se genera automáticamente"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    name="slug"
+                    id="slug"
+                    value="{{ old('slug', $course->slug ?? '') }}"
+                    placeholder="Se genera automáticamente"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                 @error('slug')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -75,7 +76,7 @@
                     <option value="">Seleccionar instructor</option>
                     @foreach($instructors as $instructor)
                         <option value="{{ $instructor->id }}"
-                                {{ old('instructor_id', $course->instructor_id ?? '') == $instructor->id ? 'selected' : '' }}>
+                            {{ old('instructor_id', $course->instructor_id ?? '') == $instructor->id ? 'selected' : '' }}>
                             {{ $instructor->names }}
                         </option>
                     @endforeach
@@ -308,11 +309,11 @@
 
                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition duration-200">
                     <input type="file"
-                           name="image"
-                           id="image"
-                           accept="image/*"
-                           class="hidden"
-                           onchange="previewImage(event)">
+                        name="image"
+                        id="image"
+                        accept="image/*"
+                        class="hidden"
+                        onchange="previewImage(event)">
 
                     <label for="image" class="cursor-pointer">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -351,11 +352,11 @@
                         <div class="flex items-center">
                             <div class="flex items-center h-5">
                                 <input type="checkbox"
-                                       name="is_active"
-                                       id="is_active"
-                                       value="1"
-                                       {{ old('is_active', isset($course) ? $course->is_active : true) ? 'checked' : '' }}
-                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    name="is_active"
+                                    id="is_active"
+                                    value="1"
+                                    {{ old('is_active', isset($course) ? $course->is_active : true) ? 'checked' : '' }}
+                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             </div>
                             <div class="ml-3">
                                 <label for="is_active" class="text-sm font-medium text-gray-700">

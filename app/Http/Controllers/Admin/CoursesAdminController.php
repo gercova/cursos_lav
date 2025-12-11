@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CourseValidate;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseSection;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -22,78 +24,6 @@ class CoursesAdminController extends Controller {
     public function __construct() {
         $this->middleware(['auth', 'admin']);
     }
-
-    /**
-     * Display a listing of the courses.
-     */
-    /*public function index(Request $request): View {
-        $query = Course::with(['category', 'instructor', 'enrollments']);
-        // Filtros
-        if ($request->has('category_id') && $request->category_id) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        if ($request->has('instructor_id') && $request->instructor_id) {
-            $query->where('instructor_id', $request->instructor_id);
-        }
-
-        if ($request->has('level') && $request->level) {
-            $query->where('level', $request->level);
-        }
-
-        if ($request->has('status') && $request->status) {
-            if ($request->status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($request->status === 'inactive') {
-                $query->where('is_active', false);
-            }
-        }
-
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('category', function($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('instructor', function($q) use ($search) {
-                        $q->where('names', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        // Ordenamiento
-        $sort = $request->get('sort', 'newest');
-        switch ($sort) {
-            case 'oldest':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'title_asc':
-                $query->orderBy('title', 'asc');
-                break;
-            case 'title_desc':
-                $query->orderBy('title', 'desc');
-                break;
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'popular':
-                $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
-                break;
-            default: // newest
-                $query->orderBy('created_at', 'desc');
-        }
-
-        $courses        = $query->paginate(15);
-        $categories     = Category::where('is_active', true)->get();
-        $instructors    = User::where('role', 'instructor')->get();
-
-        return view('admin.courses.index', compact('courses', 'categories', 'instructors'));
-    }*/
 
     public function index(Request $request): View {
         $query = Course::with(['category', 'sections'])
@@ -130,53 +60,6 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.index', compact('courses', 'categories'));
     }
 
-    // Método para cambiar estado del curso
-    /*public function toggleStatus(Course $course): JsonResponse {
-        $course->update(['is_active' => !$course->is_active]);
-
-        return response()->json([
-            'success' => true,
-            'is_active' => $course->is_active
-        ]);
-    }*/
-
-    // Métodos para secciones (ya tienes las rutas)
-    /*public function addSection(Request $request, Course $course): JsonResponse {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'order' => 'nullable|integer'
-        ]);
-
-        $section = $course->sections()->create($validated);
-
-        return response()->json([
-            'success' => true,
-            'section' => $section
-        ]);
-    }*/
-
-    /*public function updateSection(Request $request, Course $course, $sectionId): JsonResponse {
-        $section = $course->sections()->findOrFail($sectionId);
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'order' => 'nullable|integer'
-        ]);
-
-        $section->update($validated);
-
-        return response()->json(['success' => true]);
-    }*/
-
-    /*public function deleteSection(Course $course, $sectionId): JsonResponse {
-        $section = $course->sections()->findOrFail($sectionId);
-        $section->delete();
-
-        return response()->json(['success' => true]);
-    }*/
-
     // Método para obtener secciones (API)
     public function getSections(Course $course): JsonResponse {
         $sections = $course->sections()->orderBy('order')->get();
@@ -205,24 +88,8 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
     }
 
-    public function store(Request $request) {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:courses,slug',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'promotion_price' => 'nullable|numeric|min:0|lt:price',
-            'category_id' => 'required|exists:categories,id',
-            'instructor_id' => 'required|exists:users,id',
-            'level' => 'required|in:beginner,intermediate,advanced,all',
-            'duration' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'requirements' => 'nullable|array',
-            'requirements.*' => 'string|max:255',
-            'what_you_learn' => 'required|array',
-            'what_you_learn.*' => 'string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-        ]);
+    public function store(CourseValidate $request) {
+        $validated = $request->validated();
 
         // Procesar imagen
         if ($request->hasFile('image')) {
@@ -249,24 +116,8 @@ class CoursesAdminController extends Controller {
             ->with('success', 'Curso creado exitosamente');
     }
 
-    public function update(Request $request, Course $course) {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:courses,slug,' . $course->id,
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'promotion_price' => 'nullable|numeric|min:0|lt:price',
-            'category_id' => 'required|exists:categories,id',
-            'instructor_id' => 'required|exists:users,id',
-            'level' => 'required|in:beginner,intermediate,advanced,all',
-            'duration' => 'required|numeric|min:0',
-            'is_active' => 'boolean',
-            'requirements' => 'nullable|array',
-            'requirements.*' => 'string|max:255',
-            'what_you_learn' => 'required|array',
-            'what_you_learn.*' => 'string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
-        ]);
+    public function update(CourseValidate $request, Course $course) {
+        $validated = $request->validated();
 
         // Procesar imagen
         if ($request->hasFile('image')) {
@@ -287,15 +138,11 @@ class CoursesAdminController extends Controller {
             $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
         }
 
-        $course->update($validated);
+        $course = Course::updateOrCreate(['id' => $request->input('id')], $validated);
 
-        return redirect()->route('admin.courses.edit', $course)
-            ->with('success', 'Curso actualizado exitosamente');
+        return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
     }
 
-    /**
-     * Display the specified course.
-     */
     public function show(Course $course): View {
         $course->load(['category', 'instructor', 'sections.lessons', 'documents', 'exam', 'enrollments.user']);
 
@@ -312,63 +159,6 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.show', compact('course', 'stats'));
     }
 
-    /**
-     * Update the specified course.
-     */
-    /*public function update(Request $request, Course $course) {
-        $validated = $request->validate([
-            'title'             => 'required|string|max:255',
-            'description'       => 'required|string',
-            'short_description' => 'nullable|string|max:500',
-            'category_id'       => 'required|exists:categories,id',
-            'instructor_id'     => 'required|exists:users,id',
-            'level'             => 'required|in:beginner,intermediate,advanced',
-            'price'             => 'required|numeric|min:0',
-            'promotion_price'   => 'nullable|numeric|min:0|lt:price',
-            'duration'          => 'nullable|integer|min:1',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'requirements'      => 'nullable|array',
-            'requirements.*'    => 'string|max:255',
-            'what_you_learn'    => 'nullable|array',
-            'what_you_learn.*'  => 'string|max:255',
-            'is_active'         => 'boolean',
-        ]);
-
-        // Actualizar slug si el título cambió
-        if ($course->title !== $validated['title']) {
-            $slug = Str::slug($validated['title']);
-            $originalSlug = $slug;
-            $counter = 1;
-
-            while (Course::where('slug', $slug)->where('id', '!=', $course->id)->exists()) {
-                $slug = $originalSlug . '-' . $counter;
-                $counter++;
-            }
-            $validated['slug'] = $slug;
-        }
-
-        // Procesar imagen
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($course->image_url) {
-                Storage::disk('public')->delete($course->image_url);
-            }
-            $validated['image_url'] = $request->file('image')->store('courses', 'public');
-        }
-
-        $validated['is_active']         = $request->has('is_active');
-        $validated['requirements']      = $validated['requirements'] ? array_filter($validated['requirements']) : null;
-        $validated['what_you_learn']    = $validated['what_you_learn'] ? array_filter($validated['what_you_learn']) : null;
-
-        $course->update($validated);
-
-        $this->logActivity("Actualizó el curso: {$course->title}");
-        return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente.');
-    }*/
-
-    /**
-     * Remove the specified course.
-     */
     public function destroy(Course $course) {
         // Verificar si hay inscripciones activas
         if ($course->enrollments()->where('status', 'active')->exists()) {
@@ -388,9 +178,6 @@ class CoursesAdminController extends Controller {
         return redirect()->route('admin.courses.index')->with('success', 'Curso eliminado exitosamente.');
     }
 
-    /**
-     * Toggle course status (active/inactive)
-     */
     public function toggleStatus(Course $course): JsonResponse {
         $course->update([
             'is_active' => !$course->is_active
@@ -406,9 +193,6 @@ class CoursesAdminController extends Controller {
         ]);
     }
 
-    /**
-     * Duplicate a course
-     */
     public function duplicate(Course $course) {
         DB::transaction(function () use ($course) {
             // Duplicar curso
@@ -451,9 +235,6 @@ class CoursesAdminController extends Controller {
         return redirect()->route('admin.courses.index')->with('success', 'Curso duplicado exitosamente.');
     }
 
-    /**
-     * Course Sections Management
-     */
     public function addSection(Request $request, Course $course): JsonResponse {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
@@ -464,11 +245,11 @@ class CoursesAdminController extends Controller {
         $lastOrder = $course->sections()->max('order') ?? 0;
 
         $section = CourseSection::create([
-            'course_id' => $course->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'order' => $lastOrder + 1,
-            'is_active' => true,
+            'course_id'     => $course->id,
+            'title'         => $validated['title'],
+            'description'   => $validated['description'],
+            'order'         => $lastOrder + 1,
+            'is_active'     => true,
         ]);
 
         $this->logActivity("Agregó sección '{$section->title}' al curso: {$course->title}");
@@ -535,9 +316,6 @@ class CoursesAdminController extends Controller {
         ]);
     }
 
-    /**
-     * Lessons Management
-     */
     public function addLesson(Request $request, Course $course, CourseSection $section): JsonResponse {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',

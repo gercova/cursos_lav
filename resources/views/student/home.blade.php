@@ -188,7 +188,7 @@
                 @foreach($courses as $course)
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
                         <div class="relative">
-                            <img src="{{ $course->image_url ?: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
+                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
                                 alt="{{ $course->title }}"
                                 class="w-full h-48 object-cover">
                             @if($course->promotion_price)

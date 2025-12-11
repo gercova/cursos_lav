@@ -173,4 +173,12 @@ class ExamsAdminController extends Controller {
     public function show(Exam $exam): JsonResponse {
         return response()->json($exam);
     }
+
+    public function questions(Exam $exam): View {
+        $questions = $exam->questions()
+            ->orderBy('order')
+            ->paginate(20);
+
+        return view('admin.exams.questions', compact('exam', 'questions'));
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseSection;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -184,5 +185,14 @@ class CourseSectionAdminController extends Controller {
             $section->update(['order' => $order]);
             $order++;
         }
+    }
+
+    public function toggleStatus(Course $course, CourseSection $section): JsonResponse {
+        $section->update(['is_active' => !$section->is_active]);
+        return response()->json([
+            'success'   => true,
+            'section'   => $section,
+            'message'   => 'Estado actualizado correctamente'
+        ]);
     }
 }

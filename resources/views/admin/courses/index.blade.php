@@ -324,13 +324,13 @@
 
                                         <!-- Gestión de secciones (modal) -->
                                         <!--<button onclick="showSectionsModal({{ $course->id }})"-->
-                                        <a href="#"
+                                        <!--<a href="#"
                                             class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/sections"
                                             title="Gestionar secciones">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                             </svg>
-                                        </a>
+                                        </a>-->
                                         <!--</button>-->
 
                                         <!-- Documentos -->
@@ -581,12 +581,13 @@
     }
 
     // Función para agregar sección
-    async function addSection() {
+    /*async function addSection() {
         const modal = document.querySelector('[x-data]');
         const modalData = modal.__x.$data;
 
         try {
-            const response = await axios.post(`{{ route('admin.courses.sections.add', '') }}/${modalData.courseId}`, {
+            // rotue() admin.courses.sections.add
+            const response = await axios.post(`${modalData.courseId}`, {
                 title: modalData.newSectionTitle,
                 description: modalData.newSectionDescription,
                 order: modalData.newSectionOrder,
@@ -606,7 +607,7 @@
             console.error('Error al agregar sección:', error);
             showNotification('Error al agregar la sección', 'error');
         }
-    }
+    }*/
 
     // Función para eliminar curso
     async function deleteCourse(courseId) {

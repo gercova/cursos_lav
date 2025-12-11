@@ -273,20 +273,21 @@
 
                                         <!-- Cambiar estado -->
                                         <button @click="toggleSectionStatus(section)"
-                                                class="p-2"
-                                                :class="section.is_active
-                                                    ? 'text-yellow-600 hover:text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-600'
-                                                    : 'text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600'"
-                                                :title="section.is_active ? 'Desactivar' : 'Activar'">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <template x-if="section.is_active">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
-                                                </template>
-                                                <template x-if="!section.is_active">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                </template>
-                                            </svg>
+                                            class="p-2 transition-all duration-200 rounded-lg"
+                                            :class="section.is_active
+                                                ? 'text-yellow-600 hover:text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-600 rounded-lg'
+                                                : 'text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg'"
+                                            :title="section.is_active ? 'Desactivar' : 'Activar'">
+
+                                            <template x-if="section.is_active">
+                                                <!-- Power off (desactivar) -->
+                                                <i class="fas fa-power-off w-5 h-5"></i>
+                                            </template>
+
+                                            <template x-if="!section.is_active">
+                                                <!-- Play/activar -->
+                                                <i class="fas fa-play w-5 h-5"></i>
+                                            </template>
                                         </button>
 
                                         <!-- Eliminar -->
@@ -323,13 +324,13 @@
 
         <div class="flex items-center justify-center min-h-screen p-4">
             <div x-show="showModal"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-95"
-                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
 
                 <!-- Header -->
                 <div class="px-6 py-4 border-b border-gray-200">

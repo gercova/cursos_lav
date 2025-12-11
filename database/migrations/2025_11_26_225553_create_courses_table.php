@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('promotion_price', 8, 2)->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('instructor_id')->constrained('users')->onDelete('cascade');
-            $table->enum('level', ['beginner', 'intermediate', 'advanced'])->default('beginner');
+            $table->enum('level', ['beginner', 'intermediate', 'advanced', 'profesional'])->default('beginner');
             $table->integer('duration')->nullable()->comment('Duration in hours');
             $table->json('requirements')->nullable();
             $table->json('what_you_learn')->nullable();

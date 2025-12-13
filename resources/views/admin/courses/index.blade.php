@@ -101,33 +101,28 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         <input type="text"
-                               x-model="searchQuery"
-                               @input.debounce.500ms="performSearch()"
-                               placeholder="Buscar cursos..."
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            x-model="searchQuery"
+                            @input.debounce.500ms="performSearch()"
+                            placeholder="Buscar cursos..."
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
-                        <select x-model="statusFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select x-model="statusFilter" @change="performSearch()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                             <option value="">Todos</option>
                             <option value="active">Activos</option>
                             <option value="inactive">Inactivos</option>
                             <option value="promotion">En promoción</option>
                         </select>
 
-                        <select x-model="categoryFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select x-model="categoryFilter" @change="performSearch()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                             <option value="">Todas las categorías</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
 
-                        <button @click="resetFilters()"
-                                class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                        <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Limpiar
                         </button>
                     </div>
@@ -171,9 +166,6 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Estudiantes
                             </th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Estado
-                            </th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider text-right">
                                 Acciones
                             </th>
@@ -189,8 +181,8 @@
                                         <div class="flex-shrink-0">
                                             @if($course->image_url)
                                                 <img src="{{ Storage::url($course->image_url) }}"
-                                                     alt="{{ $course->title }}"
-                                                     class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                                    alt="{{ $course->title }}"
+                                                    class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
                                             @else
                                                 <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +197,17 @@
                                             <div class="flex items-center gap-2 mb-1">
                                                 <a href="#" class="text-sm font-semibold text-gray-900 hover:text-blue-600 truncate">
                                                     {{ $course->title }}
+                                                    @if($course->is_active)
+                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-green-200 text-green-800">
+                                                            Activo
+                                                        </span>
+                                                    @else
+                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-red-200 text-red-800">
+                                                            Inactivo
+                                                        </span>
+                                                    @endif
                                                 </a>
+
                                                 @if($course->is_on_promotion)
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800">
                                                         <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -286,20 +288,6 @@
                                     </div>
                                 </td>
 
-                                <!-- Estado -->
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-col gap-2">
-                                        <span :class="{'bg-gradient-to-r from-green-100 to-green-200 text-green-800': {{ $course->is_active }}, 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': !{{ $course->is_active }}}"
-                                              class="px-3 py-1 rounded-full text-xs font-semibold text-center">
-                                            {{ $course->is_active ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                        <button onclick="toggleCourseStatus({{ $course->id }})"
-                                                class="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                                            {{ $course->is_active ? 'Desactivar' : 'Activar' }}
-                                        </button>
-                                    </div>
-                                </td>
-
                                 <!-- Acciones -->
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-end gap-2">
@@ -312,6 +300,22 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                             </svg>
                                         </a>
+
+                                        <!-- Cambiar estado -->
+                                        <button
+                                            onclick="toggleCourseStatus({{ $course->id }})"
+                                            class="p-2 rounded-lg transition-all duration-200 {{ $course->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50' }}"
+                                            title="{{ $course->is_active ? 'Desactivar' : 'Activar' }}">
+                                            @if($course->is_active)
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            @endif
+                                        </button>
 
                                         <!-- Editar -->
                                         <a href="{{ route('admin.courses.edit', $course) }}"
@@ -437,27 +441,26 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
                                         <input type="text"
-                                               x-model="newSectionTitle"
-                                               required
-                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                            x-model="newSectionTitle"
+                                            required
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Orden</label>
                                         <input type="number"
-                                               x-model="newSectionOrder"
-                                               min="1"
-                                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                            x-model="newSectionOrder"
+                                            min="1"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                                     <textarea x-model="newSectionDescription"
-                                              rows="2"
-                                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+                                    rows="2"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
                                 </div>
                                 <div class="flex justify-end">
-                                    <button type="submit"
-                                            class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
+                                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
                                         Agregar Sección
                                     </button>
                                 </div>
@@ -630,11 +633,15 @@
     // Función para cambiar estado del curso
     async function toggleCourseStatus(courseId) {
         try {
-            const response = await axios.post(`/admin/courses/${courseId}/toggle-status`);
+            const response = await axios.post(`/admin/courses/${courseId}/toggle-status`, {
+                _token: '{{ csrf_token() }}'
+            });
             if (response.data.success) {
                 showNotification('Estado del curso actualizado', 'success');
                 setTimeout(() => window.location.reload(), 1000);
             }
+
+
         } catch (error) {
             console.error('Error al cambiar estado:', error);
             showNotification('Error al cambiar el estado', 'error');

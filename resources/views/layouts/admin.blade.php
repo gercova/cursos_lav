@@ -29,7 +29,7 @@
         }
     </style>
     <script>
-        API_URL = "{{ url('/') }}";
+        const API_URL = "{{ url('/') }}";
 
         // Inicializar Alpine.js para el sidebar
         document.addEventListener('alpine:init', () => {
@@ -69,16 +69,15 @@
     <div x-data="sidebar" class="flex h-screen">
         <!-- Overlay para móviles -->
         <div x-show="open && window.innerWidth < 768"
-             x-transition:enter="sidebar-overlay"
-             x-transition:leave="sidebar-overlay"
-             @click="close()"
-             class="fixed inset-0 bg-black bg-opacity-50 z-20"
-             style="display: none;">
+            x-transition:enter="sidebar-overlay"
+            x-transition:leave="sidebar-overlay"
+            @click="close()"
+            class="fixed inset-0 bg-black bg-opacity-50 z-20"
+            style="display: none;">
         </div>
 
         <!-- Sidebar -->
-        <div :class="{'translate-x-0': open, '-translate-x-full': !open}"
-             class="sidebar-transition fixed md:relative w-64 bg-blue-800 text-white h-full z-30">
+        <div :class="{'translate-x-0': open, '-translate-x-full': !open}" class="sidebar-transition fixed md:relative w-64 bg-blue-800 text-white h-full z-30">
             <div class="p-4 flex justify-between items-center">
                 <h1 class="text-xl font-bold">Panel Admin</h1>
                 <!-- Botón para cerrar en móviles -->
@@ -88,28 +87,28 @@
             </div>
             <nav class="mt-6">
                 <a href="{{ route('admin.dashboard') }}"
-                   @click="close()"
-                   class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                 </a>
                 <a href="{{ route('admin.categories.index') }}"
-                   @click="close()"
-                   class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-folder mr-2"></i>Categorías
                 </a>
                 <a href="{{ route('admin.courses.index') }}"
-                   @click="close()"
-                   class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-book mr-2"></i>Cursos
                 </a>
                 <a href="{{ route('admin.documents.index') }}"
-                   @click="close()"
-                   class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-700' : '' }}">
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-file-alt mr-2"></i>Documentos
                 </a>
                 <a href="{{ route('admin.exams.index') }}"
-                   @click="close()"
-                   class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-clipboard-list mr-2"></i>Exámenes
                 </a>
             </nav>

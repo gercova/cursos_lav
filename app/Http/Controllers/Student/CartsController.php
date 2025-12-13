@@ -15,112 +15,75 @@ use Illuminate\Support\Facades\Auth;
 class CartsController extends Controller
 {
     public function index(): View {
-        $cartItems = Cart::with('course.category')
-            ->where('user_id', Auth::id())
-            ->get();
-
-        $total = $cartItems->sum(function ($item) {
-            return $item->course->final_price;
+        $cartItems  = Cart::where('user_id', Auth::id())->with('course.category')->get();
+        $total      = $cartItems->sum(function ($item) {
+            return $item->course->promotion_price ?? $item->course->price;
         });
 
-        return view('student.cart', compact('cartItems', 'total'));
+        return view('cart.index', compact('cartItems', 'total'));
     }
 
-    public function add($courseId): JsonResponse {
-        $course = Course::where('is_active', true)->findOrFail($courseId);
-
+    // Agregar al carrito
+    public function add(Course $course) {
         // Verificar si ya está en el carrito
-        $existingCartItem = Cart::where('user_id', Auth::id())
-            ->where('course_id', $courseId)
-            ->first();
+        $exists = Cart::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->exists();
 
-        if ($existingCartItem) {
+        if ($exists) {
             return response()->json([
                 'success' => false,
-                'message' => 'El curso ya está en el carrito'
+                'message' => 'Este curso ya está en tu carrito.'
             ]);
         }
 
         // Verificar si ya está inscrito
-        $isEnrolled = Enrollment::where('user_id', Auth::id())
-            ->where('course_id', $courseId)
+        $isEnrolled = Auth::user()->enrollments()
+            ->where('course_id', $course->id)
             ->exists();
 
         if ($isEnrolled) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ya estás inscrito en este curso'
+                'message' => 'Ya estás inscrito en este curso.'
             ]);
         }
 
         Cart::create([
-            'user_id' => Auth::id(),
-            'course_id' => $courseId,
+            'user_id'   => Auth::id(),
+            'course_id' => $course->id
         ]);
 
+        $cartCount = Cart::where('user_id', Auth::id())->count();
+
         return response()->json([
-            'success' => true,
-            'message' => 'Curso agregado al carrito'
+            'success'   => true,
+            'message'   => 'Curso agregado al carrito.',
+            'cartCount' => $cartCount
         ]);
     }
 
-    public function remove($courseId): JsonResponse {
+    // Eliminar del carrito
+    public function remove(Course $course): JsonResponse {
         Cart::where('user_id', Auth::id())
-            ->where('course_id', $courseId)
+            ->where('course_id', $course->id)
             ->delete();
 
+        $cartCount = Cart::where('user_id', Auth::id())->count();
+
         return response()->json([
             'success' => true,
-            'message' => 'Curso removido del carrito'
+            'message' => 'Curso eliminado del carrito.',
+            'cartCount' => $cartCount
         ]);
     }
 
-    public function checkout(Request $request) {
-        $cartItems = Cart::with('course')->where('user_id', Auth::id())->get();
-
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart')->with('error', 'El carrito está vacío');
-        }
-
-        $total = $cartItems->sum(function ($item) {
-            return $item->course->final_price;
-        });
-
-        // Simular procesamiento de pago
-        foreach ($cartItems as $cartItem) {
-            // Crear inscripción
-            $enrollment = Enrollment::create([
-                'user_id'       => Auth::id(),
-                'course_id'     => $cartItem->course_id,
-                'enrolled_at'   => now(),
-                'status'        => 'active',
-                'progress'      => 0,
-            ]);
-
-            // Registrar pago
-            Payment::create([
-                'enrollment_id' => $enrollment->id,
-                'amount' => $cartItem->course->final_price,
-                'currency' => 'PEN',
-                'payment_method' => 'card',
-                'status' => 'completed',
-                'paid_at' => now(),
-                'transaction_id' => 'TXN-' . uniqid(),
-            ]);
-
-            // Eliminar del carrito
-            $cartItem->delete();
-        }
-
-        return redirect()->route('my-courses')
-            ->with('success', '¡Pago procesado exitosamente! Ya puedes acceder a tus cursos.');
-    }
-
-    public function getCartCount() {
-        $count = Cart::where('user_id', Auth::id())->count();
-
+    // Limpiar carrito
+    public function clear(): JsonResponse {
+        Cart::where('user_id', Auth::id())->delete();
         return response()->json([
-            'count' => $count
+            'success' => true,
+            'message' => 'Carrito vaciado correctamente.'
         ]);
     }
 }

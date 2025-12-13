@@ -1,6 +1,8 @@
-
 @csrf
-@method('POST')
+
+@if(isset($category) && $category->exists)
+    @method('PUT')
+@endif
 <div class="space-y-4">
     <!-- Nombre -->
     <input type="hidden" name="id" id="id" value="{{ $category->id ?? '' }}">

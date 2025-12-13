@@ -21,9 +21,7 @@
                     <!-- Información del curso -->
                     <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl">
                         @if($course->image_url)
-                            <img src="{{ Storage::url($course->image_url) }}"
-                                 alt="{{ $course->title }}"
-                                 class="w-16 h-16 rounded-xl object-cover border border-blue-300">
+                            <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-blue-300">
                         @else
                             <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,16 +137,13 @@
 
                 <!-- Filtros -->
                 <div class="flex gap-2">
-                    <select x-model="statusFilter"
-                            @change="filterSections()"
-                            class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <select x-model="statusFilter" @change="filterSections()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                         <option value="">Todas</option>
                         <option value="active">Activas</option>
                         <option value="inactive">Inactivas</option>
                     </select>
 
-                    <button @click="resetFilters()"
-                            class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                    <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                         Limpiar
                     </button>
                 </div>
@@ -186,8 +181,7 @@
                                         <div class="flex items-start gap-4">
                                             <!-- Número de orden -->
                                             <div class="flex-shrink-0">
-                                                <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-bold text-lg"
-                                                      x-text="section.order"></span>
+                                                <span class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-bold text-lg" x-text="section.order"></span>
                                             </div>
 
                                             <!-- Contenido -->
@@ -195,11 +189,10 @@
                                                 <div class="flex items-center gap-3 mb-2">
                                                     <h3 class="text-lg font-semibold text-gray-900" x-text="section.title"></h3>
                                                     <span x-show="section.is_active"
-                                                          class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-green-200 text-green-800">
+                                                        class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-green-200 text-green-800">
                                                         Activo
                                                     </span>
-                                                    <span x-show="!section.is_active"
-                                                          class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-red-200 text-red-800">
+                                                    <span x-show="!section.is_active" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-red-200 text-red-800">
                                                         Inactivo
                                                     </span>
                                                 </div>
@@ -229,9 +222,7 @@
                                                                 <span>Documento incluido</span>
                                                             </div>
                                                         </template>
-                                                        <a :href="section.media_url"
-                                                           target="_blank"
-                                                           class="text-blue-600 hover:text-blue-800 hover:underline text-xs">
+                                                        <a :href="section.media_url" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline text-xs">
                                                             Ver archivo
                                                         </a>
                                                     </div>
@@ -275,7 +266,7 @@
                                         <button @click="toggleSectionStatus(section)"
                                             class="p-2 transition-all duration-200 rounded-lg"
                                             :class="section.is_active
-                                                ? 'text-yellow-600 hover:text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-600 rounded-lg'
+                                                ? 'text-yellow-600 hover:text-white hover:bg-gradient-to-r hover:from-amber-500 hover:to-amber-600 rounded-lg'
                                                 : 'text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg'"
                                             :title="section.is_active ? 'Desactivar' : 'Activar'">
 
@@ -313,14 +304,14 @@
 <div x-data="{ showModal: false, sectionToDelete: null }" x-cloak>
     <!-- Overlay -->
     <div x-show="showModal"
-         x-transition:enter="ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-         @click.self="showModal = false">
+        x-transition:enter="ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+        @click.self="showModal = false">
 
         <div class="flex items-center justify-center min-h-screen p-4">
             <div x-show="showModal"
@@ -336,8 +327,7 @@
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-900">Confirmar Eliminación</h3>
-                        <button @click="showModal = false"
-                                class="p-1 hover:bg-gray-100 rounded-lg">
+                        <button @click="showModal = false" class="p-1 hover:bg-gray-100 rounded-lg">
                             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>

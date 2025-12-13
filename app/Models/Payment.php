@@ -13,28 +13,30 @@ class Payment extends Model
 
     protected $table        = 'payments';
     protected $primaryKey   = 'id';
-    protected $fillable     = [
-        'enrollment_id',
-        'transaction_id',
+    protected $fillable = [
+        'order_id',
+        'user_id',
+        'payment_id',
+        'payment_method',
         'amount',
         'currency',
-        'payment_method',
         'status',
-        'paid_at',
         'payment_details',
+        'error_message',
+        'paid_at'
     ];
 
     protected $casts = [
-        'amount'            => 'decimal:2',
-        'paid_at'           => 'datetime',
-        'payment_details'   => 'array',
+        'payment_details' => 'array',
+        'amount' => 'decimal:2',
+        'paid_at' => 'datetime'
     ];
 
-    public function enrollment(): BelongsTo {
-        return $this->belongsTo(Enrollment::class);
+    public function order(): BelongsTo {
+        return $this->belongsTo(Order::class);
     }
 
-    public function user(): HasOneThrough {
-        return $this->hasOneThrough(User::class, Enrollment::class);
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class);
     }
 }

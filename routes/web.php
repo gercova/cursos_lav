@@ -100,8 +100,10 @@ Route::middleware(['auth', 'student'])->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
-    Route::post('/login',   [AuthAdminController::class, 'login'])->middleware('guest');
+    Route::middleware(['prevent.cache'])->group(function(){
+        Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
+        Route::post('/login',   [AuthAdminController::class, 'login'])->middleware('guest');
+    });
 
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -140,12 +142,16 @@ Route::prefix('admin')->group(function () {
         // Logout
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
-        // Rutas para categorias
-        Route::get('/categories/home',                          [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
-        Route::get('/categories/search',                        [CategoriesAdminController::class, 'search'])->name('admin.categories.search');
-        Route::get('/categories/show/{category}',               [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
-        Route::post('/categories/toggle-status/{categoryId}',   [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
-        Route::post('/categories/store',                        [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
+        Route::get('categories/home',               [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
+        Route::get('categories/stats',              [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
+        Route::post('categories/store',             [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
+        Route::get('categories/{category}',         [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
+        Route::put('categories/{category}',         [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
+        Route::delete('categories/{category}',      [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
+
+        // Acciones especiales
+        Route::post('categories/{categoryId}/toggle-status', [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+        Route::post('categories/bulk-action',   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');
@@ -154,7 +160,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
         Route::post('/courses/store',                           [CoursesAdminController::class, 'store'])->name('admin.courses.store');
         Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
-        Route::put('/courses/update',                          [CoursesAdminController::class, 'update'])->name('admin.courses.update');
+        Route::put('/courses/update',                           [CoursesAdminController::class, 'update'])->name('admin.courses.update');
         Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
         Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
         Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');

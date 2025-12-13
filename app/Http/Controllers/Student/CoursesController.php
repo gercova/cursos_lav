@@ -19,10 +19,6 @@ class CoursesController extends Controller {
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
         }
-        // Filtrar por nivel
-        if ($request->has('level') && $request->level) {
-            $query->where('level', $request->level);
-        }
 
         $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->get();
@@ -50,11 +46,6 @@ class CoursesController extends Controller {
         // Filtrar por categoría
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
-        }
-
-        // Filtrar por nivel
-        if ($request->has('level') && $request->level) {
-            $query->where('level', $request->level);
         }
 
         // Ordenar

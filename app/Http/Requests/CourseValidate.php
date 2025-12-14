@@ -13,8 +13,11 @@ class CourseValidate extends FormRequest {
     public function rules(): array {
         return [
             'title'         => 'required|string|max:255|unique:courses,title,'.$this->id,
+            'meta_description' => 'nullable|string|max:255',
+            'meta_keywords' => 'nullable|string|max:255',
             'slug'          => 'nullable|string|max:255|unique:courses,slug,'.$this->id,
             'description'   => 'required|string',
+            'learning_outcomes' => 'required|string',
             'price'         => 'required|numeric|min:0',
             'promotion_price' => 'nullable|numeric|min:0|lt:price',
             'category_id'   => 'required|exists:categories,id',

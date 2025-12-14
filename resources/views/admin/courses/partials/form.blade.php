@@ -12,9 +12,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Título -->
             <div class="col-span-2">
-                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
-                    Título del Curso *
-                </label>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Título del Curso *</label>
                 <input type="text"
                     name="title"
                     id="title"
@@ -28,9 +26,7 @@
 
             <!-- Slug (se puede generar automáticamente) -->
             <div class="col-span-2">
-                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">
-                    Slug (URL amigable)
-                </label>
+                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">Slug (URL amigable)</label>
                 <input type="text"
                     name="slug"
                     id="slug"
@@ -42,11 +38,36 @@
                 @enderror
             </div>
 
+            <!-- Meta-description (SEO) -->
+            <div class="col-span-2">
+                <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-1">Meta-description (SEO)</label>
+                <input type="text"
+                    name="meta_description"
+                    id="meta_description"
+                    value="{{ old('meta_description', $course->meta_description ?? '') }}"
+                    placeholder="Se genera automáticamente"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                @error('meta_description')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- keywords (SEO) -->
+            <div class="col-span-2">
+                <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-1">keywords (SEO)</label>
+                <textarea type="text"
+                    name="meta_keywords"
+                    id="meta_keywords"
+                    placeholder="Se genera automáticamente"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('meta_keywords', $course->meta_keywords ?? '') }}</textarea>
+                @error('meta_keywords')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Categoría -->
             <div>
-                <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">
-                    Categoría *
-                </label>
+                <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
                 <select name="category_id"
                         id="category_id"
                         required
@@ -54,7 +75,7 @@
                     <option value="">Seleccionar categoría</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}"
-                                {{ old('category_id', $course->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                            {{ old('category_id', $course->category_id ?? '') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -66,13 +87,11 @@
 
             <!-- Instructor -->
             <div>
-                <label for="instructor_id" class="block text-sm font-medium text-gray-700 mb-1">
-                    Instructor *
-                </label>
+                <label for="instructor_id" class="block text-sm font-medium text-gray-700 mb-1">Instructor *</label>
                 <select name="instructor_id"
-                        id="instructor_id"
-                        required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    id="instructor_id"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <option value="">Seleccionar instructor</option>
                     @foreach($instructors as $instructor)
                         <option value="{{ $instructor->id }}"
@@ -88,9 +107,7 @@
 
             <!-- Nivel -->
             <div>
-                <label for="level" class="block text-sm font-medium text-gray-700 mb-1">
-                    Nivel *
-                </label>
+                <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Nivel *</label>
                 <select name="level" id="level" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <option value="">Seleccionar nivel</option>
                     <option value="beginner" {{ old('level', $course->level ?? '') == 'beginner' ? 'selected' : '' }}>Principiante</option>
@@ -105,9 +122,7 @@
 
             <!-- Duración -->
             <div>
-                <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">
-                    Duración (horas) *
-                </label>
+                <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Duración (horas) *</label>
                 <input type="number"
                     name="duration"
                     id="duration"
@@ -134,14 +149,7 @@
                 </label>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/</span>
-                    <input type="number"
-                        name="price"
-                        id="price"
-                        value="{{ old('price', $course->price ?? '0') }}"
-                        min="0"
-                        step="0.01"
-                        required
-                        class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <input type="number" name="price" id="price" value="{{ old('price', $course->price ?? '0') }}" min="0" step="0.01" required class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                 </div>
                 @error('price')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -155,14 +163,7 @@
                 </label>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/</span>
-                    <input type="number"
-                        name="promotion_price"
-                        id="promotion_price"
-                        value="{{ old('promotion_price', $course->promotion_price ?? '') }}"
-                        min="0"
-                        step="0.01"
-                        placeholder="Opcional"
-                        class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <input type="number" name="promotion_price" id="promotion_price" value="{{ old('promotion_price', $course->promotion_price ?? '') }}" min="0" step="0.01" placeholder="Opcional" class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                 </div>
                 @error('promotion_price')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -173,11 +174,7 @@
             <div class="col-span-2">
                 <div class="flex items-center p-3 bg-white rounded-lg border border-blue-200">
                     <div class="flex items-center h-5">
-                        <input type="checkbox"
-                            id="is_on_promotion"
-                            disabled
-                            {{ (isset($course) && $course->is_on_promotion) ? 'checked' : '' }}
-                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="checkbox" id="is_on_promotion" disabled {{ (isset($course) && $course->is_on_promotion) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="is_on_promotion" class="font-medium text-blue-900">
@@ -207,6 +204,17 @@
                 required
                 class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('description', $course->description ?? '') }}</textarea>
             @error('description')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- Resultados del Aprendizaje -->
+        <div class="mb-6">
+            <label for="learning_outcomes" class="block text-sm font-medium text-gray-700 mb-1">
+                Resultados del Aprendizaje *
+            </label>
+            <textarea name="learning_outcomes" id="learning_outcomes" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('learning_outcomes', $course->learning_outcomes ?? '') }}</textarea>
+            @error('learning_outcomes')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>

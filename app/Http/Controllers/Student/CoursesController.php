@@ -91,6 +91,12 @@ class CoursesController extends Controller {
     public function show($id): View {
         $course = Course::with(['sections.lessons', 'category', 'instructor', 'documents'])
             ->where('is_active', true)
+            ->whereHas('sections', function ($query) {
+                $query->where('is_active', true)
+                    ->whereHas('lessons', function ($lessonQuery) {
+                        $lessonQuery->where('is_active', true);
+                    });
+            })
             ->findOrFail($id);
 
         $isEnrolled = false;
@@ -102,8 +108,10 @@ class CoursesController extends Controller {
     }
 
     public function dashboard() {
-        $user = Auth::user();
-        $enrollments = Enrollment::with('course.category')
+        $this->middleware(['auth', 'student']);
+
+        $user           = Auth::user();
+        $enrollments    = Enrollment::with('course.category')
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -112,8 +120,10 @@ class CoursesController extends Controller {
     }
 
     public function myCourses() {
-        $user = Auth::user();
-        $enrollments = Enrollment::with(['course.category', 'course.sections.lessons'])
+        $this->middleware(['auth', 'student']);
+
+        $user           = Auth::user();
+        $enrollments    = Enrollment::with(['course.category', 'course.sections.lessons'])
             ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();

@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', $course->title . ' - Plataforma de Cursos')
-
 @section('content')
 <div class="min-h-screen bg-gray-50">
     <!-- Hero Section del Curso -->
@@ -60,9 +58,7 @@
 
                     <div class="flex items-center mb-6">
                         <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full object-cover mr-3"
-                                 src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/photos/default-instructor.jpg') }}"
-                                 alt="{{ $course->instructor->names }}">
+                            <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
                             <div>
                                 <p class="text-sm font-medium text-gray-900">Instructor: {{ $course->instructor->names }}</p>
                                 <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
@@ -78,41 +74,8 @@
                         <div class="p-4">
                             <div class="grid grid-cols-2 gap-2 mb-4">
                                 <div class="col-span-2">
-                                    <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                        alt="{{ $course->title }}"
-                                        class="w-full h-48 object-cover rounded-lg">
+                                    <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-lg">
                                 </div>
-                                @if($course->documents->where('type', 'image')->count() > 0)
-                                    @foreach($course->documents->where('type', 'image')->take(4) as $image)
-                                        <div>
-                                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                            alt="Imagen del curso"
-                                            class="w-full h-24 object-cover rounded-lg">
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <!-- Imágenes placeholder si no hay imágenes adicionales -->
-                                    <div>
-                                        <img src="{{ asset('storage/photos/course-placeholder-1.jpg') }}"
-                                            alt="Curso"
-                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
-                                    </div>
-                                    <div>
-                                        <img src="{{ asset('storage/photos/course-placeholder-2.jpg') }}"
-                                            alt="Curso"
-                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
-                                    </div>
-                                    <div>
-                                        <img src="{{ asset('storage/photos/course-placeholder-3.jpg') }}"
-                                            alt="Curso"
-                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
-                                    </div>
-                                    <div>
-                                        <img src="{{ asset('storage/photos/course-placeholder-4.jpg') }}"
-                                            alt="Curso"
-                                            class="w-full h-24 object-cover rounded-lg bg-gray-200">
-                                    </div>
-                                @endif
                             </div>
 
                             <div class="text-center mb-4">
@@ -172,8 +135,8 @@
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">Lo que aprenderás</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        @if($course->learning_outcomes && is_array($course->learning_outcomes) && count($course->learning_outcomes) > 0)
-                            @foreach($course->learning_outcomes as $outcome)
+                        @if($course->what_you_learn && is_array($course->what_you_learn) && count($course->what_you_learn) > 0)
+                            @foreach($course->what_you_learn as $outcome)
                                 <div class="flex items-start">
                                     <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -259,19 +222,19 @@
                         </li>
                         <li class="flex items-center text-sm text-gray-700">
                             <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4-4L19 7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             Acceso de por vida
                         </li>
                         <li class="flex items-center text-sm text-gray-700">
                             <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4-4L19 7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             Acceso en dispositivos móviles y TV
                         </li>
                         <li class="flex items-center text-sm text-gray-700">
                             <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4-4L19 7"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             Certificado de finalización
                         </li>
@@ -283,8 +246,8 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Instructor</h3>
                     <div class="flex items-start space-x-4">
                         <img class="h-16 w-16 rounded-full object-cover"
-                             src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/photos/default-instructor.jpg') }}"
-                             alt="{{ $course->instructor->names }}">
+                            src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/instructors/instructor-default.png') }}"
+                            alt="{{ $course->instructor->names }}">
                         <div>
                             <h4 class="font-semibold text-gray-900">{{ $course->instructor->names }}</h4>
                             <p class="text-sm text-gray-600 mb-2">{{ $course->instructor->profession ?? 'Instructor' }}</p>

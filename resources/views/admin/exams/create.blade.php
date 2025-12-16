@@ -43,7 +43,7 @@
     </div>
 
     <!-- Formulario -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 p-2">
         <form action="{{ route('admin.exams.store') }}"
               method="POST"
               id="examForm"

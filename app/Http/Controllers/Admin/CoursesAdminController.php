@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PhpParser\Node\Stmt\TryCatch;
 
 class CoursesAdminController extends Controller {
 
@@ -110,10 +111,17 @@ class CoursesAdminController extends Controller {
             $validated['slug'] = Str::slug($validated['title']);
         }
 
-        $course = Course::create($validated);
+        DB::beginTransaction();
 
-        return redirect()->route('admin.courses.edit', $course)
-            ->with('success', 'Curso creado exitosamente');
+        try {
+            $course = Course::create($validated);
+            DB::commit();
+            return redirect()->route('admin.courses.edit', $course)->with('success', 'Curso creado exitosamente');
+        } catch (\Throwable $th) {
+            // Log del error (opcional pero recomendado)
+            Log::error('Error al crear curso: ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+        }
     }
 
     public function update(CourseValidate $request, Course $course) {

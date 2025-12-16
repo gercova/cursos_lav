@@ -41,12 +41,7 @@
             <!-- Meta-description (SEO) -->
             <div class="col-span-2">
                 <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-1">Meta-description (SEO)</label>
-                <input type="text"
-                    name="meta_description"
-                    id="meta_description"
-                    value="{{ old('meta_description', $course->meta_description ?? '') }}"
-                    placeholder="Se genera automáticamente"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <input type="text" name="meta_description" id="meta_description" value="{{ old('meta_description', $course->meta_description ?? '') }}" placeholder="Se genera automáticamente" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" required>
                 @error('meta_description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -55,11 +50,7 @@
             <!-- keywords (SEO) -->
             <div class="col-span-2">
                 <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-1">keywords (SEO)</label>
-                <textarea type="text"
-                    name="meta_keywords"
-                    id="meta_keywords"
-                    placeholder="Se genera automáticamente"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('meta_keywords', $course->meta_keywords ?? '') }}</textarea>
+                <textarea type="text" name="meta_keywords" id="meta_keywords" placeholder="Se genera automáticamente" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" required>{{ old('meta_keywords', $course->meta_keywords ?? '') }}</textarea>
                 @error('meta_keywords')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -68,10 +59,7 @@
             <!-- Categoría -->
             <div>
                 <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-                <select name="category_id"
-                        id="category_id"
-                        required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <select name="category_id" id="category_id" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <option value="">Seleccionar categoría</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}"
@@ -444,13 +432,13 @@
                 newItem.innerHTML = `
                     <div class="flex-1">
                         <input type="text"
-                               name="${containerId.replace('_container', '')}[]"
-                               placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            name="${containerId.replace('_container', '')}[]"
+                            placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
                     <button type="button"
-                            onclick="this.parentElement.remove()"
-                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                        onclick="this.parentElement.remove()"
+                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -465,23 +453,29 @@
         };
     }
 
-    // Generar slug automáticamente
-    document.getElementById('title')?.addEventListener('input', function(e) {
-        const slugInput = document.getElementById('slug');
-        if (slugInput && !slugInput.value) {
-            const slug = e.target.value
-                .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/\s+/g, '-');
-            slugInput.value = slug;
-        }
+    const input     = document.getElementById('title');
+    const output    = document.getElementById('slug');
+
+    input.addEventListener('input', () => {
+        output.value = slugify(input.value);
     });
+
+
+    function slugify(text) {
+        return text
+            .normalize('NFD')                     // Descompone letras con acentos (ej. á → a + ◌́)
+            .replace(/[\u0300-\u036f]/g, '')     // Elimina los diacríticos (acentos, virgulillas, etc.)
+            .toLowerCase()                        // Convierte a minúsculas
+            .replace(/[^a-z0-9\s-]/g, '')         // Elimina todo excepto letras, números, espacios y guiones
+            .replace(/[\s-]+/g, '-')              // Reemplaza espacios y múltiples guiones por un solo guion
+            .replace(/^-+|-+$/g, '');             // Elimina guiones al inicio o al final
+    }
 
     // Previsualización de imagen
     function previewImage(event) {
-        const input = event.target;
-        const preview = document.getElementById('preview');
-        const previewContainer = document.getElementById('imagePreview');
+        const input             = event.target;
+        const preview           = document.getElementById('preview');
+        const previewContainer  = document.getElementById('imagePreview');
 
         if (input.files && input.files[0]) {
             const reader = new FileReader();

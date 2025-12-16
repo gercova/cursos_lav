@@ -131,14 +131,14 @@ class ExamsAdminController extends Controller {
 
     public function update(Request $request, Exam $exam): JsonResponse {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'course_id'     => 'required|exists:courses,id',
             'passing_score' => 'required|integer|min:0|max:100',
-            'time_limit' => 'nullable|integer|min:0',
-            'max_attempts' => 'nullable|integer|min:0',
-            'is_final' => 'boolean',
-            'show_results' => 'boolean',
+            'time_limit'    => 'nullable|integer|min:0',
+            'max_attempts'  => 'nullable|integer|min:0',
+            'is_final'      => 'boolean',
+            'show_results'  => 'boolean',
             'randomize_questions' => 'boolean',
             'is_active' => 'boolean',
         ]);

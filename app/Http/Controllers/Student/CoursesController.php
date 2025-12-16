@@ -57,10 +57,10 @@ class CoursesController extends Controller {
             case 'popular':
                 $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
                 break;
-            case 'rating':
+            /*case 'rating':
                 // Asumiendo que tienes un campo de rating o reviews
                 $query->orderBy('rating', 'desc');
-                break;
+                break;*/
             case 'price_low':
                 $query->orderBy('price', 'asc');
                 break;
@@ -77,7 +77,7 @@ class CoursesController extends Controller {
                 $query->orderBy('created_at', 'desc');
         }
 
-        $courses = $query->paginate(12);
+        $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->get();
 
         // Si es una petición AJAX, retornar solo la vista parcial

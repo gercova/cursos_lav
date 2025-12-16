@@ -23,6 +23,11 @@ class CartsController extends Controller
         return view('cart.index', compact('cartItems', 'total'));
     }
 
+    public function count() {
+        $count = auth()->check() ? auth()->user()->cartItems()->count() : 0;
+        return response()->json(['count' => $count]);
+    }
+
     // Agregar al carrito
     public function add(Course $course) {
         // Verificar si ya está en el carrito

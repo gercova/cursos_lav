@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamQuestion;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ExamQuestionAdminController extends Controller {
@@ -13,8 +15,11 @@ class ExamQuestionAdminController extends Controller {
         $this->middleware(['auth', 'admin']);
     }
 
-    public function store(Request $request, Exam $exam)
-    {
+    public function index(): View {
+
+    }
+
+    public function store(Request $request, Exam $exam) {
         $request->validate([
             'question'  => 'required|string|max:1000',
             'type'      => 'required|in:multiple_choice,true_false',
@@ -24,23 +29,43 @@ class ExamQuestionAdminController extends Controller {
         ]);
 
         // Procesar opciones para multiple choice
+        $options = null;
         if ($request->type === 'multiple_choice') {
-            $options = json_decode($request->options, true);
-            if (!is_array($options) || count(array_filter($options)) < 2) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Debe proporcionar al menos 2 opciones válidas'
-                ], 422);
+            // Si options ya es un array, convertirlo a JSON
+            if (is_array($request->options)) {
+                // Filtrar opciones vacías
+                $filteredOptions = array_filter($request->options, function($option) {
+                    return !empty(trim($option));
+                });
+
+                if (count($filteredOptions) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+
+                $options = json_encode($filteredOptions);
+            } else {
+                // Si es string JSON, validarlo
+                $optionsArray = json_decode($request->options, true);
+                if (!is_array($optionsArray) || count(array_filter($optionsArray)) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+                $options = $request->options;
             }
         }
 
         $question = $exam->questions()->create([
-            'question' => $request->question,
-            'type' => $request->type,
-            'points' => $request->points,
-            'options' => $request->type === 'multiple_choice' ? $request->options : null,
-            'correct_answer' => $request->correct_answer,
-            'order' => $exam->questions()->count() + 1,
+            'question'          => $request->question,
+            'type'              => $request->type,
+            'points'            => $request->points,
+            'options'           => $options,
+            'correct_answer'    => $request->correct_answer,
+            'order'             => $exam->questions()->count() + 1,
         ]);
 
         return response()->json([
@@ -52,34 +77,60 @@ class ExamQuestionAdminController extends Controller {
 
     public function edit(ExamQuestion $question)
     {
-        return response()->json($question);
+        // Asegurar que las opciones sean un array si existen
+        $questionData = $question->toArray();
+        if ($question->options && is_string($question->options)) {
+            $questionData['options'] = json_decode($question->options, true);
+        }
+
+        return response()->json($questionData);
     }
 
-    public function update(Request $request, ExamQuestion $question)
-    {
+    public function update(Request $request, ExamQuestion $question): JsonResponse {
         $request->validate([
-            'question' => 'required|string|max:1000',
-            'type' => 'required|in:multiple_choice,true_false',
-            'points' => 'required|integer|min:1|max:100',
-            'options' => 'required_if:type,multiple_choice',
-            'correct_answer' => 'required',
+            'question'          => 'required|string|max:1000',
+            'type'              => 'required|in:multiple_choice,true_false',
+            'points'            => 'required|integer|min:1|max:100',
+            'options'           => 'required_if:type,multiple_choice',
+            'correct_answer'    => 'required',
         ]);
 
+        // Procesar opciones para multiple choice
+        $options = null;
         if ($request->type === 'multiple_choice') {
-            $options = json_decode($request->options, true);
-            if (!is_array($options) || count(array_filter($options)) < 2) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Debe proporcionar al menos 2 opciones válidas'
-                ], 422);
+            // Si options ya es un array, convertirlo a JSON
+            if (is_array($request->options)) {
+                // Filtrar opciones vacías
+                $filteredOptions = array_filter($request->options, function($option) {
+                    return !empty(trim($option));
+                });
+
+                if (count($filteredOptions) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+
+                $options = json_encode($filteredOptions);
+            } else {
+                // Si es string JSON, validarlo
+                $optionsArray = json_decode($request->options, true);
+                if (!is_array($optionsArray) || count(array_filter($optionsArray)) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+                $options = $request->options;
             }
         }
 
         $question->update([
-            'question' => $request->question,
-            'type' => $request->type,
-            'points' => $request->points,
-            'options' => $request->type === 'multiple_choice' ? $request->options : null,
+            'question'  => $request->question,
+            'type'      => $request->type,
+            'points'    => $request->points,
+            'options'   => $options,
             'correct_answer' => $request->correct_answer,
         ]);
 
@@ -90,8 +141,7 @@ class ExamQuestionAdminController extends Controller {
         ]);
     }
 
-    public function destroy(ExamQuestion $question)
-    {
+    public function destroy(ExamQuestion $question): JsonResponse {
         $question->delete();
 
         // Reordenar preguntas restantes
@@ -107,8 +157,7 @@ class ExamQuestionAdminController extends Controller {
         ]);
     }
 
-    public function move(Request $request, ExamQuestion $question)
-    {
+    public function move(Request $request, ExamQuestion $question): JsonResponse {
         $direction = $request->input('direction');
         $currentOrder = $question->order;
 

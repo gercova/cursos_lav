@@ -153,23 +153,32 @@
                                     <!-- Opciones de respuesta -->
                                     @if($question->type === 'multiple_choice' && $question->options)
                                         <div class="ml-11 space-y-2 mt-4">
-                                            @foreach(json_decode($question->options) as $index => $option)
-                                                <div class="flex items-center gap-3">
-                                                    <div class="flex-shrink-0 w-6 h-6 rounded-full border-2
-                                                        {{ $question->correct_answer == $index ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
-                                                        @if($question->correct_answer == $index)
-                                                            <div class="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
-                                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                            </div>
-                                                        @endif
+                                            @php
+                                                // Asegurarse de que las opciones sean un array
+                                                $options = is_string($question->options)
+                                                    ? json_decode($question->options, true)
+                                                    : $question->options;
+                                            @endphp
+
+                                            @foreach($options as $index => $option)
+                                                @if(!empty($option))
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full border-2
+                                                            {{ $question->correct_answer == $index ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
+                                                            @if($question->correct_answer == $index)
+                                                                <div class="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
+                                                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="flex-1 p-3 rounded-lg
+                                                            {{ $question->correct_answer == $index ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
+                                                            <span class="text-gray-700">{{ $option }}</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex-1 p-3 rounded-lg
-                                                        {{ $question->correct_answer == $index ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
-                                                        <span class="text-gray-700">{{ $option }}</span>
-                                                    </div>
-                                                </div>
+                                                @endif
                                             @endforeach
                                         </div>
                                     @elseif($question->type === 'true_false')
@@ -340,24 +349,24 @@
     <!-- Modal para crear/editar pregunta -->
     <div x-data="questionModal()" x-cloak>
         <div x-show="showModal"
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-             @click.self="closeModal">
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+            @click.self="closeModal">
 
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div x-show="showModal"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
 
                     <!-- Header -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -427,11 +436,11 @@
                                     Enunciado de la Pregunta *
                                 </label>
                                 <textarea x-model="formData.question"
-                                          name="question"
-                                          rows="3"
-                                          required
-                                          class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                          placeholder="Escribe la pregunta aquí..."></textarea>
+                                    name="question"
+                                    rows="3"
+                                    required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                    placeholder="Escribe la pregunta aquí..."></textarea>
                             </div>
 
                             <!-- Puntos -->
@@ -571,8 +580,14 @@
             typeFilter: '',
             loading: false,
 
+            // Referencia al componente modal
+            modalComponent: null,
+
             init() {
-                // Inicialización
+                // Inicialización - obtener referencia al modal después de que Alpine esté listo
+                this.$nextTick(() => {
+                    this.modalComponent = Alpine.$data(document.querySelector('[x-data="questionModal()"]'));
+                });
             },
 
             async searchQuestions() {
@@ -591,32 +606,80 @@
             },
 
             showCreateModal() {
-                const modal = document.querySelector('[x-data="questionModal()"]');
-                if (modal) {
-                    modal.__x.$data.showModal = true;
-                    modal.__x.$data.isEditing = false;
-                    modal.__x.$data.resetForm();
+                try {
+                    // Obtener el componente modal
+                    const modalEl = document.querySelector('[x-data="questionModal()"]');
+                    if (!modalEl) {
+                        console.error('Modal element not found');
+                        return;
+                    }
+
+                    // Acceder al contexto Alpine del modal
+                    const modalComponent = Alpine.$data(modalEl);
+                    if (!modalComponent) {
+                        console.error('Modal component not found');
+                        return;
+                    }
+
+                    modalComponent.showModal = true;
+                    modalComponent.isEditing = false;
+                    modalComponent.resetForm();
+                } catch (error) {
+                    console.error('Error al mostrar modal:', error);
+                    showNotification('Error al abrir el formulario', 'error');
                 }
             },
 
             async editQuestion(questionId) {
-                const modal = document.querySelector('[x-data="questionModal()"]');
-                if (modal) {
-                    modal.__x.$data.showModal = true;
-                    modal.__x.$data.isEditing = true;
+                try {
+                    // Obtener el componente modal
+                    const modalEl = document.querySelector('[x-data="questionModal()"]');
+                    if (!modalEl) {
+                        console.error('Modal element not found');
+                        return;
+                    }
+
+                    // Acceder al contexto Alpine del modal
+                    const modalComponent = Alpine.$data(modalEl);
+                    if (!modalComponent) {
+                        console.error('Modal component not found');
+                        return;
+                    }
+
+                    modalComponent.showModal = true;
+                    modalComponent.isEditing = true;
 
                     try {
-                        const response = await axios.get(`/admin/exams/questions/${questionId}`);
-                        modal.__x.$data.formData = response.data;
+                        const response = await axios.get(`/admin/exams/questions/${questionId}/edit`);
+                        const questionData = response.data;
 
                         // Asegurar que las opciones sean un array
-                        if (modal.__x.$data.formData.options && typeof modal.__x.$data.formData.options === 'string') {
-                            modal.__x.$data.formData.options = JSON.parse(modal.__x.$data.formData.options);
+                        if (questionData.options) {
+                            if (typeof questionData.options === 'string') {
+                                try {
+                                    questionData.options = JSON.parse(questionData.options);
+                                } catch (e) {
+                                    console.error('Error parsing options:', e);
+                                    questionData.options = [];
+                                }
+                            }
+                        } else {
+                            questionData.options = ['', '', '', ''];
                         }
+
+                        // Asegurar que correct_answer sea del tipo correcto
+                        if (questionData.type === 'multiple_choice') {
+                            questionData.correct_answer = parseInt(questionData.correct_answer);
+                        }
+
+                        modalComponent.formData = questionData;
                     } catch (error) {
                         console.error('Error al cargar pregunta:', error);
                         showNotification('Error al cargar la pregunta', 'error');
                     }
+                } catch (error) {
+                    console.error('Error al abrir modal de edición:', error);
+                    showNotification('Error al abrir el editor', 'error');
                 }
             },
 
@@ -731,22 +794,35 @@
                         ? `/admin/exams/questions/${this.formData.id}`
                         : '{{ route("admin.exams.questions.store", $exam) }}';
 
-                    const method = this.isEditing ? 'PUT' : 'POST';
-
                     // Preparar datos
                     const formData = new FormData();
                     formData.append('exam_id', '{{ $exam->id }}');
                     formData.append('question', this.formData.question);
                     formData.append('type', this.formData.type);
                     formData.append('points', this.formData.points);
-                    formData.append('correct_answer', this.formData.correct_answer);
 
                     if (this.formData.type === 'multiple_choice') {
-                        formData.append('options', JSON.stringify(this.formData.options));
+                        // Filtrar opciones vacías
+                        const filteredOptions = this.formData.options.filter(option => option.trim() !== '');
+                        if (filteredOptions.length < 2) {
+                            showNotification('Debe proporcionar al menos 2 opciones válidas', 'error');
+                            this.isSubmitting = false;
+                            return;
+                        }
+                        formData.append('options', JSON.stringify(filteredOptions));
+                        formData.append('correct_answer', this.formData.correct_answer);
+                    } else {
+                        // Para verdadero/falso
+                        formData.append('correct_answer', this.formData.correct_answer.toString());
+                    }
+
+                    // Agregar _method para PUT
+                    if (this.isEditing) {
+                        formData.append('_method', 'PUT');
                     }
 
                     const response = await axios({
-                        method: method,
+                        method: 'POST',
                         url: url,
                         data: formData,
                         headers: {
@@ -821,7 +897,6 @@
         }, 3000);
     }
 </script>
-
 <style>
     [x-cloak] { display: none !important; }
 

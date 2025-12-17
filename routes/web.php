@@ -184,9 +184,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/courses/{course}/sections/reorder',       [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
 
         // Rutas para lecciones
-        Route::get('/courses/{course}/sections/{section}/lessons',               [LessonsAdminController ::class, 'index'])->name('admin.courses.sections.lessons.index');
+        Route::get('/courses//lessons/{course}/{section}',               [LessonsAdminController ::class, 'index'])->name('admin.lessons.index');
         Route::get('/courses/{course}/sections/{section}/lessons/create',        [LessonsAdminController::class, 'create'])->name('admin.courses.sections.lessons.create');
-        Route::post('/courses/{course}/sections/{section}/lessons',              [LessonsAdminController::class, 'store'])->name('admin.courses.sections.lessons.store');
+        Route::post('/courses/lessons/{course}/{section}',                      [LessonsAdminController::class, 'store'])->name('admin.lessons.store');
         Route::get('/courses/{course}/sections/{section}/lessons/{lesson}/edit', [LessonsAdminController::class, 'edit'])->name('admin.courses.sections.lessons.edit');
         Route::put('/courses/{course}/sections/{section}/lessons/{lesson}',      [LessonsAdminController::class, 'update'])->name('admin.courses.sections.lessons.update');
         Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',   [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');

@@ -4,11 +4,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LessonValidate;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class LessonsAdminController extends Controller {
@@ -33,29 +36,25 @@ class LessonsAdminController extends Controller {
     }
 
     // Guardar nueva lección
-    public function store(Request $request, Course $course, CourseSection $section) {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'video_url'     => 'nullable|url|max:500',
-            'duration'      => 'required|integer|min:1',
-            'order'         => 'required|integer|min:1',
-            'is_free'       => 'boolean',
-            'is_active'     => 'boolean'
-        ]);
-
+    public function store(LessonValidate $request, Course $course, CourseSection $section) {
+        $validated = $request->validated();
+        $validated['course_id']         = $course->id;
         $validated['course_section_id'] = $section->id;
-        $validated['is_free'] = $request->has('is_free');
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_free']           = $request->has('is_free');
+        $validated['is_active']         = $request->has('is_active');
 
         // También puedes agregar course_id directo si lo tienes en la tabla
-        // $validated['course_id'] = $course->id;
+        DB::beginTransaction();
+        try {
+            $lesson = Lesson::create($validated);
+            DB::commit();
 
-        $lesson = Lesson::create($validated);
-
-        return redirect()
-            ->route('admin.courses.sections.lessons.index', [$course, $section])
-            ->with('success', 'Lección creada exitosamente.');
+            return redirect()->route('admin.lessons.index', [$course, $section])->with('success', 'Lección creada exitosamente.');
+        } catch (\Throwable $th) {
+            // Log del error (opcional pero recomendado)
+            Log::error('Error al crear curso: ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+        }
     }
 
     // Mostrar formulario para editar lección
@@ -64,17 +63,8 @@ class LessonsAdminController extends Controller {
     }
 
     // Actualizar lección
-    public function update(Request $request, Course $course, CourseSection $section, Lesson $lesson) {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'video_url'     => 'nullable|url|max:500',
-            'duration'      => 'required|integer|min:1',
-            'order'         => 'required|integer|min:1',
-            'is_free'       => 'boolean',
-            'is_active'     => 'boolean'
-        ]);
-
+    public function update(LessonValidate $request, Course $course, CourseSection $section, Lesson $lesson) {
+        $validated = $request->validated();
         $validated['is_free']   = $request->has('is_free');
         $validated['is_active'] = $request->has('is_active');
 

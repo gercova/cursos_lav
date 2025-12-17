@@ -39,7 +39,7 @@ class Lesson extends Model
         return $this->hasOneThrough(Course::class, CourseSection::class, 'id', 'id', 'course_section_id', 'course_id');
     }
 
-    public function getVideoUrlAttribute(): ?string {
+    /*public function getVideoUrlAttribute(): ?string {
         $originalUrl = $this->getRawOriginal('video_url') ?? $this->getAttribute('video_url');
 
         if (!$originalUrl) {
@@ -47,9 +47,9 @@ class Lesson extends Model
         }
 
         return Storage::url($originalUrl);
-    }
+    }*/
 
-    public function getMediaTypeAttribute(): string {
+    /*public function getMediaTypeAttribute(): string {
         $originalUrl = $this->getRawOriginal('video_url') ?? $this->getAttribute('video_url');
 
         if (!$originalUrl) {
@@ -71,5 +71,5 @@ class Lesson extends Model
         }
 
         return 'other';
-    }
+    }*/
 }

@@ -62,15 +62,9 @@ class CourseSectionAdminController extends Controller {
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
             'description'   => 'nullable|string',
-            'mediafile'     => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm,mkv,jpg,jpeg,png,gif,webp,pdf,doc,docx,txt,ppt,pptx|max:51200', // 50MB
             'order'         => 'required|integer|min:1',
             'is_active'     => 'boolean',
         ]);
-
-        // Manejar la subida del archivo
-        if ($request->hasFile('mediafile')) {
-            $validated['mediafile'] = $request->file('mediafile')->store('course-sections', 'public');
-        }
 
         $validated['course_id'] = $course->id;
         $validated['is_active'] = $request->has('is_active');
@@ -80,8 +74,7 @@ class CourseSectionAdminController extends Controller {
 
         CourseSection::create($validated);
 
-        return redirect()->route('admin.courses.edit', $course)
-            ->with('success', 'Sección creada exitosamente.');
+        return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección creada exitosamente.');
     }
 
     /**
@@ -96,11 +89,11 @@ class CourseSectionAdminController extends Controller {
      */
     public function update(Request $request, Course $course, CourseSection $section) {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'mediafile' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm,mkv,jpg,jpeg,png,gif,webp,pdf,doc,docx,txt,ppt,pptx|max:51200',
-            'order' => 'required|integer|min:1',
-            'is_active' => 'boolean',
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'mediafile'     => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm,mkv,jpg,jpeg,png,gif,webp,pdf,doc,docx,txt,ppt,pptx|max:51200',
+            'order'         => 'required|integer|min:1',
+            'is_active'     => 'boolean',
         ]);
 
         // Manejar eliminación del archivo actual

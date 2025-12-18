@@ -8,9 +8,7 @@
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     @if($course->image_url)
-                        <img src="{{ Storage::url($course->image_url) }}"
-                             alt="{{ $course->title }}"
-                             class="w-12 h-12 rounded-xl object-cover border border-gray-300">
+                        <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-12 h-12 rounded-xl object-cover border border-gray-300">
                     @endif
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Secciones del Curso</h1>
@@ -61,8 +59,7 @@
         <!-- Lista de secciones -->
         <div class="divide-y divide-gray-100" id="sections-list">
             @forelse($sections as $section)
-                <div class="p-6 hover:bg-gray-50 transition duration-200 group"
-                     data-section-id="{{ $section->id }}">
+                <div class="p-6 hover:bg-gray-50 transition duration-200 group" data-section-id="{{ $section->id }}">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <!-- Información de la sección -->
                         <div class="flex-1">
@@ -121,27 +118,21 @@
                         <!-- Acciones -->
                         <div class="flex items-center gap-2">
                             <!-- Ver/Editar lecciones -->
-                            <a href="{{ route('admin.courses.sections.lessons.index', [$course, $section]) }}"
-                               class="p-2 text-indigo-600 hover:text-white hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-600 rounded-lg transition-all duration-200"
-                               title="Gestionar lecciones">
+                            <a href="{{ route('admin.courses.sections.lessons.index', [$course, $section]) }}" class="p-2 text-indigo-600 hover:text-white hover:bg-gradient-to-r hover:from-indigo-500 hover:to-indigo-600 rounded-lg transition-all duration-200" title="Gestionar lecciones">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                 </svg>
                             </a>
 
                             <!-- Editar sección -->
-                            <a href="{{ route('admin.courses.sections.edit', [$course, $section]) }}"
-                               class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200"
-                               title="Editar sección">
+                            <a href="{{ route('admin.courses.sections.edit', [$course, $section]) }}" class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200" title="Editar sección">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </a>
 
                             <!-- Eliminar sección -->
-                            <button onclick="deleteSection({{ $course->id }}, {{ $section->id }})"
-                                    class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
-                                    title="Eliminar sección">
+                            <button onclick="deleteSection({{ $course->id }}, {{ $section->id }})" class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200" title="Eliminar sección">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>

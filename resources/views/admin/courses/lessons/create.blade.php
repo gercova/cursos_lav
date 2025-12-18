@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
-@section('title', 'Nueva Lección: ' . $section->title)
-
+@section('title', 'Nueva Lección: '.$section->title)
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
@@ -53,10 +51,14 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.lessons.store', [$course, $section]) }}" method="POST" id="lessonForm" oninput="updateProgress()" class="p-6">
+        <form
+            action="{{ route('admin.courses.sections.lessons.store', [$course, $section]) }}"
+            method="post"
+            id="lessonForm"
+            oninput="updateProgress()"
+            class="p-4"
+        >
             @csrf
-            <input type="hidden" name="course_id" id="course_id" value="{{ $course->id }}">
-            <input type="hidden" name="course_section_id" id="course_section_id" value="{{ $section->id }}">
             <div class="space-y-6">
                 <!-- Título y Orden -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -69,7 +71,6 @@
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-
                     <div>
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Orden en la sección *
@@ -83,7 +84,6 @@
                         </p>
                     </div>
                 </div>
-
                 <!-- Duración -->
                 <div>
                     <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">
@@ -99,7 +99,6 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
                 <!-- URL del video -->
                 <div>
                     <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">
@@ -113,7 +112,6 @@
                         Soporta YouTube, Vimeo, o enlaces directos a archivos .mp4
                     </p>
                 </div>
-
                 <!-- Descripción -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -124,7 +122,6 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
                 <!-- Opciones avanzadas -->
                 <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">Opciones Avanzadas</h3>
@@ -162,7 +159,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Vista previa de video -->
                 <div id="video-preview" class="hidden">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">Vista Previa del Video</h3>
@@ -171,7 +167,6 @@
                         </iframe>
                     </div>
                 </div>
-
                 <!-- Botones -->
                 <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
                     <a href="{{ route('admin.courses.sections.lessons.index', [$course, $section]) }}" class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">

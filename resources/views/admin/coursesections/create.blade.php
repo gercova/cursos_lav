@@ -23,7 +23,6 @@
         <!-- Formulario -->
         <form action="{{ route('admin.courses.sections.store', $course->id) }}" method="POST" enctype="multipart/form-data" x-data="sectionForm()">
             @csrf
-
             <div class="p-6 space-y-6">
                 <!-- Información del curso -->
                 <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4">
@@ -56,13 +55,13 @@
                         Título de la Sección <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
-                           id="title"
-                           name="title"
-                           value="{{ old('title') }}"
-                           required
-                           maxlength="255"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                           placeholder="Ej: Introducción al curso">
+                        id="title"
+                        name="title"
+                        value="{{ old('title') }}"
+                        required
+                        maxlength="255"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        placeholder="Ej: Introducción al curso">
                     @error('title')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -74,10 +73,10 @@
                         Descripción
                     </label>
                     <textarea id="description"
-                              name="description"
-                              rows="4"
-                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                              placeholder="Describe brevemente el contenido de esta sección...">{{ old('description') }}</textarea>
+                        name="description"
+                        rows="4"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        placeholder="Describe brevemente el contenido de esta sección...">{{ old('description') }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -85,103 +84,17 @@
 
                 <!-- Campos de Archivo Multimedia y Orden -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Subida de Archivo Multimedia -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Archivo Multimedia (Video/Imagen/PDF)
-                        </label>
-
-                        <!-- Área de subida -->
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-blue-400 transition duration-200"
-                             @dragover.prevent="dragover = true"
-                             @dragleave.prevent="dragover = false"
-                             @drop.prevent="handleDrop($event)">
-                            <div class="space-y-1 text-center">
-                                <!-- Icono de subida -->
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-
-                                <div class="flex text-sm text-gray-600">
-                                    <label for="mediafile" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                        <span>Subir archivo</span>
-                                        <input id="mediafile"
-                                               name="mediafile"
-                                               type="file"
-                                               class="sr-only"
-                                               accept="video/*,image/*,.pdf,.doc,.docx,.txt,.ppt,.pptx"
-                                               @change="handleFileSelect">
-                                    </label>
-                                    <p class="pl-1">o arrastra y suelta</p>
-                                </div>
-
-                                <p class="text-xs text-gray-500">
-                                    MP4, AVI, MOV, WEBM, PDF, DOC, PPT hasta 50MB
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Vista previa del archivo -->
-                        <div x-show="filePreview" class="mt-4 p-4 border border-gray-200 rounded-xl bg-gray-50">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <template x-if="fileType === 'video'">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                                                <i class="fas fa-video text-purple-600"></i>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template x-if="fileType === 'image'">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center">
-                                                <i class="fas fa-image text-green-600"></i>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template x-if="fileType === 'document'">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center">
-                                                <i class="fas fa-file-alt text-orange-600"></i>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <template x-if="fileType === 'other'">
-                                        <div class="flex-shrink-0">
-                                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                                <i class="fas fa-file text-gray-600"></i>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900" x-text="fileName"></p>
-                                        <p class="text-xs text-gray-500" x-text="formatFileSize(fileSize)"></p>
-                                    </div>
-                                </div>
-                                <button type="button" @click="clearFile()" class="text-gray-400 hover:text-red-500">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        @error('mediafile')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Campo Orden -->
                     <div>
                         <label for="order" class="block text-sm font-medium text-gray-700 mb-2">
                             Orden de la Sección <span class="text-red-500">*</span>
                         </label>
                         <input type="number"
-                               id="order"
-                               name="order"
-                               value="{{ old('order', $nextOrder) }}"
-                               required
-                               min="1"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            id="order"
+                            name="order"
+                            value="{{ old('order', $nextOrder) }}"
+                            required
+                            min="1"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                         <p class="mt-1 text-sm text-gray-500">
                             Las secciones se mostrarán en orden ascendente (1, 2, 3...)
                         </p>
@@ -195,11 +108,11 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center">
                         <input type="checkbox"
-                               id="is_active"
-                               name="is_active"
-                               value="1"
-                               {{ old('is_active', true) ? 'checked' : '' }}
-                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            id="is_active"
+                            name="is_active"
+                            value="1"
+                            {{ old('is_active', true) ? 'checked' : '' }}
+                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                         <label for="is_active" class="ml-2 block text-sm text-gray-900">
                             Sección activa (visible para los estudiantes)
                         </label>

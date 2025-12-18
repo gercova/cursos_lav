@@ -22,38 +22,35 @@ class LessonsAdminController extends Controller {
 
     // Listar lecciones de una sección
     public function index(Course $course, CourseSection $section): View {
-        $lessons = $section->lessons()
-            ->orderBy('order')
-            ->get();
-
+        $lessons = $section->lessons()->orderBy('order')->get();
         return view('admin.courses.lessons.index', compact('course', 'section', 'lessons'));
     }
 
     // Mostrar formulario para crear lección
-    public function create(Course $course, CourseSection $section)
-    {
+    public function create(Course $course, CourseSection $section): View {
         return view('admin.courses.lessons.create', compact('course', 'section'));
     }
 
     // Guardar nueva lección
     public function store(LessonValidate $request, Course $course, CourseSection $section) {
-        $validated = $request->validated();
-        $validated['course_id']         = $course->id;
-        $validated['course_section_id'] = $section->id;
-        $validated['is_free']           = $request->has('is_free');
-        $validated['is_active']         = $request->has('is_active');
-
-        // También puedes agregar course_id directo si lo tienes en la tabla
         DB::beginTransaction();
         try {
-            $lesson = Lesson::create($validated);
-            DB::commit();
+            $data                       = $request->validated();
+            $data['course_id']          = $course->id;
+            $data['course_section_id']  = $section->id;
+            $data['is_free']            = $request->boolean('is_free');
+            $data['is_active']          = $request->boolean('is_active');
 
-            return redirect()->route('admin.lessons.index', [$course, $section])->with('success', 'Lección creada exitosamente.');
+            $lesson = Lesson::create($data);
+
+            DB::commit();
+            return redirect()
+                ->route('admin.courses.sections.lessons.index', [$course, $section])
+                ->with('success', 'Lección creada exitosamente.');
         } catch (\Throwable $th) {
-            // Log del error (opcional pero recomendado)
-            Log::error('Error al crear curso: ' . $th->getMessage());
-            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+            DB::rollback();
+            Log::error('Error al crear lección: ' . $th->getMessage());
+            return back()->withInput()->with('error', 'Ocurrió un error...');
         }
     }
 

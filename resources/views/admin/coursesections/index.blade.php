@@ -246,7 +246,7 @@
                                     <!-- Acciones -->
                                     <div class="flex items-center gap-2">
                                         <!-- Ver/editar lecciones -->
-                                        <a :href="`/admin/courses/${section.course_id}/sections/${section.id}/lessons`"
+                                        <a :href="`/admin/courses/${section.course_id}/sections/${section.id}`"
                                            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 hover:from-indigo-100 hover:to-indigo-200 rounded-lg transition duration-200"
                                            title="Gestionar lecciones">
                                             <i class="fas fa-book-open text-sm"></i>
@@ -283,8 +283,8 @@
 
                                         <!-- Eliminar -->
                                         <button @click="deleteSection(section)"
-                                                class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
-                                                title="Eliminar sección">
+                                            class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
+                                            title="Eliminar sección">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>

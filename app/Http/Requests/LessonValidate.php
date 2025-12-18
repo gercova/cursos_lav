@@ -12,8 +12,6 @@ class LessonValidate extends FormRequest
 
     public function rules(): array {
         return [
-            'course_id'         => 'required',
-            'course_section_id' => 'required',
             'title'             => 'required|string|max:255',
             'description'       => 'required|string',
             'video_url'         => 'required|url|max:500',
@@ -26,8 +24,6 @@ class LessonValidate extends FormRequest
 
     public function messages(): array {
         return [
-            'course_id.required'            => 'El curso es requerido',
-            'course_section_id.required'    => 'La sección del curso es requerido',
             'title.required'                => 'El título es requerido',
             'title.max'                     => 'El título deber tener una longitud máxima de 255 caracteres',
             'description.required'          => 'La descripción es requerida',
@@ -41,5 +37,13 @@ class LessonValidate extends FormRequest
             'order.integer'                 => 'El orden debe ser de tipo entero',
             'order.min'                     => 'El orden mínimo es 1',
         ];
+    }
+
+    protected function prepareForValidation(){
+        // Convertir checkboxes a booleanos
+        $this->merge([
+            'is_free'   => $this->has('is_free') ? filter_var($this->is_free, FILTER_VALIDATE_BOOLEAN) : false,
+            'is_active' => $this->has('is_active') ? filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN) : false,
+        ]);
     }
 }

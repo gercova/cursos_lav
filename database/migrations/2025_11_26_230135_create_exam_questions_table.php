@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained()->onDelete('cascade');
             $table->text('question');
             $table->enum('type', ['multiple_choice', 'true_false'])->default('multiple_choice');
-            $table->json('options');
+            $table->json('options')->nullable();
             $table->string('correct_answer');
             $table->integer('points')->default(1);
             $table->integer('order')->default(0);

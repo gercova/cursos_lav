@@ -107,19 +107,23 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                                 <input type="text"
-                                       x-model="searchQuery"
-                                       @input.debounce.500ms="searchQuestions()"
-                                       placeholder="Buscar preguntas..."
-                                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                    x-model="searchQuery"
+                                    value="{{ request('search') }}"  {{-- ← Agregar esto --}}
+                                    @input.debounce.500ms="searchQuestions()"
+                                    placeholder="Buscar preguntas..."
+                                    class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                >
                             </div>
 
-                            <select x-model="typeFilter"
-                                    @change="searchQuestions()"
-                                    class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            <select x-model="typeFilter" @change="searchQuestions()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                 <option value="">Todos los tipos</option>
-                                <option value="multiple_choice">Opción múltiple</option>
-                                <option value="true_false">Verdadero/Falso</option>
+                                <option value="multiple_choice" {{ request('typeFilter') === 'multiple_choice' ? 'selected' : '' }}>Opción múltiple</option>
+                                <option value="true_false" {{ request('typeFilter') === 'true_false' ? 'selected' : '' }}>Verdadero/Falso</option>
                             </select>
+
+                            <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                                Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -127,8 +131,7 @@
                 <!-- Lista de preguntas -->
                 <div class="divide-y divide-gray-100">
                     @forelse($questions as $question)
-                        <div class="p-6 hover:bg-gray-50 transition duration-200 question-item"
-                             data-question-id="{{ $question->id }}">
+                        <div class="p-6 hover:bg-gray-50 transition duration-200 question-item" data-question-id="{{ $question->id }}">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <!-- Header de la pregunta -->
@@ -155,9 +158,7 @@
                                         <div class="ml-11 space-y-2 mt-4">
                                             @php
                                                 // Asegurarse de que las opciones sean un array
-                                                $options = is_string($question->options)
-                                                    ? json_decode($question->options, true)
-                                                    : $question->options;
+                                                $options = is_string($question->options) ? json_decode($question->options, true) : $question->options;
                                             @endphp
 
                                             @foreach($options as $index => $option)
@@ -222,31 +223,35 @@
                                 <!-- Acciones -->
                                 <div class="flex items-center gap-2 ml-4">
                                     <button @click="editQuestion({{ $question->id }})"
-                                            class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200"
-                                            title="Editar">
+                                        class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200"
+                                        title="Editar"
+                                    >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
                                     </button>
                                     <button @click="deleteQuestion({{ $question->id }})"
-                                            class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
-                                            title="Eliminar">
+                                        class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
+                                        title="Eliminar"
+                                    >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
                                     </button>
                                     <button @click="moveQuestion({{ $question->id }}, 'up')"
-                                            {{ $loop->first ? 'disabled' : '' }}
-                                            class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            title="Mover arriba">
+                                        {{ $loop->first ? 'disabled' : '' }}
+                                        class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Mover arriba"
+                                    >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                                         </svg>
                                     </button>
                                     <button @click="moveQuestion({{ $question->id }}, 'down')"
-                                            {{ $loop->last ? 'disabled' : '' }}
-                                            class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            title="Mover abajo">
+                                        {{ $loop->last ? 'disabled' : '' }}
+                                        class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Mover abajo"
+                                    >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
@@ -265,7 +270,8 @@
                             <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay preguntas aún</h3>
                             <p class="text-gray-500 mb-6 max-w-md mx-auto">Comienza creando tu primera pregunta para este examen.</p>
                             <button @click="showCreateModal()"
-                                    class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                                class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                            >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
@@ -274,6 +280,26 @@
                         </div>
                     @endforelse
                 </div>
+                <!-- Paginación -->
+                @if($questions->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="text-sm text-gray-700">
+                                Mostrando
+                                <span class="font-medium">{{ $questions->firstItem() }}</span>
+                                a
+                                <span class="font-medium">{{ $questions->lastItem() }}</span>
+                                de
+                                <span class="font-medium">{{ $questions->total() }}</span>
+                                resultados
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                {{ $questions->links() }}
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -286,7 +312,7 @@
                 <div class="space-y-4 mb-6">
                     <div class="p-4 bg-white rounded-xl border border-blue-200">
                         <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-900">{{ $exam->questions_count }}</div>
+                            <div class="text-2xl font-bold text-blue-900">{{ $exam->questions()->count() }}</div>
                             <div class="text-sm text-blue-700 mt-1">Total Preguntas</div>
                         </div>
                     </div>
@@ -313,7 +339,7 @@
                 <!-- Acciones rápidas -->
                 <div class="space-y-3">
                     <button @click="showCreateModal()"
-                            class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-medium transition-all duration-200 group">
+                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-medium transition-all duration-200 group">
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -323,7 +349,8 @@
                     </button>
 
                     <button @click="importQuestions()"
-                            class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 group">
+                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 group"
+                    >
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
@@ -333,7 +360,8 @@
                     </button>
 
                     <button @click="reorderQuestions()"
-                            class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 group">
+                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 group"
+                    >
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -356,7 +384,8 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-            @click.self="closeModal">
+            @click.self="closeModal"
+        >
 
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div x-show="showModal"
@@ -366,7 +395,8 @@
                     x-transition:leave="ease-in duration-200"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-95"
-                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+                >
 
                     <!-- Header -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -401,11 +431,11 @@
                                 </label>
                                 <div class="grid grid-cols-2 gap-4">
                                     <button type="button"
-                                            @click="formData.type = 'multiple_choice'"
-                                            :class="formData.type === 'multiple_choice'
-                                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'"
-                                            class="p-4 border rounded-xl transition-all duration-200">
+                                        @click="formData.type = 'multiple_choice'"
+                                        :class="formData.type === 'multiple_choice'
+                                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600'
+                                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'"
+                                        class="p-4 border rounded-xl transition-all duration-200">
                                         <div class="flex items-center justify-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -414,11 +444,12 @@
                                         </div>
                                     </button>
                                     <button type="button"
-                                            @click="formData.type = 'true_false'"
-                                            :class="formData.type === 'true_false'
-                                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'"
-                                            class="p-4 border rounded-xl transition-all duration-200">
+                                        @click="formData.type = 'true_false'"
+                                        :class="formData.type === 'true_false'
+                                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600'
+                                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'"
+                                        class="p-4 border rounded-xl transition-all duration-200"
+                                    >
                                         <div class="flex items-center justify-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -440,7 +471,8 @@
                                     rows="3"
                                     required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                    placeholder="Escribe la pregunta aquí..."></textarea>
+                                    placeholder="Escribe la pregunta aquí..."
+                                ></textarea>
                             </div>
 
                             <!-- Puntos -->
@@ -450,13 +482,14 @@
                                 </label>
                                 <div class="relative">
                                     <input type="number"
-                                           x-model="formData.points"
-                                           name="points"
-                                           min="1"
-                                           max="100"
-                                           required
-                                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                           placeholder="Ej: 10">
+                                        x-model="formData.points"
+                                        name="points"
+                                        min="1"
+                                        max="100"
+                                        required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                        placeholder="Ej: 10"
+                                    >
                                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">puntos</span>
                                 </div>
                             </div>
@@ -468,9 +501,7 @@
                                         <label class="block text-sm font-medium text-gray-700">
                                             Opciones de Respuesta *
                                         </label>
-                                        <button type="button"
-                                                @click="addOption()"
-                                                class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                        <button type="button" @click="addOption()" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                                             + Agregar opción
                                         </button>
                                     </div>
@@ -479,23 +510,20 @@
                                         <template x-for="(option, index) in options" :key="index">
                                             <div class="flex items-center gap-3">
                                                 <button type="button"
-                                                        @click="setCorrectAnswer(index)"
-                                                        :class="formData.correct_answer == index
-                                                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
-                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                                                        class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200">
+                                                    @click="setCorrectAnswer(index)"
+                                                    :class="formData.correct_answer == index ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                                                    class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200"
+                                                >
                                                     <span x-text="String.fromCharCode(65 + index)"></span>
                                                 </button>
                                                 <input type="text"
-                                                       x-model="options[index]"
-                                                       @input="formData.options = options"
-                                                       :name="'options[' + index + ']'"
-                                                       :placeholder="'Opción ' + String.fromCharCode(65 + index)"
-                                                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                                                <button type="button"
-                                                        x-show="options.length > 2"
-                                                        @click="removeOption(index)"
-                                                        class="flex-shrink-0 p-1 text-red-600 hover:text-red-800">
+                                                    x-model="options[index]"
+                                                    @input="formData.options = options"
+                                                    :name="'options[' + index + ']'"
+                                                    :placeholder="'Opción ' + String.fromCharCode(65 + index)"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                                >
+                                                <button type="button" x-show="options.length > 2" @click="removeOption(index)" class="flex-shrink-0 p-1 text-red-600 hover:text-red-800">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
@@ -515,11 +543,12 @@
                                     </label>
                                     <div class="grid grid-cols-2 gap-4">
                                         <button type="button"
-                                                @click="formData.correct_answer = 'true'"
-                                                :class="formData.correct_answer === 'true'
-                                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'"
-                                                class="p-4 border rounded-xl transition-all duration-200">
+                                            @click="formData.correct_answer = 'true'"
+                                            :class="formData.correct_answer === 'true'
+                                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600'
+                                                : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'"
+                                            class="p-4 border rounded-xl transition-all duration-200"
+                                        >
                                             <div class="flex items-center justify-center gap-2">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -528,11 +557,12 @@
                                             </div>
                                         </button>
                                         <button type="button"
-                                                @click="formData.correct_answer = 'false'"
-                                                :class="formData.correct_answer === 'false'
-                                                    ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-600'
-                                                    : 'bg-white text-gray-700 border-gray-300 hover:border-red-500'"
-                                                class="p-4 border rounded-xl transition-all duration-200">
+                                            @click="formData.correct_answer = 'false'"
+                                            :class="formData.correct_answer === 'false'
+                                                ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-red-600'
+                                                : 'bg-white text-gray-700 border-gray-300 hover:border-red-500'"
+                                            class="p-4 border rounded-xl transition-all duration-200"
+                                        >
                                             <div class="flex items-center justify-center gap-2">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -548,14 +578,13 @@
 
                         <!-- Botones -->
                         <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
-                            <button type="button"
-                                    @click="closeModal"
-                                    class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                            <button type="button" @click="closeModal" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                                 Cancelar
                             </button>
                             <button type="submit"
-                                    :disabled="isSubmitting"
-                                    class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                :disabled="isSubmitting"
+                                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <svg x-show="isSubmitting" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -576,8 +605,8 @@
     // Manager para las preguntas
     function questionManager() {
         return {
-            searchQuery: '',
-            typeFilter: '',
+            searchQuery: '{{ request("search") ?? "" }}',  // ← Agregar
+            typeFilter: '{{ request("typeFilter") ?? "" }}', // ← Agregar
             loading: false,
 
             // Referencia al componente modal
@@ -595,7 +624,7 @@
                 try {
                     const params = new URLSearchParams();
                     if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.typeFilter) params.append('type', this.typeFilter);
+                    if (this.typeFilter) params.append('typeFilter', this.typeFilter); // ← Cambiar 'type' por 'typeFilter'
 
                     const url = `{{ route('admin.exams.questions', $exam) }}?${params.toString()}`;
                     window.location.href = url;
@@ -603,6 +632,12 @@
                     console.error('Error en búsqueda:', error);
                     this.loading = false;
                 }
+            },
+
+            resetFilters() {
+                this.searchQuery    = '';
+                this.typeFilter     = '';
+                this.searchQuestions();
             },
 
             showCreateModal() {
@@ -790,9 +825,7 @@
                 this.isSubmitting = true;
 
                 try {
-                    const url = this.isEditing
-                        ? `/admin/exams/questions/${this.formData.id}`
-                        : '{{ route("admin.exams.questions.store", $exam) }}';
+                    const url = this.isEditing ? `/admin/exams/questions/${this.formData.id}` : '{{ route("admin.exams.questions.store", $exam) }}';
 
                     // Preparar datos
                     const formData = new FormData();
@@ -822,9 +855,9 @@
                     }
 
                     const response = await axios({
-                        method: 'POST',
-                        url: url,
-                        data: formData,
+                        method  : 'POST',
+                        url     : url,
+                        data : formData,
                         headers: {
                             'Content-Type': 'multipart/form-data',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'

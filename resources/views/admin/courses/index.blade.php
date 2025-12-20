@@ -326,17 +326,6 @@
                                             </svg>
                                         </a>
 
-                                        <!-- Gestión de secciones (modal) -->
-                                        <!--<button onclick="showSectionsModal({{ $course->id }})"-->
-                                        <!--<a href="#"
-                                            class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/sections"
-                                            title="Gestionar secciones">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                                            </svg>
-                                        </a>-->
-                                        <!--</button>-->
-
                                         <!-- Documentos -->
                                         <a href="#"
                                            class="p-2 text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg transition-all duration-200 group/documents"
@@ -555,8 +544,8 @@
             },
 
             resetFilters() {
-                this.searchQuery = '';
-                this.statusFilter = '';
+                this.searchQuery    = '';
+                this.statusFilter   = '';
                 this.categoryFilter = '';
                 this.performSearch();
             }
@@ -582,35 +571,6 @@
             modalData.loadingSections = false;
         }
     }
-
-    // Función para agregar sección
-    /*async function addSection() {
-        const modal = document.querySelector('[x-data]');
-        const modalData = modal.__x.$data;
-
-        try {
-            // rotue() admin.courses.sections.add
-            const response = await axios.post(`${modalData.courseId}`, {
-                title: modalData.newSectionTitle,
-                description: modalData.newSectionDescription,
-                order: modalData.newSectionOrder,
-                _token: '{{ csrf_token() }}'
-            });
-
-            // Agregar la nueva sección a la lista
-            modalData.sections.push(response.data.section);
-
-            // Limpiar formulario
-            modalData.newSectionTitle = '';
-            modalData.newSectionDescription = '';
-            modalData.newSectionOrder = '';
-
-            showNotification('Sección agregada exitosamente', 'success');
-        } catch (error) {
-            console.error('Error al agregar sección:', error);
-            showNotification('Error al agregar la sección', 'error');
-        }
-    }*/
 
     // Función para eliminar curso
     async function deleteCourse(courseId) {

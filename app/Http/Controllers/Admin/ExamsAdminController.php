@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExamValidate;
 use App\Models\Course;
 use App\Models\Exam;
 use Illuminate\Contracts\View\View;
@@ -46,7 +47,6 @@ class ExamsAdminController extends Controller {
 
         // Ordenar
         $query->orderBy('created_at', 'desc');
-
         $exams = $query->paginate(10);
         $courses = Course::where('is_active', true)
             ->with('category')
@@ -73,9 +73,8 @@ class ExamsAdminController extends Controller {
 
         // Cargar estadísticas
         $exam->loadCount(['questions', 'examAttempts']);
-        $exam->passed_count = $exam->examAttempts()->where('passed', true)->count();
-        $exam->attempts_count = $exam->examAttempts()->count();
-
+        $exam->passed_count     = $exam->examAttempts()->where('passed', true)->count();
+        $exam->attempts_count   = $exam->examAttempts()->count();
         return view('admin.exams.edit', compact('exam', 'courses'));
     }
 
@@ -88,15 +87,15 @@ class ExamsAdminController extends Controller {
 
             // Duplicar preguntas
             foreach ($exam->questions as $question) {
-                $newQuestion = $question->replicate();
-                $newQuestion->exam_id = $newExam->id;
+                $newQuestion            = $question->replicate();
+                $newQuestion->exam_id   = $newExam->id;
                 $newQuestion->save();
             }
 
             return response()->json([
-                'success' => true,
-                'message' => 'Examen duplicado exitosamente',
-                'new_exam_id' => $newExam->id
+                'success'       => true,
+                'message'       => 'Examen duplicado exitosamente',
+                'new_exam_id'   => $newExam->id
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -106,55 +105,30 @@ class ExamsAdminController extends Controller {
         }
     }
 
-    public function store(Request $request): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'course_id'     => 'required|exists:courses,id',
-            'passing_score' => 'required|integer|min:0|max:100',
-            'time_limit'    => 'nullable|integer|min:0',
-            'max_attempts'  => 'nullable|integer|min:0',
-            'is_final'      => 'boolean',
-            'show_results'  => 'boolean',
-            'randomize_questions' => 'boolean',
-            'is_active'     => 'boolean',
-        ]);
-
+    public function store(ExamValidate $request): JsonResponse {
+        $validated = $request->validated();
         $exam = Exam::create($validated);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Examen creado exitosamente',
-            'exam' => $exam
+            'success'   => true,
+            'message'   => 'Examen creado exitosamente',
+            'exam'      => $exam
         ]);
     }
 
-    public function update(Request $request, Exam $exam): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'course_id'     => 'required|exists:courses,id',
-            'passing_score' => 'required|integer|min:0|max:100',
-            'time_limit'    => 'nullable|integer|min:0',
-            'max_attempts'  => 'nullable|integer|min:0',
-            'is_final'      => 'boolean',
-            'show_results'  => 'boolean',
-            'randomize_questions' => 'boolean',
-            'is_active' => 'boolean',
-        ]);
-
+    public function update(ExamValidate $request, Exam $exam): JsonResponse {
+        $validated = $request->validated();
         $exam->update($validated);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Examen actualizado exitosamente',
-            'exam' => $exam
+            'success'   => true,
+            'message'   => 'Examen actualizado exitosamente',
+            'exam'      => $exam
         ]);
     }
 
     public function destroy(Exam $exam): JsonResponse {
         $exam->delete();
-
         return response()->json([
             'success' => true,
             'message' => 'Examen eliminado exitosamente'
@@ -165,7 +139,7 @@ class ExamsAdminController extends Controller {
         $exam->update(['is_active' => !$exam->is_active]);
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $exam->is_active
         ]);
     }
@@ -174,11 +148,47 @@ class ExamsAdminController extends Controller {
         return response()->json($exam);
     }
 
-    public function questions(Exam $exam): View {
+    /*public function questions(Exam $exam, Request $request): View {
+        // Definir tipos válidos para evitar valores inesperados
+        $allowedTypes = ['multiple_choice', 'true_false'];
+
         $questions = $exam->questions()
             ->orderBy('order')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where('question', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->filled('typeFilter'), function ($query) use ($request, $allowedTypes) {
+                $type = $request->typeFilter;
+                if (in_array($type, $allowedTypes)) {
+                    $query->where('type', $type);
+                }
+            })
             ->paginate(20);
 
         return view('admin.exams.questions', compact('exam', 'questions'));
+    }*/
+
+    public function questions(Exam $exam, Request $request): View {
+        $allowedTypes = ['multiple_choice', 'true_false'];
+
+        $questions = $exam->questions()
+            ->orderBy('order')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $query->where('question', 'like', '%' . $request->search . '%');
+            })
+            ->when($request->filled('type'), function ($query) use ($request, $allowedTypes) {
+                $type = $request->type; // ← Cambiar typeFilter por type
+                if (in_array($type, $allowedTypes)) {
+                    $query->where('type', $type);
+                }
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('admin.exams.questions', compact('exam', 'questions'));
+    }
+
+    public function results(): View {
+        return view('admin.exams.results');
     }
 }

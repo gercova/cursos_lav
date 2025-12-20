@@ -15,17 +15,13 @@ class ExamQuestionAdminController extends Controller {
         $this->middleware(['auth', 'admin']);
     }
 
-    public function index(): View {
-
-    }
-
     public function store(Request $request, Exam $exam) {
         $request->validate([
-            'question'  => 'required|string|max:1000',
-            'type'      => 'required|in:multiple_choice,true_false',
-            'points'    => 'required|integer|min:1|max:100',
-            'options'   => 'required_if:type,multiple_choice',
-            'correct_answer' => 'required',
+            'question'          => 'required|string|max:1000',
+            'type'              => 'required|in:multiple_choice,true_false',
+            'points'            => 'required|integer|min:1|max:100',
+            'options'           => 'required_if:type,multiple_choice',
+            'correct_answer'    => 'required',
         ]);
 
         // Procesar opciones para multiple choice
@@ -75,8 +71,64 @@ class ExamQuestionAdminController extends Controller {
         ]);
     }
 
-    public function edit(ExamQuestion $question)
-    {
+    /*public function store(Request $request, Exam $exam) {
+        $request->validate([
+            'question'          => 'required|string|max:1000',
+            'type'              => 'required|in:multiple_choice,true_false',
+            'points'            => 'required|integer|min:1|max:100',
+            'options'           => 'required_if:type,multiple_choice',
+            'correct_answer'    => 'required',
+        ]);
+
+        // Procesar opciones
+        $options = null; // Por defecto NULL para true_false
+
+        if ($request->type === 'multiple_choice') {
+            if (is_array($request->options)) {
+                // Filtrar opciones vacías
+                $filteredOptions = array_filter($request->options, function($option) {
+                    return !empty(trim($option));
+                });
+
+                if (count($filteredOptions) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+
+                $options = array_values($filteredOptions); // array_values para re-indexar
+            } else {
+                // Si es string JSON, validarlo
+                $optionsArray = json_decode($request->options, true);
+                if (!is_array($optionsArray) || count(array_filter($optionsArray)) < 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Debe proporcionar al menos 2 opciones válidas'
+                    ], 422);
+                }
+                $options = $optionsArray;
+            }
+        }
+        // Para true_false, $options permanece como null
+
+        $question = $exam->questions()->create([
+            'question'          => $request->question,
+            'type'              => $request->type,
+            'points'            => $request->points,
+            'options'           => $options, // Ahora puede ser NULL
+            'correct_answer'    => $request->correct_answer,
+            'order'             => $exam->questions()->count() + 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pregunta creada exitosamente',
+            'question' => $question
+        ]);
+    }*/
+
+    public function edit(ExamQuestion $question): JsonResponse {
         // Asegurar que las opciones sean un array si existen
         $questionData = $question->toArray();
         if ($question->options && is_string($question->options)) {
@@ -135,9 +187,9 @@ class ExamQuestionAdminController extends Controller {
         ]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Pregunta actualizada exitosamente',
-            'question' => $question
+            'success'   => true,
+            'message'   => 'Pregunta actualizada exitosamente',
+            'question'  => $question
         ]);
     }
 
@@ -158,8 +210,8 @@ class ExamQuestionAdminController extends Controller {
     }
 
     public function move(Request $request, ExamQuestion $question): JsonResponse {
-        $direction = $request->input('direction');
-        $currentOrder = $question->order;
+        $direction      = $request->input('direction');
+        $currentOrder   = $question->order;
 
         if ($direction === 'up' && $currentOrder > 1) {
             $previousQuestion = $question->exam->questions()

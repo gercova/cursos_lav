@@ -103,13 +103,9 @@
     </div>
 
     <!-- Formulario -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-8">
-        <form action="{{ route('admin.exams.update', $exam) }}"
-              method="POST"
-              id="examForm">
-
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-8 p-2">
+        <form action="{{ route('admin.exams.update', $exam) }}" method="POST" id="examForm">
             @include('admin.exams.partials.form')
-
         </form>
     </div>
 

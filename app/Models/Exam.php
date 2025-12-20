@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Exam extends Model
-{
+class Exam extends Model {
+
     use HasFactory;
 
     protected $table        = 'exams';
@@ -24,6 +24,7 @@ class Exam extends Model
     ];
 
     protected $casts = [
+        'duration'  => 'integer',
         'is_active' => 'boolean',
     ];
 
@@ -35,9 +36,9 @@ class Exam extends Model
         return $this->hasMany(ExamQuestion::class);
     }
 
-    /*public function attempts(): HasMany {
+    public function attempts(): HasMany {
         return $this->hasMany(ExamAttempt::class);
-    }*/
+    }
 
     public function examAttempts(): HasMany {
         return $this->hasMany(ExamAttempt::class);

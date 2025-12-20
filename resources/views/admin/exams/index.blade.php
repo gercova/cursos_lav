@@ -239,9 +239,7 @@
                                     @if($exam->course)
                                         <div class="flex items-center gap-3">
                                             @if($exam->course->image_url)
-                                                <img src="{{ Storage::url($exam->course->image_url) }}"
-                                                     alt="{{ $exam->course->title }}"
-                                                     class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                                                <img src="{{ Storage::url($exam->course->image_url) }}"  alt="{{ $exam->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">
@@ -300,12 +298,10 @@
                                 <!-- Estado -->
                                 <td class="px-6 py-5">
                                     <div class="flex flex-col gap-2">
-                                        <span :class="{'bg-gradient-to-r from-green-100 to-green-200 text-green-800': {{ $exam->is_active }}, 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': !{{ $exam->is_active }}}"
-                                              class="px-3 py-1 rounded-full text-xs font-semibold text-center">
+                                        <span :class="{'bg-gradient-to-r from-green-100 to-green-200 text-green-800': {{ $exam->is_active }}, 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': !{{ $exam->is_active }}}" class="px-3 py-1 rounded-full text-xs font-semibold text-center">
                                             {{ $exam->is_active ? 'Activo' : 'Inactivo' }}
                                         </span>
-                                        <button onclick="toggleExamStatus({{ $exam->id }})"
-                                                class="text-xs text-gray-500 hover:text-gray-700 transition-colors">
+                                        <button onclick="toggleExamStatus({{ $exam->id }})" class="text-xs text-gray-500 hover:text-gray-700 transition-colors">
                                             {{ $exam->is_active ? 'Desactivar' : 'Activar' }}
                                         </button>
                                     </div>
@@ -315,8 +311,7 @@
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-end gap-2">
                                         <!-- Ver resultados -->
-                                        <a href="{{ route('admin.exams.results', $exam) }}"
-                                           class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 group/results"
+                                        <a href="{{ route('admin.exams.results', $exam) }}" class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 group/results"
                                            title="Ver resultados">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -324,27 +319,21 @@
                                         </a>
 
                                         <!-- Editar -->
-                                        <button onclick="showEditModal({{ $exam->id }})"
-                                                class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200 group/edit"
-                                                title="Editar examen">
+                                        <button @click="$dispatch('open-edit-modal', { id: {{ $exam->id }} })" class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200 group/edit" title="Editar examen">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
 
                                         <!-- Gestión de preguntas -->
-                                        <a href="{{ route('admin.exams.questions', $exam) }}"
-                                           class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/questions"
-                                           title="Gestionar preguntas">
+                                        <a href="{{ route('admin.exams.questions', $exam) }}" class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/questions" title="Gestionar preguntas">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
                                         </a>
 
                                         <!-- Vista previa -->
-                                        <a href="#"
-                                           class="p-2 text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg transition-all duration-200 group/preview"
-                                           title="Vista previa">
+                                        <a href="#" class="p-2 text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg transition-all duration-200 group/preview" title="Vista previa">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -352,9 +341,7 @@
                                         </a>
 
                                         <!-- Eliminar -->
-                                        <button onclick="deleteExam({{ $exam->id }})"
-                                                class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200 group/delete"
-                                                title="Eliminar">
+                                        <button onclick="deleteExam({{ $exam->id }})" class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200 group/delete" title="Eliminar">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
@@ -397,28 +384,29 @@
     </div>
 
     <!-- Modal para crear/editar examen -->
-    <div x-data="examModal()" x-cloak>
+    <!--<div x-data="examModal()" x-cloak>-->
+    <div x-data="examModal()" x-cloak @open-edit-modal.window="showEditModal($event.detail.id)">
         <!-- Modal overlay -->
         <div x-show="showModal"
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-             @click.self="closeModal">
-
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+            @click.self="closeModal"
+        >
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div x-show="showModal"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+                >
                     <!-- Header del modal -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
                         <div class="flex items-center justify-between">
@@ -426,8 +414,7 @@
                                 <h3 class="text-xl font-bold text-gray-900" x-text="isEditing ? 'Editar Examen' : 'Nuevo Examen'"></h3>
                                 <p class="text-sm text-gray-600 mt-1" x-text="isEditing ? 'Modifica la configuración del examen' : 'Completa todos los campos para crear un nuevo examen'"></p>
                             </div>
-                            <button @click="closeModal"
-                                    class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
+                            <button @click="closeModal" class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
                                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -453,10 +440,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                                 Título del Examen *
                                             </label>
-                                            <input type="text"
-                                                   x-model="formData.title"
-                                                   required
-                                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                            <input type="text" x-model="formData.title" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                         </div>
 
                                         <!-- Descripción -->
@@ -464,9 +448,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                                 Descripción
                                             </label>
-                                            <textarea x-model="formData.description"
-                                                      rows="3"
-                                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"></textarea>
+                                            <textarea x-model="formData.description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"></textarea>
                                         </div>
 
                                         <!-- Curso -->
@@ -474,9 +456,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                                 Curso *
                                             </label>
-                                            <select x-model="formData.course_id"
-                                                    required
-                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                            <select x-model="formData.course_id" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                                 <option value="">Seleccionar curso</option>
                                                 @foreach($courses as $course)
                                                     <option value="{{ $course->id }}">{{ $course->title }}</option>
@@ -489,8 +469,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                                 Tipo de Examen
                                             </label>
-                                            <select x-model="formData.is_final"
-                                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                            <select x-model="formData.is_final" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                                 <option value="0">Examen Regular</option>
                                                 <option value="1">Examen Final</option>
                                             </select>
@@ -508,12 +487,7 @@
                                                 Puntaje Mínimo (%) *
                                             </label>
                                             <div class="relative">
-                                                <input type="number"
-                                                       x-model="formData.passing_score"
-                                                       min="0"
-                                                       max="100"
-                                                       required
-                                                       class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                                <input type="number" x-model="formData.passing_score" min="0" max="100" required class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                                 <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">%</span>
                                             </div>
                                         </div>
@@ -524,11 +498,7 @@
                                                 Tiempo Límite (minutos)
                                             </label>
                                             <div class="relative">
-                                                <input type="number"
-                                                       x-model="formData.time_limit"
-                                                       min="0"
-                                                       placeholder="0 = sin límite"
-                                                       class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                                <input type="number" x-model="formData.duration" min="0" placeholder="0 = sin límite" class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                                 <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">min</span>
                                             </div>
                                         </div>
@@ -539,11 +509,7 @@
                                                 Intentos Máximos
                                             </label>
                                             <div class="relative">
-                                                <input type="number"
-                                                       x-model="formData.max_attempts"
-                                                       min="0"
-                                                       placeholder="0 = ilimitados"
-                                                       class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                                <input type="number" x-model="formData.max_attempts" min="0" placeholder="0 = ilimitados" class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                             </div>
                                         </div>
                                     </div>
@@ -552,10 +518,7 @@
                                     <div class="mt-6 space-y-4">
                                         <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-blue-200">
                                             <div class="flex items-center">
-                                                <input type="checkbox"
-                                                       x-model="formData.show_results"
-                                                       id="show_results"
-                                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                                <input type="checkbox" x-model="formData.show_results" id="show_results" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                                 <label for="show_results" class="ml-3 text-sm font-medium text-blue-900">
                                                     Mostrar resultados al finalizar
                                                 </label>
@@ -567,10 +530,7 @@
 
                                         <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-blue-200">
                                             <div class="flex items-center">
-                                                <input type="checkbox"
-                                                       x-model="formData.randomize_questions"
-                                                       id="randomize_questions"
-                                                       class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                                <input type="checkbox" x-model="formData.randomize_questions" id="randomize_questions" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                                 <label for="randomize_questions" class="ml-3 text-sm font-medium text-blue-900">
                                                     Preguntas aleatorias
                                                 </label>
@@ -593,11 +553,11 @@
                                         </div>
                                         <div>
                                             <button type="button"
-                                                    @click="formData.is_active = !formData.is_active"
-                                                    :class="formData.is_active ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600'"
-                                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                                                <span :class="formData.is_active ? 'translate-x-6' : 'translate-x-1'"
-                                                      class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
+                                                @click="formData.is_active = !formData.is_active"
+                                                :class="formData.is_active ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600'"
+                                                class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                            >
+                                                <span :class="formData.is_active ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
                                             </button>
                                         </div>
                                     </div>
@@ -606,14 +566,13 @@
 
                             <!-- Botones del modal -->
                             <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
-                                <button type="button"
-                                        @click="closeModal"
-                                        class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                                <button type="button" @click="closeModal" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                                     Cancelar
                                 </button>
                                 <button type="submit"
-                                        :disabled="isSubmitting"
-                                        class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    :disabled="isSubmitting"
+                                    class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                     <svg x-show="isSubmitting" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -641,6 +600,14 @@
 
             init() {
                 // Inicializar
+                this.$watch('showModal', value => {
+                    if (value) return;
+                    this.resetForm();
+                });
+
+                this.$el.addEventListener('open-edit-modal', (e) => {
+                    this.showEditModal(e.detail.id);
+                });
             },
 
             async performSearch() {
@@ -688,7 +655,7 @@
                 description: '',
                 course_id: '',
                 passing_score: 70,
-                time_limit: 0,
+                duration: 0,
                 max_attempts: 0,
                 is_final: 0,
                 show_results: true,
@@ -706,7 +673,7 @@
                     description: '',
                     course_id: '',
                     passing_score: 70,
-                    time_limit: 0,
+                    duration: 0,
                     max_attempts: 0,
                     is_final: 0,
                     show_results: true,
@@ -719,17 +686,19 @@
                 this.showModal = true;
                 this.isEditing = true;
                 this.isSubmitting = false;
+                exam = examId
 
                 try {
                     // Cargar datos del examen
-                    const response = await axios.get(`/api/exams/${examId}`);
+                    const response = await axios.get(`/admin/exams/${examId}/show`);
+
                     this.formData = response.data;
 
                     // Asegurar que los valores booleanos sean correctos
-                    this.formData.is_final = this.formData.is_final ? 1 : 0;
-                    this.formData.show_results = Boolean(this.formData.show_results);
-                    this.formData.randomize_questions = Boolean(this.formData.randomize_questions);
-                    this.formData.is_active = Boolean(this.formData.is_active);
+                    this.formData.is_final              = this.formData.is_final ? 1 : 0;
+                    this.formData.show_results          = Boolean(this.formData.show_results);
+                    this.formData.randomize_questions   = Boolean(this.formData.randomize_questions);
+                    this.formData.is_active             = Boolean(this.formData.is_active);
 
                 } catch (error) {
                     console.error('Error al cargar examen:', error);
@@ -748,13 +717,9 @@
                 this.isSubmitting = true;
 
                 try {
-                    const url = this.isEditing
-                        ? `/admin/exams/${this.formData.id}`
-                        : '{{ route("admin.exams.store") }}';
-
-                    const method = this.isEditing ? 'PUT' : 'POST';
-
-                    const response = await axios({
+                    const url       = this.isEditing ? `/admin/exams/${this.formData.id}` : '{{ route("admin.exams.store") }}';
+                    const method    = this.isEditing ? 'PUT' : 'POST';
+                    const response  = await axios({
                         method: method,
                         url: url,
                         data: this.formData,

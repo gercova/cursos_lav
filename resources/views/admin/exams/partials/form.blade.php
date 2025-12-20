@@ -89,6 +89,9 @@
                         required
                         class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">%</span>
+                    @error('passing_score')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Barra de puntaje -->
@@ -105,18 +108,21 @@
 
             <!-- Tiempo límite -->
             <div>
-                <label for="time_limit" class="block text-sm font-medium text-blue-800 mb-1">
+                <label for="duration" class="block text-sm font-medium text-blue-800 mb-1">
                     Tiempo Límite (minutos)
                 </label>
                 <div class="relative">
                     <input type="number"
-                        id="time_limit"
-                        name="time_limit"
-                        value="{{ old('time_limit', $exam->time_limit ?? 0) }}"
+                        id="duration"
+                        name="duration"
+                        value="{{ old('duration', $exam->duration ?? 0) }}"
                         min="0"
                         class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
                         placeholder="0 = sin límite">
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">min</span>
+                    @error('duration')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <p class="text-xs text-blue-600 mt-2">
                     <i class="fas fa-info-circle mr-1"></i>
@@ -136,7 +142,11 @@
                         value="{{ old('max_attempts', $exam->max_attempts ?? 3) }}"
                         min="0"
                         class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                        placeholder="0 = ilimitados">
+                        placeholder="0 = ilimitados"
+                    >
+                    @error('max_attempts')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <p class="text-xs text-blue-600 mt-2">
                     <i class="fas fa-info-circle mr-1"></i>
@@ -152,12 +162,10 @@
                 <!-- Mostrar resultados -->
                 <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-blue-200">
                     <div class="flex items-center">
-                        <input type="checkbox"
-                            id="show_results"
-                            name="show_results"
-                            value="1"
-                            {{ old('show_results', $exam->show_results ?? true) ? 'checked' : '' }}
-                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="checkbox" id="show_results" name="show_results" value="1" {{ old('show_results', $exam->show_results ?? true) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        @error('show_results')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                         <label for="show_results" class="ml-3 text-sm font-medium text-blue-900">
                             Mostrar resultados al finalizar
                         </label>
@@ -171,6 +179,9 @@
                 <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-blue-200">
                     <div class="flex items-center">
                         <input type="checkbox" id="randomize_questions" name="randomize_questions" value="1" {{ old('randomize_questions', $exam->randomize_questions ?? false) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        @error('randomize_questions')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                         <label for="randomize_questions" class="ml-3 text-sm font-medium text-blue-900">
                             Preguntas aleatorias
                         </label>
@@ -184,6 +195,9 @@
                 <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-blue-200">
                     <div class="flex items-center">
                         <input type="checkbox" id="is_final" name="is_final" value="1" {{ old('is_final', $exam->is_final ?? false) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        @error('is_final')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                         <label for="is_final" class="ml-3 text-sm font-medium text-blue-900">
                             Examen Final
                         </label>
@@ -207,12 +221,10 @@
             </div>
             <div>
                 <label class="inline-flex items-center cursor-pointer">
-                    <input type="checkbox"
-                        id="is_active"
-                        name="is_active"
-                        value="1"
-                        {{ old('is_active', isset($exam) ? $exam->is_active : true) ? 'checked' : '' }}
-                        class="sr-only peer">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', isset($exam) ? $exam->is_active : true) ? 'checked' : '' }} class="sr-only peer">
+                    @error('is_active')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                     <div class="relative w-11 h-6 bg-red-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
                     <span class="ml-3 text-sm font-medium text-green-900">
                         {{ isset($exam) && $exam->is_active ? 'Activo' : 'Inactivo' }}

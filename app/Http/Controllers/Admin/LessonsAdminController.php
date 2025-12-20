@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/Admin/LessonAdminController.php
 
 namespace App\Http\Controllers\Admin;
 
@@ -12,7 +11,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 class LessonsAdminController extends Controller {
 
@@ -61,7 +59,7 @@ class LessonsAdminController extends Controller {
 
     // Actualizar lección
     public function update(LessonValidate $request, Course $course, CourseSection $section, Lesson $lesson) {
-        $validated = $request->validated();
+        $validated              = $request->validated();
         $validated['is_free']   = $request->has('is_free');
         $validated['is_active'] = $request->has('is_active');
 
@@ -75,7 +73,6 @@ class LessonsAdminController extends Controller {
     // Eliminar lección
     public function destroy(Course $course, CourseSection $section, Lesson $lesson) {
         $lesson->delete();
-
         return redirect()
             ->route('admin.courses.sections.lessons.index', [$course, $section])
             ->with('success', 'Lección eliminada exitosamente.');
@@ -84,7 +81,6 @@ class LessonsAdminController extends Controller {
     // Cambiar estado de la lección
     public function toggleStatus(Course $course, CourseSection $section, Lesson $lesson) {
         $lesson->update(['is_active' => !$lesson->is_active]);
-
         return response()->json([
             'success'   => true,
             'is_active' => $lesson->is_active
@@ -94,15 +90,13 @@ class LessonsAdminController extends Controller {
     // Reordenar lecciones (para arrastrar y soltar)
     public function reorder(Request $request, Course $course, CourseSection $section) {
         $request->validate([
-            'lessons' => 'required|array',
-            'lessons.*.id' => 'required|exists:lessons,id',
-            'lessons.*.order' => 'required|integer|min:1'
+            'lessons'           => 'required|array',
+            'lessons.*.id'      => 'required|exists:lessons,id',
+            'lessons.*.order'   => 'required|integer|min:1'
         ]);
 
         foreach ($request->lessons as $item) {
-            Lesson::where('id', $item['id'])
-                ->where('course_section_id', $section->id)
-                ->update(['order' => $item['order']]);
+            Lesson::where('id', $item['id'])->where('course_section_id', $section->id)->update(['order' => $item['order']]);
         }
 
         return response()->json(['success' => true]);

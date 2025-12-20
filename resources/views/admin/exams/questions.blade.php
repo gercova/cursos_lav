@@ -605,8 +605,8 @@
     // Manager para las preguntas
     function questionManager() {
         return {
-            searchQuery: '{{ request("search") ?? "" }}',  // ← Agregar
-            typeFilter: '{{ request("typeFilter") ?? "" }}', // ← Agregar
+            searchQuery: '{{ request("search") ?? "" }}',
+            typeFilter: '{{ request("typeFilter") ?? "" }}',
             loading: false,
 
             // Referencia al componente modal
@@ -624,7 +624,7 @@
                 try {
                     const params = new URLSearchParams();
                     if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.typeFilter) params.append('typeFilter', this.typeFilter); // ← Cambiar 'type' por 'typeFilter'
+                    if (this.typeFilter) params.append('type', this.typeFilter); // ← Cambiar 'type' por 'typeFilter'
 
                     const url = `{{ route('admin.exams.questions', $exam) }}?${params.toString()}`;
                     window.location.href = url;

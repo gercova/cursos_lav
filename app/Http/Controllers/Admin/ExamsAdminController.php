@@ -9,6 +9,7 @@ use App\Models\Exam;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ExamsAdminController extends Controller {
 
@@ -148,42 +149,28 @@ class ExamsAdminController extends Controller {
         return response()->json($exam);
     }
 
-    /*public function questions(Exam $exam, Request $request): View {
-        // Definir tipos válidos para evitar valores inesperados
-        $allowedTypes = ['multiple_choice', 'true_false'];
-
-        $questions = $exam->questions()
-            ->orderBy('order')
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $query->where('question', 'like', '%' . $request->search . '%');
-            })
-            ->when($request->filled('typeFilter'), function ($query) use ($request, $allowedTypes) {
-                $type = $request->typeFilter;
-                if (in_array($type, $allowedTypes)) {
-                    $query->where('type', $type);
-                }
-            })
-            ->paginate(20);
-
-        return view('admin.exams.questions', compact('exam', 'questions'));
-    }*/
-
     public function questions(Exam $exam, Request $request): View {
-        $allowedTypes = ['multiple_choice', 'true_false'];
+
+        // Validamos la entrada para seguridad extra (opcional pero recomendado)
+        $request->validate([
+            'type'  => ['nullable', Rule::in(['multiple_choice', 'true_false'])],
+            'search' => 'nullable|string|max:255',
+        ]);
 
         $questions = $exam->questions()
+            // Búsqueda
+            ->when($request->search, function ($query, $search) {
+                $query->where('question', 'like', "%{$search}%");
+            })
+            // Filtro por tipo (Laravel pasa automáticamente el valor si existe)
+            ->when($request->type, function ($query, $type) {
+                $query->where('type', $type);
+            })
+            // Ordenamiento
             ->orderBy('order')
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $query->where('question', 'like', '%' . $request->search . '%');
-            })
-            ->when($request->filled('type'), function ($query) use ($request, $allowedTypes) {
-                $type = $request->type; // ← Cambiar typeFilter por type
-                if (in_array($type, $allowedTypes)) {
-                    $query->where('type', $type);
-                }
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.exams.questions', compact('exam', 'questions'));
     }

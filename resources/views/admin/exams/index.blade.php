@@ -59,7 +59,7 @@
                     <div>
                         <p class="text-sm font-medium text-purple-800">Con Tiempo Límite</p>
                         <p class="text-2xl font-bold text-purple-900 mt-1">
-                            {{ $exams->where('time_limit', '>', 0)->count() }}
+                            {{ $exams->where('duration', '>', 0)->count() }}
                         </p>
                     </div>
                     <div class="bg-purple-600 p-3 rounded-xl">
@@ -105,33 +105,24 @@
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text"
-                               x-model="searchQuery"
-                               @input.debounce.500ms="performSearch()"
-                               placeholder="Buscar exámenes..."
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar exámenes..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
-                        <select x-model="statusFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select x-model="statusFilter" @change="performSearch()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                             <option value="">Todos</option>
                             <option value="active">Activos</option>
                             <option value="inactive">Inactivos</option>
                         </select>
 
-                        <select x-model="courseFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select x-model="courseFilter" @change="performSearch()" class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                             <option value="">Todos los cursos</option>
                             @foreach($courses as $course)
                                 <option value="{{ $course->id }}">{{ $course->title }}</option>
                             @endforeach
                         </select>
 
-                        <button @click="resetFilters()"
-                                class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                        <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Limpiar
                         </button>
                     </div>
@@ -151,8 +142,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay exámenes aún</h3>
                     <p class="text-gray-500 mb-6 max-w-md mx-auto">Comienza creando tu primer examen para evaluar a los estudiantes.</p>
-                    <button @click="showCreateModal()"
-                            class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                    <button @click="showCreateModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -175,9 +165,9 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Estadísticas
                             </th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <!--<th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Estado
-                            </th>
+                            </th>-->
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider text-right">
                                 Acciones
                             </th>
@@ -187,6 +177,7 @@
                         @foreach($exams as $exam)
                             <tr class="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-white transition-all duration-200 group">
                                 <!-- Información del examen -->
+
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-4">
                                         <!-- Icono del examen -->
@@ -231,6 +222,22 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        @if($exam->is_active)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Activa
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Inactiva
+                                            </span>
+                                        @endif
                                     </div>
                                 </td>
 
@@ -265,7 +272,7 @@
                                         <div class="flex items-center justify-between">
                                             <span class="text-xs text-gray-500">Tiempo límite:</span>
                                             <span class="text-sm font-semibold text-gray-900">
-                                                {{ $exam->time_limit > 0 ? $exam->time_limit . ' min' : 'Ilimitado' }}
+                                                {{ $exam->duration > 0 ? $exam->duration . ' min' : 'Ilimitado' }}
                                             </span>
                                         </div>
                                         <div class="flex items-center justify-between">
@@ -295,57 +302,88 @@
                                     </div>
                                 </td>
 
-                                <!-- Estado -->
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-col gap-2">
-                                        <span :class="{'bg-gradient-to-r from-green-100 to-green-200 text-green-800': {{ $exam->is_active }}, 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': !{{ $exam->is_active }}}" class="px-3 py-1 rounded-full text-xs font-semibold text-center">
-                                            {{ $exam->is_active ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                        <button onclick="toggleExamStatus({{ $exam->id }})" class="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                                            {{ $exam->is_active ? 'Desactivar' : 'Activar' }}
-                                        </button>
-                                    </div>
-                                </td>
-
                                 <!-- Acciones -->
                                 <td class="px-6 py-5">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <!-- Ver resultados -->
-                                        <a href="{{ route('admin.exams.results', $exam) }}" class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200 group/results"
-                                           title="Ver resultados">
+                                    <div x-data="{ open: false }" class="relative flex items-center justify-end">
+                                        <!-- Botón del menú desplegable -->
+                                        <button @click="open = !open" class="p-2 text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-gray-500 hover:to-gray-600 rounded-lg transition-all duration-200" title="Más acciones">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                            </svg>
-                                        </a>
-
-                                        <!-- Editar -->
-                                        <button @click="$dispatch('open-edit-modal', { id: {{ $exam->id }} })" class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200 group/edit" title="Editar examen">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                             </svg>
                                         </button>
 
-                                        <!-- Gestión de preguntas -->
-                                        <a href="{{ route('admin.exams.questions', $exam) }}" class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/questions" title="Gestionar preguntas">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                        </a>
+                                        <!-- Menú desplegable -->
+                                        <div x-show="open" @click.away="open = false"
+                                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 origin-top-right transition transform opacity-100 scale-100"
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="transform opacity-0 scale-95"
+                                            x-transition:enter-end="transform opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-150"
+                                            x-transition:leave-start="transform opacity-100 scale-100"
+                                            x-transition:leave-end="transform opacity-0 scale-95"
+                                            style="display: none;"
+                                        >
+                                            <!-- Estado: Activar/Desactivar -->
+                                            <button @click="toggleExamStatus({{ $exam->id }}); open = false"
+                                                    class="w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-{{ $exam->is_active ? 'amber' : 'green' }}-50 text-{{ $exam->is_active ? 'amber' : 'green' }}-600">
+                                                @if($exam->is_active)
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                    </svg>
+                                                    Desactivar
+                                                @else
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Activar
+                                                @endif
+                                            </button>
 
-                                        <!-- Vista previa -->
-                                        <a href="#" class="p-2 text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg transition-all duration-200 group/preview" title="Vista previa">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                        </a>
+                                            <!-- Ver resultados -->
+                                            <a href="{{ route('admin.exams.results', $exam) }}"
+                                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                                </svg>
+                                                Ver resultados
+                                            </a>
 
-                                        <!-- Eliminar -->
-                                        <button onclick="deleteExam({{ $exam->id }})" class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200 group/delete" title="Eliminar">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
+                                            <!-- Editar -->
+                                            <button @click="$dispatch('open-edit-modal', { id: {{ $exam->id }} }); open = false"
+                                                    class="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                Editar
+                                            </button>
+
+                                            <!-- Gestión de preguntas -->
+                                            <a href="{{ route('admin.exams.questions', $exam) }}"
+                                            class="block px-4 py-2 text-sm text-purple-600 hover:bg-purple-50 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                Preguntas
+                                            </a>
+
+                                            <!-- Vista previa -->
+                                            <a href="#" class="block px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                Vista previa
+                                            </a>
+
+                                            <!-- Eliminar -->
+                                            <button @click="deleteExam({{ $exam->id }}); open = false"
+                                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

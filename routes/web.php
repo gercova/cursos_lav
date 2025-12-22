@@ -196,6 +196,18 @@ Route::prefix('admin')->group(function () {
         Route::delete('/documents/{document}',                  [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         Route::post('/documents/{document}/toggle-status',      [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
 
+
+        // Rutas para documentos
+        // Route::get('/documents',                            [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
+        // Route::get('/documents/create',                     [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
+        // Route::post('/documents',                           [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
+        // Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
+        // Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
+        // Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
+        // Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
+        // Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
+        // Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
+
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');
         Route::get('/exams/create',                             [ExamsAdminController::class, 'create'])->name('admin.exams.create');

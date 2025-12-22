@@ -3,126 +3,178 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Course;
 use App\Models\Document;
+use App\Models\Course;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
-class DocumentsAdminController extends Controller
-{
+class DocumentsAdminController extends Controller {
+
     public function __construct() {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['admin', 'prevent.back']);
     }
 
     public function index(Request $request): View {
-        $query = Document::with(['course.category']);
+        $query = Document::with(['course.category'])
+            ->latest();
 
-        // Búsqueda
-        if ($search = $request->input('search')) {
-            $query->where(function($q) use ($search) {
+        // Filtros
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('file_type', 'like', "%{$search}%")
+                    ->orWhereHas('course', function ($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%");
+                    });
+                });
         }
 
-        // Filtro por estado
-        if ($status = $request->input('status')) {
-            if ($status === 'active') {
-                $query->where('is_active', true);
-            } elseif ($status === 'inactive') {
-                $query->where('is_active', false);
-            }
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
         }
 
-        // Filtro por curso
-        if ($course = $request->input('course')) {
-            $query->where('course_id', $course);
+        if ($request->filled('course')) {
+            $query->where('course_id', $request->course);
         }
 
-        // Filtro por tipo de archivo
-        if ($type = $request->input('type')) {
-            $query->where('file_type', $type);
+        if ($request->filled('type')) {
+            $query->where('file_type', $request->type);
         }
 
-        // Ordenar
-        $query->orderBy('created_at', 'desc');
+        $documents  = $query->paginate(20);
 
-        $documents = $query->paginate(15);
-        $courses = Course::where('is_active', true)
-            ->with('category')
-            ->orderBy('title')
-            ->get();
-
-        // Obtener tipos de archivo únicos
-        $fileTypes = Document::select('file_type')
-            ->distinct()
-            ->pluck('file_type')
-            ->filter()
-            ->values();
+        // Datos para filtros
+        $courses    = Course::where('is_active', true)->get();
+        $fileTypes  = Document::distinct()->pluck('file_type');
 
         return view('admin.documents.index', compact('documents', 'courses', 'fileTypes'));
     }
 
-    public function store(Request $request): JsonResponse {
-        $validated = $request->validate([
+    public function create(): View {
+        $courses = Course::where('is_active', true)
+            ->with(['category'])
+            ->withCount('enrollments as students_count')
+            ->get();
+
+        return view('admin.documents.create', compact('courses'));
+    }
+
+    public function store(Request $request) {
+        $validator = Validator::make($request->all(), [
             'title'         => 'required|string|max:255',
             'description'   => 'nullable|string',
             'course_id'     => 'required|exists:courses,id',
-            'file'          => 'required|file|max:51200', // 50MB
-            'is_active'     => 'boolean',
+            'file'          => 'required|file|max:51200|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip,rar,7z',
+            'is_active'     => 'boolean'
         ]);
 
-        // Procesar archivo
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $path = $file->store('documents', 'public');
-
-            $validated['file_path'] = $path;
-            $validated['file_type'] = $file->getClientOriginalExtension();
-            $validated['file_size'] = $file->getSize();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
 
-        $document = Document::create($validated);
+        // Procesar archivo
+        $file           = $request->file('file');
+        $originalName   = $file->getClientOriginalName();
+        $extension      = $file->getClientOriginalExtension();
+        $filename       = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Documento subido exitosamente',
-            'document' => $document
+        // Guardar archivo
+        $path           = $file->storeAs('documents', $filename, 'public');
+
+        // Crear documento
+        $document = Document::create([
+            'course_id'     => $request->course_id,
+            'title'         => $request->title,
+            'description'   => $request->description,
+            'file_path'     => $path,
+            'file_type'     => strtolower($extension),
+            'file_size'     => $file->getSize(),
+            'is_active'     => $request->boolean('is_active'),
         ]);
+
+        return redirect()->route('admin.documents.index')
+            ->with('success', 'Documento subido exitosamente.');
     }
 
-    public function update(Request $request, Document $document): JsonResponse {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',
-            'file' => 'nullable|file|max:51200', // 50MB
-            'is_active' => 'boolean',
+    public function show(Document $document): View {
+        $document->load(['course.category', 'course.enrollments']);
+        return view('admin.documents.show', compact('document'));
+    }
+
+    public function edit(Document $document): View {
+        $courses = Course::where('is_active', true)
+            ->with(['category'])
+            ->withCount('enrollments as students_count')
+            ->get();
+
+        return view('admin.documents.edit', compact('document', 'courses'));
+    }
+
+    public function update(Request $request, Document $document) {
+        $validator = Validator::make($request->all(), [
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'course_id'     => 'required|exists:courses,id',
+            'file'          => 'nullable|file|max:51200|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip,rar,7z',
+            'is_active'     => 'boolean'
         ]);
 
-        // Procesar archivo si se subió uno nuevo
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = [
+            'course_id'     => $request->course_id,
+            'title'         => $request->title,
+            'description'   => $request->description,
+            'is_active'     => $request->boolean('is_active'),
+        ];
+
+        // Si hay nuevo archivo
         if ($request->hasFile('file')) {
             // Eliminar archivo anterior
-            if ($document->file_path) {
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
                 Storage::disk('public')->delete($document->file_path);
             }
 
-            $file = $request->file('file');
-            $path = $file->store('documents', 'public');
+            // Subir nuevo archivo
+            $file           = $request->file('file');
+            $originalName   = $file->getClientOriginalName();
+            $extension      = $file->getClientOriginalExtension();
+            $filename       = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '_' . time() . '.' . $extension;
+            $path           = $file->storeAs('documents', $filename, 'public');
 
-            $validated['file_path'] = $path;
-            $validated['file_type'] = $file->getClientOriginalExtension();
-            $validated['file_size'] = $file->getSize();
+            $data['file_path'] = $path;
+            $data['file_type'] = strtolower($extension);
+            $data['file_size'] = $file->getSize();
         }
 
-        $document->update($validated);
+        $document->update($data);
+
+        return redirect()->route('admin.documents.index')->with('success', 'Documento actualizado exitosamente.');
+    }
+
+    public function destroy(Document $document): JsonResponse {
+        // Eliminar archivo físico
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
+        }
+
+        $document->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Documento actualizado exitosamente',
-            'document' => $document
+            'message' => 'Documento eliminado exitosamente.'
         ]);
     }
 
@@ -135,29 +187,15 @@ class DocumentsAdminController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Documento duplicado exitosamente',
+                'message' => 'Documento duplicado exitosamente.',
                 'new_document_id' => $newDocument->id
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al duplicar el documento'
+                'message' => 'Error al duplicar el documento.'
             ], 500);
         }
-    }
-
-    public function destroy(Document $document): JsonResponse {
-        // Eliminar archivo físico
-        if ($document->file_path) {
-            Storage::disk('public')->delete($document->file_path);
-        }
-
-        $document->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Documento eliminado exitosamente'
-        ]);
     }
 
     public function toggleStatus(Document $document): JsonResponse {
@@ -165,11 +203,8 @@ class DocumentsAdminController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Estado del documento actualizado.',
             'is_active' => $document->is_active
         ]);
-    }
-
-    public function show(Document $document): JsonResponse {
-        return response()->json($document);
     }
 }

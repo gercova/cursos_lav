@@ -202,7 +202,7 @@ Route::prefix('admin')->group(function () {
         // Route::get('/documents/create',                     [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
         // Route::post('/documents',                           [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
         // Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
-        // Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
+        Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
         // Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
         // Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         // Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');

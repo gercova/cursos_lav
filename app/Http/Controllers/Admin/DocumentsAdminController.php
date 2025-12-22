@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DocumentValidate;
 use App\Models\Document;
 use App\Models\Course;
 use Illuminate\Contracts\View\View;
@@ -56,29 +57,17 @@ class DocumentsAdminController extends Controller {
         return view('admin.documents.index', compact('documents', 'courses', 'fileTypes'));
     }
 
-    public function create(): View {
+    /*public function create(): View {
         $courses = Course::where('is_active', true)
             ->with(['category'])
             ->withCount('enrollments as students_count')
             ->get();
 
         return view('admin.documents.create', compact('courses'));
-    }
+    }*/
 
-    public function store(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'course_id'     => 'required|exists:courses,id',
-            'file'          => 'required|file|max:51200|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip,rar,7z',
-            'is_active'     => 'boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+    public function store(DocumentValidate $request) {
+        $validator = $request->validated();
 
         // Procesar archivo
         $file           = $request->file('file');
@@ -97,11 +86,22 @@ class DocumentsAdminController extends Controller {
             'file_path'     => $path,
             'file_type'     => strtolower($extension),
             'file_size'     => $file->getSize(),
-            'is_active'     => $request->boolean('is_active'),
+            'is_active'     => $request->boolean('is_active', false), // Valor por defecto
         ]);
 
+        // --- CORRECCIÓN AQUÍ ---
+        // Devolver éxito en formato JSON si es una solicitud AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento subido exitosamente.',
+                'data' => $document // Opcional: devolver los datos del documento creado
+            ]);
+        }
+        // Si no es AJAX, usar el comportamiento original
         return redirect()->route('admin.documents.index')
             ->with('success', 'Documento subido exitosamente.');
+        // --- FIN CORRECCIÓN ---
     }
 
     public function show(Document $document): View {
@@ -118,26 +118,14 @@ class DocumentsAdminController extends Controller {
         return view('admin.documents.edit', compact('document', 'courses'));
     }
 
-    public function update(Request $request, Document $document) {
-        $validator = Validator::make($request->all(), [
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'course_id'     => 'required|exists:courses,id',
-            'file'          => 'nullable|file|max:51200|mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip,rar,7z',
-            'is_active'     => 'boolean'
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+    public function update(DocumentValidate $request, Document $document) {
+        $validator = $request->validated();
 
         $data = [
             'course_id'     => $request->course_id,
             'title'         => $request->title,
             'description'   => $request->description,
-            'is_active'     => $request->boolean('is_active'),
+            'is_active'     => $request->boolean('is_active', false), // Valor por defecto
         ];
 
         // Si hay nuevo archivo
@@ -161,7 +149,18 @@ class DocumentsAdminController extends Controller {
 
         $document->update($data);
 
+        // --- CORRECCIÓN AQUÍ ---
+        // Devolver éxito en formato JSON si es una solicitud AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento actualizado exitosamente.',
+                'data' => $document // Opcional: devolver los datos del documento actualizado
+            ]);
+        }
+        // Si no es AJAX, usar el comportamiento original
         return redirect()->route('admin.documents.index')->with('success', 'Documento actualizado exitosamente.');
+        // --- FIN CORRECCIÓN ---
     }
 
     public function destroy(Document $document): JsonResponse {

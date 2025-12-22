@@ -78,7 +78,6 @@
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-6">
                 <div class="p-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">Vista Previa</h3>
-
                     @if(in_array($document->file_type, ['pdf', 'doc', 'docx', 'txt']))
                         <!-- Vista para documentos de texto -->
                         <div class="border border-gray-200 rounded-xl p-6 bg-gray-50 min-h-[400px]">
@@ -102,14 +101,10 @@
                                 <h4 class="text-lg font-semibold text-gray-900 mb-2">{{ $document->title }}</h4>
                                 <p class="text-gray-600 mb-4">Para ver el contenido completo del archivo, descárgalo o ábrelo en una nueva pestaña.</p>
                                 <div class="flex items-center justify-center gap-3">
-                                    <a href="{{ Storage::url($document->file_path) }}"
-                                       target="_blank"
-                                       class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition duration-200">
+                                    <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-medium transition duration-200">
                                         Abrir en nueva pestaña
                                     </a>
-                                    <a href="{{ Storage::url($document->file_path) }}"
-                                       download
-                                       class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition duration-200">
+                                    <a href="{{ Storage::url($document->file_path) }}" download class="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition duration-200">
                                         Descargar
                                     </a>
                                 </div>
@@ -127,9 +122,7 @@
                                 <h4 class="text-lg font-semibold text-gray-900 mb-2">Archivo {{ strtoupper($document->file_type) }}</h4>
                                 <p class="text-gray-600 mb-4">Este tipo de archivo no puede mostrarse en vista previa. Descárgalo para ver su contenido.</p>
                                 <div class="flex items-center justify-center gap-3">
-                                    <a href="{{ Storage::url($document->file_path) }}"
-                                       download
-                                       class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg font-medium transition duration-200">
+                                    <a href="{{ Storage::url($document->file_path) }}" download class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg font-medium transition duration-200">
                                         Descargar Archivo
                                     </a>
                                 </div>
@@ -152,7 +145,6 @@
                                 <p class="text-gray-600 whitespace-pre-line">{{ $document->description }}</p>
                             </div>
                         @endif
-
                         <!-- Información técnica -->
                         <div>
                             <h4 class="font-medium text-gray-900 mb-4">Información Técnica</h4>
@@ -201,14 +193,11 @@
             <!-- Información del curso -->
             <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200 shadow-sm mb-6">
                 <h3 class="text-xl font-bold text-blue-900 mb-4">Curso Asociado</h3>
-
                 @if($document->course)
                     <div class="space-y-4">
                         <div class="flex items-center gap-4">
                             @if($document->course->image_url)
-                                <img src="{{ Storage::url($document->course->image_url) }}"
-                                     alt="{{ $document->course->title }}"
-                                     class="w-16 h-16 rounded-xl object-cover border border-blue-200">
+                                <img src="{{ Storage::url($document->course->image_url) }}" alt="{{ $document->course->title }}" class="w-16 h-16 rounded-xl object-cover border border-blue-200">
                             @endif
                             <div class="flex-1">
                                 <h4 class="font-semibold text-blue-900">{{ $document->course->title }}</h4>
@@ -234,8 +223,7 @@
                         </div>
 
                         <div class="pt-4 border-t border-blue-200">
-                            <a href="{{ route('admin.courses.edit', $document->course) }}"
-                               class="block text-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg font-medium transition duration-200">
+                            <a href="{{ route('admin.courses.edit', $document->course) }}" class="block text-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg font-medium transition duration-200">
                                 Ver Curso
                             </a>
                         </div>
@@ -283,8 +271,7 @@
                         <span class="font-medium text-gray-900">Editar Información</span>
                     </a>
 
-                    <button onclick="toggleDocumentStatus({{ $document->id }})"
-                            class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition duration-200 group">
+                    <button onclick="toggleDocumentStatus({{ $document->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition duration-200 group">
                         <div class="p-2 rounded-lg bg-gradient-to-br {{ $document->is_active ? 'from-red-100 to-red-200' : 'from-green-100 to-green-200' }}">
                             <svg class="w-5 h-5 {{ $document->is_active ? 'text-red-600' : 'text-green-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 @if($document->is_active)
@@ -300,8 +287,7 @@
                         </span>
                     </button>
 
-                    <button onclick="deleteDocument({{ $document->id }})"
-                            class="w-full flex items-center gap-3 p-3 bg-white hover:bg-red-50 rounded-lg border border-red-200 transition duration-200 group">
+                    <button onclick="deleteDocument({{ $document->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-red-50 rounded-lg border border-red-200 transition duration-200 group">
                         <div class="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200">
                             <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -314,7 +300,7 @@
         </div>
     </div>
 </div>
-@endisset
+@endsection
 
 @section('scripts')
 <script>

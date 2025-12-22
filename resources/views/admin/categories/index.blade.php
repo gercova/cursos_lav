@@ -114,7 +114,8 @@
                             x-model="searchQuery"
                             @input.debounce.500ms="performSearch()"
                             placeholder="Buscar categorías..."
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        >
                     </div>
 
                     <div class="flex gap-2">
@@ -230,9 +231,11 @@
                                 <!-- Acciones -->
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div x-data="{ open: false }" class="relative flex items-center justify-end">
-                                        <button @click="open = !open"
-                                                class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-indigo-300"
-                                                title="Más opciones">
+                                        <button
+                                            @click="open = !open"
+                                            class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-indigo-300"
+                                            title="Más opciones"
+                                        >
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                             </svg>

@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Gestión de Documentos')
-
 @section('content')
 <div class="container mx-auto px-4 py-6" x-data="documentManager()" x-init="init()">
     <!-- Header con estadísticas -->
@@ -13,8 +11,10 @@
             </div>
 
             <!-- Botón para subir documento -->
-            <button @click="showUploadModal()"
-                    class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <button
+                @click="$dispatch('open-document-modal', { editing: false })"
+                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+            >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                 </svg>
@@ -106,42 +106,45 @@
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text"
-                               x-model="searchQuery"
-                               @input.debounce.500ms="performSearch()"
-                               placeholder="Buscar documentos..."
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar documentos..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
-                        <select x-model="statusFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select
+                            x-model="statusFilter"
+                            @change="performSearch()"
+                            class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        >
                             <option value="">Todos</option>
                             <option value="active">Activos</option>
                             <option value="inactive">Inactivos</option>
                         </select>
 
                         <select x-model="courseFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            @change="performSearch()"
+                            class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        >
                             <option value="">Todos los cursos</option>
                             @foreach($courses as $course)
                                 <option value="{{ $course->id }}">{{ $course->title }}</option>
                             @endforeach
                         </select>
 
-                        <select x-model="typeFilter"
-                                @change="performSearch()"
-                                class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <select
+                            x-model="typeFilter"
+                            @change="performSearch()"
+                            class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                        >
                             <option value="">Todos los tipos</option>
                             @foreach($fileTypes as $type)
                                 <option value="{{ $type }}">{{ strtoupper($type) }}</option>
                             @endforeach
                         </select>
 
-                        <button @click="resetFilters()"
-                                class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                        <button
+                            @click="resetFilters()"
+                            class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200"
+                        >
                             Limpiar
                         </button>
                     </div>
@@ -161,8 +164,11 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay documentos aún</h3>
                     <p class="text-gray-500 mb-6 max-w-md mx-auto">Comienza subiendo tu primer documento para compartir con los estudiantes.</p>
-                    <button @click="showUploadModal()"
-                            class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+
+                    <button
+                        @click="$dispatch('open-document-modal', { editing: false })"
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                    >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
@@ -185,9 +191,9 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Fecha
                             </th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <!--<th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Estado
-                            </th>
+                            </th>-->
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider text-right">
                                 Acciones
                             </th>
@@ -277,9 +283,7 @@
                                     @if($document->course)
                                         <div class="flex items-center gap-3">
                                             @if($document->course->image_url)
-                                                <img src="{{ Storage::url($document->course->image_url) }}"
-                                                     alt="{{ $document->course->title }}"
-                                                     class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                                                <img src="{{ Storage::url($document->course->image_url) }}" alt="{{ $document->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">
@@ -319,61 +323,75 @@
                                     </div>
                                 </td>
 
-                                <!-- Estado -->
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-col gap-2">
-                                        <span :class="{'bg-gradient-to-r from-green-100 to-green-200 text-green-800': {{ $document->is_active }}, 'bg-gradient-to-r from-red-100 to-red-200 text-red-800': !{{ $document->is_active }}}"
-                                              class="px-3 py-1 rounded-full text-xs font-semibold text-center">
-                                            {{ $document->is_active ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                        <button onclick="toggleDocumentStatus({{ $document->id }})"
-                                                class="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                                            {{ $document->is_active ? 'Desactivar' : 'Activar' }}
-                                        </button>
-                                    </div>
-                                </td>
-
                                 <!-- Acciones -->
                                 <td class="px-6 py-5">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <!-- Descargar -->
-                                        <a href="{{ Storage::url($document->file_path) }}"
-                                           download
-                                           class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200 group/download"
-                                           title="Descargar">
+                                    <div x-data="{ open: false }" class="relative flex items-center justify-end">
+                                        <!-- Botón del menú (tres puntos) -->
+                                        <button @click="open = !open" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-indigo-300" title="Más opciones">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                            </svg>
-                                        </a>
-
-                                        <!-- Vista previa -->
-                                        <a href="{{ Storage::url($document->file_path) }}"
-                                           target="_blank"
-                                           class="p-2 text-green-600 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-green-600 rounded-lg transition-all duration-200 group/preview"
-                                           title="Vista previa">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                        </a>
-
-                                        <!-- Editar -->
-                                        <button onclick="showEditModal({{ $document->id }})"
-                                                class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200 group/edit"
-                                                title="Editar">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                             </svg>
                                         </button>
 
-                                        <!-- Eliminar -->
-                                        <button onclick="deleteDocument({{ $document->id }})"
-                                                class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200 group/delete"
-                                                title="Eliminar">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
+                                        <!-- Menú desplegable -->
+                                        <div x-show="open" @click.away="open = false"
+                                            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20 overflow-hidden"
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="opacity-0 scale-95"
+                                            x-transition:enter-end="opacity-100 scale-100"
+                                            x-transition:leave="transition ease-in duration-150"
+                                            x-transition:leave-start="opacity-100 scale-100"
+                                            x-transition:leave-end="opacity-0 scale-95"
+                                            style="display: none;"
+                                        >
+                                            <!-- Activar / Desactivar -->
+                                            <button @click="toggleDocumentStatus({{ $document->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium {{ $document->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }} transition-colors duration-150">
+                                                @if($document->is_active)
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                    </svg>
+                                                    Desactivar
+                                                @else
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Activar
+                                                @endif
+                                            </button>
+
+                                            <!-- Descargar -->
+                                            <a href="{{ Storage::url($document->file_path) }}" download class="block w-full px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 flex items-center gap-3 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                Descargar
+                                            </a>
+
+                                            <!-- Vista previa -->
+                                            <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="block w-full px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 flex items-center gap-3 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                Vista previa
+                                            </a>
+
+                                            <!-- Editar -->
+                                            <a href="{{ route('admin.documents.edit', $document->id) }}" class="block w-full px-4 py-2.5 text-sm font-medium text-purple-600 hover:bg-purple-50 flex items-center gap-3 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                                Editar
+                                            </a>
+
+                                            <!-- Eliminar -->
+                                            <button @click="deleteDocument({{ $document->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -412,27 +430,28 @@
     </div>
 
     <!-- Modal para subir/editar documento -->
-    <div x-data="documentModal()" x-cloak>
+    <div x-data="documentModal()" x-on:open-document-modal.window="handleOpen($event.detail)" x-cloak>
         <!-- Modal overlay -->
         <div x-show="showModal"
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-             @click.self="closeModal">
-
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+            @click.self="closeModal"
+        >
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div x-show="showModal"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+                >
 
                     <!-- Header del modal -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -441,8 +460,10 @@
                                 <h3 class="text-xl font-bold text-gray-900" x-text="isEditing ? 'Editar Documento' : 'Subir Nuevo Documento'"></h3>
                                 <p class="text-sm text-gray-600 mt-1" x-text="isEditing ? 'Actualiza la información del documento' : 'Completa el formulario para subir un nuevo documento'"></p>
                             </div>
-                            <button @click="closeModal"
-                                    class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
+                            <button
+                                @click="closeModal"
+                                class="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
+                            >
                                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -457,6 +478,7 @@
                             <div x-show="isEditing">
                                 @method('PUT')
                             </div>
+                            @method('POST')
 
                             <div class="space-y-6">
                                 <!-- Información del documento -->
@@ -468,11 +490,13 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             Título del Documento *
                                         </label>
-                                        <input type="text"
-                                               x-model="formData.title"
-                                               required
-                                               placeholder="Ej: Guía de Estudio - Capítulo 1"
-                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <input
+                                            type="text"
+                                            x-model="formData.title"
+                                            required
+                                            placeholder="Ej: Guía de Estudio - Capítulo 1"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                        >
                                     </div>
 
                                     <!-- Descripción -->
@@ -481,9 +505,10 @@
                                             Descripción
                                         </label>
                                         <textarea x-model="formData.description"
-                                                  rows="3"
-                                                  placeholder="Describe el contenido del documento..."
-                                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"></textarea>
+                                            rows="3"
+                                            placeholder="Describe el contenido del documento..."
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                        ></textarea>
                                     </div>
 
                                     <!-- Curso -->
@@ -491,9 +516,11 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             Curso Asociado *
                                         </label>
-                                        <select x-model="formData.course_id"
-                                                required
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <select
+                                            x-model="formData.course_id"
+                                            required
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                        >
                                             <option value="">Seleccionar curso</option>
                                             @foreach($courses as $course)
                                                 <option value="{{ $course->id }}">{{ $course->title }}</option>
@@ -661,14 +688,26 @@
                 this.performSearch();
             },
 
-            showUploadModal() {
-                const modal = document.querySelector('[x-data="documentModal()"]');
-                if (modal) {
-                    modal.__x.$data.showModal = true;
-                    modal.__x.$data.isEditing = false;
-                    modal.__x.$data.resetForm();
+            handleOpen(detail) {
+                this.isEditing = detail.editing === true;
+                this.showModal = true;
+                if (this.isEditing && detail.id) {
+                    this.loadDocument(detail.id);
+                } else {
+                    this.resetForm();
                 }
-            }
+            },
+            async loadDocument(id) {
+                try {
+                    const response  = await axios.get(`/admin/documents/${id}`);
+                    this.formData   = response.data;
+                    this.formData.is_active = Boolean(this.formData.is_active);
+                } catch (error) {
+                    console.error('Error al cargar documento:', error);
+                    showNotification('Error al cargar el documento', 'error');
+                    this.closeModal();
+                }
+            },
         };
     }
 
@@ -750,47 +789,83 @@
 
             async submitForm() {
                 this.isSubmitting = true;
-
                 try {
                     const form = document.getElementById('documentForm');
                     const formData = new FormData(form);
 
-                    // Agregar datos del formulario
+                    // Agregar datos del formulario Alpine al FormData
                     for (const [key, value] of Object.entries(this.formData)) {
+                        // Excluir campos calculados o no modificables directamente aquí
                         if (key !== 'file_path' && key !== 'file_type' && key !== 'file_size') {
                             formData.append(key, value);
                         }
                     }
 
-                    const url = this.isEditing
-                        ? `/admin/documents/${this.formData.id}`
-                        : '{{ route("admin.documents.store") }}';
-
-                    const method = this.isEditing ? 'PUT' : 'POST';
+                    // --- CORRECCIÓN AQUÍ ---
+                    // Definir URL y método según si es edición o creación
+                    let url, method;
+                    if (this.isEditing) {
+                        // Para editar, usa PUT/PATCH y el ID del documento
+                        url = `{{ route('admin.documents.update', '') }}/${this.formData.id}`; // Añade el ID al final
+                        method = 'POST'; // Laravel usa POST para simular PUT/PATCH desde form HTML
+                        formData.append('_method', 'PUT'); // Campo oculto para simular PUT
+                    } else {
+                        // Para crear, usa POST y la ruta de store
+                        url = '{{ route("admin.documents.store") }}'; // Tu ruta de creación
+                        method = 'POST';
+                    }
+                    // --- FIN CORRECCIÓN ---
 
                     const response = await axios({
                         method: method,
                         url: url,
-                        data: formData,
+                        data: formData, // Usar 'data' en lugar de 'formData' aquí
                         headers: {
                             'Content-Type': 'multipart/form-data',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     });
 
-                    if (response.data.success) {
+                    // --- CORRECCIÓN AQUÍ ---
+                    // Manejar la respuesta del servidor
+                    // Asumiendo que tu controlador devuelve una redirección o un JSON con éxito
+                    // Si el servidor devuelve una redirección, response.data será la vista HTML, no un objeto JSON.
+                    // Si devuelve JSON, podría tener {success: true, message: "..."} o {message: "..."}
+                    // Si devuelve una redirección, no debería entrar en el catch por validación, sino que recargaría la página o mostraría la vista de éxito.
+
+                    // Si esperas que el servidor devuelva JSON (lo cual es lo ideal para AJAX):
+                    // Asegúrate de que tu controlador retorne JSON en lugar de redirigir para llamadas AJAX.
+                    // Por ejemplo, en lugar de `return redirect()->route(...)->with(...)`
+                    // Usa `return response()->json(['success' => true, 'message' => '...'])`
+                    // o `return response()->json(['message' => '...'])` y verifica el código de estado.
+
+                    // Para manejar ambas posibilidades (redirección o JSON), puedes hacer:
+                    if (response.status === 200) {
+                        // Asumimos que si es 200 OK, fue exitoso.
+                        // Intenta obtener el mensaje del JSON si está disponible
+                        const message = response.data?.message || (this.isEditing ? 'Documento actualizado exitosamente.' : 'Documento subido exitosamente.');
                         this.closeModal();
-                        showNotification(response.data.message, 'success');
-                        setTimeout(() => window.location.reload(), 1500);
+                        showNotification(message, 'success');
+                        setTimeout(() => window.location.reload(), 1500); // Recarga la página para ver los cambios
+                    } else {
+                        // Si el servidor no devuelve 200, puede ser un error no manejado por el catch
+                        // o una redirección inesperada.
+                        // En la mayoría de los casos, los errores 4xx y 5xx caen en el catch.
+                        // Si llega aquí, podría haber un problema inusual.
+                        console.warn("Respuesta inesperada del servidor:", response);
+                        showNotification("Respuesta inesperada del servidor.", 'error');
                     }
+                    // --- FIN CORRECCIÓN ---
+
                 } catch (error) {
                     console.error('Error al guardar:', error);
-
                     if (error.response && error.response.status === 422) {
                         const errors = error.response.data.errors;
                         this.showValidationErrors(errors);
                     } else {
-                        showNotification('Error al guardar el documento', 'error');
+                        // Mensaje de error genérico o del servidor
+                        const errorMessage = error.response?.data?.message || 'Error al guardar el documento';
+                        showNotification(errorMessage, 'error');
                     }
                 } finally {
                     this.isSubmitting = false;

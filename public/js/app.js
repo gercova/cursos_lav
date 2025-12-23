@@ -51,38 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-async function loadCategories() {
-    try {
-        const response = await axios.get('/api/categories');
-        const categories = response.data;
-
-        const categoriesList = document.getElementById('categories-list');
-        const mobileCategoriesList = document.getElementById('mobile-categories-list');
-
-        if (categoriesList) {
-            categoriesList.innerHTML = categories.map(category => `
-                <li>
-                    <a href="/?category=${category.id}" class="text-gray-600 hover:text-blue-600 block px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-200">
-                        ${category.name}
-                    </a>
-                </li>
-            `).join('');
-        }
-
-        if (mobileCategoriesList) {
-            mobileCategoriesList.innerHTML = categories.map(category => `
-                <li>
-                    <a href="/?category=${category.id}" class="text-gray-600 hover:text-blue-600 block px-2 py-1 rounded hover:bg-gray-100 transition-colors duration-200" onclick="closeMobileSidebar()">
-                        ${category.name}
-                    </a>
-                </li>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading categories:', error);
-    }
-}
-
 async function updateCartCount() {
     try {
         const response = await axios.get('/api/cart/count');

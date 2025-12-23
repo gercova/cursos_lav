@@ -275,6 +275,17 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if($document->is_active)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                <i class="bi bi-check-circle-fill"></i>&nbsp;
+                                                Activa
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                <i class="bi bi-x-circle-fill"></i>&nbsp;
+                                                Inactiva
+                                            </span>
+                                        @endif
                                     </div>
                                 </td>
 

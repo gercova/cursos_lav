@@ -187,22 +187,21 @@ Route::prefix('admin')->group(function () {
         Route::post('/courses/{course}/sections/{section}/lessons/reorder',         [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
 
         // Rutas para documentos
-        Route::get('/documents/home',                           [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
-        Route::get('/documents/create',                         [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
-        Route::post('/documents/store',                         [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
-        Route::post('/documents/{document}/duplicate',          [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
-        Route::get('/documents/{document}',                     [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
-        Route::put('/documents/{document}',                     [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
-        Route::delete('/documents/{document}',                  [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
-        Route::post('/documents/{document}/toggle-status',      [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
-
+        Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
+        Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
+        Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
+        Route::post('/documents/store',                     [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
+        Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
+        Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
+        Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
+        Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
+        Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
 
         // Rutas para documentos
         // Route::get('/documents',                            [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
         // Route::get('/documents/create',                     [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
         // Route::post('/documents',                           [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
         // Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
-        Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
         // Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
         // Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         // Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');

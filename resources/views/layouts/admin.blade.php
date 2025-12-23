@@ -111,6 +111,11 @@
                     class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-clipboard-list mr-2"></i>Exámenes
                 </a>
+                <a href="{{ route('admin.users.index') }}"
+                    @click="close()"
+                    class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-solid fa-users"></i> Usuarios
+                </a>
             </nav>
         </div>
 

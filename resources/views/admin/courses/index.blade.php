@@ -180,9 +180,7 @@
                                         <!-- Imagen del curso -->
                                         <div class="flex-shrink-0">
                                             @if($course->image_url)
-                                                <img src="{{ Storage::url($course->image_url) }}"
-                                                    alt="{{ $course->title }}"
-                                                    class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                                <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
                                             @else
                                                 <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,12 +196,14 @@
                                                 <a href="#" class="text-sm font-semibold text-gray-900 hover:text-blue-600 truncate">
                                                     {{ $course->title }}
                                                     @if($course->is_active)
-                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-green-200 text-green-800">
-                                                            Activo
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                            <i class="bi bi-check-circle-fill"></i>&nbsp;
+                                                            Activa
                                                         </span>
                                                     @else
-                                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-red-100 to-red-200 text-red-800">
-                                                            Inactivo
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                            <i class="bi bi-x-circle-fill"></i>&nbsp;
+                                                            Inactiva
                                                         </span>
                                                     @endif
                                                 </a>

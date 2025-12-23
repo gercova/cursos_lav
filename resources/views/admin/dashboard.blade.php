@@ -219,9 +219,7 @@
                 <a href="{{ route('admin.users.index') }}" class="p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors duration-200 group">
                     <div class="text-center">
                         <div class="bg-green-100 p-3 rounded-lg inline-flex group-hover:bg-green-200 transition-colors duration-200">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                            </svg>
+                            <i class="fa-solid fa-users"></i>
                         </div>
                         <p class="mt-2 text-sm font-medium text-gray-900">Gestionar Usuarios</p>
                     </div>
@@ -230,9 +228,7 @@
                 <a href="{{ route('admin.payments.index') }}" class="p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors duration-200 group">
                     <div class="text-center">
                         <div class="bg-purple-100 p-3 rounded-lg inline-flex group-hover:bg-purple-200 transition-colors duration-200">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                            </svg>
+                            <i class="fa-solid fa-dollar-sign"></i>
                         </div>
                         <p class="mt-2 text-sm font-medium text-gray-900">Ver Pagos</p>
                     </div>

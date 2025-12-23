@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserValidate;
 use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -109,232 +110,6 @@ class AdminController extends Controller {
         ];
     }
 
-    /**
-     * Gestión de Usuarios
-     */
-    public function usersIndex(Request $request) {
-        $query = User::query();
-
-        // Filtros
-        if ($request->has('role') && $request->role) {
-            $query->where('role', $request->role);
-        }
-
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('names', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")->orWhere('dni', 'like', "%{$search}%");
-            });
-        }
-
-        $users = $query->latest()->paginate(15);
-        return view('admin.users.index', compact('users'));
-    }
-
-    public function userShow(User $user): View {
-        $enrollments    = Enrollment::with('course')->where('user_id', $user->id)->latest()->get();
-        $certificates   = Certificate::with('course')->where('user_id', $user->id)->latest()->get();
-        return view('admin.users.show', compact('user', 'enrollments', 'certificates'));
-    }
-
-    public function userCreate() {
-        return view('admin.users.create');
-    }
-
-    public function userStore(Request $request) {
-        $validated = $request->validate([
-            'dni'           => 'required|string|max:20|unique:users',
-            'names'         => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users',
-            'password'      => 'required|string|min:8|confirmed',
-            'role'          => 'required|in:admin,instructor,student',
-            'country_code'  => 'required|string|max:5',
-            'phone'         => 'required|string|max:20',
-            'nationality'   => 'required|string|max:100',
-            'ubigeo'        => 'required|string|max:10',
-            'address'       => 'required|string|max:500',
-            'profession'    => 'required|string|max:255',
-        ]);
-
-        $user = User::create([
-            'dni'           => $validated['dni'],
-            'names'         => $validated['names'],
-            'email'         => $validated['email'],
-            'password'      => Hash::make($validated['password']),
-            'role'          => $validated['role'],
-            'country_code'  => $validated['country_code'],
-            'phone'         => $validated['phone'],
-            'nationality'   => $validated['nationality'],
-            'ubigeo'        => $validated['ubigeo'],
-            'address'       => $validated['address'],
-            'profession'    => $validated['profession'],
-            'email_verified_at' => now(),
-        ]);
-
-        $this->logActivity("Creó el usuario: {$user->names} ({$user->role})");
-        return redirect()->route('admin.users.index')->with('success', 'Usuario creado exitosamente.');
-    }
-
-    public function userEdit(User $user): View {
-        return view('admin.users.edit', compact('user'));
-    }
-
-    public function userUpdate(Request $request, User $user) {
-        $validated = $request->validate([
-            'dni'           => 'required|string|max:20|unique:users,dni,' . $user->id,
-            'names'         => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role'          => 'required|in:admin,instructor,student',
-            'country_code'  => 'required|string|max:5',
-            'phone'         => 'required|string|max:20',
-            'nationality'   => 'required|string|max:100',
-            'ubigeo'        => 'required|string|max:10',
-            'address'       => 'required|string|max:500',
-            'profession'    => 'required|string|max:255',
-        ]);
-
-        // Si se proporciona nueva contraseña
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => 'required|string|min:8|confirmed',
-            ]);
-            $validated['password'] = Hash::make($request->password);
-        }
-
-        $user->update($validated);
-
-        $this->logActivity("Actualizó el usuario: {$user->names}");
-        return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado exitosamente.');
-    }
-
-    public function userDestroy(User $user) {
-        // Prevenir eliminación de sí mismo
-        if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'No puedes eliminar tu propia cuenta.');
-        }
-
-        $userName = $user->names;
-        $user->delete();
-
-        $this->logActivity("Eliminó el usuario: {$userName}");
-
-        return redirect()->route('admin.users.index')->with('success', 'Usuario eliminado exitosamente.');
-    }
-
-    public function toggleUserStatus(User $user): JsonResponse {
-        // Prevenir desactivación de sí mismo
-        if ($user->id === Auth::id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No puedes desactivar tu propia cuenta.'
-            ], 403);
-        }
-
-        $user->update([
-            'is_active' => !$user->is_active
-        ]);
-
-        $status = $user->is_active ? 'activó' : 'desactivó';
-        $this->logActivity("{$status} el usuario: {$user->names}");
-
-        return response()->json([
-            'success'   => true,
-            'is_active' => $user->is_active,
-            'message'   => 'Estado del usuario actualizado.'
-        ]);
-    }
-
-    /**
-     * Gestión de Inscripciones
-     */
-    public function enrollmentsIndex(Request $request): View {
-        $query = Enrollment::with(['user', 'course']);
-
-        // Filtros
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->has('course_id') && $request->course_id) {
-            $query->where('course_id', $request->course_id);
-        }
-
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('names', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        $enrollments = $query->latest()->paginate(20);
-        $courses = Course::where('is_active', true)->get();
-
-        return view('admin.enrollments.index', compact('enrollments', 'courses'));
-    }
-
-    public function enrollmentShow(Enrollment $enrollment): View {
-        $enrollment->load(['user', 'course', 'payments']);
-        return view('admin.enrollments.show', compact('enrollment'));
-    }
-
-    public function updateEnrollmentStatus(Request $request, Enrollment $enrollment) {
-        $request->validate([
-            'status' => 'required|in:active,completed,cancelled'
-        ]);
-
-        $oldStatus = $enrollment->status;
-        $enrollment->update(['status' => $request->status]);
-
-        $this->logActivity("Cambió estado de inscripción #{$enrollment->id} de {$oldStatus} a {$request->status}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Estado de la inscripción actualizado.'
-        ]);
-    }
-
-    /**
-     * Gestión de Pagos
-     */
-    public function paymentsIndex(Request $request): View {
-        $query = Payment::with(['enrollment.user', 'enrollment.course']);
-        // Filtros
-        if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->has('date_from') && $request->date_from) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->has('date_to') && $request->date_to) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        $payments = $query->latest()->paginate(20);
-
-        return view('admin.payments.index', compact('payments'));
-    }
-
-    public function updatePaymentStatus(Request $request, Payment $payment): JsonResponse {
-        $request->validate([
-            'status' => 'required|in:pending,completed,failed,refunded'
-        ]);
-
-        $oldStatus = $payment->status;
-        $payment->update([
-            'status'    => $request->status,
-            'paid_at'   => $request->status === 'completed' ? now() : null
-        ]);
-
-        $this->logActivity("Actualizó pago #{$payment->id} de {$oldStatus} a {$request->status}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Estado del pago actualizado.'
-        ]);
-    }
 
     /**
      * Reportes y Analytics
@@ -539,4 +314,260 @@ class AdminController extends Controller {
 
         return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
     }
+
+
+    public function usersIndex(Request $request): View {
+        $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
+            ->orderBy('created_at', 'desc');
+
+        // Filtros
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('names', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('dni', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $users = $query->paginate(20);
+
+        $stats = [
+            'total' => User::count(),
+            'students' => User::where('role', 'student')->count(),
+            'instructors' => User::where('role', 'instructor')->count(),
+            'admins' => User::where('role', 'admin')->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'stats'));
+    }
+
+    public function userCreate(): View {
+        $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
+        return view('admin.users.create', compact('roles'));
+    }
+
+    public function userStore(UserValidate  $request) {
+        $validator = $request->validated();
+
+        $user = User::create([
+            'dni'           => $request->dni,
+            'names'         => $request->names,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'phone'         => $request->phone,
+            'nationality'   => $request->nationality,
+            'address'       => $request->address,
+            'profession'    => $request->profession,
+            'role'          => $request->role,
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Usuario creado exitosamente.');
+    }
+
+    public function userShow(User $user): View {
+        $user->load([
+            'enrollments.course.category',
+            'courses.category',
+            'certificates.course',
+            'examAttempts.exam.course',
+            'cartItems.course'
+        ]);
+
+        $enrollmentStats = $user->enrollments()
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
+                AVG(progress) as avg_progress
+            ')
+            ->first();
+
+        $certificateStats = $user->certificates()
+            ->selectRaw('COUNT(*) as total')
+            ->first();
+
+        return view('admin.users.show', compact('user', 'enrollmentStats', 'certificateStats'));
+    }
+
+    public function userEdit(User $user): View {
+        $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
+        return view('admin.users.edit', compact('user', 'roles'));
+    }
+
+    public function userUpdate(UserValidate $request, User $user) {
+        $validated = $request->validated();
+
+        $data = [
+            'dni'           => $validated['dni'],
+            'names'         => $validated['names'],
+            'email'         => $validated['email'],
+            'phone'         => $validated['phone'],
+            'nationality'   => $validated['nationality'],
+            'address'       => $validated['address'],
+            'profession'    => $validated['profession'],
+            'role'          => $validated['role'],
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($data);
+        return redirect()->route('admin.users.show', $user)->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    public function userDestroy(User $user): JsonResponse {
+        // Verificar que no sea el último admin
+        if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar el único administrador.'
+            ], 400);
+        }
+
+        $user->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario eliminado exitosamente.'
+        ]);
+    }
+
+    public function toggleUserStatus(User $user): JsonResponse {
+        $user->update([
+            'status' => $user->status === 'active' ? 'inactive' : 'active'
+        ]);
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Estado del usuario actualizado.',
+            'status'    => $user->status
+        ]);
+    }
+
+    // ==================== GESTIÓN DE INSCRIPCIONES ====================
+
+    public function enrollmentsIndex(Request $request): View {
+        $query = Enrollment::with(['user', 'course.category'])->latest();
+        // Filtros
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($q) use ($search) {
+                    $q->where('names', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('course', function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('course')) {
+            $query->where('course_id', $request->course);
+        }
+
+        $enrollments = $query->paginate(20);
+        $courses = Course::where('is_active', true)->get();
+
+        $stats = [
+            'total'     => Enrollment::count(),
+            'active'    => Enrollment::where('status', 'active')->count(),
+            'completed' => Enrollment::where('status', 'completed')->count(),
+            'cancelled' => Enrollment::where('status', 'cancelled')->count(),
+        ];
+
+        return view('admin.enrollments.index', compact('enrollments', 'courses', 'stats'));
+    }
+
+    public function enrollmentShow(Enrollment $enrollment): View {
+        $enrollment->load([
+            'user',
+            'course.category',
+            'course.instructor',
+            'payments'
+        ]);
+
+        return view('admin.enrollments.show', compact('enrollment'));
+    }
+
+    public function updateEnrollmentStatus(Request $request, Enrollment $enrollment): JsonResponse {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['active', 'completed', 'cancelled', 'pending'])]
+        ]);
+
+        $enrollment->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado de la inscripción actualizado.'
+        ]);
+    }
+
+    // ==================== GESTIÓN DE PAGOS ====================
+
+    public function paymentsIndex(Request $request): View {
+        $query = Payment::with(['user', 'enrollment.course'])
+            ->latest();
+
+        // Filtros
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_id', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('names', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('enrollment.course', function ($q) use ($search) {
+                      $q->where('title', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('method')) {
+            $query->where('payment_method', $request->method);
+        }
+
+        $payments = $query->paginate(20);
+
+        $stats = [
+            'total' => Payment::sum('amount'),
+            'pending' => Payment::where('status', 'pending')->sum('amount'),
+            'completed' => Payment::where('status', 'completed')->sum('amount'),
+            'failed' => Payment::where('status', 'failed')->sum('amount'),
+        ];
+
+        return view('admin.payments.index', compact('payments', 'stats'));
+    }
+
+    public function updatePaymentStatus(Request $request, Payment $payment): JsonResponse {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['pending', 'completed', 'failed', 'refunded'])]
+        ]);
+
+        $payment->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado del pago actualizado.'
+        ]);
+    }
+
 }

@@ -133,14 +133,13 @@ Route::prefix('admin')->group(function () {
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
         // Gestión de Usuarios
-        Route::get('/users',                    [AdminController::class, 'usersIndex'])->name('admin.users.index');
-        Route::get('/users/create',             [AdminController::class, 'userCreate'])->name('admin.users.create');
-        Route::post('/users',                   [AdminController::class, 'userStore'])->name('admin.users.store');
-        Route::get('/users/{user}',             [AdminController::class, 'userShow'])->name('admin.users.show');
-        Route::get('/users/{user}/edit',        [AdminController::class, 'userEdit'])->name('admin.users.edit');
-        Route::put('/users/{user}',             [AdminController::class, 'userUpdate'])->name('admin.users.update');
-        Route::put('/users/{user}/password',    [AdminController::class, 'updatePassword'])->name('admin.users.password');
-        Route::delete('/users/{user}',          [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
+        Route::get('/users',                        [AdminController::class, 'usersIndex'])->name('admin.users.index');
+        Route::get('/users/create',                 [AdminController::class, 'userCreate'])->name('admin.users.create');
+        Route::get('/users/{user}',                 [AdminController::class, 'userShow'])->name('admin.users.show');
+        Route::get('/users/{user}/edit',            [AdminController::class, 'userEdit'])->name('admin.users.edit');
+        Route::post('/users/store',                 [AdminController::class, 'userStore'])->name('admin.users.store');
+        Route::put('/users/{user}/password',        [AdminController::class, 'updatePassword'])->name('admin.users.password');
+        Route::delete('/users/{user}',              [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status',         [AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
 
 

@@ -338,7 +338,7 @@ class AdminController extends Controller {
             $query->where('is_active', $request->status);
         }
 
-        $users = $query->paginate(20);
+        $users = $query->paginate(10);
 
         $stats = [
             'total'         => User::count(),
@@ -355,16 +355,30 @@ class AdminController extends Controller {
         return view('admin.users.create', compact('roles'));
     }
 
-    public function userStore(UserValidate  $request) {
-        $validated      = $request->validated();
-        $proccessData   = [
-            'password'          => Hash::make('P4$$w0rd#.'),
-            'email_verified_at' => now(),
-        ];
+    public function userStore(UserValidate $request) {
+        $validated = $request->validated();
 
-        $data = array_merge($validated, $proccessData);
-        $user = User::create($data);
-        return redirect()->route('admin.users.index')->with('success', 'Usuario creado exitosamente.');
+        // Determinar si es creación por la presencia de ID en el request
+        if (!$request->has('id') || empty($request->id)) {
+            $proccessData = [
+                'password'          => Hash::make('P4$$w0rd#.'),
+                'email_verified_at' => now(),
+            ];
+
+            $data = array_merge($validated, $proccessData);
+            // Creación - usar email como identificador único
+            $user = User::updateOrCreate(
+                ['id' => $request->input('id')],
+                $data
+            );
+        } else {
+            // Actualización - usar ID del request
+            $user = User::where('id', $request->id)->first();
+            $user->update($validated);
+        }
+
+        $message = $request->has('id') ? 'actualizado' : 'creado';
+        return redirect()->route('admin.users.index')->with('success', "Usuario {$message} exitosamente.");
     }
 
     public function userShow(User $user): View {
@@ -403,20 +417,7 @@ class AdminController extends Controller {
         ];
 
         $codeCountries = collect($originalArray)->map(fn ($item) => (object) $item);
-
         return view('admin.users.edit', compact('user', 'roles', 'codeCountries'));
-    }
-
-    public function userUpdate(UserValidate $request, User $user) {
-        // Forzar la validación explícitamente
-        $validator = validator($request->all(), (new UserValidate)->rules());
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $user->update($request->validated());
-        return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado correctamente');
     }
 
     public function updatePassword(PasswordValidate $request, User $user): JsonResponse {

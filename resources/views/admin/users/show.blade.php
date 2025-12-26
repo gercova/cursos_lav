@@ -338,24 +338,3 @@
     </div>
 </div>
 @endsection
-
-@section('scripts')
-<script>
-    // Navegación entre pestañas
-    document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            document.querySelectorAll('nav a').forEach(tab => {
-                tab.classList.remove('border-blue-500', 'text-blue-600');
-                tab.classList.add('border-transparent', 'text-gray-500');
-            });
-            link.classList.add('border-blue-500', 'text-blue-600');
-            link.classList.remove('border-transparent', 'text-gray-500');
-
-            // Scroll a la sección
-            document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
-        });
-    });
-</script>
-@endsection

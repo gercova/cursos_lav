@@ -63,9 +63,8 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.users.update', $user) }}" method="POST" id="userForm">
+        <form action="{{ route('admin.users.store') }}" method="POST" id="userForm">
             @csrf
-            @method('PUT')
             <input type="hidden" name="id" id="id" value="{{ $user->id }}">
             <div class="p-8">
                 <!-- Información personal -->
@@ -287,15 +286,6 @@
                         </span>
                     </button>
 
-                    <!--<button onclick="resetPassword({{ $user->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition duration-200 group">
-                        <div class="p-2 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200">
-                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                            </svg>
-                        </div>
-                        <span class="font-medium text-gray-900">Restablecer Contraseña</span>
-                    </button>-->
-
                     <!--<button onclick="sendMessage({{ $user->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition duration-200 group">
                         <div class="p-2 rounded-lg bg-gradient-to-br from-green-100 to-green-200">
                             <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,12 +319,6 @@
         }
     }
 
-    // Mostrar/ocultar contraseña
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        field.type = field.type === 'password' ? 'text' : 'password';
-    }
-
     // Cambiar estado del usuario
     async function toggleUserStatus(userId) {
         if (!confirm('¿Estás seguro de cambiar el estado del usuario?')) {
@@ -352,23 +336,6 @@
             showNotification('Error al cambiar el estado', 'error');
         }
     }
-
-    // Restablecer contraseña
-    /*async function resetPassword(userId) {
-        if (!confirm('¿Estás seguro de restablecer la contraseña? Se enviará un email al usuario con una nueva contraseña.')) {
-            return;
-        }
-
-        try {
-            const response = await axios.post(`/admin/users/${userId}/reset-password`);
-            if (response.data.success) {
-                showNotification('Contraseña restablecida. Se ha enviado un email al usuario.', 'success');
-            }
-        } catch (error) {
-            console.error('Error al restablecer contraseña:', error);
-            showNotification('Error al restablecer la contraseña', 'error');
-        }
-    }*/
 
     // Enviar mensaje
     /*async function sendMessage(userId) {

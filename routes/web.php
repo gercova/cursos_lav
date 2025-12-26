@@ -108,17 +108,6 @@ Route::prefix('admin')->group(function () {
 
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
-
-        // Gestión de Usuarios
-        Route::get('/users',                    [AdminController::class, 'usersIndex'])->name('admin.users.index');
-        Route::get('/users/create',             [AdminController::class, 'userCreate'])->name('admin.users.create');
-        Route::post('/users',                   [AdminController::class, 'userStore'])->name('admin.users.store');
-        Route::get('/users/{user}',             [AdminController::class, 'userShow'])->name('admin.users.show');
-        Route::get('/users/{user}/edit',        [AdminController::class, 'userEdit'])->name('admin.users.edit');
-        Route::put('/users/{user}',             [AdminController::class, 'userUpdate'])->name('admin.users.update');
-        Route::delete('/users/{user}',          [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
-        Route::patch('/users/{user}/toggle-status',         [AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
-
         // Gestión de Inscripciones
         Route::get('/enrollments',                          [AdminController::class, 'enrollmentsIndex'])->name('admin.enrollments.index');
         Route::get('/enrollments/{enrollment}',             [AdminController::class, 'enrollmentShow'])->name('admin.enrollments.show');
@@ -143,16 +132,27 @@ Route::prefix('admin')->group(function () {
         // Logout
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
+        // Gestión de Usuarios
+        Route::get('/users',                    [AdminController::class, 'usersIndex'])->name('admin.users.index');
+        Route::get('/users/create',             [AdminController::class, 'userCreate'])->name('admin.users.create');
+        Route::post('/users',                   [AdminController::class, 'userStore'])->name('admin.users.store');
+        Route::get('/users/{user}',             [AdminController::class, 'userShow'])->name('admin.users.show');
+        Route::get('/users/{user}/edit',        [AdminController::class, 'userEdit'])->name('admin.users.edit');
+        Route::put('/users/{user}',             [AdminController::class, 'userUpdate'])->name('admin.users.update');
+        Route::put('/users/{user}/password',    [AdminController::class, 'updatePassword'])->name('admin.users.password');
+        Route::delete('/users/{user}',          [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
+        Route::patch('/users/{user}/toggle-status',         [AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
+
+
+        // Rutas para categorias
         Route::get('categories/home',               [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
         Route::get('categories/stats',              [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
         Route::post('categories/store',             [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
         Route::get('categories/{category}',         [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
         Route::put('categories/{category}',         [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
         Route::delete('categories/{category}',      [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
-
-        // Acciones especiales
         Route::post('categories/{categoryId}/toggle-status', [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
-        Route::post('categories/bulk-action',   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
+        Route::post('categories/bulk-action',       [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');

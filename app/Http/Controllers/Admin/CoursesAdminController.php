@@ -64,7 +64,6 @@ class CoursesAdminController extends Controller {
     // Método para obtener secciones (API)
     public function getSections(Course $course): JsonResponse {
         $sections = $course->sections()->orderBy('order')->get();
-
         return response()->json($sections);
     }
 

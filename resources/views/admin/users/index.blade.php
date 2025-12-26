@@ -211,12 +211,12 @@
                                         @if($user->is_active)
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                                                 <i class="bi bi-check-circle-fill"></i>&nbsp;
-                                                Activa
+                                                Activo
                                             </span>
                                         @else
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
                                                 <i class="bi bi-x-circle-fill"></i>&nbsp;
-                                                Inactiva
+                                                Inactivo
                                             </span>
                                         @endif
                                     </div>
@@ -329,6 +329,14 @@
                                                 Editar
                                             </a>
 
+                                            <!-- Botón modal cambiar contraseña -->
+                                            <button
+                                                @click="$dispatch('open-password-modal', { userId: {{ $user->id }} })"
+                                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors duration-150"
+                                            >
+                                                <i class="fa-solid fa-key"></i> Cambiar contraseña
+                                            </button>
+
                                             <!-- Enviar mensaje -->
                                             <button @click="sendMessage({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,6 +389,91 @@
             </div>
         @endif
     </div>
+
+    <!-- Modal para subir/editar documento -->
+    <div x-data="passwordModal()" x-on:open-password-modal.window="handleOpen($event.detail)">
+        <!-- Modal overlay -->
+        <div x-show="showModal"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+            @click.self="closeModal"
+        >
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div x-show="showModal"
+                    x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
+                >
+
+                    <!-- Header del modal -->
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Actualizar contraseña</h3>
+                            </div>
+                            <button
+                                @click="closeModal"
+                                class="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
+                            >
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenido del modal -->
+                    <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                        <form @submit.prevent="submitPassword" id="passwordForm">
+                            @csrf
+                            <div class="space-y-6">
+                                <!-- Información del documento -->
+                                <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Información del Documento</h4>
+
+                                    <!-- Título -->
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Contraseña *
+                                        </label>
+                                        <input type="password" x-model="formData.password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                    </div>
+
+                                    <!-- Descripción -->
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Confirmar contraseña *
+                                        </label>
+                                        <input type="password" x-model="formData.password_confirmation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones del modal -->
+                            <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
+                                <button type="button" @click="closeModal" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <i class="bi bi-key"></i>
+                                    Guardar cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -432,6 +525,66 @@
                 } catch (error) {
                     console.error('Error al exportar:', error);
                     showNotification('Error al exportar usuarios', 'error');
+                }
+            }
+        };
+    }
+
+    function passwordModal() {
+        return {
+            showModal: false,
+            userId: null,
+            isSubmitting: false,
+            formData: {
+                password: '',
+                password_confirmation: ''
+            },
+            handleOpen(detail) {
+                this.userId = detail.userId;
+                this.showModal = true;
+                this.resetForm();
+            },
+            resetForm() {
+                this.formData = {
+                    password: '',
+                    password_confirmation: ''
+                };
+            },
+            closeModal() {
+                this.showModal = false;
+                this.userId = null;
+                this.resetForm();
+            },
+            async submitPassword() {
+                if (this.formData.password !== this.formData.password_confirmation) {
+                    showNotification('Las contraseñas no coinciden', 'error');
+                    return;
+                }
+
+                this.isSubmitting = true;
+                try {
+                    const response = await axios.put(
+                        `/admin/users/${this.userId}/password`,
+                        this.formData,
+                        {
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        }
+                    );
+
+                    if (response.data.success) {
+                        showNotification(response.data.message, 'success');
+                        this.closeModal();
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar contraseña:', error);
+                    const message = error.response?.data?.message ||
+                                    error.response?.data?.errors?.password?.[0] ||
+                                    'Error al actualizar la contraseña';
+                    showNotification(message, 'error');
+                } finally {
+                    this.isSubmitting = false;
                 }
             }
         };

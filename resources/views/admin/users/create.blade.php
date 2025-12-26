@@ -144,7 +144,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Contraseña -->
-                        <div>
+                        <!--<div>
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                                 Contraseña <span class="text-red-500">*</span>
                             </label>
@@ -152,15 +152,15 @@
                             @error('password')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div>-->
 
                         <!-- Confirmar Contraseña -->
-                        <div>
+                        <!--<div>
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                                 Confirmar Contraseña <span class="text-red-500">*</span>
                             </label>
                             <input type="password" name="password_confirmation" id="password_confirmation" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                        </div>
+                        </div>-->
 
                         <!-- Rol -->
                         <div class="md:col-span-2">

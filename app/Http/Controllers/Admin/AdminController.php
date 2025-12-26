@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\UserValidate;
 use App\Models\Category;
 use App\Models\Certificate;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth:sanctum', 'admin']);
+        $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
     /**
@@ -110,7 +111,6 @@ class AdminController extends Controller {
         ];
     }
 
-
     /**
      * Reportes y Analytics
      */
@@ -150,8 +150,8 @@ class AdminController extends Controller {
     }
 
     private function calculateCompletionRate() {
-        $totalEnrollments = Enrollment::count();
-        $completedEnrollments = Enrollment::where('status', 'completed')->count();
+        $totalEnrollments       = Enrollment::count();
+        $completedEnrollments   = Enrollment::where('status', 'completed')->count();
 
         return $totalEnrollments > 0 ? ($completedEnrollments / $totalEnrollments) * 100 : 0;
     }
@@ -194,10 +194,10 @@ class AdminController extends Controller {
 
     public function updateSettings(Request $request) {
         $validated = $request->validate([
-            'site_name' => 'required|string|max:255',
-            'site_email' => 'required|email',
-            'currency' => 'required|string|size:3',
-            'timezone' => 'required|timezone',
+            'site_name'     => 'required|string|max:255',
+            'site_email'    => 'required|email',
+            'currency'      => 'required|string|size:3',
+            'timezone'      => 'required|timezone',
         ]);
 
         // Aquí deberías guardar estas configuraciones en la base de datos
@@ -292,11 +292,11 @@ class AdminController extends Controller {
         $user = Auth::user();
 
         $validated = $request->validate([
-            'names'     => 'required|string|max:255',
-            'email'     => 'required|email|unique:users,email,' . $user->id,
-            'phone'     => 'required|string|max:20',
-            'address'   => 'required|string|max:500',
-            'profession' => 'required|string|max:255',
+            'names'         => 'required|string|max:255',
+            'email'         => 'required|email|unique:users,email,' . $user->id,
+            'phone'         => 'required|string|max:20',
+            'address'       => 'required|string|max:500',
+            'profession'    => 'required|string|max:255',
         ]);
 
         if ($request->filled('current_password')) {
@@ -317,8 +317,7 @@ class AdminController extends Controller {
 
 
     public function usersIndex(Request $request): View {
-        $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
-            ->orderBy('created_at', 'desc');
+        $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])->orderBy('created_at', 'desc');
 
         // Filtros
         if ($request->filled('search')) {
@@ -336,16 +335,16 @@ class AdminController extends Controller {
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('is_active', $request->status);
         }
 
         $users = $query->paginate(20);
 
         $stats = [
-            'total' => User::count(),
-            'students' => User::where('role', 'student')->count(),
-            'instructors' => User::where('role', 'instructor')->count(),
-            'admins' => User::where('role', 'admin')->count(),
+            'total'         => User::count(),
+            'students'      => User::where('role', 'student')->count(),
+            'instructors'   => User::where('role', 'instructor')->count(),
+            'admins'        => User::where('role', 'admin')->count(),
         ];
 
         return view('admin.users.index', compact('users', 'stats'));
@@ -357,23 +356,15 @@ class AdminController extends Controller {
     }
 
     public function userStore(UserValidate  $request) {
-        $validator = $request->validated();
-
-        $user = User::create([
-            'dni'           => $request->dni,
-            'names'         => $request->names,
-            'email'         => $request->email,
-            'password'      => Hash::make($request->password),
-            'phone'         => $request->phone,
-            'nationality'   => $request->nationality,
-            'address'       => $request->address,
-            'profession'    => $request->profession,
-            'role'          => $request->role,
+        $validated      = $request->validated();
+        $proccessData   = [
+            'password'          => Hash::make('P4$$w0rd#.'),
             'email_verified_at' => now(),
-        ]);
+        ];
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Usuario creado exitosamente.');
+        $data = array_merge($validated, $proccessData);
+        $user = User::create($data);
+        return redirect()->route('admin.users.index')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function userShow(User $user): View {
@@ -402,29 +393,39 @@ class AdminController extends Controller {
 
     public function userEdit(User $user): View {
         $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
-        return view('admin.users.edit', compact('user', 'roles'));
+        $originalArray = [
+            ['code' => '+51', 'country' => '+51 - Perú'],
+            ['code' => '+54', 'country' => '+54 - Argentina'],
+            ['code' => '+56', 'country' => '+56 - Chile'],
+            ['code' => '+591', 'country' => '+591 - Bolivia'],
+            ['code' => '+593', 'country' => '+593 - Ecuador'],
+            ['code' => '+598', 'country' => '+598 - Uruguay'],
+        ];
+
+        $codeCountries = collect($originalArray)->map(fn ($item) => (object) $item);
+
+        return view('admin.users.edit', compact('user', 'roles', 'codeCountries'));
     }
 
     public function userUpdate(UserValidate $request, User $user) {
-        $validated = $request->validated();
+        // Forzar la validación explícitamente
+        $validator = validator($request->all(), (new UserValidate)->rules());
 
-        $data = [
-            'dni'           => $validated['dni'],
-            'names'         => $validated['names'],
-            'email'         => $validated['email'],
-            'phone'         => $validated['phone'],
-            'nationality'   => $validated['nationality'],
-            'address'       => $validated['address'],
-            'profession'    => $validated['profession'],
-            'role'          => $validated['role'],
-        ];
-
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($validated['password']);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $user->update($data);
-        return redirect()->route('admin.users.show', $user)->with('success', 'Usuario actualizado exitosamente.');
+        $user->update($request->validated());
+        return redirect()->route('admin.users.index')->with('success', 'Usuario actualizado correctamente');
+    }
+
+    public function updatePassword(PasswordValidate $request, User $user): JsonResponse {
+        $validated = $request->validated();
+        $user->update(['password' => Hash::make($validated['password'])]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada',
+        ], 200);
     }
 
     public function userDestroy(User $user): JsonResponse {
@@ -445,13 +446,13 @@ class AdminController extends Controller {
 
     public function toggleUserStatus(User $user): JsonResponse {
         $user->update([
-            'status' => $user->status === 'active' ? 'inactive' : 'active'
+            'is_active' => !$user->is_active
         ]);
 
         return response()->json([
             'success'   => true,
             'message'   => 'Estado del usuario actualizado.',
-            'status'    => $user->status
+            'status'    => $user->is_active
         ]);
     }
 

@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class ExamQuestionAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
     public function store(Request $request, Exam $exam) {

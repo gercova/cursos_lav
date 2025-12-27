@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 class ExamsAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'admin', 'prevent.back']);
     }
 
     public function index(Request $request): View {
@@ -27,8 +27,7 @@ class ExamsAdminController extends Controller {
         // Búsqueda
         if ($search = $request->input('search')) {
             $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                $q->where('title', 'like', "%{$search}%")->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -106,15 +105,11 @@ class ExamsAdminController extends Controller {
         }
     }
 
-    public function store(ExamValidate $request): JsonResponse {
+    public function store(ExamValidate $request) {
         $validated = $request->validated();
         $exam = Exam::create($validated);
 
-        return response()->json([
-            'success'   => true,
-            'message'   => 'Examen creado exitosamente',
-            'exam'      => $exam
-        ]);
+        return redirect()->route('admin.exams.questions', $exam)->with('success', "Examen creado exitosamente.");
     }
 
     public function update(ExamValidate $request, Exam $exam): JsonResponse {
@@ -153,8 +148,8 @@ class ExamsAdminController extends Controller {
 
         // Validamos la entrada para seguridad extra (opcional pero recomendado)
         $request->validate([
-            'type'  => ['nullable', Rule::in(['multiple_choice', 'true_false'])],
-            'search' => 'nullable|string|max:255',
+            'type'      => ['nullable', Rule::in(['multiple_choice', 'true_false'])],
+            'search'    => 'nullable|string|max:255',
         ]);
 
         $questions = $exam->questions()

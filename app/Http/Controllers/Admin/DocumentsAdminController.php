@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 class DocumentsAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['admin', 'prevent.back']);
+        $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
     public function index(Request $request): View {

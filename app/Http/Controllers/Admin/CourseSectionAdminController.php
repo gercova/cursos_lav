@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class CourseSectionAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'admin', 'prevent.back']);
     }
 
     public function index(Course $course) {

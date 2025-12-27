@@ -23,7 +23,7 @@ use PhpParser\Node\Stmt\TryCatch;
 class CoursesAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'admin']);
+        $this->middleware(['auth', 'admin', 'prevent.back']);
     }
 
     public function index(Request $request): View {

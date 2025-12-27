@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class DashboardAdminController extends Controller
 {
     public function __construct() {
-        $this->middleware(['auth:sanctum', 'admin']);
+        $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
     public function index(): View {

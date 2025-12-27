@@ -106,12 +106,7 @@
                                 <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
-                                <input type="text"
-                                    x-model="searchQuery"
-                                    value="{{ request('search') }}"  {{-- ← Agregar esto --}}
-                                    @input.debounce.500ms="searchQuestions()"
-                                    placeholder="Buscar preguntas..."
-                                    class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+                                <input type="text" x-model="searchQuery" value="{{ request('search') }}" @input.debounce.500ms="searchQuestions()" placeholder="Buscar preguntas..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
                                 >
                             </div>
 
@@ -338,8 +333,7 @@
 
                 <!-- Acciones rápidas -->
                 <div class="space-y-3">
-                    <button @click="showCreateModal()"
-                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-medium transition-all duration-200 group">
+                    <button @click="showCreateModal()" class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-medium transition-all duration-200 group">
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -348,9 +342,7 @@
                         <span>Nueva Pregunta</span>
                     </button>
 
-                    <button @click="importQuestions()"
-                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 group"
-                    >
+                    <button @click="importQuestions()" class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 group">
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
@@ -359,9 +351,7 @@
                         <span>Importar Preguntas</span>
                     </button>
 
-                    <button @click="reorderQuestions()"
-                        class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 group"
-                    >
+                    <button @click="reorderQuestions()" class="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl font-medium transition-all duration-200 group">
                         <div class="p-2 rounded-lg bg-white/20 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -752,14 +742,78 @@
             },
 
             importQuestions() {
-                // Implementar lógica de importación
-                showNotification('Funcionalidad de importación en desarrollo', 'info');
+                const input     = document.createElement('input');
+                input.type      = 'file';
+                input.accept    = '.json';
+                input.onchange  = (event) => {
+                    const file  = event.target.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('_token', '{{ csrf_token() }}'); // Asegurar token CSRF
+
+                    this.isSubmitting = true; // Usar estado de carga genérico o crear uno nuevo
+                    axios.post('{{ route("admin.exams.questions.import", $exam) }}', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        this.isSubmitting = false;
+                        if(response.data.success) {
+                            showNotification(response.data.message, 'success');
+                            // Opcional: Recargar la página o actualizar la lista de preguntas
+                            setTimeout(() => window.location.reload(), 2000);
+                        } else {
+                            showNotification(response.data.message, 'error');
+                            if(response.data.errors && response.data.errors.length > 0){
+                                // Mostrar errores detallados si es necesario
+                                console.error(response.data.errors);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        this.isSubmitting = false;
+                        console.error('Error en la importación:', error);
+                        showNotification('Error al importar el archivo.', 'error');
+                    });
+                };
+                input.click();
             },
 
             reorderQuestions() {
-                // Implementar lógica de reordenamiento
-                showNotification('Funcionalidad de reordenamiento en desarrollo', 'info');
-            }
+                // 1. Obtener IDs en el orden actual de la lista
+                const questionItems = document.querySelectorAll('.question-item');
+                const orderedIds    = Array.from(questionItems).map(item => parseInt(item.dataset.questionId));
+
+                if(orderedIds.length === 0) {
+                    showNotification('No hay preguntas para reordenar.', 'info');
+                    return;
+                }
+
+                // 2. Enviar solicitud para reordenar
+                this.isSubmitting = true; // Usar estado de carga genérico o crear uno nuevo
+                axios.post('{{ route("admin.exams.questions.reorder", $exam) }}', {
+                    _token: '{{ csrf_token() }}', // Asegurar token CSRF
+                    question_order: orderedIds
+                })
+                .then(response => {
+                    this.isSubmitting = false;
+                    if(response.data.success) {
+                        showNotification(response.data.message, 'success');
+                        // Recargar la página para reflejar el nuevo orden
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        showNotification(response.data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    this.isSubmitting = false;
+                    console.error('Error en el reordenamiento:', error);
+                    showNotification('Error al reordenar las preguntas.', 'error');
+                });
+            },
         };
     }
 

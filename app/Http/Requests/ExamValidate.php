@@ -15,8 +15,8 @@ class ExamValidate extends FormRequest
             'title'         => 'required|string|max:255',
             'description'   => 'required|string',
             'course_id'     => 'required|exists:courses,id',
-            'passing_score' => 'required|numeric|min:14|max:20',
-            'duration'      => 'nullable|integer|min:30',
+            'passing_score' => 'required|numeric|min:70|max:100',
+            'duration'      => 'nullable|integer|min:0',
             'max_attempts'  => 'nullable|integer|min:1',
             'is_final'      => 'boolean',
             'show_results'  => 'boolean',
@@ -33,8 +33,8 @@ class ExamValidate extends FormRequest
             'course_id.required'        => 'El curso es requerido.',
             'course_id.exists'          => 'El curso no existe.',
             'passing_score.required'    => 'El puntaje mínimo es requerido.',
-            'passing_score.min'         => 'La nota mínima es 14.',
-            'passing_score.max'         => 'La nota máxima es 20.',
+            'passing_score.min'         => 'El porcentaje de nota mínima para aprobar es 70%.',
+            'passing_score.max'         => 'La porcentaje de nota máxima para aprobar es 100%.',
             'duration.integer'          => 'La tiempo límite del examen debe ser entero.',
             'duration.min'              => 'El tiempo límite debe ser mayor o igual a 30 min.',
             'max_attempts.integer'      => 'El número de intentos debe ser un número entero.',
@@ -53,13 +53,13 @@ class ExamValidate extends FormRequest
         }
         // Convertir checkboxes a booleanos
         $this->merge([
-            'passing_score'         => $this->filled('passing_score') ? floatval($this->passing_score) : 14.0,
-            'duration'              => $this->has('duration') ? filter_var($this->duration, FILTER_VALIDATE_INT): 30,
-            'max_attempts'          => $this->has('max_attempts') ? filter_var($this->max_attempts, FILTER_VALIDATE_INT) : 1,
-            'is_final'              => $this->has('is_final') ? filter_var($this->is_final, FILTER_VALIDATE_BOOLEAN) : false,
-            'show_results'          => $this->has('show_results') ? filter_var($this->show_results, FILTER_VALIDATE_BOOLEAN) : false,
-            'randomize_questions'   => $this->has('randomize_questions') ? filter_var($this->randomize_questions, FILTER_VALIDATE_BOOLEAN) : false,
-            'is_active'             => $this->has('is_active') ? filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN) : false,
+            //'passing_score'         => $this->filled('passing_score')       ? floatval($this->passing_score) : 70.0,
+            'duration'              => $this->has('duration')               ? filter_var($this->duration, FILTER_VALIDATE_INT): 30,
+            'max_attempts'          => $this->has('max_attempts')           ? filter_var($this->max_attempts, FILTER_VALIDATE_INT) : 1,
+            'is_final'              => $this->has('is_final')               ? filter_var($this->is_final, FILTER_VALIDATE_BOOLEAN) : false,
+            'show_results'          => $this->has('show_results')           ? filter_var($this->show_results, FILTER_VALIDATE_BOOLEAN) : false,
+            'randomize_questions'   => $this->has('randomize_questions')    ? filter_var($this->randomize_questions, FILTER_VALIDATE_BOOLEAN) : false,
+            'is_active'             => $this->has('is_active')              ? filter_var($this->is_active, FILTER_VALIDATE_BOOLEAN) : false,
         ]);
     }
 }

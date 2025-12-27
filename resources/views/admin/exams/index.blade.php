@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Gestión de Exámenes')
-
 @section('content')
 <div class="container mx-auto px-4 py-6" x-data="examManager()" x-init="init()">
     <!-- Header con estadísticas -->
@@ -13,12 +11,12 @@
             </div>
 
             <!-- Botón para crear nuevo examen -->
-            <a href="{{ route('admin.exams.create') }}" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <button @click="showCreateModal()" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 Nuevo Examen
-            </a>
+            </button>
         </div>
 
         <!-- Tarjetas de estadísticas -->
@@ -413,7 +411,6 @@
     </div>
 
     <!-- Modal para crear/editar examen -->
-    <!--<div x-data="examModal()" x-cloak>-->
     <div x-data="examModal()" x-cloak @open-edit-modal.window="showEditModal($event.detail.id)">
         <!-- Modal overlay -->
         <div x-show="showModal"
@@ -453,7 +450,7 @@
 
                     <!-- Contenido del modal -->
                     <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                        <form @submit.prevent="submitForm">
+                        <form @submit.prevent="submitForm" method="POST">
                             @csrf
                             <div x-show="isEditing">
                                 @method('PUT')
@@ -629,14 +626,10 @@
 
             init() {
                 // Inicializar
-                this.$watch('showModal', value => {
-                    if (value) return;
-                    this.resetForm();
-                });
+            },
 
-                this.$el.addEventListener('open-edit-modal', (e) => {
-                    this.showEditModal(e.detail.id);
-                });
+            showCreateModal() {
+                this.$dispatch('open-create-modal', { isEditing: false });
             },
 
             async performSearch() {
@@ -663,14 +656,6 @@
                 this.performSearch();
             },
 
-            showCreateModal() {
-                const modal = document.querySelector('[x-data="examModal()"]');
-                if (modal) {
-                    modal.__x.$data.showModal = true;
-                    modal.__x.$data.isEditing = false;
-                    modal.__x.$data.resetForm();
-                }
-            }
         };
     }
 
@@ -694,6 +679,16 @@
 
             init() {
                 // Inicializar
+                this.$watch('showModal', () => {
+                    if (!this.showModal) this.resetForm();
+                });
+
+                // Escuchar evento global para crear
+                window.addEventListener('open-create-modal', (e) => {
+                    this.showModal = true;
+                    this.isEditing = e.detail?.isEditing ?? false;
+                    this.resetForm();
+                });
             },
 
             resetForm() {
@@ -794,7 +789,7 @@
             const response = await axios.delete(`/admin/exams/${examId}`);
             if (response.data.success) {
                 showNotification('Examen eliminado exitosamente', 'success');
-                setTimeout(() => window.location.reload(), 1000);
+                setTimeout(() => window.location.reload(), 500);
             }
         } catch (error) {
             console.error('Error al eliminar examen:', error);

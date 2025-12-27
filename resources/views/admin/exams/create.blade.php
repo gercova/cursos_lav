@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Crear Nuevo Examen')
-
 @section('content')
 <div class="container mx-auto px-4 py-6" x-data="{ formProgress: 0 }" x-init="updateProgress()">
     <!-- Header -->
@@ -44,13 +42,8 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 p-2">
-        <form action="{{ route('admin.exams.store') }}"
-              method="POST"
-              id="examForm"
-              oninput="updateProgress()">
-
+        <form action="{{ route('admin.exams.store') }}" method="POST" id="examForm" oninput="updateProgress()">
             @include('admin.exams.partials.form')
-
         </form>
     </div>
 

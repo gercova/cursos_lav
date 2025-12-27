@@ -105,6 +105,7 @@
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-8 p-2">
         <form action="{{ route('admin.exams.update', $exam) }}" method="POST" id="examForm">
+            @method('PUT')
             @include('admin.exams.partials.form')
         </form>
     </div>
@@ -225,8 +226,7 @@
                     </a>
 
                     <!-- Duplicar Examen -->
-                    <button onclick="duplicateExam({{ $exam->id }})"
-                            class="w-full flex items-center gap-3 p-4 bg-white rounded-xl border border-orange-200 hover:border-orange-300 hover:shadow-md transition-all duration-200 group">
+                    <button onclick="duplicateExam({{ $exam->id }})" class="w-full flex items-center gap-3 p-4 bg-white rounded-xl border border-orange-200 hover:border-orange-300 hover:shadow-md transition-all duration-200 group">
                         <div class="p-3 rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
@@ -239,8 +239,7 @@
                     </button>
 
                     <!-- Eliminar Examen -->
-                    <button onclick="deleteExam({{ $exam->id }})"
-                            class="w-full flex items-center gap-3 p-4 bg-white rounded-xl border border-red-200 hover:border-red-300 hover:shadow-md transition-all duration-200 group">
+                    <button onclick="deleteExam({{ $exam->id }})" class="w-full flex items-center gap-3 p-4 bg-white rounded-xl border border-red-200 hover:border-red-300 hover:shadow-md transition-all duration-200 group">
                         <div class="p-3 rounded-lg bg-gradient-to-br from-red-100 to-red-200 group-hover:scale-110 transition-transform duration-200">
                             <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>

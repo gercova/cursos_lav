@@ -31,7 +31,6 @@ class AdminController extends Controller {
      * Dashboard principal del administrador
      */
     public function dashboard(): View {
-        $this->middleware(['auth:sanctum', 'admin']);
         $stats              = $this->getDashboardStats();
         $recentEnrollments  = $this->getRecentEnrollments();
         $popularCourses     = $this->getPopularCourses();

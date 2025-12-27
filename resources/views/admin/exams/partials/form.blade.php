@@ -1,23 +1,16 @@
 <div class="space-y-6">
     @csrf
-
+    <input type="hidden" name="type" id="type" value="window">
     <!-- Información Básica -->
     <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
         <h4 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h4>
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Título -->
             <div class="col-span-2">
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
                     Título del Examen *
                 </label>
-                <input type="text"
-                    id="title"
-                    name="title"
-                    value="{{ old('title', $exam->title ?? '') }}"
-                    required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                    placeholder="Ej: Examen Final de Matemáticas">
+                <input type="text" id="title" name="title" value="{{ old('title', $exam->title ?? '') }}" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="Ej: Examen Final de Matemáticas">
             </div>
 
             <!-- Descripción -->
@@ -25,11 +18,7 @@
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
                     Descripción
                 </label>
-                <textarea id="description"
-                    name="description"
-                    rows="3"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                    placeholder="Describe el contenido y objetivos del examen">{{ old('description', $exam->description ?? '') }}</textarea>
+                <textarea id="description"  name="description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="Describe el contenido y objetivos del examen">{{ old('description', $exam->description ?? '') }}</textarea>
             </div>
 
             <!-- Curso -->
@@ -37,10 +26,7 @@
                 <label for="course_id" class="block text-sm font-medium text-gray-700 mb-1">
                     Curso *
                 </label>
-                <select id="course_id"
-                    name="course_id"
-                    required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <select id="course_id" name="course_id" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <option value="">Seleccionar curso</option>
                     @foreach($courses as $course)
                         <option value="{{ $course->id }}" data-category="{{ $course->category->name ?? 'Sin categoría' }}" {{ (old('course_id', $exam->course_id ?? '') == $course->id) ? 'selected' : '' }}>
@@ -49,30 +35,12 @@
                     @endforeach
                 </select>
             </div>
-
-            <!-- Duración -->
-            <div>
-                <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">
-                    Duración (minutos) *
-                </label>
-                <div class="relative">
-                    <input type="number"
-                        id="duration"
-                        name="duration"
-                        value="{{ old('duration', $exam->duration ?? 60) }}"
-                        min="1"
-                        required
-                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">min</span>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- Configuración del Examen -->
     <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
         <h4 class="text-lg font-semibold text-blue-900 mb-4">Configuración del Examen</h4>
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Puntaje mínimo -->
             <div>
@@ -80,14 +48,7 @@
                     Puntaje Mínimo (%) *
                 </label>
                 <div class="relative">
-                    <input type="number"
-                        id="passing_score"
-                        name="passing_score"
-                        value="{{ old('passing_score', $exam->passing_score ?? 70) }}"
-                        min="0"
-                        max="100"
-                        required
-                        class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <input type="number" id="passing_score" name="passing_score" value="{{ old('passing_score', $exam->passing_score ?? 70) }}" min="0" max="100" required class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">%</span>
                     @error('passing_score')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -112,13 +73,7 @@
                     Tiempo Límite (minutos)
                 </label>
                 <div class="relative">
-                    <input type="number"
-                        id="duration"
-                        name="duration"
-                        value="{{ old('duration', $exam->duration ?? 0) }}"
-                        min="0"
-                        class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                        placeholder="0 = sin límite">
+                    <input type="number" id="duration" name="duration" value="{{ old('duration', $exam->duration ?? 0) }}" min="0" class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="0 = sin límite">
                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600">min</span>
                     @error('duration')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -136,14 +91,7 @@
                     Intentos Máximos
                 </label>
                 <div class="relative">
-                    <input type="number"
-                        id="max_attempts"
-                        name="max_attempts"
-                        value="{{ old('max_attempts', $exam->max_attempts ?? 3) }}"
-                        min="0"
-                        class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                        placeholder="0 = ilimitados"
-                    >
+                    <input type="number" id="max_attempts" name="max_attempts" value="{{ old('max_attempts', $exam->max_attempts ?? 3) }}" min="0" class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="0 = ilimitados">
                     @error('max_attempts')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -236,12 +184,10 @@
 
     <!-- Botones del formulario -->
     <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200">
-        <a href="{{ route('admin.exams.index') }}"
-           class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+        <a href="{{ route('admin.exams.index') }}" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
             Cancelar
         </a>
-        <button type="submit"
-                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+        <button type="submit" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
             <i class="fas fa-save"></i>
             {{ isset($exam) ? 'Actualizar Examen' : 'Crear Examen' }}
         </button>

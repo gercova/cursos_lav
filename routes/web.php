@@ -196,32 +196,30 @@ Route::prefix('admin')->group(function () {
         Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
 
-        // Rutas para documentos
-        // Route::get('/documents',                            [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
-        // Route::get('/documents/create',                     [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
-        // Route::post('/documents',                           [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
-        // Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
-        // Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
-        // Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
-        // Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
-        // Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
-
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');
-        Route::get('/exams/create',                             [ExamsAdminController::class, 'create'])->name('admin.exams.create');
         Route::get('/exams/{exam}/edit',                        [ExamsAdminController::class, 'edit'])->name('admin.exams.edit');
+        Route::post('/exams/{exam}/duplicate',                  [ExamsAdminController::class, 'duplicate'])->name('admin.exams.duplicate');
         Route::get('/exams/{exam}/show',                        [ExamsAdminController::class, 'show'])->name('admin.exams.show');
         Route::put('/exams/{exam}',                             [ExamsAdminController::class, 'update'])->name('admin.exams.update');
+        Route::get('/exams/{id}/details',                       [ExamsAdminController::class, 'attemptDetails'])->name('admin.exams.details');
+        Route::get('/exams/{exam}/results/export',              [ExamsAdminController::class, 'exportResults'])->name('admin.exams.results.export');
         Route::get('/exams/{exam}/results',                     [ExamsAdminController::class, 'results'])->name('admin.exams.results');
         Route::get('/exams/{exam}/questions',                   [ExamsAdminController::class, 'questions'])->name('admin.exams.questions');
         Route::post('/exams/store',                             [ExamsAdminController::class, 'store'])->name('admin.exams.store');
         Route::post('/exams/{exam}/toggle-status',              [ExamsAdminController::class, 'toggleStatus'])->name('admin.exams.toggle-status');
+        Route::delete('/exams/{exam}',                          [ExamsAdminController::class, 'destroy'])->name('admin.exams.delete');
         Route::delete('/exams/{exam}/questions/{question}',     [ExamsAdminController::class, 'deleteQuestion'])->name('admin.exams.questions.delete');
 
-        Route::post('exams/{exam}/questions',                   [ExamQuestionAdminController::class, 'store'])->name('admin.exams.questions.store');
-        Route::get('exams/questions/{question}/edit',           [ExamQuestionAdminController::class, 'edit'])->name('exams.questions.edit');
-        Route::put('exams/questions/{question}',                [ExamQuestionAdminController::class, 'update'])->name('exams.questions.update');
-        Route::delete('exams/questions/{question}',             [ExamQuestionAdminController::class, 'destroy'])->name('exams.questions.destroy');
-        Route::post('exams/questions/{question}/move',          [ExamQuestionAdminController::class, 'move'])->name('exams.questions.move');
+        Route::post('/exams/{exam}/questions',                  [ExamQuestionAdminController::class, 'store'])->name('admin.exams.questions.store');
+        Route::get('/exams/questions/{question}/edit',          [ExamQuestionAdminController::class, 'edit'])->name('exams.questions.edit');
+        Route::put('/exams/questions/{question}',               [ExamQuestionAdminController::class, 'update'])->name('exams.questions.update');
+        Route::delete('/exams/questions/{question}',            [ExamQuestionAdminController::class, 'destroy'])->name('exams.questions.destroy');
+        Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('exams.questions.move');
+
+        Route::post('/exams/{exam}/questions/import',           [ExamQuestionAdminController::class, 'import'])->name('admin.exams.questions.import');
+        Route::post('/exams/{exam}/questions/reorder',          [ExamQuestionAdminController::class, 'reorder'])->name('admin.exams.questions.reorder');
+        Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('admin.exams.questions.move');
+
     });
 });

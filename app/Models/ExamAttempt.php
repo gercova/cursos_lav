@@ -17,6 +17,7 @@ class ExamAttempt extends Model
         'exam_id',
         'user_id',
         'score',
+        'total_points',
         'passed',
         'started_at',
         'completed_at',

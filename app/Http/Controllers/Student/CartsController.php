@@ -45,9 +45,9 @@ class CartsController extends Controller {
 
         if ($existing) {
             return response()->json([
-                'existing' => true,
-                'success' => false,
-                'message' => 'Este curso ya está en tu carrito'
+                'existing'  => true,
+                'success'   => false,
+                'message'   => 'Este curso ya está en tu carrito'
             ], 400);
         }
 
@@ -65,7 +65,7 @@ class CartsController extends Controller {
 
         // Agregar al carrito
         Cart::create([
-            'user_id' => $userId,
+            'user_id'   => $userId,
             'course_id' => $course
         ]);
 
@@ -97,7 +97,7 @@ class CartsController extends Controller {
 
     public function count(): JsonResponse {
         $userId = Auth::id();
-        $count = Cart::where('user_id', $userId)->count();
+        $count  = Cart::where('user_id', $userId)->count();
 
         return response()->json([
             'count' => $count
@@ -105,8 +105,8 @@ class CartsController extends Controller {
     }
 
     public function checkout(Request $request) {
-        $userId = Auth::id();
-        $cartItems = Cart::getItems($userId);
+        $userId     = Auth::id();
+        $cartItems  = Cart::getItems($userId);
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')
@@ -115,8 +115,7 @@ class CartsController extends Controller {
 
         // Aquí implementarías la lógica de checkout
         // Por ahora redirigimos a una página de confirmación
-        return redirect()->route('payment.checkout')
-            ->with('cart_items', $cartItems);
+        return redirect()->route('payment.checkout')->with('cart_items', $cartItems);
     }
 
     public function applyCoupon(Request $request) {
@@ -132,9 +131,9 @@ class CartsController extends Controller {
         if (strtoupper($couponCode) === 'DESCUENTO10') {
             session(['coupon_discount' => 0.10]); // 10% de descuento
             return response()->json([
-                'success' => true,
-                'message' => 'Cupón aplicado correctamente',
-                'discount' => 10
+                'success'   => true,
+                'message'   => 'Cupón aplicado correctamente',
+                'discount'  => 10
             ]);
         }
 

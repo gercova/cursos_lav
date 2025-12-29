@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Course extends Model
 {
@@ -76,4 +79,15 @@ class Course extends Model
     public function getStudentsCountAttribute(): int {
         return $this->enrollments()->count();
     }
+
+    protected function imageUrl(): Attribute {
+        return Attribute::make(
+            get: fn (?string $value) => match (true) {
+                empty($value) => 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                Str::startsWith($value, ['http://', 'https://']) => $value,
+                default => Storage::url($value),
+            }
+        );
+    }
+
 }

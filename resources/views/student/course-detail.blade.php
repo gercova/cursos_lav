@@ -74,7 +74,7 @@
                         <div class="p-4">
                             <div class="grid grid-cols-2 gap-2 mb-4">
                                 <div class="col-span-2">
-                                    <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-lg">
+                                    <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-lg">
                                 </div>
                             </div>
 

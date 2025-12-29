@@ -18,6 +18,7 @@ use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
 use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
@@ -70,6 +71,20 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/cart/add/{course}',           [CartsController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{courseId}',    [CartsController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
+
+    // Pagos
+    Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+
+    // Procesar pagos
+    Route::post('/payment/process-culqi',           [PaymentController::class, 'processCulqiPayment']);
+    Route::post('/payment/process-pago-efectivo',   [PaymentController::class, 'processPagoEfectivo']);
+
+    // PagoEfectivo CIP
+    Route::get('/payment/cip-instructions/{payment}',   [PaymentController::class, 'cipInstructions'])->name('payment.cip-instructions');
+    Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
+
+    // Webhook (sin autenticación)
+    Route::post('/payment/webhook',             [PaymentController::class, 'webhook']);
 
     Route::get('/wishlist',                     [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist/add',                [WishlistController::class, 'add'])->name('wishlist.add');

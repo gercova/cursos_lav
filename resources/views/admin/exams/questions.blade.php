@@ -395,8 +395,7 @@
                                 <h3 class="text-xl font-bold text-gray-900" x-text="isEditing ? 'Editar Pregunta' : 'Nueva Pregunta'"></h3>
                                 <p class="text-sm text-gray-600 mt-1" x-text="isEditing ? 'Modifica la pregunta y sus opciones' : 'Crea una nueva pregunta para el examen'"></p>
                             </div>
-                            <button @click="closeModal"
-                                    class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
+                            <button @click="closeModal" class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
                                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -410,9 +409,7 @@
                         <div x-show="isEditing">
                             <input type="hidden" name="_method" value="PUT">
                         </div>
-
                         <input type="hidden" name="exam_id" value="{{ $exam->id }}">
-
                         <div class="space-y-6">
                             <!-- Tipo de pregunta -->
                             <div>
@@ -456,13 +453,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Enunciado de la Pregunta *
                                 </label>
-                                <textarea x-model="formData.question"
-                                    name="question"
-                                    rows="3"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                    placeholder="Escribe la pregunta aquí..."
-                                ></textarea>
+                                <textarea x-model="formData.question" name="question" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="Escribe la pregunta aquí..."></textarea>
                             </div>
 
                             <!-- Puntos -->
@@ -471,15 +462,7 @@
                                     Puntos *
                                 </label>
                                 <div class="relative">
-                                    <input type="number"
-                                        x-model="formData.points"
-                                        name="points"
-                                        min="1"
-                                        max="100"
-                                        required
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                        placeholder="Ej: 10"
-                                    >
+                                    <input type="number" x-model="formData.points" name="points" min="1" max="100" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="Ej: 10">
                                     <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">puntos</span>
                                 </div>
                             </div>
@@ -499,20 +482,10 @@
                                     <div class="space-y-3" x-data="{ options: formData.options || ['', '', '', ''] }">
                                         <template x-for="(option, index) in options" :key="index">
                                             <div class="flex items-center gap-3">
-                                                <button type="button"
-                                                    @click="setCorrectAnswer(index)"
-                                                    :class="formData.correct_answer == index ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                                                    class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200"
-                                                >
+                                                <button type="button" @click="setCorrectAnswer(index)" :class="formData.correct_answer == index ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200">
                                                     <span x-text="String.fromCharCode(65 + index)"></span>
                                                 </button>
-                                                <input type="text"
-                                                    x-model="options[index]"
-                                                    @input="formData.options = options"
-                                                    :name="'options[' + index + ']'"
-                                                    :placeholder="'Opción ' + String.fromCharCode(65 + index)"
-                                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                                                >
+                                                <input type="text" x-model="options[index]" @input="formData.options = options" :name="'options[' + index + ']'" :placeholder="'Opción ' + String.fromCharCode(65 + index)" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                                 <button type="button" x-show="options.length > 2" @click="removeOption(index)" class="flex-shrink-0 p-1 text-red-600 hover:text-red-800">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -571,10 +544,7 @@
                             <button type="button" @click="closeModal" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                                 Cancelar
                             </button>
-                            <button type="submit"
-                                :disabled="isSubmitting"
-                                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
+                            <button type="submit" :disabled="isSubmitting" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                 <svg x-show="isSubmitting" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

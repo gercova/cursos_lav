@@ -501,4 +501,35 @@ class ExamsAdminController extends Controller {
             ], 500);
         }
     }
+
+    /**
+     * Actualizar total_points para intentos existentes (solo una vez)
+     */
+    public function updateAttemptsTotalPoints(Exam $exam): JsonResponse {
+        try {
+            $attempts       = $exam->examAttempts()->get();
+            $updatedCount   = 0;
+
+            foreach ($attempts as $attempt) {
+                if (!$attempt->total_points) {
+                    $totalPoints = $exam->questions()->sum('points');
+                    $attempt->update(['total_points' => $totalPoints]);
+                    $updatedCount++;
+                }
+            }
+
+            return response()->json([
+                'success'       => true,
+                'message'       => "Se actualizaron {$updatedCount} intentos con total_points",
+                'updated_count' => $updatedCount
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating attempts total points: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar los intentos'
+            ], 500);
+        }
+    }
 }

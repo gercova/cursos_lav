@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\CategoriesAdminController;
 use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\CourseSectionAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
+use App\Http\Controllers\Admin\EnrollmentsAdminController;
 use App\Http\Controllers\admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
+use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
@@ -109,12 +111,14 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
         // Gestión de Inscripciones
-        Route::get('/enrollments',                          [AdminController::class, 'enrollmentsIndex'])->name('admin.enrollments.index');
-        Route::get('/enrollments/{enrollment}',             [AdminController::class, 'enrollmentShow'])->name('admin.enrollments.show');
-        Route::patch('/enrollments/{enrollment}/status',    [AdminController::class, 'updateEnrollmentStatus'])->name('admin.enrollments.update-status');
+        Route::get('/enrollments/home',                     [EnrollmentsAdminController::class, 'index'])->name('admin.enrollments.index');
+        Route::get('/enrollments/{enrollment}',             [EnrollmentsAdminController::class, 'enrollmentShow'])->name('admin.enrollments.show');
+        Route::patch('/enrollments/{enrollment}/status',    [EnrollmentsAdminController::class, 'updateEnrollmentStatus'])->name('admin.enrollments.update-status');
+
         // Gestión de Pagos
-        Route::get('/payments',                     [AdminController::class, 'paymentsIndex'])->name('admin.payments.index');
-        Route::patch('/payments/{payment}/status',  [AdminController::class, 'updatePaymentStatus'])->name('admin.payments.update-status');
+        Route::get('/payments/home',                [PaymentsAdminController::class, 'index'])->name('admin.payments.index');
+        Route::patch('/payments/{payment}/status',  [PaymentsAdminController::class, 'updatePaymentStatus'])->name('admin.payments.update-status');
+
         // Reportes
         Route::get('/reports',                      [AdminController::class, 'reports'])->name('admin.reports');
         // Configuración
@@ -216,7 +220,6 @@ Route::prefix('admin')->group(function () {
         Route::put('/exams/questions/{question}',               [ExamQuestionAdminController::class, 'update'])->name('exams.questions.update');
         Route::delete('/exams/questions/{question}',            [ExamQuestionAdminController::class, 'destroy'])->name('exams.questions.destroy');
         Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('exams.questions.move');
-
         Route::post('/exams/{exam}/questions/import',           [ExamQuestionAdminController::class, 'import'])->name('admin.exams.questions.import');
         Route::post('/exams/{exam}/questions/reorder',          [ExamQuestionAdminController::class, 'reorder'])->name('admin.exams.questions.reorder');
         Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('admin.exams.questions.move');

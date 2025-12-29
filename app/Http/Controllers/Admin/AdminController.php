@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller {
 
@@ -119,8 +120,8 @@ class AdminController extends Controller {
     }
 
     private function generateReports(): array {
-        $startOfMonth = Carbon::now()->firstOfMonth();
-        $startOfYear = Carbon::now()->firstOfYear();
+        $startOfMonth   = Carbon::now()->firstOfMonth();
+        $startOfYear    = Carbon::now()->firstOfYear();
 
         return [
             'monthly_revenue' => Payment::where('status', 'completed')
@@ -455,120 +456,4 @@ class AdminController extends Controller {
             'status'    => $user->is_active
         ]);
     }
-
-    // ==================== GESTIÓN DE INSCRIPCIONES ====================
-
-    public function enrollmentsIndex(Request $request): View {
-        $query = Enrollment::with(['user', 'course.category'])->latest();
-        // Filtros
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('user', function ($q) use ($search) {
-                    $q->where('names', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%");
-                })->orWhereHas('course', function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%");
-                });
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('course')) {
-            $query->where('course_id', $request->course);
-        }
-
-        $enrollments = $query->paginate(20);
-        $courses = Course::where('is_active', true)->get();
-
-        $stats = [
-            'total'     => Enrollment::count(),
-            'active'    => Enrollment::where('status', 'active')->count(),
-            'completed' => Enrollment::where('status', 'completed')->count(),
-            'cancelled' => Enrollment::where('status', 'cancelled')->count(),
-        ];
-
-        return view('admin.enrollments.index', compact('enrollments', 'courses', 'stats'));
-    }
-
-    public function enrollmentShow(Enrollment $enrollment): View {
-        $enrollment->load([
-            'user',
-            'course.category',
-            'course.instructor',
-            'payments'
-        ]);
-
-        return view('admin.enrollments.show', compact('enrollment'));
-    }
-
-    public function updateEnrollmentStatus(Request $request, Enrollment $enrollment): JsonResponse {
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(['active', 'completed', 'cancelled', 'pending'])]
-        ]);
-
-        $enrollment->update(['status' => $validated['status']]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Estado de la inscripción actualizado.'
-        ]);
-    }
-
-    // ==================== GESTIÓN DE PAGOS ====================
-
-    public function paymentsIndex(Request $request): View {
-        $query = Payment::with(['user', 'enrollment.course'])
-            ->latest();
-
-        // Filtros
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('transaction_id', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($q) use ($search) {
-                      $q->where('names', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('enrollment.course', function ($q) use ($search) {
-                      $q->where('title', 'like', "%{$search}%");
-                  });
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('method')) {
-            $query->where('payment_method', $request->method);
-        }
-
-        $payments = $query->paginate(20);
-
-        $stats = [
-            'total' => Payment::sum('amount'),
-            'pending' => Payment::where('status', 'pending')->sum('amount'),
-            'completed' => Payment::where('status', 'completed')->sum('amount'),
-            'failed' => Payment::where('status', 'failed')->sum('amount'),
-        ];
-
-        return view('admin.payments.index', compact('payments', 'stats'));
-    }
-
-    public function updatePaymentStatus(Request $request, Payment $payment): JsonResponse {
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(['pending', 'completed', 'failed', 'refunded'])]
-        ]);
-
-        $payment->update(['status' => $validated['status']]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Estado del pago actualizado.'
-        ]);
-    }
-
 }

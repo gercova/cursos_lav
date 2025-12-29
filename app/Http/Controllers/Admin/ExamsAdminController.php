@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExamsAdminController extends Controller {
 
@@ -301,7 +300,7 @@ class ExamsAdminController extends Controller {
     /**
      * Exportar resultados del examen a CSV
      */
-    public function exportResults(Exam $exam, Request $request): BinaryFileResponse {
+    public function exportResults(Exam $exam, Request $request) {
         try {
             // Aplicar filtros si existen
             $query = $exam->examAttempts()->with('user:id,name,email');

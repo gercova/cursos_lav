@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('title', 'IPF Consultores - Inicio')
 @section('content')
 <!-- Hero Section con Carousel Full Width -->
@@ -9,9 +8,7 @@
         <!-- Slide 1 -->
         <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100" id="slide-1">
             <div class="absolute inset-0 bg-black opacity-40"></div>
-            <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                alt="Aprende desde cualquier lugar"
-                class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Aprende desde cualquier lugar" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 animate-fade-in">
@@ -30,9 +27,7 @@
         <!-- Slide 2 -->
         <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-2">
             <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
-                 alt="Cursos profesionales"
-                 class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="Cursos profesionales" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
@@ -51,9 +46,7 @@
         <!-- Slide 3 -->
         <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-3">
             <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                 alt="Certificaciones reconocidas"
-                 class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Certificaciones reconocidas" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
@@ -72,9 +65,7 @@
         <!-- Slide 4 -->
         <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-4">
             <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-red-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                 alt="Comunidad de aprendizaje"
-                 class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Comunidad de aprendizaje" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
@@ -93,9 +84,7 @@
         <!-- Slide 5 -->
         <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-5">
             <div class="absolute inset-0 bg-gradient-to-r from-teal-900/70 to-blue-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                 alt="Flexibilidad de horarios"
-                 class="w-full h-full object-cover">
+            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Flexibilidad de horarios" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex items-center justify-center">
                 <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
@@ -188,9 +177,7 @@
                 @foreach($courses as $course)
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
                         <div class="relative">
-                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                alt="{{ $course->title }}"
-                                class="w-full h-48 object-cover">
+                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
                             @if($course->promotion_price)
                                 <span class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
                                     -{{ number_format((($course->price - $course->promotion_price) / $course->price) * 100, 0) }}%
@@ -229,8 +216,8 @@
                                         <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                     @endif
                                 </div>
-                                <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
-                                    Agregar al Carrito
+                                <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg w-full lg:w-auto">
+                                    Agregar
                                 </button>
                             </div>
                         </div>

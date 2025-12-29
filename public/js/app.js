@@ -1,7 +1,6 @@
 // Cargar categorías
 document.addEventListener('DOMContentLoaded', function() {
-    loadCategories();
-    updateCartCount();
+    updateCartCount()
 
     // Sidebar móvil
     const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -51,13 +50,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Actualizar contador del carrito
 async function updateCartCount() {
     try {
         const response = await axios.get('/api/cart/count');
         const cartCount = document.getElementById('cart-count');
         if (cartCount) {
             cartCount.textContent = response.data.count;
-            // Efecto de animación cuando cambia el count
             if (response.data.count > 0) {
                 cartCount.classList.add('animate-pulse');
                 setTimeout(() => {

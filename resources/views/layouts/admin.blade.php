@@ -106,7 +106,7 @@
                     <i class="fas fa-solid fa-users"></i> Usuarios
                 </a>
                 <a href="{{ route('admin.enrollments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enrollments.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fa-solid fa-address-book"></i> Gestión de inscripciones
+                    <i class="fas fa-solid fa-address-book"></i> Gestión de inscripciones
                 </a>
                 <a href="{{ route('admin.payments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.payments.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-solid fa-dollar-sign"></i> Gestión de pagos

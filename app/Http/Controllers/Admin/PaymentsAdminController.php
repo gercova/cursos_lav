@@ -15,9 +15,6 @@ class PaymentsAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request): View {
         $query = Payment::with(['user', 'enrollment.course'])
             ->latest();

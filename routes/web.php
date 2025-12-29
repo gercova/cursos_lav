@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
+use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
 use App\Http\Controllers\Student\StudentSettingsController;
+use App\Http\Controllers\Student\WishlistController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -65,15 +67,26 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Carrito de compras
     Route::get('/cart',                         [CartsController::class, 'index'])->name('cart');
-    Route::post('/cart/add/{courseId}',         [CartsController::class, 'add'])->name('cart.add');
+    Route::post('/cart/add/{course}',           [CartsController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{courseId}',    [CartsController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
 
+    Route::get('/wishlist',                     [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/wishlist/add',                [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{course}',  [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::delete('/wishlist/clear-all',        [WishlistController::class, 'clearAll'])->name('wishlist.clear-all');
+    Route::get('/wishlist/count',               [WishlistController::class, 'count'])->name('wishlist.count');
+    Route::get('/wishlist/check/{course}',      [WishlistController::class, 'check'])->name('wishlist.check');
+    Route::post('/wishlist/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // API para actualizar contador en tiempo real
+    Route::get('/api/wishlist/count',           [WishlistController::class, 'count']);
+
     // Exámenes
     Route::get('/exam',                         [StudentExamsController::class, 'index'])->name('student.exams');
-    //Route::get('/exam/{courseId}',              [ExamsAdminController::class, 'show'])->name('exam.show');
-    //Route::post('/exam/{courseId}/start',       [ExamsAdminController::class, 'start'])->name('exam.start');
-    //Route::post('/exam/{courseId}/submit',      [ExamsAdminController::class, 'submit'])->name('exam.submit');
+    // Route::get('/exam/{courseId}',              [ExamsAdminController::class, 'show'])->name('exam.show');
+    // Route::post('/exam/{courseId}/start',       [ExamsAdminController::class, 'start'])->name('exam.start');
+    // Route::post('/exam/{courseId}/submit',      [ExamsAdminController::class, 'submit'])->name('exam.submit');
 
     // Certificados
     Route::get('/certificate',                  [CertificatesController::class, 'index'])->name('student.certificates');
@@ -130,22 +143,21 @@ Route::prefix('admin')->group(function () {
         Route::post('/clear-cache',                 [AdminController::class, 'clearCache'])->name('admin.cache.clear');
         // Log de Actividades
         Route::get('/activity-log',                 [AdminController::class, 'activityLog'])->name('admin.activity-log');
-        // Perfil
-        Route::get('/profile',                      [AdminController::class, 'profile'])->name('admin.profile');
-        Route::put('/profile',                      [AdminController::class, 'updateProfile'])->name('admin.profile.update');
         // Logout
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
         // Gestión de Usuarios
-        Route::get('/users',                        [AdminController::class, 'usersIndex'])->name('admin.users.index');
-        Route::get('/users/create',                 [AdminController::class, 'userCreate'])->name('admin.users.create');
-        Route::get('/users/{user}',                 [AdminController::class, 'userShow'])->name('admin.users.show');
-        Route::get('/users/{user}/edit',            [AdminController::class, 'userEdit'])->name('admin.users.edit');
-        Route::post('/users/store',                 [AdminController::class, 'userStore'])->name('admin.users.store');
-        Route::put('/users/{user}/password',        [AdminController::class, 'updatePassword'])->name('admin.users.password');
-        Route::delete('/users/{user}',              [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
-        Route::patch('/users/{user}/toggle-status',         [AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
-
+        Route::get('/users/home',                   [UserAdminController::class, 'index'])->name('admin.users.index');
+        Route::get('/users/create',                 [UserAdminController::class, 'create'])->name('admin.users.create');
+        Route::get('/users/{user}',                 [UserAdminController::class, 'show'])->name('admin.users.show');
+        Route::get('/users/{user}/edit',            [UserAdminController::class, 'edit'])->name('admin.users.edit');
+        Route::post('/users/store',                 [UserAdminController::class, 'store'])->name('admin.users.store');
+        Route::put('/users/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('admin.users.password');
+        Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
+        Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+        // Perfil
+        // Route::get('/profile',                      [UserAdminController::class, 'profile'])->name('admin.profile');
+        // Route::put('/profile',                      [UserAdminController::class, 'updateProfile'])->name('admin.profile.update');
 
         // Rutas para categorias
         Route::get('categories/home',               [CategoriesAdminController::class, 'index'])->name('admin.categories.index');

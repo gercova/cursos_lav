@@ -107,12 +107,23 @@
                                 </button>
                             @endif
 
-                            <button class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mb-4">
+                            <!--<button class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mb-4">
                                 <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                 </svg>
                                 Agregar a Favoritos
-                            </button>
+                            </button>-->
+
+                            <div class="relative">
+                                @php
+                                    $inWishlist = auth()->check() ? \App\Models\Wishlist::isInWishlist(auth()->id(), $course->id) : false;
+                                @endphp
+
+                                <button onclick="toggleWishlist({{ $course->id }})" class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mb-4 flex items-center justify-center" id="wishlist-btn-{{ $course->id }}">
+                                    <i class="{{ $inWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart' }} mr-2"></i>
+                                    {{ $inWishlist ? 'Eliminar de Favoritos' : 'Agregar a Favoritos' }}
+                                </button>
+                            </div>
 
                             <div class="text-center text-sm text-gray-600">
                                 <p>✅ Garantía de devolución de 30 días</p>

@@ -9,7 +9,6 @@ class HomeCarousel {
     init() {
         this.setupEventListeners();
         this.startAutoPlay();
-        this.loadCategories();
     }
 
     setupEventListeners() {
@@ -146,33 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-/*async function loadCategories() {
-    try {
-        const response = await axios.get('/api/categories');
-        const categories = response.data;
-
-        const categoriesGrid = document.getElementById('categories-grid');
-        if (categoriesGrid) {
-            categoriesGrid.innerHTML = categories.map(category => `
-                <a href="/?category=${category.id}" class="bg-white rounded-lg shadow-md p-4 sm:p-6 text-center hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-gray-100 group">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold text-gray-900 text-sm sm:text-base group-hover:text-blue-600 transition-colors duration-300">${category.name}</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1">${category.courses_count || 0} cursos</p>
-                </a>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading categories:', error);
-    }
-}*/
-
-// Llamar a la función cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', loadCategories);
-
 // Smooth scroll para los enlaces internos
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -186,3 +158,103 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Función global para agregar al carrito
+async function addToCart(courseId) {
+    const btn = event?.target;
+    if (btn) {
+        btn.disabled    = true;
+        btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+    }
+
+    try {
+        const response = await fetch(`/cart/add/${courseId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('✓ Curso agregado al carrito', 'success');
+            updateCartCount();
+        } else if(data.success == false) {
+            showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+        } else {
+            throw new Error(data.message || 'Error al agregar el curso');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+
+        if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+            showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+        } else {
+            showNotification('Error al agregar el curso al carrito', 'error');
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Agregar';
+        }
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Remover notificaciones existentes
+    const existing = document.querySelectorAll('.custom-notification');
+    existing.forEach(n => n.remove());
+
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        warning: 'bg-yellow-500',
+        info: 'bg-blue-500'
+    };
+
+    const notification = document.createElement('div');
+    notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+    notification.innerHTML = `
+        <span class="text-lg">${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('animate-fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+async function updateCartCount() {
+    try {
+        const response = await fetch('/api/cart/count', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const data = await response.json();
+
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount && data.count !== undefined) {
+            cartCount.textContent = data.count;
+
+            // Animación del contador
+            cartCount.classList.add('animate-bounce');
+            setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
+        }
+    } catch (error) {
+        console.error('Error updating cart count:', error);
+    }
+}

@@ -255,8 +255,7 @@
                                                         <span class="text-2xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                                     @endif
                                                 </div>
-                                                <button onclick="addToCart({{ $course->id }})"
-                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg w-full lg:w-auto">
+                                                <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg w-full lg:w-auto">
                                                     Agregar al Carrito
                                                 </button>
                                             </div>
@@ -298,7 +297,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-white mb-4">¿No encuentras lo que buscas?</h2>
         <p class="text-xl text-gray-300 mb-8">Contáctanos y te ayudaremos a encontrar el curso perfecto para ti</p>
-        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+        <a href="{{ route('contacto') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
             Contactar Asesor
         </a>
     </div>
@@ -716,6 +715,8 @@ async function addToCart(courseId) {
         if (data.success) {
             showNotification('✓ Curso agregado al carrito', 'success');
             updateCartCount();
+        } else if(data.success == false) {
+            showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
         } else {
             throw new Error(data.message || 'Error al agregar el curso');
         }

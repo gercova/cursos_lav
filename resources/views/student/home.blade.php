@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'IPF Consultores - Inicio')
+@section('title', $enterprise->trade_name.' - Inicio')
 @section('content')
 <!-- Hero Section con Carousel Full Width -->
 <div class="relative w-full">

@@ -5,9 +5,7 @@
             @foreach($courses as $course)
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
                     <div class="relative">
-                        <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                             alt="{{ $course->title }}"
-                             class="w-full h-48 object-cover">
+                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
                         @if($course->promotion_price)
                             <span class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
                                 -{{ number_format((($course->price - $course->promotion_price) / $course->price) * 100, 0) }}%
@@ -61,8 +59,7 @@
                                     <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                 @endif
                             </div>
-                            <button onclick="addToCart({{ $course->id }})"
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
+                            <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
                                 Agregar
                             </button>
                         </div>
@@ -79,9 +76,7 @@
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
                     <div class="flex flex-col md:flex-row">
                         <div class="md:w-64 md:flex-shrink-0">
-                            <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}"
-                                alt="{{ $course->title }}"
-                                class="w-full h-48 md:h-full object-cover">
+                            <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
                         </div>
                         <div class="p-6 flex-1">
                             <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">

@@ -71,6 +71,61 @@
                                 </div>
                             </div>
                             <div class="flex items-start">
+                                <div class="bg-cyan-400 p-2 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Puntualidad</h4>
+                                    <p class="text-gray-600 text-sm">Cumplir tiempos con respeto y profesionalismo.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-emerald-500 p-2 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Responsabilidad</h4>
+                                    <p class="text-gray-600 text-sm">Asumir compromisos con seriedad y calidad.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-fuchsia-200 p-2 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.6 8.4l-9.8 9.8c-.4.4-1 .4-1.4 0L5.4 14.2c-.4-.4-.4-1 0-1.4l9.8-9.8c.4-.4 1-.4 1.4 0l4 4c.4.4.4 1 0 1.4zM7 15l-5 5M22 2l-5 5"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Honestidad</h4>
+                                    <p class="text-gray-600 text-sm">Actuar con transparencia y credibilidad.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-green-100 p-2 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22v-9m0 0c-3-3-7.5-3-7.5 0s4.5 3 7.5 0c3 3 7.5 3 7.5 0s-4.5-3-7.5 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Sostenibilidad</h4>
+                                    <p class="text-gray-600 text-sm">Generar impacto positivo y cuidar recursos.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-amber-200 p-2 rounded-lg mr-4">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M12 6v15M3 6l-3 6h6l-3-6zM21 6l-3 6h6l-3-6zM8 21h8"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Integridad</h4>
+                                    <p class="text-gray-600 text-sm">Mantener ética y coherencia en cada acción.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
                                 <div class="bg-green-100 p-2 rounded-lg mr-4">
                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>

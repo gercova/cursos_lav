@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Enterprise;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -79,13 +80,14 @@ class CoursesController extends Controller {
 
         $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->get();
+        $enterprise = Enterprise::first();
 
         // Si es una petición AJAX, retornar solo la vista parcial
         if ($request->ajax()) {
             return view('student.partials.courses-grid', compact('courses'))->render();
         }
 
-        return view('student.courses', compact('courses', 'categories'));
+        return view('student.courses', compact('courses', 'categories', 'enterprise'));
     }
 
     public function show($id): View {

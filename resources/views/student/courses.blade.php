@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'IPF Consultores - Catálogo de Cursos')
+@section('title', $enterprise->trade_name.' - Catálogo de Cursos')
 @section('content')
 <!-- Hero Section -->
 <div class="bg-gradient-to-r from-blue-600 to-purple-700 py-16 sm:py-20">
@@ -196,7 +196,7 @@
                             <a href="{{ route('course.show', $course->id) }}">
                                 <div class="flex flex-col md:flex-row">
                                     <div class="md:w-64 md:flex-shrink-0">
-                                        <img src="{{ $course->image_url ? Storage::url($course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80' }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
+                                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
                                     </div>
                                     <div class="p-6 flex-1">
                                         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">

@@ -23,12 +23,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void {
 
         View::composer('layouts.app', function ($view) {
-            $enterprise = Enterprise::find(1);
+            $enterprise = Enterprise::first();
             $view->with(['enterprise' => $enterprise]);
         });
 
         View::composer('student.home', function ($view) {
-            $enterprise = Enterprise::find(1);
+            $enterprise = Enterprise::first();
             $view->with(['enterprise' => $enterprise]);
         });
     }

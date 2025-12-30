@@ -90,6 +90,9 @@
                 <a href="{{ route('admin.dashboard') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                 </a>
+                <a href="{{ route('admin.enterprise.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enterprise.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-building mr-2"></i>Datos de Empresa
+                </a>
                 <a href="{{ route('admin.categories.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-folder mr-2"></i>Categorías
                 </a>

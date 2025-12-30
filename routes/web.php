@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\CourseSectionAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
 use App\Http\Controllers\Admin\EnrollmentsAdminController;
+use App\Http\Controllers\Admin\EnterpriseAdminController;
 use App\Http\Controllers\admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
@@ -160,6 +161,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/activity-log',                 [AdminController::class, 'activityLog'])->name('admin.activity-log');
         // Logout
         Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
+
+        Route::get('/enterprise',                   [EnterpriseAdminController::class, 'index'])->name('admin.enterprise.index');
+        Route::put('/enterprise',                   [EnterpriseAdminController::class, 'update'])->name('admin.enterprise.update');
+        Route::delete('/enterprise/logo',           [EnterpriseAdminController::class, 'deleteLogo'])->name('admin.enterprise.delete-logo');
+        Route::delete('/enterprise/favicon',        [EnterpriseAdminController::class, 'deleteFavicon'])->name('admin.enterprise.delete-favicon');
 
         // Gestión de Usuarios
         Route::get('/users/home',                   [UserAdminController::class, 'index'])->name('admin.users.index');

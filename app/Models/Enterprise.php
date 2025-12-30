@@ -11,7 +11,7 @@ class Enterprise extends Model
 
     protected $table        = 'enterprise';
     protected $primaryKey   = 'id';
-    protected $fillable     = [
+    protected $fillable = [
         'ruc',
         'company_name',
         'trade_name',
@@ -26,13 +26,15 @@ class Enterprise extends Model
         'vision',
         'mission',
         'phone_number_1',
-        'phonen_umber_2',
+        'phone_number_2', // Nota: corrige el typo si es necesario
         'email',
         'facebook_link',
         'linkedin_link',
         'twitter_link',
         'instagram_link',
-        'whatsapp_link'
+        'whatsapp_link',
+        'logo_path',      // Agregar estos campos
+        'favicon_path'    // Agregar estos campos
     ];
 
     protected $casts = [

@@ -2,7 +2,7 @@
 @section('title', 'Mi perfil')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto" x-data="{ activeTab: 'info' }">
     <!-- Header del perfil -->
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900">Mi Perfil</h1>
@@ -133,29 +133,29 @@
                 <div class="border-b border-gray-200">
                     <nav class="flex space-x-1">
                         <button @click="activeTab = 'info'"
-                            :class="{
-                                'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'info',
-                                'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'info'
-                            }"
-                            class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
+                                :class="{
+                                    'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'info',
+                                    'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'info'
+                                }"
+                                class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
                             <i class="fas fa-user mr-2"></i>
                             Información Personal
                         </button>
                         <button @click="activeTab = 'password'"
-                            :class="{
-                                'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'password',
-                                'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'password'
-                            }"
-                            class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
+                                :class="{
+                                    'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'password',
+                                    'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'password'
+                                }"
+                                class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
                             <i class="fas fa-lock mr-2"></i>
                             Cambiar Contraseña
                         </button>
                         <button @click="activeTab = 'privacy'"
-                            :class="{
-                                'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'privacy',
-                                'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'privacy'
-                            }"
-                            class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
+                                :class="{
+                                    'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'privacy',
+                                    'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'privacy'
+                                }"
+                                class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
                             <i class="fas fa-shield-alt mr-2"></i>
                             Privacidad
                         </button>
@@ -166,14 +166,12 @@
                 <div class="p-6">
                     <!-- Tab 1: Información Personal -->
                     <div x-show="activeTab === 'info'" x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform -translate-y-2"
-                         x-transition:enter-end="opacity-100 transform translate-y-0">
-                        <form action="{{ route('student.profile.update') }}" method="POST" class="space-y-6">
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0">
+                        <form action="{{ route('student.profile.update') }}" method="POST" class="space-y-6" autocomplete="off">
                             @csrf
                             @method('PUT')
-
                             <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar información personal</h3>
-
                             <!-- Grid de campos -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- DNI -->
@@ -182,11 +180,11 @@
                                         DNI / Documento
                                     </label>
                                     <input type="text"
-                                           id="dni"
-                                           name="dni"
-                                           value="{{ old('dni', $user->dni) }}"
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('dni') border-red-300 @enderror"
-                                           placeholder="Ingresa tu DNI">
+                                        id="dni"
+                                        name="dni"
+                                        value="{{ old('dni', $user->dni) }}"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('dni') border-red-300 @enderror"
+                                        placeholder="Ingresa tu DNI">
                                     @error('dni')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -198,12 +196,12 @@
                                         Nombres Completos *
                                     </label>
                                     <input type="text"
-                                           id="names"
-                                           name="names"
-                                           value="{{ old('names', $user->names) }}"
-                                           required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('names') border-red-300 @enderror"
-                                           placeholder="Ingresa tus nombres">
+                                        id="names"
+                                        name="names"
+                                        value="{{ old('names', $user->names) }}"
+                                        required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('names') border-red-300 @enderror"
+                                        placeholder="Ingresa tus nombres">
                                     @error('names')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -215,12 +213,12 @@
                                         Correo Electrónico *
                                     </label>
                                     <input type="email"
-                                           id="email"
-                                           name="email"
-                                           value="{{ old('email', $user->email) }}"
-                                           required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('email') border-red-300 @enderror"
-                                           placeholder="ejemplo@correo.com">
+                                        id="email"
+                                        name="email"
+                                        value="{{ old('email', $user->email) }}"
+                                        required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('email') border-red-300 @enderror"
+                                        placeholder="ejemplo@correo.com">
                                     @error('email')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -232,8 +230,7 @@
                                         Teléfono
                                     </label>
                                     <div class="flex">
-                                        <select name="country_code"
-                                                class="px-4 py-2.5 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 @error('country_code') border-red-300 @enderror">
+                                        <select name="country_code" class="px-4 py-2.5 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 @error('country_code') border-red-300 @enderror">
                                             <option value="+51" {{ old('country_code', $user->country_code) == '+51' ? 'selected' : '' }}>+51 PE</option>
                                             <option value="+1" {{ old('country_code', $user->country_code) == '+1' ? 'selected' : '' }}>+1 US</option>
                                             <option value="+57" {{ old('country_code', $user->country_code) == '+57' ? 'selected' : '' }}>+57 CO</option>
@@ -241,11 +238,11 @@
                                             <option value="+54" {{ old('country_code', $user->country_code) == '+54' ? 'selected' : '' }}>+54 AR</option>
                                         </select>
                                         <input type="tel"
-                                               id="phone"
-                                               name="phone"
-                                               value="{{ old('phone', $user->phone) }}"
-                                               class="flex-1 px-4 py-2.5 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('phone') border-red-300 @enderror"
-                                               placeholder="987654321">
+                                            id="phone"
+                                            name="phone"
+                                            value="{{ old('phone', $user->phone) }}"
+                                            class="flex-1 px-4 py-2.5 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('phone') border-red-300 @enderror"
+                                            placeholder="987654321">
                                     </div>
                                     @error('phone')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -257,9 +254,7 @@
                                     <label for="nationality" class="block text-sm font-medium text-gray-700 mb-2">
                                         Nacionalidad
                                     </label>
-                                    <select id="nationality"
-                                            name="nationality"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nationality') border-red-300 @enderror">
+                                    <select id="nationality" name="nationality" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('nationality') border-red-300 @enderror">
                                         <option value="">Seleccionar nacionalidad</option>
                                         <option value="Peruana" {{ old('nationality', $user->nationality) == 'Peruana' ? 'selected' : '' }}>Peruana</option>
                                         <option value="Colombiana" {{ old('nationality', $user->nationality) == 'Colombiana' ? 'selected' : '' }}>Colombiana</option>
@@ -279,11 +274,11 @@
                                         Profesión / Ocupación
                                     </label>
                                     <input type="text"
-                                           id="profession"
-                                           name="profession"
-                                           value="{{ old('profession', $user->profession) }}"
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('profession') border-red-300 @enderror"
-                                           placeholder="Ingresa tu profesión">
+                                        id="profession"
+                                        name="profession"
+                                        value="{{ old('profession', $user->profession) }}"
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('profession') border-red-300 @enderror"
+                                        placeholder="Ingresa tu profesión">
                                     @error('profession')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
@@ -296,10 +291,10 @@
                                     Dirección
                                 </label>
                                 <textarea id="address"
-                                          name="address"
-                                          rows="3"
-                                          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('address') border-red-300 @enderror"
-                                          placeholder="Ingresa tu dirección completa">{{ old('address', $user->address) }}</textarea>
+                                    name="address"
+                                    rows="3"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 @error('address') border-red-300 @enderror"
+                                    placeholder="Ingresa tu dirección completa">{{ old('address', $user->address) }}</textarea>
                                 @error('address')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -307,12 +302,10 @@
 
                             <!-- Botones -->
                             <div class="flex justify-end pt-6 border-t border-gray-200">
-                                <button type="reset"
-                                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 mr-3">
+                                <button type="reset" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 mr-3">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                        class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
+                                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
                                     <i class="fas fa-save mr-2"></i>
                                     Guardar Cambios
                                 </button>
@@ -322,9 +315,9 @@
 
                     <!-- Tab 2: Cambiar Contraseña -->
                     <div x-show="activeTab === 'password'" x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform -translate-y-2"
-                         x-transition:enter-end="opacity-100 transform translate-y-0"
-                         style="display: none;">
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        style="display: none;">
                         <form action="{{ route('student.profile.update-password') }}" method="POST" class="space-y-6">
                             @csrf
                             @method('PUT')
@@ -339,14 +332,12 @@
                                 </label>
                                 <div class="relative">
                                     <input type="password"
-                                           id="current_password"
-                                           name="current_password"
-                                           required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10 @error('current_password') border-red-300 @enderror"
-                                           placeholder="Ingresa tu contraseña actual">
-                                    <button type="button"
-                                            onclick="togglePasswordVisibility('current_password')"
-                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        id="current_password"
+                                        name="current_password"
+                                        required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10 @error('current_password') border-red-300 @enderror"
+                                        placeholder="Ingresa tu contraseña actual">
+                                    <button type="button" onclick="togglePasswordVisibility('current_password')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -362,11 +353,11 @@
                                 </label>
                                 <div class="relative">
                                     <input type="password"
-                                           id="password"
-                                           name="password"
-                                           required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10 @error('password') border-red-300 @enderror"
-                                           placeholder="Ingresa la nueva contraseña">
+                                        id="password"
+                                        name="password"
+                                        required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10 @error('password') border-red-300 @enderror"
+                                        placeholder="Ingresa la nueva contraseña">
                                     <button type="button"
                                             onclick="togglePasswordVisibility('password')"
                                             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
@@ -391,14 +382,12 @@
                                 </label>
                                 <div class="relative">
                                     <input type="password"
-                                           id="password_confirmation"
-                                           name="password_confirmation"
-                                           required
-                                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10"
-                                           placeholder="Confirma la nueva contraseña">
-                                    <button type="button"
-                                            onclick="togglePasswordVisibility('password_confirmation')"
-                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
+                                        id="password_confirmation"
+                                        name="password_confirmation"
+                                        required
+                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 pr-10"
+                                        placeholder="Confirma la nueva contraseña">
+                                    <button type="button" onclick="togglePasswordVisibility('password_confirmation')" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -429,12 +418,10 @@
 
                             <!-- Botones -->
                             <div class="flex justify-end pt-6 border-t border-gray-200">
-                                <button type="reset"
-                                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 mr-3">
+                                <button type="reset" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 mr-3">
                                     Cancelar
                                 </button>
-                                <button type="submit"
-                                        class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
+                                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
                                     <i class="fas fa-key mr-2"></i>
                                     Cambiar Contraseña
                                 </button>
@@ -444,9 +431,9 @@
 
                     <!-- Tab 3: Privacidad -->
                     <div x-show="activeTab === 'privacy'" x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 transform -translate-y-2"
-                         x-transition:enter-end="opacity-100 transform translate-y-0"
-                         style="display: none;">
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        style="display: none;">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Configuración de privacidad</h3>
                         <p class="text-gray-600 mb-6">Controla cómo otros usuarios ven tu información en la plataforma.</p>
 
@@ -489,8 +476,7 @@
 
                             <!-- Botón para guardar configuraciones -->
                             <div class="flex justify-end pt-6 border-t border-gray-200">
-                                <button type="button"
-                                        class="px-6 py-2.5 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
+                                <button type="button" class="px-6 py-2.5 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
                                     <i class="fas fa-save mr-2"></i>
                                     Guardar Configuración
                                 </button>

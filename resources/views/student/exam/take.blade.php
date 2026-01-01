@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Examen - ' . $attempt->exam->course->title)
-
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -38,13 +36,8 @@
                                     <div class="space-y-3">
                                         @foreach($question->options as $key => $option)
                                             <div class="flex items-center">
-                                                <input type="radio"
-                                                       id="question_{{ $question->id }}_{{ $key }}"
-                                                       name="answers[{{ $question->id }}]"
-                                                       value="{{ $key }}"
-                                                       class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
-                                                <label for="question_{{ $question->id }}_{{ $key }}"
-                                                       class="ml-3 block text-sm font-medium text-gray-700">
+                                                <input type="radio" id="question_{{ $question->id }}_{{ $key }}" name="answers[{{ $question->id }}]" value="{{ $key }}" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                                <label for="question_{{ $question->id }}_{{ $key }}" class="ml-3 block text-sm font-medium text-gray-700">
                                                     {{ $option }}
                                                 </label>
                                             </div>
@@ -57,8 +50,7 @@
                 </div>
 
                 <div class="mt-8 flex justify-end">
-                    <button type="submit"
-                            class="px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700">
+                    <button type="submit" class="px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700">
                         Finalizar Examen
                     </button>
                 </div>

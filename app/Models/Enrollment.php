@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Enrollment extends Model
@@ -38,5 +39,17 @@ class Enrollment extends Model
 
     public function payments(): HasMany {
         return $this->hasMany(Payment::class);
+    }
+
+    public function completedLessons(): BelongsToMany {
+        return $this->belongsToMany(Lesson::class, 'completed_lessons')
+            ->withPivot('completed_at', 'time_spent_minutes')
+            ->withTimestamps();
+    }
+
+    public function completedDocuments(): BelongsToMany {
+        return $this->belongsToMany(Document::class, 'completed_documents')
+            ->withPivot('completed_at', 'time_spent_minutes')
+            ->withTimestamps();
     }
 }

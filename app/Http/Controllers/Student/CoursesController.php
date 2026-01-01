@@ -23,7 +23,8 @@ class CoursesController extends Controller {
 
         $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->get();
-        return view('student.home', compact('courses', 'categories'));
+        $enterprise = Enterprise::first();
+        return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
 
     public function courses(Request $request) {
@@ -164,5 +165,15 @@ class CoursesController extends Controller {
         });
 
         return view('student.my-courses', compact('enrollments', 'coursesData'));
+    }
+
+    public function aboutus(): View {
+        $enterprise = Enterprise::first();
+        return view('student.about', compact('enterprise'));
+    }
+
+    public function contact(): View {
+        $enterprise = Enterprise::first();
+        return view('student.contact', compact('enterprise'));
     }
 }

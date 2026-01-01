@@ -276,8 +276,7 @@ class PaymentController extends Controller {
         }
     }
 
-    private function createCulqiCIP($data)
-    {
+    private function createCulqiCIP($data) {
         $privateKey = config('services.culqi.secret_key');
 
         try {

@@ -235,9 +235,7 @@
             <!-- Miembro 1 -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group">
                 <div class="relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                         alt="CEO"
-                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="CEO" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </div>
                 <div class="p-6 text-center">
@@ -250,9 +248,7 @@
             <!-- Miembro 2 -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group">
                 <div class="relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                         alt="Directora Académica"
-                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Directora Académica" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-green-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </div>
                 <div class="p-6 text-center">
@@ -265,9 +261,7 @@
             <!-- Miembro 3 -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group">
                 <div class="relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                         alt="CTO"
-                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="CTO" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </div>
                 <div class="p-6 text-center">
@@ -280,9 +274,7 @@
             <!-- Miembro 4 -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 group">
                 <div class="relative overflow-hidden">
-                    <img src="https://images.unsplash.com/photo-1551836026-d5c88ac5c73d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                         alt="Directora de Marketing"
-                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1551836026-d5c88ac5c73d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Directora de Marketing" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-orange-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                 </div>
                 <div class="p-6 text-center">
@@ -312,9 +304,7 @@
             <div class="relative h-64 sm:h-80 lg:h-96 w-full">
                 <!-- Slide 1 -->
                 <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100" id="gallery-slide-1">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
-                         alt="Comunidad de estudiantes"
-                         class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="Comunidad de estudiantes" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black opacity-40"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <h3 class="text-xl font-bold">Comunidad Activa</h3>
@@ -324,9 +314,7 @@
 
                 <!-- Slide 2 -->
                 <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="gallery-slide-2">
-                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                         alt="Sesiones de aprendizaje"
-                         class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Sesiones de aprendizaje" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black opacity-40"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <h3 class="text-xl font-bold">Aprendizaje Colaborativo</h3>
@@ -336,9 +324,7 @@
 
                 <!-- Slide 3 -->
                 <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="gallery-slide-3">
-                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                         alt="Ceremonia de graduación"
-                         class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Ceremonia de graduación" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black opacity-40"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <h3 class="text-xl font-bold">Logros Compartidos</h3>
@@ -348,9 +334,7 @@
 
                 <!-- Slide 4 -->
                 <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="gallery-slide-4">
-                    <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                         alt="Innovación tecnológica"
-                         class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Innovación tecnológica" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black opacity-40"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <h3 class="text-xl font-bold">Tecnología Educativa</h3>
@@ -360,9 +344,7 @@
 
                 <!-- Slide 5 -->
                 <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="gallery-slide-5">
-                    <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                         alt="Eventos educativos"
-                         class="w-full h-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Eventos educativos" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black opacity-40"></div>
                     <div class="absolute bottom-6 left-6 text-white">
                         <h3 class="text-xl font-bold">Eventos Especiales</h3>
@@ -396,27 +378,19 @@
         <!-- Mini Gallery Grid -->
         <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="relative group overflow-hidden rounded-lg cursor-pointer" onclick="galleryCarousel.goToSlide(0)">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                     alt="Miniatura 1"
-                     class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Miniatura 1" class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
             <div class="relative group overflow-hidden rounded-lg cursor-pointer" onclick="galleryCarousel.goToSlide(1)">
-                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                     alt="Miniatura 2"
-                     class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
+                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Miniatura 2" class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
             <div class="relative group overflow-hidden rounded-lg cursor-pointer" onclick="galleryCarousel.goToSlide(2)">
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                     alt="Miniatura 3"
-                     class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Miniatura 3" class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
             <div class="relative group overflow-hidden rounded-lg cursor-pointer" onclick="galleryCarousel.goToSlide(3)">
-                <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                     alt="Miniatura 4"
-                     class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
+                <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Miniatura 4" class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300">
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
         </div>

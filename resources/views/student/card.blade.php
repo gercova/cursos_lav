@@ -27,9 +27,7 @@
                                 <!-- Imagen del curso -->
                                 <div class="flex-shrink-0 w-full sm:w-32 h-40 sm:h-32">
                                     <a href="{{ route('course.show', $item->course->id) }}">
-                                        <img src="{{ $item->course->image_url ? Storage::url($item->course->image_url) : 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80' }}"
-                                             alt="{{ $item->course->title }}"
-                                             class="w-full h-full object-cover rounded-lg">
+                                        <img src="{{ $item->course->image_url }}" alt="{{ $item->course->title }}" class="w-full h-full object-cover rounded-lg">
                                     </a>
                                 </div>
 

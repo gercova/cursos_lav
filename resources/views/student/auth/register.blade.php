@@ -1,6 +1,5 @@
 @extends('layouts.app')
-
-@section('title', 'Registrarse')
+@section('title', $entreprise->trade_name.' - Registrarse')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -8,9 +7,7 @@
         <!-- Header -->
         <div class="text-center mb-8">
             <div class="mx-auto h-12 w-12 bg-green-600 rounded-full flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                </svg>
+                <i class="fa-solid fa-user-plus text-white"></i>
             </div>
             <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
                 Crear Cuenta

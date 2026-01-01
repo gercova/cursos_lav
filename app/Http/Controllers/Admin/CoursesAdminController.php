@@ -11,6 +11,7 @@ use App\Models\Document;
 use App\Models\Exam;
 use App\Models\Lesson;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use PhpParser\Node\Stmt\TryCatch;
 
 class CoursesAdminController extends Controller {
 
@@ -115,6 +115,15 @@ class CoursesAdminController extends Controller {
         try {
             $course = Course::create($validated);
             DB::commit();
+            if($course && $course->is_active == true) {
+                // Notificar a todos los estudiantes activos
+                $students = User::where('role', 'student')->where('is_active', true)->get();
+
+                foreach ($students as $student) {
+                    NotificationService::sendNewCourseNotification($student, $course);
+                }
+            }
+
             return redirect()->route('admin.courses.edit', $course)->with('success', 'Curso creado exitosamente');
         } catch (\Throwable $th) {
             // Log del error (opcional pero recomendado)

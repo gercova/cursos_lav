@@ -21,7 +21,7 @@
                 <!-- Logo y botón hamburguesa para móviles -->
                 <div class="flex items-center">
                     <a href="{{ url('/') }}" class="flex-shrink-0">
-                        <img class="h-8 w-auto" src="{{ asset('storage/photos/ipf-logo.png') }}" alt="Logo">
+                        <img class="h-8 w-auto" src="{{ $enterprise->logo_path }}" alt="Logo">
                     </a>
 
                     <!-- Botón hamburguesa para móviles -->
@@ -161,7 +161,7 @@
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Plataforma de Cursos</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ $enterprise->trade_name }}</h3>
                     <p class="text-gray-300">Ofrecemos los mejores cursos online para tu desarrollo profesional.</p>
                 </div>
                 <div>
@@ -197,7 +197,7 @@
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
-                <p>&copy; 2024 Plataforma de Cursos. Todos los derechos reservados.</p>
+                <p>{{ $enterprise->trade_name }} &copy; 2024 Plataforma de Cursos. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

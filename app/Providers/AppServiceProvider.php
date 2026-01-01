@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['enterprise' => $enterprise]);
         });
 
-        View::composer('student.home', function ($view) {
+        View::composer('layouts.student', function ($view) {
             $enterprise = Enterprise::first();
             $view->with(['enterprise' => $enterprise]);
         });

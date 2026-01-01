@@ -24,7 +24,6 @@ use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
-use App\Http\Controllers\Student\StudentSettingsController;
 use App\Http\Controllers\Student\WishlistController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -43,15 +42,9 @@ use Illuminate\Support\Facades\Route;
 // Rutas públicas
 Route::get('/',                 [CoursesController::class, 'index'])->name('home');
 Route::get('/cursos',           [CoursesController::class, 'courses'])->name('cursos');
-Route::get('/nosotros', function () {
-    return view('student.about');
-})->name('nosotros');
-Route::get('/contacto', function () {
-    return view('student.contact');
-})->name('contacto');
-// Ruta para el formulario de contacto
+Route::get('/nosotros',         [CoursesController::class, 'aboutus'])->name('nosotros');
+Route::get('/contacto',         [CoursesController::class, 'contact'])->name('contacto');
 Route::post('/contact/send',    [ContactController::class, 'sendMessage'])->name('contact.send');
-
 Route::get('/curso/{id}',       [CoursesController::class, 'show'])->name('course.show');
 Route::get('/api/cart/count',   [CartsController::class, 'count'])->name('cart.count');
 
@@ -74,12 +67,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
 
     // Pagos
-    Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
-
-    // Procesar pagos
-    Route::post('/payment/process-culqi',           [PaymentController::class, 'processCulqiPayment']);
-    Route::post('/payment/process-pago-efectivo',   [PaymentController::class, 'processPagoEfectivo']);
-
+    Route::get('/checkout',                             [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::post('/payment/process-culqi',               [PaymentController::class, 'processCulqiPayment']);
+    Route::post('/payment/process-pago-efectivo',       [PaymentController::class, 'processPagoEfectivo']);
     // PagoEfectivo CIP
     Route::get('/payment/cip-instructions/{payment}',   [PaymentController::class, 'cipInstructions'])->name('payment.cip-instructions');
     Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
@@ -111,21 +101,34 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Rutas nuevas
     // Dashboard principal
-    Route::get('/dashboard',                    [DashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/api/student/dashboard-stats',      [DashboardController::class, 'stats'])->name('student.dashboard.stats');
+    Route::get('/api/student/dashboard-courses',    [DashboardController::class, 'dashboardCourses'])->name('student.dashboard.courses');
+    Route::get('/api/student/progress-courses',     [DashboardController::class, 'progressCourses'])->name('student.progress.courses');
+    Route::get('/api/student/recent-activity',      [DashboardController::class, 'recentActivity'])->name('student.recent.activity');
+    Route::get('/api/student/upcoming-events',      [DashboardController::class, 'upcomingEvents'])->name('student.upcoming.events');
+    Route::get('/api/student/achievements',         [DashboardController::class, 'achievements'])->name('student.achievements');
+
+    // Notificaciones
+    Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
+    Route::get('/api/student/notifications',        [StudentNotificationController::class, 'apiIndex'])->name('student.notifications.api');
+    Route::post('/notifications/{id}/read',         [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
+    Route::post('/notifications/read-all',          [StudentNotificationController::class, 'markAllAsRead'])->name('student.notifications.read-all');
+    Route::delete('/notifications/{id}',            [StudentNotificationController::class, 'destroy'])->name('student.notifications.delete');
+    Route::delete('/notifications',                 [StudentNotificationController::class, 'clearAll'])->name('student.notifications.clear-all');
 
     // Perfil del estudiante
-    Route::get('/profile',                      [StudentProfileController::class, 'show'])->name('student.profile');
-    Route::put('/profile',                      [StudentProfileController::class, 'update'])->name('student.profile.update');
+    Route::get('/profile',                          [StudentProfileController::class, 'show'])->name('student.profile');
+    Route::put('/profile',                          [StudentProfileController::class, 'update'])->name('student.profile.update');
+    Route::put('/password',                         [StudentProfileController::class, 'updatePassword'])->name('student.profile.update-password');
+    Route::post('/photo',                           [StudentProfileController::class, 'updateProfilePhoto'])->name('student.profile.update-photo');
+    Route::delete('/photo',                         [StudentProfileController::class, 'deleteProfilePhoto'])->name('student.profile.delete-photo');
 
     // Mis cursos
-    Route::get('/courses',                      [CoursesController::class, 'index'])->name('student.courses.index');
+    Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');
 
     // Progreso
-    Route::get('/progress',                     [StudentProgressController::class, 'index'])->name('student.progress');
-
-    // Configuración
-    Route::get('/settings',                     [StudentSettingsController::class, 'index'])->name('student.settings');
-    Route::put('/settings',                     [StudentSettingsController::class, 'update'])->name('student.settings.update');
+    Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
 
     // Notificaciones
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');

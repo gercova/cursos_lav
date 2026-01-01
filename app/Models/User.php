@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Traits\StudentActivityLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable {
 
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, StudentActivityLogger;
 
     protected $table        = 'users';
     protected $primaryKey   = 'id';
@@ -27,6 +29,7 @@ class User extends Authenticatable {
         'profession',
         'role',
         'email_verified_at',
+        'profile_photo',
         'is_active',
     ];
 
@@ -70,5 +73,13 @@ class User extends Authenticatable {
 
     public function cartItems() {
         return $this->hasMany(Cart::class);
+    }
+
+    public function notifications() {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+    public function unreadNotifications() {
+        return $this->notifications()->unread();
     }
 }

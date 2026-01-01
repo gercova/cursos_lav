@@ -19,8 +19,8 @@ class ContactController extends Controller {
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
+                'success'   => false,
+                'errors'    => $validator->errors()
             ], 422);
         }
 

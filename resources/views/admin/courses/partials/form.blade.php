@@ -258,16 +258,10 @@
                 @foreach($requirements as $index => $requirement)
                     <div class="flex items-center gap-3">
                         <div class="flex-1">
-                            <input type="text"
-                                   name="requirements[]"
-                                   value="{{ $requirement }}"
-                                   placeholder="Ej: Conocimientos básicos de programación"
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            <input type="text" name="requirements[]" value="{{ $requirement }}" placeholder="Ej: Conocimientos básicos de programación" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                         </div>
                         @if($index > 0)
-                            <button type="button"
-                                    @click="removeItem($event)"
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                            <button type="button" @click="removeItem($event)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -410,13 +404,10 @@
             </a>
         </div>
         <div class="flex items-center gap-4">
-            <button type="button"
-                    onclick="window.location.reload()"
-                    class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+            <button type="button" onclick="window.location.reload()" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                 Reiniciar
             </button>
-            <button type="submit"
-                    class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                 {{ isset($course) ? 'Actualizar Curso' : 'Crear Curso' }}
             </button>
         </div>

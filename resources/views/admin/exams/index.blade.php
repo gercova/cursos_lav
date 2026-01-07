@@ -163,9 +163,6 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Estadísticas
                             </th>
-                            <!--<th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Estado
-                            </th>-->
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider text-right">
                                 Acciones
                             </th>
@@ -240,7 +237,7 @@
                                     @if($exam->course)
                                         <div class="flex items-center gap-3">
                                             @if($exam->course->image_url)
-                                                <img src="{{ Storage::url($exam->course->image_url) }}"  alt="{{ $exam->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                                                <img src="{{ $exam->course->image_url }}"  alt="{{ $exam->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">

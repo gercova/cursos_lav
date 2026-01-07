@@ -73,7 +73,8 @@
                 @endif
 
                 <!-- Formulario -->
-                <form class="space-y-6" action="{{ route('login') }}" method="POST">
+                <form class="space-y-6" action="{{ route('admin.login.post') }}" method="POST">
+                    @method('POST')
                     @csrf
                     <!-- Campo Email -->
                     <div class="space-y-2">

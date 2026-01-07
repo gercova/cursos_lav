@@ -564,7 +564,6 @@
             }
         };
     </script>
-
     <style>
         /* Variables CSS para consistencia */
         :root {
@@ -643,8 +642,8 @@
         }
 
         .footer-collapsed {
-            margin-left: var(--sidebar-collapsed);
-            width: calc(100% - var(--sidebar-collapsed));
+            /* margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed)); */
         }
 
         /* Mejoras visuales */

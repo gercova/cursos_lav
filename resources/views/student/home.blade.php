@@ -190,7 +190,7 @@
 
                         <div class="p-6">
                             <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors duration-200">
-                                <a href="{{ route('course.show', $course->id) }}">{{ $course->title }}</a>
+                                <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
                             </h3>
                             <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: $course->description }}</p>
 

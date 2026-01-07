@@ -121,7 +121,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
                     @foreach($courses as $course)
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
-                            <a href="{{ route('course.show', $course->id) }}">
+                            <a href="{{ route('course.show', $course->slug) }}">
                                 <div class="relative">
                                     <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
                                     @if($course->promotion_price)
@@ -141,7 +141,7 @@
 
                                 <div class="p-6">
                                     <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors duration-200">
-                                        <a href="{{ route('course.show', $course->id) }}">{{ $course->title }}</a>
+                                        <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
                                     </h3>
                                     <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: Str::limit($course->description, 120) }}</p>
 
@@ -193,7 +193,7 @@
                 <div class="space-y-6">
                     @foreach($courses as $course)
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
-                            <a href="{{ route('course.show', $course->id) }}">
+                            <a href="{{ route('course.show', $course->slug) }}">
                                 <div class="flex flex-col md:flex-row">
                                     <div class="md:w-64 md:flex-shrink-0">
                                         <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
@@ -218,7 +218,7 @@
                                                 </div>
 
                                                 <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors duration-200">
-                                                    <a href="{{ route('course.show', $course->id) }}">{{ $course->title }}</a>
+                                                    <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
                                                 </h3>
 
                                                 <p class="text-gray-600 mb-4">{{ $course->short_description ?: $course->description }}</p>

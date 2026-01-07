@@ -294,7 +294,7 @@
                                     @if($document->course)
                                         <div class="flex items-center gap-3">
                                             @if($document->course->image_url)
-                                                <img src="{{ Storage::url($document->course->image_url) }}" alt="{{ $document->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
+                                                <img src="{{ $document->course->image_url }}" alt="{{ $document->course->title }}" class="w-10 h-10 rounded-lg object-cover border border-gray-200">
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">

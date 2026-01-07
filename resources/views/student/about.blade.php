@@ -151,6 +151,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
@@ -170,6 +171,9 @@
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">Nuestra Misión</h2>
                 </div>
                 <div class="space-y-4 text-lg text-gray-600">
+                    <p>
+                        Brindar servicios generales a fin de atender a nuestros clientes cumplimiento los requerimientos legales de los diversos entes reguladores y fiscalizadores del Perú, de forma profesional y personalizada.
+                    </p>
                     <p>
                         <span class="font-semibold text-gray-900">Democratizar el acceso a educación de calidad</span> mediante plataformas tecnológicas innovadoras que rompan las barreras geográficas, económicas y temporales.
                     </p>
@@ -199,6 +203,9 @@
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">Nuestra Visión</h2>
                 </div>
                 <div class="space-y-4 text-lg text-gray-600">
+                    <p>
+                        Ser reconocidos como una empresa líder en la región donde operamos en el mercado de consultoría y servicios generales, destacándonos por la calidad de nuestros servicios.
+                    </p>
                     <p>
                         Aspiramos a ser <span class="font-semibold text-gray-900">la plataforma de educación online líder en Latinoamérica</span>, reconocida por nuestra excelencia académica, innovación tecnológica y impacto social positivo.
                     </p>

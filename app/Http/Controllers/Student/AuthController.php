@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginValidate;
 use App\Http\Requests\UserStudentValidate;
 use App\Models\Enterprise;
 use App\Models\User;
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller {
 
     public function showRegister(): View {
-        $entreprise = Enterprise::first();
-        return view('student.auth.register', compact('entreprise'));
+        $enterprise = Enterprise::first();
+        return view('student.auth.register', compact('enterprise'));
     }
 
     public function register(UserStudentValidate $request) {
@@ -44,13 +45,20 @@ class AuthController extends Controller {
         return view('student.auth.login', compact('enterprise'));
     }
 
-    public function login(Request $request) {
-        $credentials = $request->validate([
-            'email'     => 'required|email',
-            'password'  => 'required',
-        ]);
+    public function login(LoginValidate $request) {
+        $validated = $request->validated();
 
-        if (Auth::attempt($credentials)) {
+        // Verificar si el usuario es administrador
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || $user->isAdmin()) {
+            return back()->withErrors([
+                'email' => 'Este usuario no tiene los permisos para el acceso por este formulario.',
+            ])->onlyInput('email');
+
+        }
+
+        if (Auth::attempt($validated)) {
             $request->session()->regenerate();
             if (Auth::user()->role == 'student') {
                 return redirect()->intended('dashboard');
@@ -60,6 +68,7 @@ class AuthController extends Controller {
         return back()->withErrors([
             'email' => 'Las credenciales proporcionadas no son correctas.',
         ])->onlyInput('email');
+
     }
 
     public function logout(Request $request) {

@@ -38,7 +38,7 @@ class EnrollmentsAdminController extends Controller {
             $query->where('course_id', $request->course);
         }
 
-        $enrollments    = $query->paginate(20);
+        $enrollments    = $query->paginate(10);
         $courses        = Course::where('is_active', true)->get();
 
         $stats = [

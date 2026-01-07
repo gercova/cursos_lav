@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\AuthAdminController;
 use App\Http\Controllers\Admin\CategoriesAdminController;
 use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\CourseSectionAdminController;
@@ -13,7 +12,10 @@ use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\UserAdminController;
-use App\Http\Controllers\ContactController;
+use App\Http\Controllers\AppController;
+use App\Http\Controllers\Auth\AuthAdminController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Student\AuthController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
@@ -25,7 +27,6 @@ use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
 use App\Http\Controllers\Student\WishlistController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,20 +41,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Rutas públicas
-Route::get('/',                 [CoursesController::class, 'index'])->name('home');
-Route::get('/cursos',           [CoursesController::class, 'courses'])->name('cursos');
-Route::get('/nosotros',         [CoursesController::class, 'aboutus'])->name('nosotros');
-Route::get('/contacto',         [CoursesController::class, 'contact'])->name('contacto');
-Route::post('/contact/send',    [ContactController::class, 'sendMessage'])->name('contact.send');
-Route::get('/curso/{id}',       [CoursesController::class, 'show'])->name('course.show');
-Route::get('/api/cart/count',   [CartsController::class, 'count'])->name('cart.count');
+Route::get('/',                         [AppController::class, 'home'])->name('home');
+Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
+Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
+Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
+Route::post('/contact/send',            [AppController::class, 'sendMessage'])->name('contact.send');
+Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
+Route::get('/api/cart/count',           [CartsController::class, 'count'])->name('cart.count');
+Route::get('/terminos-y-condiciones',   [AppController::class, 'terms'])->name('terminos-y-condiciones');
+Route::get('/politicas-de-uso',         [AppController::class, 'policies'])->name('politicas-de-uso');
+Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->name('politicas-de-cookies');
 
-// Autenticación estudiantes
-Route::get('/register',         [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register',        [AuthController::class, 'register']);
-Route::get('/login',            [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login',           [AuthController::class, 'login']);
-Route::post('/logout',          [AuthController::class, 'logout'])->name('logout');
+// Autenticación general (Admin / Instructor / Student)
+Route::get('/register',         [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register',        [RegisterController::class, 'register']);
+Route::get('/login',            [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login',           [LoginController::class, 'login']);
+Route::post('/logout',          [LoginController::class, 'logout'])->name('logout');
 
 // Rutas protegidas para estudiantes
 Route::middleware(['auth', 'student'])->group(function () {
@@ -88,16 +92,20 @@ Route::middleware(['auth', 'student'])->group(function () {
     // API para actualizar contador en tiempo real
     Route::get('/api/wishlist/count',           [WishlistController::class, 'count']);
 
+    // Cursos
+    Route::get('/course/learn/{course}',            [CoursesController::class, 'learn' ])->name('course.learn');
+
     // Exámenes
-    Route::get('/exam',                         [StudentExamsController::class, 'index'])->name('student.exams');
-    // Route::get('/exam/{courseId}',              [ExamsAdminController::class, 'show'])->name('exam.show');
-    // Route::post('/exam/{courseId}/start',       [ExamsAdminController::class, 'start'])->name('exam.start');
-    // Route::post('/exam/{courseId}/submit',      [ExamsAdminController::class, 'submit'])->name('exam.submit');
+    Route::get('/exam/home',                        [StudentExamsController::class, 'index'])->name('student.exams');
+    Route::get('/examen/comenzar/{courseId}',       [StudentExamsController::class, 'start'])->name('student.exam.start');
+    Route::get('/examen/tomar/{attemptId}',         [StudentExamsController::class, 'take'])->name('student.exam.take');
+    Route::get('/examen/resultado/{attemptId}',     [StudentExamsController::class, 'result'])->name('student.exam.result');
 
     // Certificados
-    Route::get('/certificate',                  [CertificatesController::class, 'index'])->name('student.certificates');
-    Route::get('/certificate/{certificateId}',  [CertificatesController::class, 'show'])->name('student.certificate.show');
-    Route::get('/certificate/{certificateId}/download', [CertificatesController::class, 'download'])->name('certificate.download');
+    Route::get('/certificate',                      [CertificatesController::class, 'index'])->name('student.certificates');
+    Route::get('/certificate/{certificateId}',      [CertificatesController::class, 'show'])->name('student.certificate.show');
+    Route::get('/{certificateId}/descargar',        [CertificatesController::class, 'download'])->name('download');
+    Route::post('/generar/{enrollmentId}',          [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Rutas nuevas
     // Dashboard principal
@@ -135,10 +143,10 @@ Route::middleware(['auth', 'student'])->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    Route::middleware(['prevent.cache'])->group(function(){
-        Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
-        Route::post('/login',   [AuthAdminController::class, 'login'])->middleware('guest');
-    });
+    // Route::middleware(['prevent.cache'])->group(function(){
+    //     Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
+    //     Route::post('/login',   [AuthAdminController::class, 'login'])->name('admin.login.post')->middleware('guest');
+    // });
 
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -163,7 +171,7 @@ Route::prefix('admin')->group(function () {
         // Log de Actividades
         Route::get('/activity-log',                 [AdminController::class, 'activityLog'])->name('admin.activity-log');
         // Logout
-        Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
+        // Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
         Route::get('/enterprise',                   [EnterpriseAdminController::class, 'index'])->name('admin.enterprise.index');
         Route::put('/enterprise',                   [EnterpriseAdminController::class, 'update'])->name('admin.enterprise.update');

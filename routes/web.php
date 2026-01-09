@@ -13,10 +13,10 @@ use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\Auth\AuthAdminController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Student\AuthController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
@@ -58,6 +58,12 @@ Route::post('/register',        [RegisterController::class, 'register']);
 Route::get('/login',            [LoginController::class, 'showLogin'])->name('login');
 Route::post('/login',           [LoginController::class, 'login']);
 Route::post('/logout',          [LoginController::class, 'logout'])->name('logout');
+Route::get('forgot-password',   [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password',  [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Restablecer contraseña
+Route::get('reset-password/{token}',    [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password',           [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Rutas protegidas para estudiantes
 Route::middleware(['auth', 'student'])->group(function () {
@@ -143,11 +149,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    // Route::middleware(['prevent.cache'])->group(function(){
-    //     Route::get('/login',    [AuthAdminController::class, 'showLogin'])->name('admin.login')->middleware('guest');
-    //     Route::post('/login',   [AuthAdminController::class, 'login'])->name('admin.login.post')->middleware('guest');
-    // });
-
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
         // Gestión de Inscripciones

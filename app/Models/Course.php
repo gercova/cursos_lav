@@ -22,7 +22,6 @@ class Course extends Model
         'slug',
         'description',
         'learning_outcomes',
-        'learning_outcomes',
         'short_description',
         'image_url',
         'price',

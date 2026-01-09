@@ -208,9 +208,7 @@ class StudentProgressController extends Controller
                 'completed_items'   => $totalCompleted,
                 'progress'          => $sectionTotal > 0 ? round(($totalCompleted / $sectionTotal) * 100) : 0,
                 'lessons'           => $section->lessons->map(function($lesson) use ($enrollment) {
-                    $isCompleted = $enrollment->completedLessons()
-                        ->where('lesson_id', $lesson->id)
-                        ->exists();
+                    $isCompleted = $enrollment->completedLessons()->where('lesson_id', $lesson->id)->exists();
 
                     return [
                         'id'            => $lesson->id,
@@ -219,9 +217,7 @@ class StudentProgressController extends Controller
                         'duration'      => $lesson->duration_minutes,
                         'is_completed'  => $isCompleted,
                         'completed_at'  => $isCompleted ?
-                            $enrollment->completedLessons()
-                                ->where('lesson_id', $lesson->id)
-                                ->first()->pivot->completed_at : null,
+                            $enrollment->completedLessons()->where('lesson_id', $lesson->id)->first()->pivot->completed_at : null,
                     ];
                 }),
             ];
@@ -242,16 +238,16 @@ class StudentProgressController extends Controller
                 ->first();
 
             $examInfo = [
-                'has_exam' => true,
-                'exam_id' => $course->exam->id,
-                'title' => $course->exam->title,
-                'description' => $course->exam->description,
-                'passing_score' => $course->exam->passing_score,
-                'time_limit' => $course->exam->time_limit,
-                'attempts_count' => $user->examAttempts()->where('exam_id', $course->exam->id)->count(),
-                'best_score' => $examAttempt ? $examAttempt->score : null,
-                'is_passed' => $examAttempt ? $examAttempt->is_passed : false,
-                'last_attempt' => $examAttempt ? $examAttempt->created_at : null,
+                'has_exam'          => true,
+                'exam_id'           => $course->exam->id,
+                'title'             => $course->exam->title,
+                'description'       => $course->exam->description,
+                'passing_score'     => $course->exam->passing_score,
+                'time_limit'        => $course->exam->time_limit,
+                'attempts_count'    => $user->examAttempts()->where('exam_id', $course->exam->id)->count(),
+                'best_score'        => $examAttempt ? $examAttempt->score : null,
+                'is_passed'         => $examAttempt ? $examAttempt->is_passed : false,
+                'last_attempt'      => $examAttempt ? $examAttempt->created_at : null,
             ];
         }
 
@@ -372,9 +368,9 @@ class StudentProgressController extends Controller
         }
 
         return response()->json([
-            'success' => false,
-            'message' => 'Esta lección ya estaba completada',
-            'progress' => $enrollment->progress_percentage,
+            'success'   => false,
+            'message'   => 'Esta lección ya estaba completada',
+            'progress'  => $enrollment->progress_percentage,
         ]);
     }
 

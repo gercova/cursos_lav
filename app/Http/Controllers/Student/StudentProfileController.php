@@ -27,7 +27,6 @@ class StudentProfileController extends Controller {
 
     public function update(UserValidate $request): RedirectResponse {
         $user = Auth::user();
-
         $data = $request->validated();
 
         // Manejar la subida de foto de perfil si existe
@@ -43,8 +42,7 @@ class StudentProfileController extends Controller {
 
         $user->update($data);
 
-        return redirect()->route('student.profile')
-            ->with('success', 'Perfil actualizado correctamente.');
+        return redirect()->route('student.profile')->with('success', 'Perfil actualizado correctamente.');
     }
 
     public function updatePassword(PasswordValidate $request): RedirectResponse {
@@ -60,8 +58,7 @@ class StudentProfileController extends Controller {
             'password' => Hash::make($request->password)
         ]);
 
-        return redirect()->route('student.profile')
-            ->with('success', 'Contraseña actualizada correctamente.');
+        return redirect()->route('student.profile')->with('success', 'Contraseña actualizada correctamente.');
     }
 
     public function updateProfilePhoto(Request $request): RedirectResponse {
@@ -80,8 +77,7 @@ class StudentProfileController extends Controller {
         $path = $request->file('profile_photo')->store('profile-photos', 'public');
         $user->update(['profile_photo' => $path]);
 
-        return redirect()->route('student.profile')
-            ->with('success', 'Foto de perfil actualizada correctamente.');
+        return redirect()->route('student.profile')->with('success', 'Foto de perfil actualizada correctamente.');
     }
 
     public function deleteProfilePhoto(): RedirectResponse {
@@ -90,12 +86,9 @@ class StudentProfileController extends Controller {
         if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
             Storage::disk('public')->delete($user->profile_photo);
             $user->update(['profile_photo' => null]);
-
-            return redirect()->route('student.profile')
-                ->with('success', 'Foto de perfil eliminada correctamente.');
+            return redirect()->route('student.profile')->with('success', 'Foto de perfil eliminada correctamente.');
         }
 
-        return redirect()->route('student.profile')
-            ->with('error', 'No tienes una foto de perfil para eliminar.');
+        return redirect()->route('student.profile')->with('error', 'No tienes una foto de perfil para eliminar.');
     }
 }

@@ -74,10 +74,7 @@
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
                                 </svg>
                             </div>
-                            <input id="email" name="email" type="email" autocomplete="email" required
-                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('email') border-red-500 @enderror"
-                                   placeholder="correo@ejemplo.com"
-                                   value="{{ old('email') }}">
+                            <input id="email" name="email" type="email" autocomplete="email" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('email') border-red-500 @enderror" placeholder="correo@ejemplo.com" value="{{ old('email') }}">
                         </div>
                         @error('email')
                             <p class="mt-2 text-sm text-red-600 flex items-center">
@@ -93,7 +90,7 @@
                                 <i class="fas fa-lock mr-2 text-blue-500"></i>
                                 Contraseña
                             </label>
-                            <a href="#" class="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200">
+                            <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200">
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
@@ -103,9 +100,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                             </div>
-                            <input id="password" name="password" type="password" autocomplete="current-password" required
-                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('password') border-red-500 @enderror"
-                                   placeholder="••••••••">
+                            <input id="password" name="password" type="password" autocomplete="current-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('password') border-red-500 @enderror" placeholder="••••••••">
                         </div>
                         @error('password')
                             <p class="mt-2 text-sm text-red-600 flex items-center">
@@ -116,8 +111,7 @@
 
                     <!-- Remember me -->
                     <div class="flex items-center">
-                        <input id="remember_me" name="remember" type="checkbox"
-                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200">
+                        <input id="remember_me" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200">
                         <label for="remember_me" class="ml-3 text-sm text-gray-700">
                             Mantener sesión iniciada
                         </label>
@@ -125,8 +119,7 @@
 
                     <!-- Submit Button -->
                     <div>
-                        <button type="submit"
-                                class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                        <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
                             <i class="fas fa-sign-in-alt mr-2"></i>
                             Iniciar Sesión
                         </button>
@@ -146,13 +139,11 @@
 
                     <!-- Social Login (opcional) -->
                     <div class="grid grid-cols-2 gap-3">
-                        <button type="button"
-                                class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        <button type="button" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                             <i class="fab fa-google text-red-500 mr-2"></i>
                             Google
                         </button>
-                        <button type="button"
-                                class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        <button type="button" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                             <i class="fab fa-facebook text-blue-600 mr-2"></i>
                             Facebook
                         </button>

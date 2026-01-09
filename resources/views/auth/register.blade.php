@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Registrarse')
-
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-6xl mx-auto">
@@ -142,10 +141,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-fingerprint text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="dni" name="dni" type="text" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Ingresa tu número de DNI"
-                                                   value="{{ old('dni') }}">
+                                            <input id="dni" name="dni" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Ingresa tu número de DNI" value="{{ old('dni') }}">
                                         </div>
                                     </div>
 
@@ -161,10 +157,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-user text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="names" name="names" type="text" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Nombres y apellidos completos"
-                                                   value="{{ old('names') }}">
+                                            <input id="names" name="names" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Nombres y apellidos completos" value="{{ old('names') }}">
                                         </div>
                                     </div>
 
@@ -180,10 +173,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-at text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="email" name="email" type="email" autocomplete="email" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="correo@ejemplo.com"
-                                                   value="{{ old('email') }}">
+                                            <input id="email" name="email" type="email" autocomplete="email" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="correo@ejemplo.com" value="{{ old('email') }}">
                                         </div>
                                     </div>
 
@@ -199,9 +189,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="password" name="password" type="password" autocomplete="new-password" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Mínimo 8 caracteres">
+                                            <input id="password" name="password" type="password" autocomplete="new-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Mínimo 8 caracteres">
                                         </div>
                                         <div id="password-strength" class="mt-3 hidden">
                                             <div class="flex items-center space-x-2">
@@ -226,8 +214,7 @@
                                         </label>
                                         <div class="grid grid-cols-3 gap-3">
                                             <div class="relative group">
-                                                <select id="country_code" name="country_code" required
-                                                        class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200 appearance-none bg-white">
+                                                <select id="country_code" name="country_code" required class="block w-full px-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200 appearance-none bg-white">
                                                     <option value="+51" {{ old('country_code', '+51') == '+51' ? 'selected' : '' }}>🇵🇪 +51</option>
                                                     <option value="+1" {{ old('country_code') == '+1' ? 'selected' : '' }}>🇺🇸 +1</option>
                                                     <option value="+52" {{ old('country_code') == '+52' ? 'selected' : '' }}>🇲🇽 +52</option>
@@ -244,10 +231,7 @@
                                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                         <i class="fas fa-phone text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                                     </div>
-                                                    <input id="phone" name="phone" type="tel" required
-                                                           class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                           placeholder="987 654 321"
-                                                           value="{{ old('phone') }}">
+                                                    <input id="phone" name="phone" type="tel" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="987 654 321" value="{{ old('phone') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -265,10 +249,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-flag text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="nationality" name="nationality" type="text" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Ej: Peruana"
-                                                   value="{{ old('nationality') }}">
+                                            <input id="nationality" name="nationality" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Ej: Peruana" value="{{ old('nationality') }}">
                                         </div>
                                     </div>
 
@@ -284,9 +265,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
                                                 <i class="fas fa-home text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <textarea id="address" name="address" rows="2" required
-                                                      class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                      placeholder="Av. Principal 123, Ciudad, Departamento">{{ old('address') }}</textarea>
+                                            <textarea id="address" name="address" rows="2" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Av. Principal 123, Ciudad, Departamento">{{ old('address') }}</textarea>
                                         </div>
                                     </div>
 
@@ -302,10 +281,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-user-tie text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="profession" name="profession" type="text" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Ej: Ingeniero, Estudiante, etc."
-                                                   value="{{ old('profession') }}">
+                                            <input id="profession" name="profession" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Ej: Ingeniero, Estudiante, etc." value="{{ old('profession') }}">
                                         </div>
                                     </div>
 
@@ -321,9 +297,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required
-                                                   class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200"
-                                                   placeholder="Repite tu contraseña">
+                                            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Repite tu contraseña">
                                         </div>
                                         <div id="password-match" class="mt-2 text-sm hidden">
                                             <i class="fas fa-check-circle mr-1"></i>
@@ -337,8 +311,7 @@
                             <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-xl border border-blue-200">
                                 <div class="flex items-start">
                                     <div class="flex items-center h-5 mt-0.5">
-                                        <input id="terms" name="terms" type="checkbox" required
-                                               class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200">
+                                        <input id="terms" name="terms" type="checkbox" required class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors duration-200">
                                     </div>
                                     <div class="ml-3">
                                         <label for="terms" class="text-gray-700 cursor-pointer">
@@ -358,21 +331,18 @@
 
                             <!-- Botones de acción -->
                             <div class="mt-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                                <a href="{{ route('login') }}"
-                                   class="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                                <a href="{{ route('login') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200">
                                     <i class="fas fa-sign-in-alt mr-2"></i>
                                     ¿Ya tienes cuenta? Inicia sesión
                                 </a>
 
                                 <div class="flex space-x-3">
-                                    <a href="{{ route('home') }}"
-                                       class="inline-flex items-center px-5 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                                    <a href="{{ route('home') }}" class="inline-flex items-center px-5 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
                                         <i class="fas fa-times mr-2"></i>
                                         Cancelar
                                     </a>
 
-                                    <button type="submit"
-                                            class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl">
+                                    <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl">
                                         <i class="fas fa-user-plus mr-2"></i>
                                         Crear mi cuenta
                                     </button>

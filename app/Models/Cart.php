@@ -12,7 +12,7 @@ class Cart extends Model
 
     protected $tables       = 'carts';
     protected $primaryKey   = 'id';
-    protected $fillable = ['user_id', 'course_id'];
+    protected $fillable     = ['user_id', 'course_id'];
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);

@@ -11,9 +11,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Order extends Model
 {
     use HasFactory;
-    protected $table = 'orders';
-    protected $primaryKey = 'id';
-    protected $fillable = [
+    protected $table        = 'orders';
+    protected $primaryKey   = 'id';
+    public $timestamps      = false;
+    protected $fillable     = [
         'order_number',
         'user_id',
         'subtotal',
@@ -28,11 +29,13 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'billing_info' => 'array',
-        'subtotal' => 'decimal:2',
-        'tax' => 'decimal:2',
-        'discount' => 'decimal:2',
-        'total' => 'decimal:2'
+        'billing_info'  => 'array',
+        'subtotal'      => 'decimal:2',
+        'tax'           => 'decimal:2',
+        'discount'      => 'decimal:2',
+        'total'         => 'decimal:2',
+        // 'created_at'    => 'datetime',
+        // 'updated_at'    => 'datetime',
     ];
 
     public function user(): BelongsTo {

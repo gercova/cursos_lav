@@ -226,7 +226,7 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         @if($enrollment->course->image_url)
-                                            <img src="{{ Storage::url($enrollment->course->image_url) }}" alt="{{ $enrollment->course->title }}" class="w-16 h-16 rounded-lg object-cover">
+                                            <img src="{{ $enrollment->course->image_url }}" alt="{{ $enrollment->course->title }}" class="w-16 h-16 rounded-lg object-cover">
                                         @endif
                                         <div>
                                             <h4 class="font-medium text-gray-900">{{ $enrollment->course->title }}</h4>

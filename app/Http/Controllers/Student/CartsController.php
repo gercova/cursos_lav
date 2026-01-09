@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CartsController extends Controller {
 
+    public function __construct() {
+        $this->middleware(['auth:sanctum', 'prevent.back']);
+    }
+
     public function index(): View {
         $userId = Auth::id();
 
@@ -19,9 +23,9 @@ class CartsController extends Controller {
         $cartItems = Cart::getItems($userId);
 
         // Calcular totales
-        $subtotal = Cart::getTotal($userId);
-        $tax = $subtotal * 0.18; // 18% de impuesto (ajusta según tu país)
-        $total = $subtotal + $tax;
+        $subtotal   = Cart::getTotal($userId);
+        $tax        = $subtotal * 0.18; // 18% de impuesto (ajusta según tu país)
+        $total      = $subtotal + $tax;
 
         // Verificar si hay un cupón activo en la sesión
         $discount = session('coupon_discount', 0);

@@ -35,6 +35,12 @@ class EnterpriseSeeder extends Seeder
             'twitter_link'      => 'x.com/ipfconsultoresperu',
             'instagram_link'    => 'instagram.com/ipfconsultoresperu',
             'whatsapp_link'     => '999999999',
+            'logo_path'         => 'image.png',
+            'favicon_path'      => 'image.png',
+            'logo_principal'    => 'image.png',
+            'logo_mini'         => 'image.png',
+            'logotipo'          => 'image.png',
+            'isologo'           => 'image.png',
         ]);
     }
 }

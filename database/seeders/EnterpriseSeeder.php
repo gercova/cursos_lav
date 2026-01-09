@@ -13,7 +13,7 @@ class EnterpriseSeeder extends Seeder
      */
     public function run(): void
     {
-        Enterprise::created([
+        Enterprise::create([
             'ruc'               => '20000000000',
             'company_name'      => 'IPF Consultores S.A.C.',
             'trade_name'        => 'IPF Consultores',

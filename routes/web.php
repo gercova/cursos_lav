@@ -109,8 +109,8 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Certificados
     Route::get('/certificate',                      [CertificatesController::class, 'index'])->name('student.certificates');
-    Route::get('/certificate/{certificateId}',      [CertificatesController::class, 'show'])->name('student.certificate.show');
-    Route::get('/{certificateId}/descargar',        [CertificatesController::class, 'download'])->name('download');
+    Route::get('/certificate/{certificateId}',      [CertificatesController::class, 'show'])->name('student.certificates.show');
+    Route::get('/{certificateId}/descargar',        [CertificatesController::class, 'download'])->name('student.certificates.download');
     Route::post('/generar/{enrollmentId}',          [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Rutas nuevas

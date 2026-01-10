@@ -13,7 +13,8 @@ class ExamQuestionFactory extends Factory {
 
     protected $model = ExamQuestion::class;
     public function definition() {
-        $type = $this->faker->randomElement(['multiple_choice', 'true_false', 'short_answer']);
+        // $type = $this->faker->randomElement(['multiple_choice', 'true_false', 'short_answer']);
+        $type = $this->faker->randomElement(['multiple_choice', 'true_false']);
         $options = $this->generateOptions($type);
 
         return [

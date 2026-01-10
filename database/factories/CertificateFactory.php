@@ -25,7 +25,7 @@ class CertificateFactory extends Factory {
             'certificate_number'    => $this->faker->numerify('####-') . date('Y') . '-IPF-EDUCA',
             'issue_date'            => $issueDate,
             'expiry_date'           => $this->faker->optional(0.7)->dateTimeBetween($issueDate, '+2 years'),
-            'verification_url'      => $this->faker->url(),
+            'total_hours'           => $this->faker->randomNumber(2, 10),
             'download_count'        => $this->faker->numberBetween(0, 10),
             'total_hours'           => $this->faker->randomFloat(1, 10, 100),
         ];

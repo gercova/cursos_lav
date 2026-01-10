@@ -53,13 +53,13 @@ Route::get('/politicas-de-uso',         [AppController::class, 'policies'])->nam
 Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->name('politicas-de-cookies');
 
 // Autenticación general (Admin / Instructor / Student)
-Route::get('/register',         [RegisterController::class, 'showRegister'])->name('register');
-Route::post('/register',        [RegisterController::class, 'register']);
-Route::get('/login',            [LoginController::class, 'showLogin'])->name('login');
-Route::post('/login',           [LoginController::class, 'login']);
-Route::post('/logout',          [LoginController::class, 'logout'])->name('logout');
-Route::get('forgot-password',   [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password',  [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register',                [RegisterController::class, 'register']);
+Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login');
+Route::post('/login',                   [LoginController::class, 'login']);
+Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
+Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password',          [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Restablecer contraseña
 Route::get('reset-password/{token}',    [ResetPasswordController::class, 'showResetForm'])->name('password.reset');

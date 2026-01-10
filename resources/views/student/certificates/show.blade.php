@@ -24,7 +24,7 @@
 
         <!-- Vista previa del certificado -->
         <div class="border-2 border-gray-300 p-8 bg-white">
-            @include('student.certificate.pdf-content', ['certificate' => $certificate])
+            @include('student.certificates.pdf', ['certificate' => $certificate])
         </div>
 
         <!-- Información de verificación -->

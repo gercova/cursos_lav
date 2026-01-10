@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LessonProgress extends Model {
 
     use HasFactory;
-    protected $table        = 'lessons_progress';
+    protected $table        = 'lesson_progress';
     protected $primaryKey   = 'id';
     protected $fillable     = [
         'user_id',

@@ -7,10 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class ExamAttempt extends Model
-{
-    use HasFactory;
+class ExamAttempt extends Model {
 
+    use HasFactory;
     protected $table        = 'exam_attempts';
     protected $primaryKey   = 'id';
     protected $fillable     = [

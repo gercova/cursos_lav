@@ -19,7 +19,7 @@ class Certificate extends Model
         'certificate_number',
         'issue_date',
         'expiry_date',
-        'verification_url',
+        'total_hours',
         'download_count',
         'total_hours',
     ];

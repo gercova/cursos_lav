@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Enterprise;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +34,11 @@ class RegisterController extends Controller
      */
     public function __construct() {
         $this->middleware('guest');
+    }
+
+    public function showRegister(): View {
+        $enterprise = Enterprise::first();
+        return view('auth.register', compact('enterprise'));
     }
 
     protected function validator(array $data) {

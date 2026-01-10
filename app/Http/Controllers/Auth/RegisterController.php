@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserStudentValidate;
 use App\Models\Enterprise;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,23 +43,24 @@ class RegisterController extends Controller
         return view('auth.register', compact('enterprise'));
     }
 
-    protected function validator(array $data) {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+    public function register(UserStudentValidate $request) {
+        $validated = $request->validated();
+
+        $user = User::create([
+            'dni'           => $validated['dni'],
+            'names'         => $validated['names'],
+            'email'         => $validated['email'],
+            'password'      => Hash::make($validated['password']),
+            'country_code'  => $validated['country_code'],
+            'phone'         => $validated['phone'],
+            'nationality'   => $validated['nationality'],
+            'ubigeo'        => $validated['ubigeo'],
+            'address'       => $validated['address'],
+            'profession'    => $validated['profession'],
+            'role'          => 'student',
         ]);
-    }
 
-    protected function create(array $data) {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-    }
-
-    public function register(){
-
+        Auth::login($user);
+        return redirect()->route('student.dashboard')->with('success', '¡Registro exitoso!');
     }
 }

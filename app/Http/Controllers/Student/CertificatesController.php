@@ -26,7 +26,7 @@ class CertificatesController extends Controller {
 
     public function show($certificateId): View {
         $certificate = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-        return view('student.certificate.show', compact('certificate'));
+        return view('student.certificates.show', compact('certificate'));
     }
 
     public function download($certificateId) {

@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Enrollment extends Model
-{
-    use HasFactory;
+class Enrollment extends Model {
 
+    use HasFactory;
     protected $table        = 'enrollments';
     protected $primaryKey   = 'id';
     protected $fillable     = [

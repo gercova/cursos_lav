@@ -131,8 +131,29 @@
                                 </div>
                             </div>
                         </td>
+                        {{-- <td class="px-6 py-4 whitespace-nowrap">
+                            @if($payment->order && $payment->order->items->first())
+                                <div class="text-sm text-gray-900">
+                                    {{ $payment->order->items->first()->course_title ?? 'N/A' }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    {{ $payment->order->items->count() }} curso(s)
+                                </div>
+                            @else
+                                <span class="text-sm text-gray-500">N/A</span>
+                            @endif
+                        </td> --}}
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $payment->enrollment->course->title ?? 'N/A' }}</div>
+                            @if($payment->order && $payment->order->items->first())
+                                <div class="text-sm text-gray-900">
+                                    {{ $payment->order->items->first()->course_title ?? 'N/A' }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    {{ $payment->order->items->count() }} curso(s)
+                                </div>
+                            @else
+                                <span class="text-sm text-gray-500">N/A</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="text-sm font-semibold text-gray-900">S/ {{ number_format($payment->amount, 2) }}</span>

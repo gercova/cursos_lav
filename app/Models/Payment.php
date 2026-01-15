@@ -39,4 +39,34 @@ class Payment extends Model
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
+
+    public function enrollment(): HasOneThrough {
+        return $this->hasOneThrough(
+            Enrollment::class,
+            Order::class,
+            'id', // Foreign key on orders table
+            'id', // Foreign key on enrollments table
+            'order_id', // Local key on payments table
+            'id' // Local key on orders table
+        );
+    }
+
+    public function getCoursesAttribute() {
+        if ($this->order) {
+            return $this->order->items->map(function ($item) {
+                return [
+                    'title' => $item->course_title,
+                    'course' => $item->course
+                ];
+            });
+        }
+        return collect();
+    }
+
+    public function getFirstCourseAttribute() {
+        if ($this->order && $this->order->items->isNotEmpty()) {
+            return $this->order->items->first()->course;
+        }
+        return null;
+    }
 }

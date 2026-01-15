@@ -97,12 +97,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-gray-400"></i>
                                     </div>
-                                    <input type="text"
-                                        x-model="customer.first_name"
-                                        required
-                                        @input="saveToLocalStorage"
-                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="Ingresa tus nombres"
+                                    <input type="text" x-model="customer.first_name" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ingresa tus nombres"
                                     >
                                 </div>
                             </div>
@@ -116,12 +111,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-gray-400"></i>
                                     </div>
-                                    <input type="text"
-                                        x-model="customer.last_name"
-                                        required
-                                        @input="saveToLocalStorage"
-                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="Ingresa tus apellidos">
+                                    <input type="text" x-model="customer.last_name" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ingresa tus apellidos">
                                 </div>
                             </div>
 
@@ -134,12 +124,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-envelope text-gray-400"></i>
                                     </div>
-                                    <input type="email"
-                                        x-model="customer.email"
-                                        required
-                                        @input="saveToLocalStorage"
-                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="ejemplo@correo.com">
+                                    <input type="email" x-model="customer.email" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="ejemplo@correo.com">
                                 </div>
                                 <p class="text-sm text-gray-500">Te enviaremos la confirmación a este correo</p>
                             </div>
@@ -153,12 +138,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-phone text-gray-400"></i>
                                     </div>
-                                    <input type="tel"
-                                        x-model="customer.phone"
-                                        required
-                                        @input="saveToLocalStorage"
-                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="+51 987 654 321">
+                                    <input type="tel" x-model="customer.phone" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="+51 987 654 321">
                                 </div>
                             </div>
 
@@ -181,11 +161,7 @@
                                 <label class="block text-sm font-medium text-gray-700">
                                     Número de documento <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text"
-                                    x-model="customer.document_number"
-                                    @input="saveToLocalStorage"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                    :placeholder="'Número de ' + customer.document_type">
+                                <input type="text" x-model="customer.document_number" @input="saveToLocalStorage" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" :placeholder="'Número de ' + customer.document_type">
                             </div>
 
                             <!-- Dirección -->
@@ -197,12 +173,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-map-marker-alt text-gray-400"></i>
                                     </div>
-                                    <input type="text"
-                                        x-model="customer.address"
-                                        required
-                                        @input="saveToLocalStorage"
-                                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="Ingresa tu dirección completa">
+                                    <input type="text" x-model="customer.address" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ingresa tu dirección completa">
                                 </div>
                             </div>
 
@@ -212,11 +183,7 @@
                                     <label class="block text-sm font-medium text-gray-700">
                                         Ciudad
                                     </label>
-                                    <input type="text"
-                                        x-model="customer.city"
-                                        @input="saveToLocalStorage"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                        placeholder="Ej: Lima">
+                                    <input type="text" x-model="customer.city" @input="saveToLocalStorage" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ej: Lima">
                                 </div>
                                 <div class="space-y-2">
                                     <label class="block text-sm font-medium text-gray-700">
@@ -248,9 +215,9 @@
 
                 <!-- Paso 2: Método de pago -->
                 <div x-show="currentStep === 2" x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform -translate-x-4"
-                     x-transition:enter-end="opacity-100 transform translate-x-0"
-                     class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                    x-transition:enter-start="opacity-0 transform -translate-x-4"
+                    x-transition:enter-end="opacity-100 transform translate-x-0"
+                    class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                     <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
                         <div class="flex items-center">
                             <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
@@ -266,9 +233,7 @@
                     <form @submit.prevent="processPayment" class="p-6">
                         <!-- Opciones de pago -->
                         <div class="space-y-4 mb-8">
-                            <label @click="paymentMethod = 'card'"
-                                   :class="paymentMethod === 'card' ? 'border-2 border-blue-500 bg-blue-50' : 'border border-gray-300 hover:border-blue-300 hover:bg-gray-50'"
-                                   class="block p-5 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02]">
+                            <label @click="paymentMethod = 'card'" :class="paymentMethod === 'card' ? 'border-2 border-blue-500 bg-blue-50' : 'border border-gray-300 hover:border-blue-300 hover:bg-gray-50'" class="block p-5 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02]">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0">
                                         <div :class="paymentMethod === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'" class="w-12 h-12 rounded-lg flex items-center justify-center transition-colors duration-200">
@@ -356,8 +321,7 @@
                                         <div class="relative">
                                             <div id="card-cvv" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200"></div>
                                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                                <button type="button" onclick="showCVVInfo()"
-                                                        class="text-gray-400 hover:text-gray-600">
+                                                <button type="button" onclick="showCVVInfo()" class="text-gray-400 hover:text-gray-600">
                                                     <i class="fas fa-question-circle"></i>
                                                 </button>
                                             </div>
@@ -446,9 +410,7 @@
                                 Volver atrás
                             </button>
 
-                            <button type="submit" :disabled="isProcessing"
-                                    :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'"
-                                    class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center">
+                            <button type="submit" :disabled="isProcessing" :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center">
                                 <template x-if="!isProcessing">
                                     <span>
                                         <i class="fas fa-lock mr-2"></i>
@@ -548,7 +510,7 @@
                             </div>
 
                             <!-- Cupón -->
-                            <div class="mt-6">
+                            <!--<div class="mt-6">
                                 <div x-show="!couponApplied" class="space-y-2">
                                     <label class="block text-sm font-medium text-gray-700">¿Tienes un cupón?</label>
                                     <div class="flex gap-2">
@@ -570,7 +532,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
 
@@ -700,8 +662,7 @@
                         Explorar cursos
                     </a>
 
-                    <a href="{{ route('student.dashboard') }}"
-                       class="px-8 py-3 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-50 text-gray-700 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center">
+                    <a href="{{ route('student.dashboard') }}" class="px-8 py-3 border-2 border-gray-300 hover:border-blue-300 hover:bg-blue-50 text-gray-700 font-semibold rounded-lg transition-all duration-200 flex items-center justify-center">
                         <i class="fas fa-home mr-2"></i>
                         Ir al inicio
                     </a>

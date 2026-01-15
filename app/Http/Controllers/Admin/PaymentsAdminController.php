@@ -16,21 +16,23 @@ class PaymentsAdminController extends Controller {
     }
 
     public function index(Request $request): View {
-        $query = Payment::with(['user', 'enrollment.course'])
+        $query = Payment::with(['user', 'order.items.course'])
+        // $query = Payment::with(['user', 'order'])
             ->latest();
 
         // Filtros
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('transaction_id', 'like', "%{$search}%")
+                $q->where('payment_id', 'like', "%{$search}%") // Cambiar transaction_id por payment_id
                     ->orWhereHas('user', function ($q) use ($search) {
-                        $q->where('names', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%");
+                        $q->where('names', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                     })
-                    ->orWhereHas('enrollment.course', function ($q) use ($search) {
+                    ->orWhereHas('order.items.course', function ($q) use ($search) {
                         $q->where('title', 'like', "%{$search}%");
                     });
-                });
+            });
         }
 
         if ($request->filled('status')) {

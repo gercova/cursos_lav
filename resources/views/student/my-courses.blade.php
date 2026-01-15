@@ -1,7 +1,144 @@
 @extends('layouts.student')
 @section('title', 'Mis Cursos')
 @section('content')
-<div x-data="myCoursesApp()" x-init="init()">
+{{-- Mover el script AQUÍ, antes del div --}}
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('myCoursesApp', () => ({
+        search: '',
+        filter: 'all',
+        courses: @json($coursesData),
+        stats: {
+            totalCourses: 0,
+            inProgress: 0,
+            completed: 0,
+            hoursStudied: 0
+        },
+        recentCourses: [],
+        selectedCourse: null,
+        showModal: false,
+        searchTimeout: null,
+        itemsPerPage: 5,
+        currentPage: 1,
+
+        get filteredCourses() {
+            let filtered = this.courses;
+
+            if (this.filter === 'in_progress') {
+                filtered = filtered.filter(course => course.progress < 100);
+            } else if (this.filter === 'completed') {
+                filtered = filtered.filter(course => course.progress >= 100);
+            }
+
+            if (this.search.trim()) {
+                const searchTerm = this.search.toLowerCase();
+                filtered = filtered.filter(course =>
+                    course.title.toLowerCase().includes(searchTerm) ||
+                    course.description.toLowerCase().includes(searchTerm) ||
+                    course.category.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+
+            return filtered.slice(start, end);
+        },
+
+        get totalPages() {
+            let filtered = this.courses;
+
+            if (this.filter === 'in_progress') {
+                filtered = filtered.filter(course => course.progress < 100);
+            } else if (this.filter === 'completed') {
+                filtered = filtered.filter(course => course.progress >= 100);
+            }
+
+            if (this.search.trim()) {
+                const searchTerm = this.search.toLowerCase();
+                filtered = filtered.filter(course =>
+                    course.title.toLowerCase().includes(searchTerm) ||
+                    course.description.toLowerCase().includes(searchTerm) ||
+                    course.category.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            return Math.ceil(filtered.length / this.itemsPerPage) || 1;
+        },
+
+        init() {
+            this.calculateStats();
+            this.getRecentCourses();
+        },
+
+        calculateStats() {
+            this.stats.totalCourses = this.courses.length;
+            this.stats.inProgress = this.courses.filter(course => course.progress < 100).length;
+            this.stats.completed = this.courses.filter(course => course.progress >= 100).length;
+            this.stats.hoursStudied = Math.floor(this.courses.reduce((total, course) =>
+                total + (course.lessons * 0.5), 0
+            ));
+        },
+
+        getRecentCourses() {
+            this.recentCourses = [...this.courses]
+                .sort((a, b) => {
+                    const dateA = a.last_accessed ? new Date(a.last_accessed.split('/').reverse().join('-')) : new Date(0);
+                    const dateB = b.last_accessed ? new Date(b.last_accessed.split('/').reverse().join('-')) : new Date(0);
+
+                    if (a.last_accessed || b.last_accessed) {
+                        return dateB - dateA;
+                    }
+                    return b.id - a.id;
+                })
+                .slice(0, 3);
+        },
+
+        debounceSearch() {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = setTimeout(() => {
+                this.currentPage = 1;
+            }, 300);
+        },
+
+        showCourseDetails(courseId) {
+            this.selectedCourse = this.courses.find(course => course.id === courseId);
+            this.showModal = true;
+            document.body.style.overflow = 'hidden';
+        },
+
+        closeModal() {
+            this.showModal = false;
+            this.selectedCourse = null;
+            document.body.style.overflow = 'auto';
+        },
+
+        prevPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                this.scrollToTop();
+            }
+        },
+
+        nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                this.scrollToTop();
+            }
+        },
+
+        goToPage(page) {
+            this.currentPage = page;
+            this.scrollToTop();
+        },
+
+        scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }));
+});
+</script>
+<div x-data="myCoursesApp" x-init="init()">
     <!-- Header -->
     <div class="mb-6">
         <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Mis Cursos</h1>
@@ -64,29 +201,19 @@
         <div class="p-4 border-b border-gray-200">
             <div class="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
                 <div class="flex space-x-2">
-                    <button @click="filter = 'all'"
-                            :class="filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                    <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                         Todos
                     </button>
-                    <button @click="filter = 'in_progress'"
-                            :class="filter === 'in_progress' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                    <button @click="filter = 'in_progress'" :class="filter === 'in_progress' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                         En Progreso
                     </button>
-                    <button @click="filter = 'completed'"
-                            :class="filter === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                    <button @click="filter = 'completed'" :class="filter === 'completed' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                         Completados
                     </button>
                 </div>
 
                 <div class="relative">
-                    <input type="text"
-                           x-model="search"
-                           @input="debounceSearch()"
-                           placeholder="Buscar curso..."
-                           class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64">
+                    <input type="text" x-model="search" @input="debounceSearch()" placeholder="Buscar curso..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
             </div>
@@ -103,15 +230,13 @@
                             <div class="p-5">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
-                                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full"
-                                              :class="course.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
+                                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full" :class="course.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
                                             <span x-text="course.status === 'completed' ? 'Completado' : course.progress + '%'"></span>
                                         </span>
                                         <h3 class="text-lg font-bold text-gray-800 mt-2" x-text="course.title"></h3>
                                         <p class="text-sm text-gray-600 mt-1" x-text="course.category"></p>
                                     </div>
-                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center"
-                                         :class="course.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'">
+                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" :class="course.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'">
                                         <i class="fas" :class="course.status === 'completed' ? 'fa-check text-green-600' : 'fa-book text-blue-600'"></i>
                                     </div>
                                 </div>
@@ -122,9 +247,7 @@
                                         <span x-text="course.progress + '%'"></span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="h-2 rounded-full progress-bar"
-                                             :class="course.status === 'completed' ? 'bg-green-600' : 'bg-blue-600'"
-                                             :style="'width: ' + course.progress + '%'"></div>
+                                        <div class="h-2 rounded-full progress-bar" :class="course.status === 'completed' ? 'bg-green-600' : 'bg-blue-600'" :style="'width: ' + course.progress + '%'"></div>
                                     </div>
                                 </div>
 
@@ -175,8 +298,7 @@
                                             <i class="fas fa-book text-white text-5xl opacity-20"></i>
                                         </div>
                                         <div class="absolute top-3 left-3">
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full"
-                                                  :class="course.status === 'completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="course.status === 'completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'">
                                                 <span x-text="course.status === 'completed' ? 'Completado' : 'En progreso'"></span>
                                             </span>
                                         </div>
@@ -210,15 +332,11 @@
                                                     <div class="w-16 h-16">
                                                         <div class="relative">
                                                             <svg class="w-16 h-16" viewBox="0 0 36 36">
-                                                                <path class="text-gray-200" fill="none" stroke="currentColor" stroke-width="3"
-                                                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                                                <path :class="course.status === 'completed' ? 'text-green-500' : 'text-blue-500'" fill="none" stroke="currentColor" stroke-width="3"
-                                                                      :stroke-dasharray="course.progress + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                                                <path class="text-gray-200" fill="none" stroke="currentColor" stroke-width="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                                                <path :class="course.status === 'completed' ? 'text-green-500' : 'text-blue-500'" fill="none" stroke="currentColor" stroke-width="3" :stroke-dasharray="course.progress + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                                                             </svg>
                                                             <div class="absolute inset-0 flex items-center justify-center">
-                                                                <span class="text-lg font-bold"
-                                                                      :class="course.status === 'completed' ? 'text-green-600' : 'text-blue-600'"
-                                                                      x-text="course.progress + '%'"></span>
+                                                                <span class="text-lg font-bold" :class="course.status === 'completed' ? 'text-green-600' : 'text-blue-600'" x-text="course.progress + '%'"></span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -242,8 +360,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex space-x-3">
-                                                    <button @click="showCourseDetails(course.id)"
-                                                            class="px-4 py-2 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200">
+                                                    <button @click="showCourseDetails(course.id)" class="px-4 py-2 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200">
                                                         <i class="fas fa-info-circle mr-2"></i>
                                                         Detalles
                                                     </button>
@@ -268,20 +385,13 @@
                         Mostrando <span x-text="filteredCourses.length"></span> de <span x-text="stats.totalCourses"></span> cursos
                     </div>
                     <div class="flex space-x-2">
-                        <button @click="prevPage()" :disabled="currentPage === 1"
-                                :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <button @click="prevPage()" :disabled="currentPage === 1" :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                             <i class="fas fa-chevron-left"></i>
                         </button>
                         <template x-for="page in totalPages" :key="page">
-                            <button @click="goToPage(page)"
-                                    :class="page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-100'"
-                                    class="px-3 py-2 rounded-lg text-sm"
-                                    x-text="page"></button>
+                            <button @click="goToPage(page)" :class="page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-100'" class="px-3 py-2 rounded-lg text-sm" x-text="page"></button>
                         </template>
-                        <button @click="nextPage()" :disabled="currentPage === totalPages"
-                                :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'"
-                                class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <button @click="nextPage()" :disabled="currentPage === totalPages" :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
                             <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -292,12 +402,12 @@
 
     <!-- Modal de detalles del curso -->
     <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0">
         <div @click.away="closeModal" class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div class="p-6">
                 <div class="flex justify-between items-start mb-6">
@@ -331,8 +441,7 @@
                                     <span x-text="selectedCourse?.completed_lessons + '/' + selectedCourse?.total_lessons"></span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="h-2.5 rounded-full bg-green-600 progress-bar"
-                                         :style="'width: ' + (selectedCourse?.completed_lessons / selectedCourse?.total_lessons * 100) + '%'"></div>
+                                    <div class="h-2.5 rounded-full bg-green-600 progress-bar" :style="'width: ' + (selectedCourse?.completed_lessons / selectedCourse?.total_lessons * 100) + '%'"></div>
                                 </div>
                             </div>
                         </div>
@@ -370,8 +479,7 @@
 
                 <div class="border-t border-gray-200 pt-6">
                     <div class="flex justify-end space-x-3">
-                        <button @click="closeModal"
-                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                        <button @click="closeModal" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                             Cerrar
                         </button>
                         <a :href="selectedCourse?.continue_url"
@@ -385,146 +493,4 @@
         </div>
     </div>
 </div>
-@endsection
-
-@section('scripts')
-<script>
-function myCoursesApp() {
-    return {
-        search: '',
-        filter: 'all',
-        courses: @json($coursesData),
-        stats: {
-            totalCourses: 0,
-            inProgress: 0,
-            completed: 0,
-            hoursStudied: 0
-        },
-        recentCourses: [],
-        selectedCourse: null,
-        showModal: false,
-        searchTimeout: null,
-        itemsPerPage: 5,
-        currentPage: 1,
-
-        // ... resto del código ALPINE
-        get filteredCourses() {
-            let filtered = this.courses;
-
-            // Aplicar filtro
-            if (this.filter === 'in_progress') {
-                filtered = filtered.filter(course => course.progress < 100);
-            } else if (this.filter === 'completed') {
-                filtered = filtered.filter(course => course.progress >= 100);
-            }
-
-            // Aplicar búsqueda
-            if (this.search.trim()) {
-                const searchTerm = this.search.toLowerCase();
-                filtered = filtered.filter(course =>
-                    course.title.toLowerCase().includes(searchTerm) ||
-                    course.description.toLowerCase().includes(searchTerm) ||
-                    course.category.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            // Paginación
-            const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
-
-            return filtered.slice(start, end);
-        },
-
-        get totalPages() {
-            let filtered = this.courses;
-
-            if (this.filter === 'in_progress') {
-                filtered = filtered.filter(course => course.progress < 100);
-            } else if (this.filter === 'completed') {
-                filtered = filtered.filter(course => course.progress >= 100);
-            }
-
-            if (this.search.trim()) {
-                const searchTerm = this.search.toLowerCase();
-                filtered = filtered.filter(course =>
-                    course.title.toLowerCase().includes(searchTerm) ||
-                    course.description.toLowerCase().includes(searchTerm) ||
-                    course.category.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            return Math.ceil(filtered.length / this.itemsPerPage);
-        },
-
-        init() {
-            this.calculateStats();
-            this.getRecentCourses();
-        },
-
-        calculateStats() {
-            this.stats.totalCourses = this.courses.length;
-            this.stats.inProgress = this.courses.filter(course => course.progress < 100).length;
-            this.stats.completed = this.courses.filter(course => course.progress >= 100).length;
-            this.stats.hoursStudied = Math.floor(this.courses.reduce((total, course) =>
-                total + (course.lessons * 0.5), 0
-            ));
-        },
-
-        getRecentCourses() {
-            // Tomar los 3 cursos con más reciente acceso o los más recientemente inscritos
-            this.recentCourses = [...this.courses]
-                .sort((a, b) => {
-                    if (a.last_accessed && b.last_accessed) {
-                        return new Date(b.last_accessed.split('/').reverse().join('-')) -
-                               new Date(a.last_accessed.split('/').reverse().join('-'));
-                    }
-                    return b.id - a.id;
-                })
-                .slice(0, 3);
-        },
-
-        debounceSearch() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                this.currentPage = 1;
-            }, 300);
-        },
-
-        showCourseDetails(courseId) {
-            this.selectedCourse = this.courses.find(course => course.id === courseId);
-            this.showModal = true;
-            document.body.style.overflow = 'hidden';
-        },
-
-        closeModal() {
-            this.showModal = false;
-            this.selectedCourse = null;
-            document.body.style.overflow = 'auto';
-        },
-
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-                this.scrollToTop();
-            }
-        },
-
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-                this.scrollToTop();
-            }
-        },
-
-        goToPage(page) {
-            this.currentPage = page;
-            this.scrollToTop();
-        },
-
-        scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    };
-}
-</script>
 @endsection

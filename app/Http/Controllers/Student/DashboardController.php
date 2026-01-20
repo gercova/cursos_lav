@@ -77,28 +77,6 @@ class DashboardController extends Controller {
         return response()->json($courses);
     }
 
-    public function progressCourses(): JsonResponse {
-        $user = Auth::user();
-        $enrollments = Enrollment::with('course')
-            ->where('user_id', $user->id)
-            ->where('progress', '<', 100)
-            ->where('progress', '>', 0)
-            ->orderBy('progress', 'desc')
-            ->limit(3)
-            ->get();
-
-        $courses = $enrollments->map(function($enrollment) {
-            return [
-                'title'     => $enrollment->course->title,
-                'slug'      => $enrollment->course->slug,
-                'progress'  => $enrollment->progress ?? 0,
-                'color'     => $this->getColorByProgress($enrollment->progress)
-            ];
-        });
-
-        return response()->json($courses);
-    }
-
     public function recentActivity(): JsonResponse {
         $user = Auth::user();
 
@@ -202,10 +180,10 @@ class DashboardController extends Controller {
 
         if ($activeDays >= 5) {
             $achievements[] = [
-                'title' => 'Asistencia Perfecta',
-                'description' => 'Activo 5 de los últimos 7 días',
-                'icon' => 'calendar-check',
-                'color' => 'green'
+                'title'         => 'Asistencia Perfecta',
+                'description'   => 'Activo 5 de los últimos 7 días',
+                'icon'          => 'calendar-check',
+                'color'         => 'green'
             ];
         }
 
@@ -233,11 +211,11 @@ class DashboardController extends Controller {
 
     private function getActivityColor($type) {
         $colors = [
-            'lesson_completed' => 'green',
-            'course_enrolled' => 'blue',
-            'exam_taken' => 'red',
-            'certificate_earned' => 'yellow',
-            'comment' => 'purple'
+            'lesson_completed'      => 'green',
+            'course_enrolled'       => 'blue',
+            'exam_taken'            => 'red',
+            'certificate_earned'    => 'yellow',
+            'comment'               => 'purple'
         ];
 
         return $colors[$type] ?? 'gray';

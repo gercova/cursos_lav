@@ -30,6 +30,8 @@ class User extends Authenticatable {
         'role',
         'email_verified_at',
         'profile_photo',
+        'code',
+        'promotion_price_is_active',
         'is_active',
     ];
 

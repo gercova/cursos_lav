@@ -15,7 +15,7 @@ class Course extends Model
     use HasFactory;
     protected $table        = 'courses';
     protected $primaryKey   = 'id';
-    protected $fillable = [
+    protected $fillable     = [
         'title',
         'meta_description',
         'meta_keywords',
@@ -51,6 +51,10 @@ class Course extends Model
         return $this->belongsTo(User::class, 'instructor_id');
     }
 
+    public function coursePromotionCode(): HasMany {
+        return $this->hasMany(CoursePromotionCode::class, 'course_id', 'id');
+    }
+
     public function sections(): HasMany {
         return $this->hasMany(CourseSection::class)->orderBy('order');
     }
@@ -63,7 +67,7 @@ class Course extends Model
         return $this->hasMany(Document::class);
     }
 
-    public function exam(): HasMany {
+    public function exams(): HasMany {
         return $this->hasMany(Exam::class);
     }
 

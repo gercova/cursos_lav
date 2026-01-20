@@ -76,20 +76,19 @@
                                     <!-- Acciones -->
                                     <div class="mt-4 flex items-center justify-between">
                                         <div class="flex items-center space-x-3">
-                                            <button onclick="removeFromCart({{ $item->course_id }})"
-                                                    class="flex items-center text-red-600 hover:text-red-800 transition-colors duration-200">
+                                            <button onclick="removeFromCart({{ $item->course_id }})" class="flex items-center text-red-600 hover:text-red-800 transition-colors duration-200">
                                                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                                 <span class="text-sm font-medium">Eliminar</span>
                                             </button>
-                                            <button onclick="addToWishlist({{ $item->course_id }})"
+                                            {{-- <button onclick="addToWishlist({{ $item->course_id }})"
                                                     class="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                                 </svg>
                                                 <span class="text-sm font-medium">Mover a favoritos</span>
-                                            </button>
+                                            </button> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -100,19 +99,15 @@
                 </div>
 
                 <!-- Cupón de descuento -->
-                <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                {{-- <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Tienes un cupón de descuento?</h3>
                     <div class="flex gap-3">
-                        <input type="text"
-                               id="coupon-code"
-                               placeholder="Ingresa código de cupón"
-                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <button id="apply-coupon"
-                                class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors duration-200">
+                        <input type="text" id="coupon-code" placeholder="Ingresa código de cupón" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <button id="apply-coupon" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors duration-200">
                             Aplicar cupón
                         </button>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Resumen del pedido -->
@@ -174,8 +169,7 @@
                         <div class="mt-8 space-y-3">
                             <form action="{{ route('cart.checkout') }}" method="POST">
                                 @csrf
-                                <button type="submit"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                     </svg>
@@ -183,8 +177,7 @@
                                 </button>
                             </form>
 
-                            <a href="{{ route('cursos') }}"
-                               class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                            <a href="{{ route('cursos') }}" class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>
@@ -283,169 +276,169 @@
 
 @section('scripts')
 <script>
-let courseToDelete = null;
+    let courseToDelete = null;
 
-// Función para eliminar del carrito
-function removeFromCart(courseId) {
-    courseToDelete = courseId;
-    const modal = document.getElementById('delete-modal');
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
+    // Función para eliminar del carrito
+    function removeFromCart(courseId) {
+        courseToDelete = courseId;
+        const modal = document.getElementById('delete-modal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-function closeDeleteModal() {
-    const modal = document.getElementById('delete-modal');
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    courseToDelete = null;
-}
+    function closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        courseToDelete = null;
+    }
 
-document.getElementById('confirm-delete').addEventListener('click', async function() {
-    if (!courseToDelete) return;
+    document.getElementById('confirm-delete').addEventListener('click', async function() {
+        if (!courseToDelete) return;
 
-    try {
-        const response = await axios.delete(`/cart/remove/${courseToDelete}`, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest'
+        try {
+            const response = await axios.delete(`/cart/remove/${courseToDelete}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.data.success) {
+                // Mostrar notificación de éxito
+                showNotification('Curso eliminado del carrito', 'success');
+
+                // Recargar la página después de un breve delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
-        });
-
-        if (response.data.success) {
-            // Mostrar notificación de éxito
-            showNotification('Curso eliminado del carrito', 'success');
-
-            // Recargar la página después de un breve delay
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+            showNotification('Error al eliminar el curso', 'error');
+        } finally {
+            closeDeleteModal();
         }
-    } catch (error) {
-        console.error('Error removing from cart:', error);
-        showNotification('Error al eliminar el curso', 'error');
-    } finally {
-        closeDeleteModal();
+    });
+
+    // Función para agregar a favoritos
+    // async function addToWishlist(courseId) {
+    //     try {
+    //         const response = await axios.post('/api/wishlist/add', {
+    //             course_id: courseId
+    //         }, {
+    //             headers: {
+    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    //             }
+    //         });
+
+    //         if (response.data.success) {
+    //             showNotification('Curso movido a favoritos', 'success');
+
+    //             // Actualizar contador de carrito si se elimina del carrito
+    //             setTimeout(() => {
+    //                 window.location.reload();
+    //             }, 1500);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error adding to wishlist:', error);
+
+    //         if (error.response && error.response.status === 401) {
+    //             showNotification('Debes iniciar sesión para usar favoritos', 'warning');
+    //             setTimeout(() => {
+    //                 window.location.href = '/login';
+    //             }, 2000);
+    //         } else {
+    //             showNotification('Error al agregar a favoritos', 'error');
+    //         }
+    //     }
+    // }
+
+    // Aplicar cupón
+    // document.getElementById('apply-coupon').addEventListener('click', async function() {
+    //     const couponCode = document.getElementById('coupon-code').value.trim();
+
+    //     if (!couponCode) {
+    //         showNotification('Ingresa un código de cupón', 'warning');
+    //         return;
+    //     }
+
+    //     const btn = this;
+    //     btn.disabled = true;
+    //     btn.textContent = 'Aplicando...';
+
+    //     try {
+    //         const response = await axios.post('/api/cart/apply-coupon', {
+    //             coupon_code: couponCode
+    //         }, {
+    //             headers: {
+    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    //             }
+    //         });
+
+    //         if (response.data.success) {
+    //             showNotification('Cupón aplicado correctamente', 'success');
+    //             // Recargar para actualizar precios
+    //             setTimeout(() => {
+    //                 window.location.reload();
+    //             }, 1000);
+    //         } else {
+    //             showNotification(response.data.message || 'Cupón inválido', 'error');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error applying coupon:', error);
+    //         showNotification('Error al aplicar el cupón', 'error');
+    //     } finally {
+    //         btn.disabled = false;
+    //         btn.textContent = 'Aplicar cupón';
+    //     }
+    // });
+
+    // Función para mostrar notificaciones
+    function showNotification(message, type = 'info') {
+        // Remover notificaciones existentes
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
+
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-lg">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
-});
 
-// Función para agregar a favoritos
-async function addToWishlist(courseId) {
-    try {
-        const response = await axios.post('/api/wishlist/add', {
-            course_id: courseId
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-
-        if (response.data.success) {
-            showNotification('Curso movido a favoritos', 'success');
-
-            // Actualizar contador de carrito si se elimina del carrito
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeDeleteModal();
         }
-    } catch (error) {
-        console.error('Error adding to wishlist:', error);
+    });
 
-        if (error.response && error.response.status === 401) {
-            showNotification('Debes iniciar sesión para usar favoritos', 'warning');
-            setTimeout(() => {
-                window.location.href = '/login';
-            }, 2000);
-        } else {
-            showNotification('Error al agregar a favoritos', 'error');
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
         }
-    }
-}
-
-// Aplicar cupón
-document.getElementById('apply-coupon').addEventListener('click', async function() {
-    const couponCode = document.getElementById('coupon-code').value.trim();
-
-    if (!couponCode) {
-        showNotification('Ingresa un código de cupón', 'warning');
-        return;
-    }
-
-    const btn = this;
-    btn.disabled = true;
-    btn.textContent = 'Aplicando...';
-
-    try {
-        const response = await axios.post('/api/cart/apply-coupon', {
-            coupon_code: couponCode
-        }, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        });
-
-        if (response.data.success) {
-            showNotification('Cupón aplicado correctamente', 'success');
-            // Recargar para actualizar precios
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        } else {
-            showNotification(response.data.message || 'Cupón inválido', 'error');
-        }
-    } catch (error) {
-        console.error('Error applying coupon:', error);
-        showNotification('Error al aplicar el cupón', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Aplicar cupón';
-    }
-});
-
-// Función para mostrar notificaciones
-function showNotification(message, type = 'info') {
-    // Remover notificaciones existentes
-    const existing = document.querySelectorAll('.custom-notification');
-    existing.forEach(n => n.remove());
-
-    const colors = {
-        success: 'bg-green-500',
-        error: 'bg-red-500',
-        warning: 'bg-yellow-500',
-        info: 'bg-blue-500'
-    };
-
-    const notification = document.createElement('div');
-    notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
-    notification.innerHTML = `
-        <span class="text-lg">${message}</span>
-        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-    `;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.classList.add('animate-fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// Cerrar modal con Escape
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeDeleteModal();
-    }
-});
-
-// Cerrar modal al hacer clic fuera
-document.getElementById('delete-modal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeDeleteModal();
-    }
-});
+    });
 </script>
 
 <style>

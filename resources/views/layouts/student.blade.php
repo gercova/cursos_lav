@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $enterprise->favicon_path }}">
     <title>Dashboard Estudiante - @yield('title')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('css/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!--<link rel="stylesheet" href="{{ asset('css/font-awesome.all.min.css') }}">-->
@@ -121,11 +122,6 @@
                     <span class="sidebar-text">Certificados</span>
                 </a>
 
-                <a href="{{ route('student.progress') }}" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg {{ request()->routeIs('student.progress') ? 'text-gray-900 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-200 group sidebar-link-hover' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group sidebar-link-hover' }}">
-                    <i class="fas fa-chart-line mr-3 text-purple-600 text-base"></i>
-                    <span class="sidebar-text">Mi Progreso</span>
-                </a>
-
                 <a href="{{ route('student.exams') }}" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg {{ request()->routeIs('student.exams') ? 'text-gray-900 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all duration-200 group sidebar-link-hover' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group sidebar-link-hover' }}">
                     <i class="fas fa-file-alt mr-3 text-rose-600 text-base"></i>
                     <span class="sidebar-text">Exámenes</span>
@@ -137,19 +133,6 @@
                     <span class="sidebar-text">Mi Perfil</span>
                 </a>
             </nav>
-
-            <!-- Sección de cursos en progreso -->
-            <div class="mt-8 pt-6 border-t border-gray-200">
-                <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 sidebar-text">
-                    <i class="fas fa-spinner mr-1 text-blue-500"></i> Cursos en Progreso
-                </h3>
-                <div id="progress-courses-list" class="space-y-3">
-                    <div class="px-3 py-4 text-center">
-                        <div class="loading-spinner w-6 h-6 mx-auto mb-2"></div>
-                        <p class="text-xs text-gray-500">Cargando cursos...</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- Sección de metas -->
             <div class="mt-6 pt-6 border-t border-gray-200">
@@ -208,7 +191,7 @@
 
             // Cargar datos del dashboard
             loadDashboardData();
-            loadProgressCourses();
+            // loadProgressCourses();
             loadNotifications();
             updateCartCount();
 
@@ -350,58 +333,58 @@
         }
 
         // Cargar cursos en progreso
-        async function loadProgressCourses() {
-            try {
-                const response = await axios.get('/api/student/progress-courses');
-                const courses = response.data;
-                const container = document.getElementById('progress-courses-list');
+        // async function loadProgressCourses() {
+        //     try {
+        //         const response = await axios.get('/api/student/progress-courses');
+        //         const courses = response.data;
+        //         const container = document.getElementById('progress-courses-list');
 
-                if (courses && courses.length > 0) {
-                    container.innerHTML = courses.map(course => `
-                        <a href="/course/${course.slug}/learn" class="block group animate-slide-in">
-                            <div class="flex items-center px-3 py-3 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-100 hover:border-blue-200">
-                                <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-${course.color || 'blue'}-100 to-${course.color || 'blue'}-50 flex items-center justify-center shadow-sm group-hover:shadow transition-shadow duration-200">
-                                    <i class="fas fa-${course.icon || 'book'} text-${course.color || 'blue'}-600 text-sm"></i>
-                                </div>
-                                <div class="ml-3 flex-1 min-w-0">
-                                    <p class="text-xs font-semibold text-gray-900 truncate sidebar-text">${course.title}</p>
-                                    <div class="flex items-center mt-2">
-                                        <div class="flex-1 bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                            <div class="bg-gradient-to-r from-${course.color || 'blue'}-400 to-${course.color || 'blue'}-500 h-full rounded-full transition-all duration-500" style="width: ${course.progress || 0}%"></div>
-                                        </div>
-                                        <span class="ml-2 text-xs font-bold text-${course.color || 'blue'}-600 sidebar-text">${course.progress || 0}%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    `).join('');
-                } else {
-                    container.innerHTML = `
-                        <div class="px-3 py-4 text-center animate-fade-in">
-                            <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-                                <i class="fas fa-book-open text-gray-400 text-lg"></i>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-2">No tienes cursos activos</p>
-                            <a href="{{ route('cursos') }}" class="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 font-medium">
-                                Explorar cursos
-                                <i class="fas fa-arrow-right ml-1 text-xs"></i>
-                            </a>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error loading progress courses:', error);
-                const container = document.getElementById('progress-courses-list');
-                container.innerHTML = `
-                    <div class="px-3 py-4 text-center">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-red-100 flex items-center justify-center">
-                            <i class="fas fa-exclamation-triangle text-red-400 text-lg"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">Error al cargar cursos</p>
-                    </div>
-                `;
-            }
-        }
+        //         if (courses && courses.length > 0) {
+        //             container.innerHTML = courses.map(course => `
+        //                 <a href="/course/${course.slug}/learn" class="block group animate-slide-in">
+        //                     <div class="flex items-center px-3 py-3 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-gray-100 hover:border-blue-200">
+        //                         <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-${course.color || 'blue'}-100 to-${course.color || 'blue'}-50 flex items-center justify-center shadow-sm group-hover:shadow transition-shadow duration-200">
+        //                             <i class="fas fa-${course.icon || 'book'} text-${course.color || 'blue'}-600 text-sm"></i>
+        //                         </div>
+        //                         <div class="ml-3 flex-1 min-w-0">
+        //                             <p class="text-xs font-semibold text-gray-900 truncate sidebar-text">${course.title}</p>
+        //                             <div class="flex items-center mt-2">
+        //                                 <div class="flex-1 bg-gray-200 rounded-full h-1.5 overflow-hidden">
+        //                                     <div class="bg-gradient-to-r from-${course.color || 'blue'}-400 to-${course.color || 'blue'}-500 h-full rounded-full transition-all duration-500" style="width: ${course.progress || 0}%"></div>
+        //                                 </div>
+        //                                 <span class="ml-2 text-xs font-bold text-${course.color || 'blue'}-600 sidebar-text">${course.progress || 0}%</span>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 </a>
+        //             `).join('');
+        //         } else {
+        //             container.innerHTML = `
+        //                 <div class="px-3 py-4 text-center animate-fade-in">
+        //                     <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+        //                         <i class="fas fa-book-open text-gray-400 text-lg"></i>
+        //                     </div>
+        //                     <p class="text-sm text-gray-600 mb-2">No tienes cursos activos</p>
+        //                     <a href="{{ route('cursos') }}" class="inline-flex items-center text-xs text-blue-600 hover:text-blue-800 font-medium">
+        //                         Explorar cursos
+        //                         <i class="fas fa-arrow-right ml-1 text-xs"></i>
+        //                     </a>
+        //                 </div>
+        //             `;
+        //         }
+        //     } catch (error) {
+        //         console.error('Error loading progress courses:', error);
+        //         const container = document.getElementById('progress-courses-list');
+        //         container.innerHTML = `
+        //             <div class="px-3 py-4 text-center">
+        //                 <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-red-100 flex items-center justify-center">
+        //                     <i class="fas fa-exclamation-triangle text-red-400 text-lg"></i>
+        //                 </div>
+        //                 <p class="text-sm text-gray-600">Error al cargar cursos</p>
+        //             </div>
+        //         `;
+        //     }
+        // }
 
         // Cargar notificaciones
         /*async function loadNotifications() {
@@ -557,7 +540,7 @@
         window.studentDashboard = {
             refreshStats: loadDashboardData,
             refreshNotifications: loadNotifications,
-            refreshCourses: loadProgressCourses,
+            // refreshCourses: loadProgressCourses,
             refreshCart: updateCartCount,
             toggleSidebar: function() {
                 document.getElementById('sidebar-toggle-btn').click();

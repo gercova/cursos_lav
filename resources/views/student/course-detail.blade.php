@@ -274,7 +274,7 @@
                 </div>
 
                 <!-- Carousel de imágenes del curso -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                {{-- <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Galería del Curso</h3>
                     <div x-data="courseCarousel()" class="relative">
                         <!-- Contenedor del carousel -->
@@ -344,7 +344,7 @@
                             <p class="text-center text-sm text-gray-500 mt-2">Explora la imagen del curso</p>
                         </template>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

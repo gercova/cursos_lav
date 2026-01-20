@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CodeValidate;
 use App\Http\Requests\PasswordValidate;
-use App\Http\Requests\ProfileValidate;
 use App\Http\Requests\UserValidate;
+use App\Models\Course;
+use App\Models\CoursePromotionCode;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserAdminController extends Controller {
@@ -52,31 +53,6 @@ class UserAdminController extends Controller {
 
         return view('admin.users.index', compact('users', 'stats'));
     }
-
-    // public function profile(): View {
-    //     return view('admin.profile.index');
-    // }
-
-    // public function updateProfile(ProfileValidate $request) {
-    //     $user = Auth::user();
-
-    //     $validated = $request->validated();
-
-    //     if ($request->filled('current_password')) {
-    //         $request->validate([
-    //             'current_password'  => 'required|current_password',
-    //             'new_password'      => 'required|string|min:8|confirmed',
-    //         ]);
-
-    //         $validated['password'] = Hash::make($request->new_password);
-    //     }
-
-    //     $user->update($validated);
-
-    //     $this->logActivity("Actualizó su perfil de administrador");
-
-    //     return redirect()->back()->with('success', 'Perfil actualizado exitosamente.');
-    // }
 
     public function create(): View {
         $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
@@ -183,5 +159,81 @@ class UserAdminController extends Controller {
             'message'   => 'Estado del usuario actualizado.',
             'status'    => $user->is_active
         ]);
+    }
+
+    public function createCode(User $user, CodeValidate $request) {
+        $validated = $request->validated();
+
+
+
+        if($user->where('code', null)->where('id', $user->id)->first()){
+            $newCode = $this->createNickname($user->names);
+            $user->update(['code' => $newCode, 'promotion_price_is_active' => $validated['promotion_price_is_active']]);
+        }
+
+        $code =$user->code;
+
+        $courses                = Course::where('is_active', true)->select(['id', 'price'])->get();
+        $promotionData          = $courses->map(function ($course) use ($user, $code) {
+            $discountPercentage = isset($validated['discount_percentage']) ? $validated['discount_percentage'] : 20;
+            $discountPrice      = $course->price - ($course->price * ($discountPercentage / 100));
+
+            if ($discountPercentage == 0) {
+                $discountPrice = null;
+            }
+
+            return [
+                'course_id'             => $course->id,
+                'user_id'               => $user->id,
+                'code'                  => $code,
+                'discount_percentage'   => $discountPercentage,
+                'price'                 => $course->price,
+                'promotion_price'       => $discountPrice,
+                'is_active'             => true,
+                'created_at'            => now(),
+                'updated_at'            => now(),
+            ];
+        })->toArray();
+
+        if (!empty($promotionData)) {
+            CoursePromotionCode::insert($promotionData);
+        }
+
+        return response()->json([
+            'success'   => true,
+            'type'      => 'success',
+            'message'   => 'Código de promoción creado exitosamente',
+            'data'      => [
+                'code'                  => $code,
+                'promotions_created'    => count($promotionData)
+            ]
+        ], 200);
+    }
+
+    public function createNickname($name): string {
+        $nickname   = '';
+        $count      = mb_substr_count($name, ' ');
+        $p          = explode(' ', $name);
+
+        if ($count == 1) {
+            $w = substr($p[0], 0, -3);
+            $nickname = $w . $p[1];
+        } elseif ($count == 2) {
+            $nickname = $p[0][0] . $p[1] . $p[2][0];
+        } elseif ($count == 3) {
+            $nickname = $p[0][0] . $p[1] . $p[2][0] . $p[3][0];
+        } elseif ($count == 4) {
+            $nickname = $p[0][0] . $p[1][0] . $p[2][0] . $p[3] . $p[4][0];
+        } else {
+            // Caso por defecto: usar el primer nombre completo
+            $nickname = strtoupper(str_replace(' ', '', $name));
+        }
+        // Eliminar caracteres no alfanuméricos
+        $nickname = preg_replace('/[^a-zA-Z0-9]/', '', $nickname);
+        if(User::where('code', $nickname)->count() > 1) {
+            $nickname .= 1;
+        }
+
+        return strtoupper($nickname);
     }
 }

@@ -32,4 +32,20 @@ class CourseSection extends Model
     public function lessons(): HasMany {
         return $this->hasMany(Lesson::class)->orderBy('order');
     }
+
+    public function previousSection() {
+        return $this->where('course_id', $this->course_id)
+            ->where('order', '<', $this->order)
+            ->where('is_active', true)
+            ->orderBy('order', 'desc')
+            ->first();
+    }
+
+    public function nextSection() {
+        return $this->where('course_id', $this->course_id)
+            ->where('order', '>', $this->order)
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->first();
+    }
 }

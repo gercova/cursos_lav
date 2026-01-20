@@ -29,4 +29,8 @@ class ExamQuestion extends Model
     public function exam(): BelongsTo {
         return $this->belongsTo(Exam::class);
     }
+
+    public function getOptionsAttribute($value) {
+        return is_array($value) ? $value : json_decode($value, true);
+    }
 }

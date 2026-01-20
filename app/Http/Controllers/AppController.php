@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\CoursePromotionCode;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -27,86 +30,207 @@ class AppController extends Controller {
         return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
 
-    public function courses(Request $request) {
-        $query = Course::with(['category', 'instructor'])->where('is_active', true);
-        // Filtro por búsqueda
-        if ($request->has('search') && $request->search) {
-            $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('category', function($q) use ($searchTerm) {
-                        $q->where('name', 'like', '%' . $searchTerm . '%');
+    // public function courses(Request $request, $code = null) {
+
+    //     $exists = User::where('code', $code)->where('is_active', true)->first();
+    //     if($code == null){
+    //         $query = Course::with(['category', 'instructor'])->where('is_active', true);
+    //     } else if($exists) {
+    //         $query  = Course::with(['category', 'instructor', 'coursePromotionCode'])
+    //             ->join('course_promotion_code as cpc', 'courses.id', '=', 'cpc.course_id')
+    //             ->where('cpc.code', $exists->code)
+    //             ->where('courses.is_active', true);
+    //     }
+
+    //     // Filtro por búsqueda
+    //     if ($request->has('search') && $request->search) {
+    //         $searchTerm = $request->search;
+    //         $query->where(function($q) use ($searchTerm) {
+    //             $q->where('title', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('description', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhereHas('category', function($q) use ($searchTerm) {
+    //                     $q->where('name', 'like', '%' . $searchTerm . '%');
+    //                 })
+    //                 ->orWhereHas('instructor', function($q) use ($searchTerm) {
+    //                     $q->where('names', 'like', '%' . $searchTerm . '%');
+    //                 });
+    //         });
+    //     }
+
+    //     // Filtrar por categoría
+    //     if ($request->has('category') && $request->category) {
+    //         $query->where('category_id', $request->category);
+    //     }
+
+    //     // Ordenar
+    //     $sort = $request->get('sort', 'newest');
+    //     switch ($sort) {
+    //         case 'oldest':
+    //             $query->orderBy('courses.created_at', 'asc');
+    //             break;
+    //         case 'popular':
+    //             $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
+    //             break;
+    //         case 'price_low':
+    //             $query->orderBy('courses.price', 'asc');
+    //             break;
+    //         case 'price_high':
+    //             $query->orderBy('courses.price', 'desc');
+    //             break;
+    //         case 'name_asc':
+    //             $query->orderBy('title', 'asc');
+    //             break;
+    //         case 'name_desc':
+    //             $query->orderBy('title', 'desc');
+    //             break;
+    //         default: // newest
+    //             $query->orderBy('courses.created_at', 'desc');
+    //     }
+
+    //     $courses    = $query->paginate(12);
+    //     $categories = Category::where('is_active', true)->get();
+    //     $enterprise = Enterprise::first();
+
+    //     // Si es una petición AJAX, retornar solo la vista parcial
+    //     if ($request->ajax()) {
+    //         return view('student.partials.courses-grid', compact('courses'))->render();
+    //     }
+
+    //     return view('student.courses', compact('courses', 'categories', 'enterprise'));
+    // }
+
+    public function courses(Request $request, $code = null) {
+        $query = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
+
+        // 2. Lógica del Código Promocional / Partner
+        $partner = null;
+        if ($code) {
+            $partner = User::where('code', $code)->where('is_active', true)->first();
+
+            if ($partner) {
+                // Obtener todos los códigos promocionales asociados a este partner
+                $promoCodes = CoursePromotionCode::where('user_id', $partner->id)->where('is_active', true)->pluck('code')->toArray();
+
+                if (!empty($promoCodes)) {
+                    // Filtrar cursos que tienen este código promocional del partner
+                    $query->whereHas('coursePromotionCode', function ($q) use ($promoCodes) {
+                        $q->whereIn('code', $promoCodes);
+                    });
+                    // Cargamos la relación con el código promocional activo
+                    $query->with(['coursePromotionCode' => function($q) use ($promoCodes) {
+                        $q->whereIn('code', $promoCodes)->where('is_active', true);
+                    }]);
+                } else {
+                    // Si el partner existe pero no tiene códigos promocionales
+                    // Mostramos cursos normales (sin descuento)
+                    $partner = null;
+                }
+            } else {
+                // Código inválido - mostrar cursos normales sin descuento
+                // O si prefieres no mostrar nada, descomenta la siguiente línea:
+                // $query->whereRaw('0 = 1');
+                $partner = null;
+            }
+        }
+
+        // 3. Filtro por búsqueda
+        $query->when($request->search, function ($q, $search) {
+            $q->where(function ($subQuery) use ($search) {
+                $subQuery->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('short_description', 'like', '%' . $search . '%')
+                    ->orWhereHas('category', function ($cat) use ($search) {
+                        $cat->where('name', 'like', '%' . $search . '%');
                     })
-                    ->orWhereHas('instructor', function($q) use ($searchTerm) {
-                        $q->where('names', 'like', '%' . $searchTerm . '%');
+                    ->orWhereHas('instructor', function ($inst) use ($search) {
+                        $inst->where('names', 'like', '%' . $search . '%');
                     });
             });
-        }
+        });
 
-        // Filtrar por categoría
-        if ($request->has('category') && $request->category) {
-            $query->where('category_id', $request->category);
-        }
+        // 4. Filtrar por categoría
+        $query->when($request->category, function ($q, $category_id) {
+            $q->where('category_id', $category_id);
+        });
 
-        // Ordenar
+        // 5. Ordenamiento
         $sort = $request->get('sort', 'newest');
-        switch ($sort) {
-            case 'oldest':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'popular':
-                $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
-                break;
-            /*case 'rating':
-                // Asumiendo que tienes un campo de rating o reviews
-                $query->orderBy('rating', 'desc');
-                break;*/
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'name_asc':
-                $query->orderBy('title', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('title', 'desc');
-                break;
-            default: // newest
-                $query->orderBy('created_at', 'desc');
-        }
 
-        $courses    = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
-        $enterprise = Enterprise::first();
+        match ($sort) {
+            'oldest'     => $query->orderBy('courses.created_at', 'asc'),
+            'popular'    => $query->withCount('enrollments')->orderBy('enrollments_count', 'desc'),
+            'price_low'  => $query->orderBy('courses.price', 'asc'),
+            'price_high' => $query->orderBy('courses.price', 'desc'),
+            'name_asc'   => $query->orderBy('courses.title', 'asc'),
+            'name_desc'  => $query->orderBy('courses.title', 'desc'),
+            default      => $query->orderBy('courses.created_at', 'desc'),
+        };
 
-        // Si es una petición AJAX, retornar solo la vista parcial
+        // 6. Ejecución
+        $courses = $query->paginate(12)->withQueryString();
+
+        // 7. Para cada curso, determinar el precio final según si hay código promocional
+        $courses->transform(function ($course) use ($partner) {
+            // Si hay un partner válido, buscar si este curso tiene descuento específico
+            if ($partner && $course->coursePromotionCode->isNotEmpty()) {
+                $promoCode = $course->coursePromotionCode->first();
+
+                // Usar precio promocional si está disponible y es menor
+                if ($promoCode->promotion_price < $course->price) {
+                    $course->final_price = $promoCode->promotion_price;
+                    $course->original_price = $course->price;
+                    $course->has_promotion = true;
+                    $course->discount_percentage = $promoCode->discount_percentage;
+                    $course->promo_code = $promoCode->code;
+                } else {
+                    // Mantener precio normal
+                    $course->final_price = $course->getFinalPriceAttribute();
+                    $course->has_promotion = $course->getIsOnPromotionAttribute();
+                }
+            } else {
+                // Sin código o sin partner válido, usar precio normal
+                $course->final_price = $course->getFinalPriceAttribute();
+                $course->has_promotion = $course->getIsOnPromotionAttribute();
+            }
+
+            return $course;
+        });
+
+        // 8. Respuesta AJAX o normal
         if ($request->ajax()) {
             return view('student.partials.courses-grid', compact('courses'))->render();
         }
 
-        return view('student.courses', compact('courses', 'categories', 'enterprise'));
+        $categories = Category::where('is_active', true)->get();
+        $enterprise = Enterprise::first();
+
+        return view('student.courses', compact('courses', 'categories', 'enterprise', 'partner'));
     }
 
-    public function show($slug): View {
-        $course = Course::with(['sections.lessons', 'category', 'instructor', 'documents'])
+    public function show(string $slug): View {
+        $course = Course::with([
+                'sections' => function($query) {
+                    $query->where('is_active', true)->orderBy('order');
+                },
+                'sections.lessons' => function($query) {
+                    $query->where('is_active', true)->orderBy('order');
+                },
+                'category',
+                'instructor',
+                'documents' => function($query) {
+                    $query->where('is_active', true);
+                }
+            ])
             ->where('is_active', true)
-            ->whereHas('sections', function ($query) {
-                $query->where('is_active', true)
-                    ->whereHas('lessons', function ($lessonQuery) {
-                        $lessonQuery->where('is_active', true);
-                    });
-            })
             ->where('slug', $slug)
-            ->first();
+            ->firstOrFail(); // Usar firstOrFail para 404 automático
 
-        $isEnrolled = false;
-        if (Auth::check()) {
-            $isEnrolled = Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->exists();
-        }
+        $isEnrolled = Auth::check()
+            ? Enrollment::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->exists()
+            : false;
 
         return view('student.course-detail', compact('course', 'isEnrolled'));
     }

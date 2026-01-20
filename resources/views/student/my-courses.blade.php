@@ -256,10 +256,9 @@ document.addEventListener('alpine:init', () => {
                                         <i class="far fa-clock mr-1"></i>
                                         <span x-text="course.last_accessed"></span>
                                     </div>
-                                    <a :href="course.continue_url"
-                                       class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
-                                        <span x-text="course.status === 'completed' ? 'Ver Certificado' : 'Continuar'"></span>
-                                        <i class="fas fa-arrow-right ml-1"></i>
+                                    <a :href="course.continue_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-play mr-2"></i>
+                                        <span>Ingresar al Curso</span>
                                     </a>
                                 </div>
                             </div>
@@ -364,8 +363,7 @@ document.addEventListener('alpine:init', () => {
                                                         <i class="fas fa-info-circle mr-2"></i>
                                                         Detalles
                                                     </button>
-                                                    <a :href="course.continue_url"
-                                                       class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
+                                                    <a :href="course.continue_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
                                                         <i class="fas" :class="course.status === 'completed' ? 'fa-certificate' : 'fa-play'"></i>
                                                         <span class="ml-2" x-text="course.status === 'completed' ? 'Ver Certificado' : 'Continuar'"></span>
                                                     </a>
@@ -401,13 +399,7 @@ document.addEventListener('alpine:init', () => {
     </div>
 
     <!-- Modal de detalles del curso -->
-    <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0">
+    <div x-show="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
         <div @click.away="closeModal" class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
             <div class="p-6">
                 <div class="flex justify-between items-start mb-6">
@@ -430,8 +422,7 @@ document.addEventListener('alpine:init', () => {
                                     <span x-text="selectedCourse?.progress + '%'"></span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="h-2.5 rounded-full bg-blue-600 progress-bar"
-                                         :style="'width: ' + selectedCourse?.progress + '%'"></div>
+                                    <div class="h-2.5 rounded-full bg-blue-600 progress-bar" :style="'width: ' + selectedCourse?.progress + '%'"></div>
                                 </div>
                             </div>
 

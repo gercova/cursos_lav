@@ -196,6 +196,13 @@
                                             <div class="text-sm text-gray-500 truncate">
                                                 DNI: {{ $user->dni }}
                                             </div>
+                                            @if($user->code)
+                                                <div class="text-sm text-gray-500 truncate">
+                                                    <span class="px-3 py-1 rounded-full text-xs font-semibold text-center bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800">
+                                                        COD: {{ $user->code }}
+                                                    </span>
+                                                </div>
+                                            @endif
                                             <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
                                                 <div class="flex items-center gap-1">
                                                     <i class="bi bi-person"></i>
@@ -330,19 +337,30 @@
                                             </a>
 
                                             <!-- Botón modal cambiar contraseña -->
-                                            <button
-                                                @click="$dispatch('open-password-modal', { userId: {{ $user->id }} })"
-                                                class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors duration-150"
-                                            >
+                                            <button @click="$dispatch('open-password-modal', { userId: {{ $user->id }} })" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors duration-150">
                                                 <i class="fa-solid fa-key"></i> Cambiar contraseña
                                             </button>
 
-                                            <!-- Enviar mensaje -->
-                                            <button @click="sendMessage({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
+                                            @if($user->code)
+                                                <button onclick="copyPromoLink('{{ $user->code }}', this)"
+                                                    class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200" title="Copiar enlace de promoción">
+                                                    <i class="fas fa-link"></i> Copiar enlace
+                                                </button>
+                                            @endif
+
+                                            <!-- Crear código de descuento -->
+                                            {{-- <button @click="createCode({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
                                                 </svg>
-                                                Enviar mensaje
+                                                Crear código
+                                            </button> --}}
+
+                                            <button @click="$dispatch('open-code-user-modal', { userId: {{ $user->id }} })" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                                </svg>
+                                                Crear código
                                             </button>
 
                                             <!-- Eliminar -->
@@ -354,6 +372,7 @@
                                             </button>
                                         </div>
                                     </div>
+
                                 </td>
                             </tr>
                         @endforeach
@@ -390,7 +409,7 @@
         @endif
     </div>
 
-    <!-- Modal para subir/editar documento -->
+    <!-- Modal para cambiar contraseña -->
     <div x-data="passwordModal()" x-on:open-password-modal.window="handleOpen($event.detail)">
         <!-- Modal overlay -->
         <div x-show="showModal"
@@ -465,6 +484,75 @@
                                 </button>
                                 <button type="submit" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                     <i class="bi bi-key"></i>
+                                    Guardar cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cambiar contraseña -->
+    <div x-data="createCodeModal()" x-on:open-code-user-modal.window="handleOpen($event.detail)">
+        <!-- Modal overlay -->
+        <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm" @click.self="closeModal">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                    <!-- Header del modal -->
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">Crear código de descuento</h3>
+                            </div>
+                            <button @click="closeModal" class="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenido del modal -->
+                    <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                        <form @submit.prevent="submitPassword" id="passwordForm">
+                            @csrf
+                            <div class="space-y-6">
+                                <!-- Información del documento -->
+                                <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Información del Documento</h4>
+
+                                    <!-- Título -->
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Insertar porcentaje de descuento, sin no lo inserta, el valor por defecto es del 20%
+                                        </label>
+                                        <input type="number" step="0.01" x-model="formData.discount_percentage" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <div class="flex items-center h-5">
+                                            <input type="checkbox" name="promotion_price_is_active" x-model="formData.promotion_price_is_active" id="promotion_price_is_active" value="0" {{ old('promotion_price_is_active') }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        </div>
+                                        <div class="ml-3">
+                                            <label for="promotion_price_is_active" class="text-sm font-medium text-gray-700">
+                                                Curso Activo
+                                            </label>
+                                            <p class="text-xs text-gray-500">
+                                                El curso será visible para los estudiantes
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones del modal -->
+                            <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
+                                <button type="button" @click="closeModal" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                     Guardar cambios
                                 </button>
                             </div>
@@ -579,9 +667,67 @@
                     }
                 } catch (error) {
                     console.error('Error al actualizar contraseña:', error);
-                    const message = error.response?.data?.message ||
-                                    error.response?.data?.errors?.password?.[0] ||
-                                    'Error al actualizar la contraseña';
+                    const message = error.response?.data?.message || error.response?.data?.errors?.password?.[0] || 'Error al actualizar la contraseña';
+                    showNotification(message, 'error');
+                } finally {
+                    this.isSubmitting = false;
+                }
+            }
+        };
+    }
+
+    function createCodeModal() {
+        return {
+            showModal: false,
+            userId: null,
+            isSubmitting: false,
+            formData: {
+                discount_percentage:        '',
+                promotion_price_is_active:  '',
+            },
+
+            handleOpen(detail) {
+                this.userId     = detail.userId;
+                this.showModal  = true;
+                this.resetForm();
+            },
+
+            resetForm() {
+                this.formData = {
+                    discount_percentage:        '',
+                    promotion_price_is_active:  '',
+                };
+            },
+
+            closeModal() {
+                this.showModal  = false;
+                this.userId     = null;
+                this.resetForm();
+            },
+
+            async submitPassword() {
+
+
+                this.isSubmitting = true;
+                try {
+                    const response = await axios.put(
+                        `${API_URL}/admin/users/create-code/${this.userId}`,
+                        this.formData,
+                        {
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        }
+                    );
+
+                    if (response.data.success) {
+                        showNotification(response.data.message, 'success');
+                        this.closeModal();
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    console.error('Error al crear el codigo:', error);
+                    const message = error.response?.data?.message || error.response?.data?.errors?.password?.[0] || 'Error al crear el codigo';
                     showNotification(message, 'error');
                 } finally {
                     this.isSubmitting = false;
@@ -626,23 +772,71 @@
         }
     }
 
-    // Función para enviar mensaje
-    async function sendMessage(userId) {
-        const message = prompt('Escribe el mensaje que deseas enviar:');
-        if (!message) return;
+    // async function createCode(userId) {
+    //     try {
+    //         const response = await axios.put(`${API_URL}/admin/users/create-code/${userId}`);
+
+    //         if (response.data.success) {
+    //             showNotification('Código creado exitosamente', 'success');
+    //             setTimeout(() => window.location.reload(), 1000);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error al crear el código:', error);
+    //         showNotification('Error al crear el código', 'error');
+    //     }
+    // }
+
+    function copyPromoLink(code, button) {
+        const promoLink = `${API_URL}/cursos/${code}`;
+
+        // Crear un input temporal para copiar el texto
+        const tempInput = document.createElement('input');
+        tempInput.value = promoLink;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); // Para dispositivos móviles
 
         try {
-            const response = await axios.post(`/admin/users/${userId}/send-message`, {
-                message: message
-            });
+            // Intentar copiar usando la API moderna
+            const successful = document.execCommand('copy');
 
-            if (response.data.success) {
-                showNotification('Mensaje enviado exitosamente', 'success');
+            if (successful) {
+                // Feedback visual
+                const originalContent = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check text-green-600"></i>';
+                button.classList.remove('text-gray-600', 'bg-gray-100', 'border-gray-300');
+                button.classList.add('text-green-600', 'bg-green-100', 'border-green-300');
+
+                // Mostrar notificación
+                showNotification('Enlace copiado: ' + promoLink, 'success');
+
+                // Restaurar después de 2 segundos
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('text-green-600', 'bg-green-100', 'border-green-300');
+                    button.classList.add('text-gray-600', 'bg-gray-100', 'border-gray-300');
+                }, 2000);
+            } else {
+                showNotification('Error al copiar el enlace', 'error');
             }
-        } catch (error) {
-            console.error('Error al enviar mensaje:', error);
-            showNotification('Error al enviar el mensaje', 'error');
+        } catch (err) {
+            console.error('Error al copiar:', err);
+            showNotification('Error al copiar el enlace', 'error');
         }
+
+        // Limpiar
+        document.body.removeChild(tempInput);
+    }
+
+
+    // También puedes agregar funcionalidad para usar la API moderna si está disponible
+    function copyToClipboardModern(text) {
+        return navigator.clipboard.writeText(text).then(() => {
+            return true;
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+            return false;
+        });
     }
 
     // Función para mostrar notificaciones

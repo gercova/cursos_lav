@@ -60,15 +60,14 @@ class CoursesController extends Controller {
                 'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : null,
                 'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
                 'total_lessons'     => $totalLessons,
-                'continue_url'      => route('course.learn', $course->slug)
+                'continue_url'      => route('student.course.learn', $course)
             ];
         });
 
         return view('student.my-courses', compact('enrollments', 'coursesData'));
     }
 
-    public function learn($course): View {
-        $course = Course::where('slug', $course)->where('is_active', true)->first();
-        return view('lesson', compact('course'));
+    public function learn(Course $course): View {
+        return view('student.courses.learn', compact('course'));
     }
 }

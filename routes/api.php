@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Student\LessonController;
 use App\Http\Controllers\Student\StudentExamsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,4 +50,15 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
         return response()->json([]);
     });
 
+    // Obtener datos de una lección
+    Route::get('/lesson/{lesson}', [LessonController::class, 'show']);
+
+    // Obtener lección anterior/siguiente
+    Route::get('/lesson/{lesson}/previous', [LessonController::class, 'previous']);
+    Route::get('/lesson/{lesson}/next', [LessonController::class, 'next']);
+
+    // Manejar notas
+    Route::post('/course/{course}/notes', [NoteController::class, 'store']);
+    Route::get('/course/{course}/notes', [NoteController::class, 'index']);
+    Route::delete('/notes/{note}', [\NoteController::class, 'destroy']);
 });

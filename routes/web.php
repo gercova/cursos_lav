@@ -21,12 +21,12 @@ use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
 use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Student\LessonController;
 use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
-use App\Http\Controllers\Student\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,11 +42,11 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/',                         [AppController::class, 'home'])->name('home');
-Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
+Route::get('/cursos/{code?}',           [AppController::class, 'courses'])->name('cursos');
+Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
 Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
 Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
 Route::post('/contact/send',            [AppController::class, 'sendMessage'])->name('contact.send');
-Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
 Route::get('/api/cart/count',           [CartsController::class, 'count'])->name('cart.count');
 Route::get('/terminos-y-condiciones',   [AppController::class, 'terms'])->name('terminos-y-condiciones');
 Route::get('/politicas-de-uso',         [AppController::class, 'policies'])->name('politicas-de-uso');
@@ -85,27 +85,22 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
 
     // Webhook (sin autenticación)
-    Route::post('/payment/webhook',             [PaymentController::class, 'webhook']);
+    Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
 
-    Route::get('/wishlist',                     [WishlistController::class, 'index'])->name('wishlist');
-    Route::post('/wishlist/add',                [WishlistController::class, 'add'])->name('wishlist.add');
-    Route::delete('/wishlist/remove/{course}',  [WishlistController::class, 'remove'])->name('wishlist.remove');
-    Route::delete('/wishlist/clear-all',        [WishlistController::class, 'clearAll'])->name('wishlist.clear-all');
-    Route::get('/wishlist/count',               [WishlistController::class, 'count'])->name('wishlist.count');
-    Route::get('/wishlist/check/{course}',      [WishlistController::class, 'check'])->name('wishlist.check');
-    Route::post('/wishlist/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
-    // API para actualizar contador en tiempo real
-    Route::get('/api/wishlist/count',           [WishlistController::class, 'count']);
-
-    // Cursos
-    Route::get('/course/learn/{course}',            [CoursesController::class, 'learn' ])->name('course.learn');
-
-    // Exámenes
-    Route::get('/exam/home',                        [StudentExamsController::class, 'index'])->name('student.exams');
-    Route::get('/examen/comenzar/{courseId}',       [StudentExamsController::class, 'start'])->name('student.exam.start');
-    Route::get('/examen/tomar/{attemptId}',         [StudentExamsController::class, 'take'])->name('student.exam.take');
-    Route::get('/examen/resultado/{attemptId}',     [StudentExamsController::class, 'result'])->name('student.exam.result');
+    // Listar exámenes
+    Route::get('/exams/home',                           [StudentExamsController::class, 'index'])->name('student.exams');
+    // Mostrar examen (puede ser pantalla de inicio o examen activo)
+    Route::get('/exams/{id}',                           [StudentExamsController::class, 'show'])->name('student.exams.show');
+    // Iniciar nuevo intento (AJAX)
+    Route::post('/exams/{id}/start',                    [StudentExamsController::class, 'start'])->name('student.exams.start');
+    // Guardar respuestas durante el examen (AJAX)
+    Route::post('/exams/{id}/save',                     [StudentExamsController::class, 'saveAnswers'])->name('student.exams.save-answers');
+    // Finalizar y enviar examen
+    Route::post('/exams/{id}/submit',                   [StudentExamsController::class, 'submit'])->name('student.exams.submit');
+    // Ver resultado del examen
+    Route::get('/exams/result/{attemptId}',             [StudentExamsController::class, 'result'])->name('student.exams.result');
+    // Ver detalles de un examen realizado
+    Route::get('/exams/view/{attemptId}',               [StudentExamsController::class, 'view'])->name('student.exams.view');
 
     // Certificados
     Route::get('/certificate',                      [CertificatesController::class, 'index'])->name('student.certificates');
@@ -118,7 +113,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
     Route::get('/api/student/dashboard-stats',      [DashboardController::class, 'stats'])->name('student.dashboard.stats');
     Route::get('/api/student/dashboard-courses',    [DashboardController::class, 'dashboardCourses'])->name('student.dashboard.courses');
-    Route::get('/api/student/progress-courses',     [DashboardController::class, 'progressCourses'])->name('student.progress.courses');
     Route::get('/api/student/recent-activity',      [DashboardController::class, 'recentActivity'])->name('student.recent.activity');
     Route::get('/api/student/upcoming-events',      [DashboardController::class, 'upcomingEvents'])->name('student.upcoming.events');
     Route::get('/api/student/achievements',         [DashboardController::class, 'achievements'])->name('student.achievements');
@@ -140,6 +134,14 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Mis cursos
     Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');
+
+    Route::get('/courses/{course}/learn',           [CoursesController::class, 'learn'])->name('student.course.learn');
+    // Vista de lección individual
+    Route::get('/courses/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
+    // Guardar progreso de lección
+    Route::post('/lesson/progress/save',            [LessonController::class, 'saveProgress'])->name('lesson.progress.save');
+    // Marcar lección como completada
+    Route::post('/lesson/complete',                 [LessonController::class, 'complete'])->name('lesson.complete');
 
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
@@ -171,8 +173,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/clear-cache',                 [AdminController::class, 'clearCache'])->name('admin.cache.clear');
         // Log de Actividades
         Route::get('/activity-log',                 [AdminController::class, 'activityLog'])->name('admin.activity-log');
-        // Logout
-        // Route::post('/logout',                      [AuthAdminController::class, 'logout'])->name('admin.logout');
 
         Route::get('/enterprise',                   [EnterpriseAdminController::class, 'index'])->name('admin.enterprise.index');
         Route::put('/enterprise',                   [EnterpriseAdminController::class, 'update'])->name('admin.enterprise.update');
@@ -188,9 +188,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/users/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('admin.users.password');
         Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
-        // Perfil
-        // Route::get('/profile',                      [UserAdminController::class, 'profile'])->name('admin.profile');
-        // Route::put('/profile',                      [UserAdminController::class, 'updateProfile'])->name('admin.profile.update');
+        Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
 
         // Rutas para categorias
         Route::get('categories/home',               [CategoriesAdminController::class, 'index'])->name('admin.categories.index');

@@ -88,19 +88,13 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
 
     // Listar exámenes
-    Route::get('/exams/home',                           [StudentExamsController::class, 'index'])->name('student.exams');
-    // Mostrar examen (puede ser pantalla de inicio o examen activo)
-    Route::get('/exams/{id}',                           [StudentExamsController::class, 'show'])->name('student.exams.show');
-    // Iniciar nuevo intento (AJAX)
-    Route::post('/exams/{id}/start',                    [StudentExamsController::class, 'start'])->name('student.exams.start');
-    // Guardar respuestas durante el examen (AJAX)
-    Route::post('/exams/{id}/save',                     [StudentExamsController::class, 'saveAnswers'])->name('student.exams.save-answers');
-    // Finalizar y enviar examen
-    Route::post('/exams/{id}/submit',                   [StudentExamsController::class, 'submit'])->name('student.exams.submit');
-    // Ver resultado del examen
-    Route::get('/exams/result/{attemptId}',             [StudentExamsController::class, 'result'])->name('student.exams.result');
-    // Ver detalles de un examen realizado
-    Route::get('/exams/view/{attemptId}',               [StudentExamsController::class, 'view'])->name('student.exams.view');
+    Route::get('/exams/home',                   [StudentExamsController::class, 'index'])->name('student.exams');
+    Route::get('/exams/{id}',                   [StudentExamsController::class, 'show'])->name('student.exams.show');
+    Route::post('/exams/{id}/start',            [StudentExamsController::class, 'start'])->name('student.exams.start');
+    Route::post('/exams/{id}/save',             [StudentExamsController::class, 'saveAnswers'])->name('student.exams.save-answers');
+    Route::post('/exams/{id}/submit',           [StudentExamsController::class, 'submit'])->name('student.exams.submit');
+    Route::get('/exams/result/{attemptId}',     [StudentExamsController::class, 'result'])->name('student.exams.result');
+    Route::get('/exams/view/{attemptId}',       [StudentExamsController::class, 'view'])->name('student.exams.view');
 
     // Certificados
     Route::get('/certificate',                      [CertificatesController::class, 'index'])->name('student.certificates');
@@ -108,7 +102,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/{certificateId}/descargar',        [CertificatesController::class, 'download'])->name('student.certificates.download');
     Route::post('/generar/{enrollmentId}',          [CertificatesController::class, 'generateCertificate'])->name('generate');
 
-    // Rutas nuevas
     // Dashboard principal
     Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
     Route::get('/api/student/dashboard-stats',      [DashboardController::class, 'stats'])->name('student.dashboard.stats');

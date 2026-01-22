@@ -98,8 +98,8 @@
                     @foreach($questions as $index => $question)
                         @php
                             $userAnswer = isset($attempt->answers[$question->id]) ? $attempt->answers[$question->id] : null;
-                            $isCorrect = $userAnswer == $question->correct_answer;
-                            $points = $isCorrect ? $question->points : 0;
+                            $isCorrect  = $userAnswer == $question->correct_answer;
+                            $points     = $isCorrect ? $question->points : 0;
                         @endphp
 
                         <div class="border border-gray-200 rounded-xl p-5 hover:border-blue-300 transition-colors duration-200 {{ $isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200' }}">
@@ -132,8 +132,8 @@
                                     @if(is_array($question->options))
                                         @foreach($question->options as $key => $option)
                                             @php
-                                                $isThisCorrect = $key == $question->correct_answer;
-                                                $isUserAnswer = $userAnswer == $key;
+                                                $isThisCorrect  = $key == $question->correct_answer;
+                                                $isUserAnswer   = $userAnswer == $key;
                                             @endphp
                                             <div class="flex items-center p-3 rounded-lg border {{ $isThisCorrect ? 'border-emerald-300 bg-emerald-50' : 'border-gray-200' }} {{ $isUserAnswer ? ($isThisCorrect ? 'ring-2 ring-emerald-500' : 'ring-2 ring-rose-500') : '' }}">
                                                 <div class="flex items-center flex-1">

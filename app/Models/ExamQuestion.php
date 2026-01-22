@@ -33,4 +33,12 @@ class ExamQuestion extends Model
     public function getOptionsAttribute($value) {
         return is_array($value) ? $value : json_decode($value, true);
     }
+
+    // Agregar accessor para consistentemente obtener correct_answer como string
+    public function getCorrectAnswerAttribute($value) {
+        if (is_numeric($value)) {
+            return (string) $value;
+        }
+        return $value;
+    }
 }

@@ -28,11 +28,11 @@ class Exam extends Model {
     ];
 
     public function course(): BelongsTo {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, 'course_id', 'id');
     }
 
     public function questions(): HasMany {
-        return $this->hasMany(ExamQuestion::class);
+        return $this->hasMany(ExamQuestion::class, 'exam_id', 'id');
     }
 
     public function attempts(): HasMany {

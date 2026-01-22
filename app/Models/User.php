@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Traits\StudentActivityLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -57,27 +58,27 @@ class User extends Authenticatable {
         return $this->role === 'instructor';
     }
 
-    public function enrollments() {
-        return $this->hasMany(Enrollment::class);
+    public function enrollments(): HasMany {
+        return $this->hasMany(Enrollment::class, 'user_id', 'id');
     }
 
-    public function courses() {
+    public function courses(): HasMany {
         return $this->hasMany(Course::class, 'instructor_id');
     }
 
-    public function certificates() {
-        return $this->hasMany(Certificate::class);
+    public function certificates(): HasMany {
+        return $this->hasMany(Certificate::class, 'user_id', 'id');
     }
 
-    public function examAttempts() {
-        return $this->hasMany(ExamAttempt::class);
+    public function examAttempts(): HasMany {
+        return $this->hasMany(ExamAttempt::class, 'user_id', 'id');
     }
 
-    public function cartItems() {
-        return $this->hasMany(Cart::class);
+    public function cartItems(): HasMany {
+        return $this->hasMany(Cart::class, 'user_id', 'id');
     }
 
-    public function notifications() {
+    public function notifications(): HasMany {
         return $this->hasMany(Notification::class)->latest();
     }
 

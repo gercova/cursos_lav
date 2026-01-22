@@ -43,16 +43,45 @@ class ExamAttempt extends Model {
         return $this->hasOne(Certificate::class);
     }
 
+    // public function getTimeRemainingAttribute() {
+    //     if (!$this->started_at || $this->completed_at) {
+    //         return 0;
+    //     }
+
+    //     $endTime = $this->started_at->addMinutes($this->exam->duration);
+    //     return now()->diffInSeconds($endTime, false);
+    // }
+
+    // public function isExpired() {
+    //     return $this->time_remaining <= 0;
+    // }
+
     public function getTimeRemainingAttribute() {
         if (!$this->started_at || $this->completed_at) {
             return 0;
         }
 
         $endTime = $this->started_at->addMinutes($this->exam->duration);
-        return now()->diffInSeconds($endTime, false);
+        $remaining = now()->diffInSeconds($endTime, false);
+
+        // Asegurar que no sea negativo
+        return max(0, $remaining);
     }
 
     public function isExpired() {
         return $this->time_remaining <= 0;
+    }
+
+    // Agregar método para verificar si puede ser completado
+    public function canBeSubmitted() {
+        if ($this->completed_at) {
+            return false; // Ya está completado
+        }
+
+        if ($this->isExpired()) {
+            return false; // Tiempo expirado
+        }
+
+        return true;
     }
 }

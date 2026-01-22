@@ -183,7 +183,7 @@ class ExamsAdminController extends Controller {
     public function results(Exam $exam): View {
         // Cargamos el examen y sus intentos con la información del usuario
         $exam->load(['examAttempts.user' => function($query) {
-            $query->select('id', 'name', 'email'); // Seleccionar solo campos necesarios
+            $query->select('id', 'names', 'email'); // Seleccionar solo campos necesarios
         }]);
 
         $results = $exam->examAttempts()->with('user')->latest()->paginate(15);
@@ -196,7 +196,7 @@ class ExamsAdminController extends Controller {
     public function attemptDetails($id): JsonResponse {
         try {
             $attempt = ExamAttempt::with([
-                'user:id,name,email',
+                'user:id,names,email',
                 'exam:id,title,passing_score',
                 'exam.questions:id,exam_id,question,correct_answer,type,points'
             ])->findOrFail($id);
@@ -249,7 +249,7 @@ class ExamsAdminController extends Controller {
                     'id' => $attempt->id,
                     'user' => [
                         'id'    => $attempt->user->id,
-                        'name'  => $attempt->user->name,
+                        'names' => $attempt->user->names,
                         'email' => $attempt->user->email,
                     ],
                     'exam' => [
@@ -272,9 +272,9 @@ class ExamsAdminController extends Controller {
             Log::error('Error fetching attempt details: ' . $e->getMessage());
 
             return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener los detalles del intento',
-                'error' => config('app.debug') ? $e->getMessage() : null
+                'success'   => false,
+                'message'   => 'Error al obtener los detalles del intento',
+                'error'     => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
@@ -308,7 +308,7 @@ class ExamsAdminController extends Controller {
             // Filtrar por búsqueda
             if ($search = $request->input('search')) {
                 $query->whereHas('user', function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
+                    $q->where('names', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
                 });
             }
@@ -389,11 +389,11 @@ class ExamsAdminController extends Controller {
 
             // Crear respuesta de descarga
             $headers = [
-                'Content-Type' => 'text/csv; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-                'Pragma' => 'no-cache',
-                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-                'Expires' => '0'
+                'Content-Type'          => 'text/csv; charset=utf-8',
+                'Content-Disposition'   => 'attachment; filename="' . $filename . '"',
+                'Pragma'                => 'no-cache',
+                'Cache-Control'         => 'must-revalidate, post-check=0, pre-check=0',
+                'Expires'               => '0'
             ];
 
             return response()->download($filepath, $filename, $headers)->deleteFileAfterSend(true);
@@ -414,16 +414,16 @@ class ExamsAdminController extends Controller {
             $attempts = $exam->examAttempts()->with('user')->get();
 
             // Calcular estadísticas
-            $totalAttempts = $attempts->count();
-            $passedCount = $attempts->where('passed', true)->count();
-            $failedCount = $totalAttempts - $passedCount;
-            $passRate = $totalAttempts > 0 ? ($passedCount / $totalAttempts * 100) : 0;
+            $totalAttempts  = $attempts->count();
+            $passedCount    = $attempts->where('passed', true)->count();
+            $failedCount    = $totalAttempts - $passedCount;
+            $passRate       = $totalAttempts > 0 ? ($passedCount / $totalAttempts * 100) : 0;
 
             // Puntuaciones
-            $scores = $attempts->pluck('score')->filter();
-            $averageScore = $scores->avg() ?? 0;
-            $highestScore = $scores->max() ?? 0;
-            $lowestScore = $scores->min() ?? 0;
+            $scores         = $attempts->pluck('score')->filter();
+            $averageScore   = $scores->avg() ?? 0;
+            $highestScore   = $scores->max() ?? 0;
+            $lowestScore    = $scores->min() ?? 0;
 
             // Distribución por rangos
             $scoreDistribution = [

@@ -366,27 +366,10 @@
 
     <!-- Modal para crear/editar pregunta -->
     <div x-data="questionModal()" x-cloak>
-        <div x-show="showModal"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-            @click.self="closeModal"
-        >
+        <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm" @click.self="closeModal">
 
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div x-show="showModal"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
-                >
+                <div x-show="showModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
 
                     <!-- Header -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -417,12 +400,7 @@
                                     Tipo de Pregunta *
                                 </label>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <button type="button"
-                                        @click="formData.type = 'multiple_choice'"
-                                        :class="formData.type === 'multiple_choice'
-                                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'"
-                                        class="p-4 border rounded-xl transition-all duration-200">
+                                    <button type="button" @click="formData.type = 'multiple_choice'" :class="formData.type === 'multiple_choice' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500'" class="p-4 border rounded-xl transition-all duration-200">
                                         <div class="flex items-center justify-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -430,13 +408,7 @@
                                             <span class="font-medium">Opción Múltiple</span>
                                         </div>
                                     </button>
-                                    <button type="button"
-                                        @click="formData.type = 'true_false'"
-                                        :class="formData.type === 'true_false'
-                                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600'
-                                            : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'"
-                                        class="p-4 border rounded-xl transition-all duration-200"
-                                    >
+                                    <button type="button" @click="formData.type = 'true_false'" :class="formData.type === 'true_false' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-green-600' : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'" class="p-4 border rounded-xl transition-all duration-200">
                                         <div class="flex items-center justify-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -645,12 +617,13 @@
                     modalComponent.isEditing = true;
 
                     try {
-                        const response = await axios.get(`/admin/exams/questions/${questionId}/edit`);
-                        const questionData = response.data;
+                        const response      = await axios.get(`/admin/exams/questions/${questionId}/edit`);
+                        const questionData  = response.data;
 
                         // Asegurar que las opciones sean un array
                         if (questionData.options) {
                             if (typeof questionData.options === 'string') {
+                                console.log(questionData.options);
                                 try {
                                     questionData.options = JSON.parse(questionData.options);
                                 } catch (e) {
@@ -799,6 +772,7 @@
                 type: 'multiple_choice',
                 points: 10,
                 options: ['', '', '', ''],
+                // options: [],
                 correct_answer: 0
             },
 
@@ -813,6 +787,7 @@
                     type: 'multiple_choice',
                     points: 10,
                     options: ['', '', '', ''],
+                    // options: [],
                     correct_answer: 0
                 };
             },

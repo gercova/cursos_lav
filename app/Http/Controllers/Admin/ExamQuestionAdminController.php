@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamQuestion;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +16,7 @@ class ExamQuestionAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
-    public function store(Request $request, Exam $exam) {
+    public function store(Request $request, Exam $exam): JsonResponse {
         $request->validate([
             'question'          => 'required|string|max:1000',
             'type'              => 'required|in:multiple_choice,true_false',
@@ -67,9 +66,9 @@ class ExamQuestionAdminController extends Controller {
         ]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Pregunta creada exitosamente',
-            'question' => $question
+            'success'   => true,
+            'message'   => 'Pregunta creada exitosamente',
+            'question'  => $question
         ]);
     }
 
@@ -142,8 +141,8 @@ class ExamQuestionAdminController extends Controller {
         $question->delete();
 
         // Reordenar preguntas restantes
-        $exam = $question->exam;
-        $order = 1;
+        $exam   = $question->exam;
+        $order  = 1;
         foreach ($exam->questions()->orderBy('order')->get() as $q) {
             $q->update(['order' => $order++]);
         }

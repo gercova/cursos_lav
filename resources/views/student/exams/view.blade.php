@@ -40,7 +40,6 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $exam->title }}</h3>
                         <p class="text-gray-600 mb-4">{{ $exam->description }}</p>
-
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <i class="fas fa-book text-gray-400 w-5 mr-3"></i>
@@ -48,7 +47,7 @@
                             </div>
                             <div class="flex items-center">
                                 <i class="fas fa-user text-gray-400 w-5 mr-3"></i>
-                                <span class="text-gray-700">Estudiante: <span class="font-medium">{{ auth()->user()->name }}</span></span>
+                                <span class="text-gray-700">Estudiante: <span class="font-medium">{{ auth()->user()->names }}</span></span>
                             </div>
                             <div class="flex items-center">
                                 <i class="far fa-calendar text-gray-400 w-5 mr-3"></i>
@@ -67,11 +66,11 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-700">Puntos obtenidos:</span>
-                                    <span class="font-bold text-gray-900">{{ $attempt->score }}/{{ $attempt->total_points }}</span>
+                                    <span class="font-bold text-gray-900">{{ round($attempt->score, 1) }}/{{ $attempt->total_points }}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-gray-700">Puntaje mínimo:</span>
-                                    <span class="font-bold {{ $attempt->passed ? 'text-emerald-600' : 'text-rose-600' }}">{{ $exam->passing_score }} puntos</span>
+                                    <span class="text-gray-700">Puntaje mínimo (%):</span>
+                                    <span class="font-bold {{ $attempt->passed ? 'text-emerald-600' : 'text-rose-600' }}">{{ round($exam->passing_score, 1) }} %</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-700">Estado:</span>
@@ -272,7 +271,7 @@
                 <div class="space-y-3">
                     <div class="flex justify-between">
                         <span class="text-gray-300">Curso:</span>
-                        <span class="font-medium">{{ $exam->course->code ?? 'N/A' }}</span>
+                        <span class="font-medium">{{ $exam->course->title ?? 'N/A' }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-300">Porcentaje:</span>

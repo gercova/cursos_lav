@@ -75,7 +75,7 @@
                                 <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
                                     <i class="fas fa-trophy text-amber-600"></i>
                                 </div>
-                                <p class="text-sm text-gray-700">{{ $exam->passing_score }}</p>
+                                <p class="text-sm text-gray-700">{{ round($exam->passing_score, 1) }} %</p>
                                 <p class="text-xs text-gray-500">Para aprobar</p>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
                                         <i class="fas fa-trophy text-amber-500 mr-3"></i>
                                         <span class="text-sm text-gray-600">Para aprobar</span>
                                     </div>
-                                    <span class="font-semibold text-gray-800">{{ $exam->passing_score }} pts</span>
+                                    <span class="font-semibold text-gray-800">{{ round($exam->passing_score, 1) }} %</span>
                                 </div>
 
                                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">

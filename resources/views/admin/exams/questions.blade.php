@@ -36,15 +36,13 @@
             </div>
 
             <div class="flex items-center gap-2 mt-6 lg:mt-0">
-                <a href="{{ route('admin.exams.edit', $exam) }}"
-                   class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                <a href="{{ route('admin.exams.edit', $exam) }}" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                     Volver a Configuración
                 </a>
-                <button @click="showCreateModal()"
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <button @click="showCreateModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -56,8 +54,7 @@
         <!-- Pestañas de navegación -->
         <div class="border-b border-gray-200 mb-8">
             <nav class="flex space-x-8 overflow-x-auto" aria-label="Tabs">
-                <a href="{{ route('admin.exams.edit', $exam) }}"
-                   class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                <a href="{{ route('admin.exams.edit', $exam) }}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -65,8 +62,7 @@
                         Información General
                     </div>
                 </a>
-                <a href="#"
-                   class="border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                <a href="#" class="border-blue-500 text-blue-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -159,8 +155,7 @@
                                             @foreach($options as $index => $option)
                                                 @if(!empty($option))
                                                     <div class="flex items-center gap-3">
-                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full border-2
-                                                            {{ $question->correct_answer == $index ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
+                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 {{ $question->correct_answer == $index ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
                                                             @if($question->correct_answer == $index)
                                                                 <div class="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
                                                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,8 +164,7 @@
                                                                 </div>
                                                             @endif
                                                         </div>
-                                                        <div class="flex-1 p-3 rounded-lg
-                                                            {{ $question->correct_answer == $index ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
+                                                        <div class="flex-1 p-3 rounded-lg {{ $question->correct_answer == $index ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
                                                             <span class="text-gray-700">{{ $option }}</span>
                                                         </div>
                                                     </div>
@@ -180,8 +174,7 @@
                                     @elseif($question->type === 'true_false')
                                         <div class="ml-11 space-y-2 mt-4">
                                             <div class="flex items-center gap-3">
-                                                <div class="flex-shrink-0 w-6 h-6 rounded-full border-2
-                                                    {{ $question->correct_answer == 'true' ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
+                                                <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 {{ $question->correct_answer == 'true' ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
                                                     @if($question->correct_answer == 'true')
                                                         <div class="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
                                                             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,14 +183,12 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="flex-1 p-3 rounded-lg
-                                                    {{ $question->correct_answer == 'true' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
+                                                <div class="flex-1 p-3 rounded-lg {{ $question->correct_answer == 'true' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
                                                     <span class="text-gray-700">Verdadero</span>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-3">
-                                                <div class="flex-shrink-0 w-6 h-6 rounded-full border-2
-                                                    {{ $question->correct_answer == 'false' ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
+                                                <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 {{ $question->correct_answer == 'false' ? 'border-green-500 bg-green-50' : 'border-gray-300' }}">
                                                     @if($question->correct_answer == 'false')
                                                         <div class="w-full h-full rounded-full bg-green-500 flex items-center justify-center">
                                                             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,8 +197,7 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="flex-1 p-3 rounded-lg
-                                                    {{ $question->correct_answer == 'false' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
+                                                <div class="flex-1 p-3 rounded-lg {{ $question->correct_answer == 'false' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
                                                     <span class="text-gray-700">Falso</span>
                                                 </div>
                                             </div>
@@ -217,10 +207,7 @@
 
                                 <!-- Acciones -->
                                 <div class="flex items-center gap-2 ml-4">
-                                    <button @click="editQuestion({{ $question->id }})"
-                                        class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200"
-                                        title="Editar"
-                                    >
+                                    <button @click="editQuestion({{ $question->id }})" class="p-2 text-blue-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 rounded-lg transition-all duration-200" title="Editar" >
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
@@ -451,14 +438,27 @@
                                         </button>
                                     </div>
 
-                                    <div class="space-y-3" x-data="{ options: formData.options || ['', '', '', ''] }">
-                                        <template x-for="(option, index) in options" :key="index">
+                                    <!-- Cambia esto: -->
+                                    <div class="space-y-3">
+                                        <template x-for="(option, index) in formData.options" :key="index">
                                             <div class="flex items-center gap-3">
-                                                <button type="button" @click="setCorrectAnswer(index)" :class="formData.correct_answer == index ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200">
+                                                <button type="button" @click="setCorrectAnswer(index)"
+                                                    :class="formData.correct_answer == index
+                                                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+                                                    class="flex-shrink-0 w-8 h-8 rounded-full font-medium transition duration-200">
                                                     <span x-text="String.fromCharCode(65 + index)"></span>
                                                 </button>
-                                                <input type="text" x-model="options[index]" @input="formData.options = options" :name="'options[' + index + ']'" :placeholder="'Opción ' + String.fromCharCode(65 + index)" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                                                <button type="button" x-show="options.length > 2" @click="removeOption(index)" class="flex-shrink-0 p-1 text-red-600 hover:text-red-800">
+                                                <input type="text"
+                                                    x-model="formData.options[index]"
+                                                    @input.debounce.500ms="console.log('Option changed:', index, formData.options[index])"
+                                                    :name="'options[' + index + ']'"
+                                                    :placeholder="'Opción ' + String.fromCharCode(65 + index)"
+                                                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                                <!-- botón quitar alternativa -->
+                                                <button type="button" x-show="formData.options.length > 2"
+                                                    @click="removeOption(index)"
+                                                    class="flex-shrink-0 p-1 text-red-600 hover:text-red-800">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
@@ -613,38 +613,23 @@
                         return;
                     }
 
-                    modalComponent.showModal = true;
-                    modalComponent.isEditing = true;
-
                     try {
+                        // IMPORTANTE: Usa la ruta correcta según tus rutas
                         const response      = await axios.get(`/admin/exams/questions/${questionId}/edit`);
                         const questionData  = response.data;
 
-                        // Asegurar que las opciones sean un array
-                        if (questionData.options) {
-                            if (typeof questionData.options === 'string') {
-                                console.log(questionData.options);
-                                try {
-                                    questionData.options = JSON.parse(questionData.options);
-                                } catch (e) {
-                                    console.error('Error parsing options:', e);
-                                    questionData.options = [];
-                                }
-                            }
-                        } else {
-                            questionData.options = ['', '', '', ''];
-                        }
+                        console.log('Datos recibidos del servidor:', questionData);
 
-                        // Asegurar que correct_answer sea del tipo correcto
-                        if (questionData.type === 'multiple_choice') {
-                            questionData.correct_answer = parseInt(questionData.correct_answer);
-                        }
+                        // Abrir modal y cargar datos
+                        modalComponent.showModal = true;
+                        modalComponent.isEditing = true;
+                        modalComponent.loadQuestionData(questionData);
 
-                        modalComponent.formData = questionData;
                     } catch (error) {
-                        console.error('Error al cargar pregunta:', error);
-                        showNotification('Error al cargar la pregunta', 'error');
+                        console.error('Error en la solicitud:', error);
+                        showNotification('Error al cargar la pregunta: ' + error.message, 'error');
                     }
+
                 } catch (error) {
                     console.error('Error al abrir modal de edición:', error);
                     showNotification('Error al abrir el editor', 'error');
@@ -760,7 +745,6 @@
         };
     }
 
-    // Modal para crear/editar preguntas
     function questionModal() {
         return {
             showModal: false,
@@ -772,37 +756,37 @@
                 type: 'multiple_choice',
                 points: 10,
                 options: ['', '', '', ''],
-                // options: [],
                 correct_answer: 0
             },
 
-            init() {
-                // Inicialización
-            },
+            init() {},
 
             resetForm() {
+                // IMPORTANTE: Cambiar la referencia del array para forzar reactividad
+                const defaultOptions = ['', '', '', ''];
                 this.formData = {
                     id: null,
                     question: '',
                     type: 'multiple_choice',
                     points: 10,
-                    options: ['', '', '', ''],
-                    // options: [],
+                    options: defaultOptions, // Nueva referencia
                     correct_answer: 0
                 };
             },
 
             addOption() {
-                if (this.formData.options.length < 6) {
-                    this.formData.options.push('');
-                }
+                // Forzar reactividad creando un nuevo array
+                this.formData.options = [...this.formData.options, ''];
             },
 
             removeOption(index) {
                 if (this.formData.options.length > 2) {
-                    this.formData.options.splice(index, 1);
+                    // Crear nuevo array sin el elemento
+                    const newOptions = [...this.formData.options];
+                    newOptions.splice(index, 1);
+                    this.formData.options = newOptions; // Nueva referencia
 
-                    // Ajustar respuesta correcta si es necesario
+                    // Ajustar respuesta correcta
                     if (this.formData.correct_answer >= index) {
                         this.formData.correct_answer = Math.max(0, this.formData.correct_answer - 1);
                     }
@@ -818,6 +802,62 @@
                 this.isEditing = false;
                 this.isSubmitting = false;
                 this.resetForm();
+            },
+
+            // Método específico para cargar datos de edición
+            loadQuestionData(questionData) {
+                console.log('Cargando datos:', questionData);
+
+                // Parsear opciones si es necesario
+                let optionsArray = ['', '', '', '']; // Base de 4 opciones
+
+                if (questionData.options) {
+                    let parsedOptions = questionData.options;
+
+                    // Si es string, parsear como JSON
+                    if (typeof parsedOptions === 'string') {
+                        try {
+                            parsedOptions = JSON.parse(parsedOptions);
+                        } catch (e) {
+                            console.error('Error parsing options:', e);
+                            parsedOptions = [];
+                        }
+                    }
+
+                    // Asegurar que sea un array
+                    if (Array.isArray(parsedOptions)) {
+                        // Limpiar el array base primero
+                        optionsArray = [];
+
+                        // Copiar las opciones existentes
+                        for (let i = 0; i < parsedOptions.length; i++) {
+                            optionsArray.push(parsedOptions[i] || '');
+                        }
+
+                        // Si hay menos de 4 opciones, agregar espacios vacíos
+                        while (optionsArray.length < 4) {
+                            optionsArray.push('');
+                        }
+                    }
+                }
+
+                // Convertir correct_answer a número si es múltiple choice
+                let correctAnswer = questionData.correct_answer;
+                if (questionData.type === 'multiple_choice') {
+                    correctAnswer = parseInt(correctAnswer) || 0;
+                }
+
+                // IMPORTANTE: Asignar todo el objeto de una vez para reactividad
+                this.formData = {
+                    id: questionData.id,
+                    question: questionData.question,
+                    type: questionData.type,
+                    points: questionData.points,
+                    options: optionsArray, // Nueva referencia de array
+                    correct_answer: correctAnswer
+                };
+
+                console.log('FormData actualizado:', this.formData);
             },
 
             async submitForm() {
@@ -853,15 +893,19 @@
                         formData.append('_method', 'PUT');
                     }
 
+                    console.log('Enviando datos...', url);
+
                     const response = await axios({
-                        method  : 'POST',
-                        url     : url,
-                        data : formData,
+                        method: 'POST',
+                        url: url,
+                        data: formData,
                         headers: {
                             'Content-Type': 'multipart/form-data',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
                     });
+
+                    console.log('Respuesta:', response.data);
 
                     if (response.data.success) {
                         this.closeModal();

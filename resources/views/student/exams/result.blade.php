@@ -19,7 +19,7 @@
         @endif
 
         <div class="inline-flex items-center px-6 py-3 rounded-full text-lg font-medium {{ $attempt->passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
-            <span class="mr-2">{{ $attempt->score }}/{{ $attempt->total_points }} puntos</span>
+            <span class="mr-2">{{ round($attempt->score, 1) }}/{{ $attempt->total_points }} puntos</span>
             <span class="font-bold">({{ round($percentage, 1) }}%)</span>
         </div>
     </div>
@@ -132,9 +132,19 @@
             <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Siguientes pasos</h3>
                 <div class="space-y-3">
+
                     <a href="{{ route('student.exams.view', $attempt->id) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
                         <i class="fas fa-eye mr-2"></i>
                         Ver detalles completos
+                    </a>
+
+                    @php
+
+                    @endphp
+
+                    <a href="{{ route('student.certificates.show', $attempt->id) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
+                        <i class="fas fa-certificate text-white-600"></i>
+                        &nbsp;Ver certificado
                     </a>
 
                     <a href="{{ route('student.exams') }}" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">

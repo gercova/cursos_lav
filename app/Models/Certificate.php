@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class Certificate extends Model
 {
@@ -21,7 +20,6 @@ class Certificate extends Model
         'expiry_date',
         'total_hours',
         'download_count',
-        'total_hours',
     ];
 
     protected $casts = [
@@ -45,10 +43,7 @@ class Certificate extends Model
     public static function generateCertificateNumber($year = null) {
         $year = $year ?? date('Y');
 
-        // Contar certificados del año actual
         $count = self::whereYear('issue_date', $year)->count() + 1;
-
-        // Formato: 000X-YYYY-IPF-EDUCA
         return str_pad($count, 4, '0', STR_PAD_LEFT) . '-' . $year . '-IPF-EDUCA';
     }
 
@@ -56,22 +51,34 @@ class Certificate extends Model
         return $this->certificate_number ?? self::generateCertificateNumber($this->issue_date?->year);
     }
 
-    public function getQrCode($size = 150) {
-        $verificationUrl = $this->verification_url ?? url('/verify-certificate/' . $this->certificate_code);
-
-        return QrCode::size($size)->format('png')->generate($verificationUrl);
-    }
-
-    public function getQrCodeBase64($size = 150) {
-        $qrCode = $this->getQrCode($size);
-        return 'data:image/png;base64,' . base64_encode($qrCode);
-    }
-
     public static function generateVerificationCode() {
         return 'CERT-' . strtoupper(uniqid()) . '-' . date('Ymd');
     }
 
+    // Accessor para verification_url (no se guarda en BD)
     public function getVerificationUrlAttribute() {
-        return url('/verify-certificate/' . $this->certificate_code);
+        return url('/verify/' . $this->certificate_code); // Cambiado a ruta más simple
+    }
+
+    // En el modelo Certificate, agrega este método
+    public function getFormattedIssueDate() {
+        // Traducir meses al español
+        $months = [
+            'January'   => 'enero',
+            'February'  => 'febrero',
+            'March'     => 'marzo',
+            'April'     => 'abril',
+            'May'       => 'mayo',
+            'June'      => 'junio',
+            'July'      => 'julio',
+            'August'    => 'agosto',
+            'September' => 'septiembre',
+            'October'   => 'octubre',
+            'November'  => 'noviembre',
+            'December'  => 'diciembre'
+        ];
+
+        $month = $months[$this->issue_date->format('F')];
+        return $this->issue_date->format('d') . ' de ' . $month . ' del ' . $this->issue_date->format('Y');
     }
 }

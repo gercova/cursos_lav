@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
-use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Models\Enterprise;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF; // Cambio importante
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CertificatesController extends Controller {
@@ -17,33 +19,78 @@ class CertificatesController extends Controller {
     }
 
     public function index() {
-        $certificates = Certificate::with('course')->where('user_id', Auth::id())->orderBy('issue_date', 'desc')->paginate(10);
+        $certificates = Certificate::with('course')
+            ->where('user_id', Auth::id())
+            ->orderBy('issue_date', 'desc')
+            ->paginate(10);
         return view('student.certificates.index', compact('certificates'));
     }
 
     public function show($certificateId): View {
-        $certificate = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-        return view('student.certificates.show', compact('certificate'));
+        $enterprise = Enterprise::first();
+        $certificate = Certificate::with(['user', 'course'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($certificateId);
+        return view('student.certificates.show', compact('certificate', 'enterprise'));
     }
 
     public function download($certificateId) {
-        $certificate = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-        // Incrementar contador de descargas
+        $enterprise     = Enterprise::first();
+        $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
+
         $certificate->increment('download_count');
 
-        $pdf = PDF::loadView('student.certificate.pdf', compact('certificate'))->setPaper('a4', 'portrait')->setOption('defaultFont', 'Times New Roman');
-        $slug = Str::slug($certificate->course->title);
+        $pdf = PDF::loadView('student.certificates.pdf', compact('certificate', 'enterprise'))
+            ->setOptions([
+                'page-size'     => 'A4',
+                'orientation'   => 'Landscape',
+                'margin-top'    => '0mm',
+                'margin-right'  => '0mm',
+                'margin-bottom' => '0mm',
+                'margin-left'   => '0mm',
+                // Recomendado para que wkhtmltopdf pueda leer imágenes locales (public_path/storage/...)
+                'enable-local-file-access' => true,
+                // Recomendado para caracteres especiales
+                'encoding' => 'UTF-8',
+            ]);
 
-        $fileName = 'certificado-'.$slug.'.pdf';
+        $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
 
         return $pdf->download($fileName);
     }
 
+
+    // public function download(Certificate $certificate) {
+    //     abort_if($certificate->user_id !== Auth::id(), 403);
+
+    //     $certificate->load(['user', 'course']);
+    //     $verificationUrl = url('/verify/' . $certificate->certificate_code);
+
+    //     $html = view('certificates.pdf_template', compact('certificate', 'verificationUrl'))->render();
+
+    //     $pdf = PDF::loadHTML($html);
+
+    //     // Configurar orientación horizontal
+    //     $pdf->setOption('page-size', 'A4');
+    //     $pdf->setOption('orientation', 'Landscape'); // <-- Esto es clave
+    //     $pdf->setOption('margin-top', '10mm');
+    //     $pdf->setOption('margin-right', '10mm');
+    //     $pdf->setOption('margin-bottom', '10mm');
+    //     $pdf->setOption('margin-left', '10mm');
+
+    //     return $pdf->download("Certificado_{$certificate->course->title}_{$certificate->user->names}.pdf");
+    // }
+
+
     public function generateCertificate($enrollmentId) {
-        $enrollment = Enrollment::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($enrollmentId);
+        $enrollment = Enrollment::with(['user', 'course'])
+            ->where('user_id', Auth::id())
+            ->findOrFail($enrollmentId);
 
         // Verificar si ya existe un certificado
-        $existingCertificate = Certificate::where('user_id', Auth::id())->where('course_id', $enrollment->course_id)->first();
+        $existingCertificate = Certificate::where('user_id', Auth::id())
+            ->where('course_id', $enrollment->course_id)
+            ->first();
 
         if ($existingCertificate) {
             return redirect()->route('student.certificates.show', $existingCertificate->id)->with('info', 'Ya tienes un certificado para este curso.');
@@ -57,32 +104,37 @@ class CertificatesController extends Controller {
             'certificate_number'    => Certificate::generateCertificateNumber(),
             'issue_date'            => now(),
             'total_hours'           => $enrollment->course->duration ?? 4.0,
-            'verification_url'      => url('/verify-certificate/'.Certificate::generateVerificationCode()),
         ]);
 
         return redirect()->route('student.certificates.show', $certificate->id)->with('success', 'Certificado generado exitosamente.');
     }
 
     public function verify($code): View {
-        $certificate = Certificate::with(['user', 'course'])->where('certificate_code', $code)->first();
+        $certificate    = Certificate::with(['user', 'course'])->where('certificate_code', $code)->first();
+        $enterprise     = Enterprise::first();
 
         if (!$certificate) {
-            return view('student.certificate.verify', [
+            return view('student.certificates.verify', [
+                'enterprise'        => $enterprise,
                 'valid'     => false,
-                'message'   => 'Certificado no encontrado'
+                'message'   => 'Certificado no encontrado o código inválido'
             ]);
         }
 
         if ($certificate->expiry_date && $certificate->expiry_date->isPast()) {
-            return view('student.certificate.verify', [
+            return view('student.certificates.verify', [
+                'enterprise'        => $enterprise,
                 'valid'     => false,
                 'message'   => 'Certificado expirado'
             ]);
         }
 
-        return view('student.certificate.verify', [
-            'valid'         => true,
-            'certificate'   => $certificate
+        return view('student.certificates.verify', [
+            'enterprise'        => $enterprise,
+            'valid'             => true,
+            'certificate'       => $certificate,
+            'enterprise'        => $enterprise,
+            'verification_date' => now()->format('d/m/Y H:i:s')
         ]);
     }
 }

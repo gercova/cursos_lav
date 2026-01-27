@@ -21,10 +21,10 @@
                 <!-- Estadísticas rápidas -->
                 <div class="flex flex-wrap gap-3 mt-4">
                     @php
-                        $totalAttempts = $results->total();
-                        $passedCount = $results->where('passed', true)->count();
-                        $averageScore = $results->avg('score') ?? 0;
-                        $passRate = $totalAttempts > 0 ? ($passedCount / $totalAttempts * 100) : 0;
+                        $totalAttempts  = $results->total();
+                        $passedCount    = $results->where('passed', true)->count();
+                        $averageScore   = $results->avg('score') ?? 0;
+                        $passRate       = $totalAttempts > 0 ? ($passedCount / $totalAttempts * 100) : 0;
                     @endphp
                     <div class="px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                         <div class="text-sm text-blue-700 font-medium">Total Intentos</div>
@@ -164,7 +164,7 @@
                                         </span>
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-semibold text-gray-900">{{ $attempt->user->name ?? 'Usuario Eliminado' }}</div>
+                                        <div class="text-sm font-semibold text-gray-900">{{ $attempt->user->names ?? 'Usuario Eliminado' }}</div>
                                         <div class="text-sm text-gray-500">{{ $attempt->user->email ?? 'N/A' }}</div>
                                     </div>
                                 </div>

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\Certificate;
+use App\Models\Enrollment;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
+use App\Models\ExamQuestion;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -138,67 +142,6 @@ class StudentExamsController extends Controller {
     /**
      * Mostrar formulario de examen
      */
-    // public function show($id): View|RedirectResponse {
-    //     $user = Auth::user();
-    //     $exam = Exam::with('course', 'questions')->findOrFail($id);
-
-    //     // Verificar inscripción
-    //     if (!$user->enrollments()->where('course_id', $exam->course_id)->exists()) {
-    //         return redirect()->route('student.exams.index')->with('error', 'No estás inscrito en este curso.');
-    //     }
-
-    //     // Verificar intentos máximos
-    //     $attemptCount = ExamAttempt::where('exam_id', $id)->where('user_id', $user->id)->count();
-
-    //     if ($exam->max_attempts > 0 && $attemptCount >= $exam->max_attempts) {
-    //         return redirect()->route('student.exams')->with('error', 'Has alcanzado el número máximo de intentos para este examen.');
-    //     }
-
-    //     // Verificar intento activo
-    //     $activeAttempt  = ExamAttempt::where('exam_id', $id)->where('user_id', $user->id)->whereNull('completed_at')->first();
-    //     $questions      = $exam->questions()->inRandomOrder()->get();
-
-    //     $numberAttempts = ExamAttempt::where('exam_id', $id)->where('user_id', $user->id)->count();
-
-    //     if ($activeAttempt) {
-    //         // Calcular tiempo restante
-    //         $startedAt      = $activeAttempt->started_at;
-    //         $examDuration   = $exam->duration * 60;
-    //         $timeElapsed    = now()->diffInSeconds($startedAt);
-    //         $timeRemaining  = max(0, $examDuration - $timeElapsed);
-
-    //         if ($timeRemaining <= 0) {
-    //             $activeAttempt->update([
-    //                 'completed_at'  => now(),
-    //                 'passed'        => false
-    //             ]);
-
-    //             return redirect()->route('student.exams.result', $activeAttempt->id)->with('error', 'El tiempo para este intento ha expirado.');
-    //         }
-
-    //         return view('student.exams.take', [
-    //             'exam'          => $exam,
-    //             'attempt'       => $activeAttempt,
-    //             'questions'     => $questions,
-    //             'timeRemaining' => $timeRemaining,
-    //             'attemptNumber' => $activeAttempt->attempt_number,
-    //             'numberAttempts' => $numberAttempts,
-    //         ]);
-    //     }
-
-    //     // Preparar para nuevo intento
-    //     $attemptNumber = $attemptCount + 1;
-
-    //     return view('student.exams.take', [
-    //         'exam'          => $exam,
-    //         'attempt'       => null,
-    //         'questions'     => $questions,
-    //         'timeRemaining' => $exam->duration * 60,
-    //         'attemptNumber' => $attemptNumber,
-    //         'numberAttempts' => $numberAttempts,
-    //         'isNewAttempt'  => true
-    //     ]);
-    // }
     public function show($id): View|RedirectResponse {
         $user = Auth::user();
         $exam = Exam::with('course', 'questions')->findOrFail($id);
@@ -218,14 +161,8 @@ class StudentExamsController extends Controller {
 
         // Verificar intentos máximos permitidos
         if ($exam->max_attempts > 0 && $completedAttemptsCount >= $exam->max_attempts) {
-            return redirect()->route('student.exams.index')->with('error', 'Has alcanzado el número máximo de intentos para este examen.');
+            return redirect()->route('student.exams')->with('error', 'Has alcanzado el número máximo de intentos para este examen.');
         }
-
-        // Verificar si hay un intento activo (sin completar)
-        // $activeAttempt = ExamAttempt::where('exam_id', $id)
-        //     ->where('user_id', $user->id)
-        //     ->whereNull('completed_at')
-        //     ->first();
 
         $activeAttempt = ExamAttempt::where('exam_id', $id)
             ->where('user_id', $user->id)
@@ -266,19 +203,19 @@ class StudentExamsController extends Controller {
             }
 
             return view('student.exams.take', [
-                'exam'          => $exam,
-                'attempt'       => $activeAttempt,
-                'questions'     => $questions,
-                'timeRemaining' => $timeRemaining,
-                'attemptNumber' => $activeAttempt->attempt_number,
-                'numberAttempts' => $totalAttemptsCount,
+                'exam'              => $exam,
+                'attempt'           => $activeAttempt,
+                'questions'         => $questions,
+                'timeRemaining'     => $timeRemaining,
+                'attemptNumber'     => $activeAttempt->attempt_number,
+                'numberAttempts'    => $totalAttemptsCount,
             ]);
         }
 
         // Preparar para nuevo intento
         // El número de intento debe ser mayor que el último intent_number
-        $lastAttemptNumber = $allAttempts->max('attempt_number') ?? 0;
-        $attemptNumber = $lastAttemptNumber + 1;
+        $lastAttemptNumber  = $allAttempts->max('attempt_number') ?? 0;
+        $attemptNumber      = $lastAttemptNumber + 1;
 
         return view('student.exams.take', [
             'exam'          => $exam,
@@ -294,42 +231,6 @@ class StudentExamsController extends Controller {
     /**
      * Iniciar un nuevo intento de examen
      */
-    // public function start(Request $request, $id): RedirectResponse {
-    //     $user = Auth::user();
-    //     $exam = Exam::findOrFail($id);
-
-    //     // Verificar inscripción
-    //     if (!$user->enrollments()->where('course_id', $exam->course_id)->exists()) {
-    //         return redirect()->route('student.exams')->with('error', 'No estás inscrito en este curso.');
-    //     }
-
-    //     // Verificar intentos
-    //     $attemptCount = ExamAttempt::where('exam_id', $id)
-    //         ->where('user_id', $user->id)
-    //         ->count();
-
-    //     if ($exam->max_attempts > 0 && $attemptCount >= $exam->max_attempts) {
-    //         return redirect()->route('student.exams')->with('error', 'Has alcanzado el número máximo de intentos.');
-    //     }
-
-    //     // Calcular puntos totales
-    //     $totalPoints = $exam->questions()->sum('points');
-
-    //     // Crear nuevo intento
-    //     $attempt = ExamAttempt::create([
-    //         'exam_id'           => $exam->id,
-    //         'user_id'           => $user->id,
-    //         'attempt_number'    => $attemptCount + 1,
-    //         'started_at'        => now(),
-    //         'answers'           => [],
-    //         'score'             => 0,
-    //         'total_points'      => $totalPoints,
-    //         'passed'            => false
-    //     ]);
-
-    //     return redirect()->route('student.exams.show', $id);
-    // }
-
     public function start(Request $request, $id): RedirectResponse {
         $user = Auth::user();
         $exam = Exam::findOrFail($id);
@@ -475,7 +376,7 @@ class StudentExamsController extends Controller {
     /**
      * Finalizar examen
      */
-    public function submit(Request $request, $id) {
+    public function submit(Request $request, $id): JsonResponse|RedirectResponse {
         $request->validate([
             'answers'       => 'required|array',
             'attempt_id'    => 'required|exists:exam_attempts,id'
@@ -554,9 +455,11 @@ class StudentExamsController extends Controller {
             }
         }
 
-        // Determinar si pasó
-        $passed     = $score >= $exam->passing_score;
-        $percentage = $attempt->total_points > 0 ? ($score / $attempt->total_points) * 100 : 0;
+        // Total puntos 100% de un examen
+        // porcentaje permitido 70 %
+        $percentageAllowed  = (($exam->passing_score * $score) / 100);
+        $passed             = $score >= $percentageAllowed;
+        $percentage         = $attempt->total_points > 0 ? ($score / $attempt->total_points) * 100 : 0;
 
         // Log del resultado
         Log::info('Resultado del examen calculado', [
@@ -579,7 +482,100 @@ class StudentExamsController extends Controller {
             'completed_at'  => now()
         ]);
 
+        $existsCertificate = Certificate::join('exam_attempts as et', 'certificates.exam_attempt_id', '=', 'et.id')
+            ->where('certificates.user_id', $attempt->user_id)
+            ->where('certificates.course_id', $exam->course_id)
+            ->where('certificates.exam_attempt_id', $request->attempt_id)
+            ->where('et.passed', true)
+            ->exists();
+
+        if(!$existsCertificate) {
+            $createCertificate = Certificate::create([
+                'user_id'               => $attempt->user_id,
+                'course_id'             => $exam->course_id,
+                'exam_attempt_id'       => $attempt->id,
+                'certificate_code'      => $this->createCertificateCode($attempt->user_id),
+                'certificate_number'    => $this->createCertificateNumber($attempt->user_id),
+                'issue_date'            => now()->format('Y-m-d H:i:s'),
+                'expiry_date'           => null,
+                'total_hours'           => $exam->course->duration,
+                'download_count'        => 0,
+            ]);
+        }
+
         return redirect()->route('student.exams.result', $attempt->id);
+    }
+
+    public function createCertificateCode($userId): string {
+        $certificateUser = Certificate::where('user_id', $userId)->count();
+
+        $countDigit = strlen((string) $userId);
+        if($countDigit == 1) {
+            $fill = '000';
+        } elseif($countDigit == 2) {
+            $fill = '00';
+        } elseif ($countDigit == 3) {
+            $fill = '0';
+        } else {
+            $fill = '';
+        }
+
+        ($certificateUser > 0) ? $certificateUser += 1 : $certificateUser = 1;
+
+        $countCertificates = strlen((string) $certificateUser);
+        if ($countCertificates == 1) {
+            $fill2 = '000';
+        } elseif ($countCertificates == 2) {
+            $fill2 = '00';
+        } elseif ($countCertificates == 3) {
+            $fill2 = '0';
+        }
+
+        $codeCertificate = 'CERT-'. $fill2.$certificateUser . '-' . $fill.$userId;
+        return strtoupper($codeCertificate);
+    }
+
+    public function createCertificateNumber($userId): String {
+
+        $countDigit = strlen((string) $userId);
+        if($countDigit == 1) {
+            $fill = '000';
+        } elseif($countDigit == 2) {
+            $fill = '00';
+        } elseif ($countDigit == 3) {
+            $fill = '0';
+        } else {
+            $fill = '';
+        }
+
+        $course         = Enrollment::where('user_id', $userId)->first();
+        $courseId       = $course->course_id;
+        $catCourseId    = $course->course->category_id;
+
+        $countDigitCourse = strlen((string) $courseId);
+        if($countDigitCourse == 1) {
+            $fill2 = '000';
+        } elseif($countDigitCourse == 2) {
+            $fill2 = '00';
+        } elseif ($countDigitCourse == 3) {
+            $fill2 = '0';
+        } else {
+            $fill2 = '';
+        }
+
+        $countDigitCat = strlen((string) $catCourseId);
+        if($countDigitCat == 1) {
+            $fill3 = '000';
+        } elseif($countDigitCat == 2) {
+            $fill3 = '00';
+        } elseif ($countDigitCat == 3) {
+            $fill3 = '0';
+        } else {
+            $fill3 = '';
+        }
+
+        $certificateNumber = $fill.$userId . $fill3.$catCourseId . $fill2. $courseId. 'IPF-EDUCA';
+        return strtoupper($certificateNumber);
     }
 
     /**
@@ -638,15 +634,6 @@ class StudentExamsController extends Controller {
     /**
      * Helper para verificar si puede retomar el examen
      */
-    // private function canRetakeExam($exam, $userId) {
-    //     if ($exam->max_attempts == 0) {
-    //         return true;
-    //     }
-
-    //     $attemptCount = ExamAttempt::where('exam_id', $exam->id)->where('user_id', $userId)->count();
-    //     return $attemptCount <= $exam->max_attempts;
-    // }
-
     private function canRetakeExam($exam, $userId) {
         if ($exam->max_attempts == 0) {
             return true; // Intentos ilimitados

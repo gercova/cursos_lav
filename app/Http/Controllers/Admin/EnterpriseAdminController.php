@@ -45,7 +45,7 @@ class EnterpriseAdminController extends Controller {
             'vision'                    => 'nullable|string',
             'mission'                   => 'nullable|string',
             'phone_number_1'            => 'required|string|max:20',
-            'phone_number_2'            => 'nullable|string|max:20',
+            // 'phone_number_2'            => 'nullable|string|max:20',
             'email'                     => 'required|email|max:100',
             'facebook_link'             => 'nullable|url|max:255',
             'linkedin_link'             => 'nullable|url|max:255',

@@ -23,7 +23,10 @@ class CourseSeeder extends Seeder {
         $courses = [
             [
                 'title'             => 'Laravel 10: De Principiante a Experto',
+                'meta_description'  => 'Este es un curso para ser vendido',
+                'meta_keywords'     => 'palabras clave, cursos de SSOMA, SST',
                 'description'       => 'Aprende Laravel 10 desde cero y desarrolla aplicaciones web profesionales.',
+                'learning_outcomes' => 'Necessitatibus voluptatum optio enim rerum.',
                 'price'             => 199.00,
                 'promotion_price'   => 149.00,
                 'category_id'       => 1,
@@ -34,7 +37,10 @@ class CourseSeeder extends Seeder {
             ],
             [
                 'title'             => 'JavaScript Moderno ES6+',
+                'meta_description'  => 'Este es un curso para ser vendido',
+                'meta_keywords'     => 'palabras clave, cursos de SSOMA, SST',
                 'description'       => 'Domina JavaScript moderno con todas las características de ES6 y beyond.',
+                'learning_outcomes' => 'Necessitatibus voluptatum optio enim rerum.',
                 'price'             => 179.00,
                 'category_id'       => 2,
                 'level'             => 'intermediate',
@@ -44,7 +50,10 @@ class CourseSeeder extends Seeder {
             ],
             [
                 'title'             => 'Diseño UI/UX con Figma',
+                'meta_description'  => 'Este es un curso para ser vendido',
+                'meta_keywords'     => 'palabras clave, cursos de SSOMA, SST',
                 'description'       => 'Crea interfaces de usuario profesionales y experiencias de usuario excepcionales.',
+                'learning_outcomes' => 'Necessitatibus voluptatum optio enim rerum.',
                 'price'             => 159.00,
                 'promotion_price'   => 129.00,
                 'category_id'       => 3,

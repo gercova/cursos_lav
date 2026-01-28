@@ -9,8 +9,6 @@ use App\Models\Enterprise;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF; // Cambio importante
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class CertificatesController extends Controller {
 
@@ -19,18 +17,13 @@ class CertificatesController extends Controller {
     }
 
     public function index() {
-        $certificates = Certificate::with('course')
-            ->where('user_id', Auth::id())
-            ->orderBy('issue_date', 'desc')
-            ->paginate(10);
+        $certificates = Certificate::with('course')->where('user_id', Auth::id())->orderBy('issue_date', 'desc')->paginate(10);
         return view('student.certificates.index', compact('certificates'));
     }
 
     public function show($certificateId): View {
-        $enterprise = Enterprise::first();
-        $certificate = Certificate::with(['user', 'course'])
-            ->where('user_id', Auth::id())
-            ->findOrFail($certificateId);
+        $enterprise     = Enterprise::first();
+        $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
         return view('student.certificates.show', compact('certificate', 'enterprise'));
     }
 
@@ -59,38 +52,11 @@ class CertificatesController extends Controller {
         return $pdf->download($fileName);
     }
 
-
-    // public function download(Certificate $certificate) {
-    //     abort_if($certificate->user_id !== Auth::id(), 403);
-
-    //     $certificate->load(['user', 'course']);
-    //     $verificationUrl = url('/verify/' . $certificate->certificate_code);
-
-    //     $html = view('certificates.pdf_template', compact('certificate', 'verificationUrl'))->render();
-
-    //     $pdf = PDF::loadHTML($html);
-
-    //     // Configurar orientación horizontal
-    //     $pdf->setOption('page-size', 'A4');
-    //     $pdf->setOption('orientation', 'Landscape'); // <-- Esto es clave
-    //     $pdf->setOption('margin-top', '10mm');
-    //     $pdf->setOption('margin-right', '10mm');
-    //     $pdf->setOption('margin-bottom', '10mm');
-    //     $pdf->setOption('margin-left', '10mm');
-
-    //     return $pdf->download("Certificado_{$certificate->course->title}_{$certificate->user->names}.pdf");
-    // }
-
-
     public function generateCertificate($enrollmentId) {
-        $enrollment = Enrollment::with(['user', 'course'])
-            ->where('user_id', Auth::id())
-            ->findOrFail($enrollmentId);
+        $enrollment = Enrollment::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($enrollmentId);
 
         // Verificar si ya existe un certificado
-        $existingCertificate = Certificate::where('user_id', Auth::id())
-            ->where('course_id', $enrollment->course_id)
-            ->first();
+        $existingCertificate = Certificate::where('user_id', Auth::id())->where('course_id', $enrollment->course_id)->first();
 
         if ($existingCertificate) {
             return redirect()->route('student.certificates.show', $existingCertificate->id)->with('info', 'Ya tienes un certificado para este curso.');
@@ -115,17 +81,17 @@ class CertificatesController extends Controller {
 
         if (!$certificate) {
             return view('student.certificates.verify', [
-                'enterprise'        => $enterprise,
-                'valid'     => false,
-                'message'   => 'Certificado no encontrado o código inválido'
+                'enterprise'    => $enterprise,
+                'valid'         => false,
+                'message'       => 'Certificado no encontrado o código inválido'
             ]);
         }
 
         if ($certificate->expiry_date && $certificate->expiry_date->isPast()) {
             return view('student.certificates.verify', [
-                'enterprise'        => $enterprise,
-                'valid'     => false,
-                'message'   => 'Certificado expirado'
+                'enterprise'    => $enterprise,
+                'valid'         => false,
+                'message'       => 'Certificado expirado'
             ]);
         }
 

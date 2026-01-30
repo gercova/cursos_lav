@@ -28,7 +28,6 @@ class Course extends Model
         'promotion_price',
         'category_id',
         'instructor_id',
-        'level',
         'duration',
         'is_active',
         'requirements',

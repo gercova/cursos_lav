@@ -42,10 +42,6 @@
             justify-content: space-between;
             margin-bottom: 20px;
         }
-        .logo-container {
-            position: relative;
-            z-index: 2;
-        }
         .logo {
             width: 120px;
             height: auto;
@@ -177,11 +173,6 @@
 </head>
 <body>
     <div class="certificate-container">
-        <!-- Logo IPF -->
-        <div class="logo-container">
-            <img src="{{ $enterprise->logo_path }}" alt="Logo IPF" class="logo">
-        </div>
-
         <div class="certificate-card">
             <!-- Sello de fondo (opcional) -->
             <div class="seal"></div>
@@ -189,6 +180,7 @@
             <!-- Encabezado con título y subtítulo -->
             <div class="header">
                 <div class="title-container">
+                    <img src="{{ $enterprise->logo_path }}" alt="Logo IPF" class="logo">
                     <h1 class="certificate-title">CERTIFICADO DE CAPACITACIÓN</h1>
                     <p class="subtitle">Otorgado por {{ $enterprise->trade_name ?? 'IPF CONSULTORES SAC' }}</p>
                 </div>

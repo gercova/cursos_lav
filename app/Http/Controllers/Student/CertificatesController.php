@@ -52,6 +52,31 @@ class CertificatesController extends Controller {
         return $pdf->download($fileName);
     }
 
+    public function print($certificateId) {
+        $enterprise     = Enterprise::first();
+        $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
+
+        $certificate->increment('download_count');
+
+        $pdf = PDF::loadView('student.certificates.pdf', compact('certificate', 'enterprise'))
+            ->setOptions([
+                'page-size'     => 'A4',
+                'orientation'   => 'Landscape',
+                'margin-top'    => '0mm',
+                'margin-right'  => '0mm',
+                'margin-bottom' => '0mm',
+                'margin-left'   => '0mm',
+                // Recomendado para que wkhtmltopdf pueda leer imágenes locales (public_path/storage/...)
+                'enable-local-file-access' => true,
+                // Recomendado para caracteres especiales
+                'encoding' => 'UTF-8',
+            ]);
+
+        $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
+
+        return $pdf->download($fileName);
+    }
+
     public function generateCertificate($enrollmentId) {
         $enrollment = Enrollment::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($enrollmentId);
 

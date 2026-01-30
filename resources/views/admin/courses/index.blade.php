@@ -180,7 +180,7 @@
                                         <!-- Imagen del curso -->
                                         <div class="flex-shrink-0">
                                             @if($course->image_url)
-                                                <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
+                                                <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm">
                                             @else
                                                 <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

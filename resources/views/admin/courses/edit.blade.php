@@ -8,7 +8,7 @@
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     @if($course->image_url)
-                        <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-12 h-12 rounded-xl object-cover border border-gray-300">
+                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-12 h-12 rounded-xl object-cover border border-gray-300">
                     @endif
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Editar Curso</h1>

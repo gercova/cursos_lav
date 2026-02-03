@@ -29,7 +29,6 @@ class Enterprise extends Model {
         'vision',
         'mission',
         'phone_number_1',
-        // 'phone_number_2',
         'email',
         'facebook_link',
         'linkedin_link',

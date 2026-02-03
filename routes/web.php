@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\CourseSectionAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
 use App\Http\Controllers\Admin\EnrollmentsAdminController;
 use App\Http\Controllers\Admin\EnterpriseAdminController;
-use App\Http\Controllers\admin\ExamQuestionAdminController;
+use App\Http\Controllers\Admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
@@ -71,6 +71,10 @@ Route::get('/verify/{code}',            [CertificatesController::class, 'verify'
 Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
     Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
+    Route::get('/dashboard-stats',              [DashboardController::class, 'dashboardStats']);
+    Route::get('/dashboard-exams',              [DashboardController::class, 'dashboardExams']);
+    Route::get('/dashboard-certificates',       [DashboardController::class, 'dashboardCertificates']);
+    Route::get('/recent-activity',              [DashboardController::class, 'recentActivity']);
 
     // Carrito de compras
     Route::get('/cart',                         [CartsController::class, 'index'])->name('cart');
@@ -99,11 +103,11 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/exams/view/{attemptId}',       [StudentExamsController::class, 'view'])->name('student.exams.view');
 
     // Certificados
-    Route::get('/certificate',                      [CertificatesController::class, 'index'])->name('student.certificates');
-    Route::get('/certificate/{certificateId}',      [CertificatesController::class, 'show'])->name('student.certificates.show');
-    Route::get('/certificate/print/{certificateId}', [CertificatesController::class, 'print'])->name('student.certificates.print');
-    Route::get('/{certificateId}/descargar',        [CertificatesController::class, 'download'])->name('student.certificates.download');
-    Route::post('/generar/{enrollmentId}',          [CertificatesController::class, 'generateCertificate'])->name('generate');
+    Route::get('/certificate',                          [CertificatesController::class, 'index'])->name('student.certificates');
+    Route::get('/certificate/{certificateId}',          [CertificatesController::class, 'show'])->name('student.certificates.show');
+    Route::get('/certificate/print/{certificateId}',    [CertificatesController::class, 'print'])->name('student.certificates.print');
+    Route::get('/{certificateId}/descargar',            [CertificatesController::class, 'download'])->name('student.certificates.download');
+    Route::post('/generar/{enrollmentId}',              [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Dashboard principal
     Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
@@ -187,14 +191,14 @@ Route::prefix('admin')->group(function () {
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
 
         // Rutas para categorias
-        Route::get('categories/home',               [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
-        Route::get('categories/stats',              [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
-        Route::post('categories/store',             [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
-        Route::get('categories/{category}',         [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
-        Route::put('categories/{category}',         [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
-        Route::delete('categories/{category}',      [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
-        Route::post('categories/{categoryId}/toggle-status', [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
-        Route::post('categories/bulk-action',       [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
+        Route::get('categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
+        Route::get('categories/stats',                          [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
+        Route::post('categories/store',                         [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
+        Route::get('categories/{category}',                     [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
+        Route::put('categories/{category}',                     [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
+        Route::delete('categories/{category}',                  [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
+        Route::post('categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+        Route::post('categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
         // Rutas adicionales para cursos
         Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');

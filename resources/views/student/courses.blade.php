@@ -300,495 +300,496 @@
         </a>
     </div>
 </section>
+
 <script>
     class CoursesPage {
-    constructor() {
-        this.currentView = localStorage.getItem('coursesView') || 'grid';
-        this.filters = {
-            search: '',
-            category: '',
-            sort: 'newest'
-        };
-        this.isLoading = false;
-        this.init();
-    }
-
-    init() {
-        this.setupEventListeners();
-        this.loadInitialFilters();
-        this.setupViewToggle();
-        this.restoreView();
-    }
-
-    setupEventListeners() {
-        // Búsqueda con debounce
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', this.debounce(() => {
-                this.filters.search = searchInput.value;
-                this.applyFilters();
-            }, 500));
+        constructor() {
+            this.currentView    = localStorage.getItem('coursesView') || 'grid';
+            this.filters        = {
+                search: '',
+                category: '',
+                sort: 'newest'
+            };
+            this.isLoading = false;
+            this.init();
         }
 
-        // Filtro de categoría
-        const categoryFilter = document.getElementById('category-filter');
-        if (categoryFilter) {
-            categoryFilter.addEventListener('change', (e) => {
-                this.filters.category = e.target.value;
-                this.applyFilters();
-            });
+        init() {
+            this.setupEventListeners();
+            this.loadInitialFilters();
+            this.setupViewToggle();
+            this.restoreView();
         }
 
-        // Filtro de ordenamiento
-        const sortFilter = document.getElementById('sort-filter');
-        if (sortFilter) {
-            sortFilter.addEventListener('change', (e) => {
-                this.filters.sort = e.target.value;
-                this.applyFilters();
-            });
-        }
-
-        // Botón limpiar filtros
-        const clearBtn = document.getElementById('clear-filters');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => this.clearFilters());
-        }
-
-        // Botón reset en empty state
-        const resetBtn = document.getElementById('reset-search');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => this.clearFilters());
-        }
-
-        // Navegación con teclado (Escape para limpiar)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && (this.filters.search || this.filters.category)) {
-                this.clearFilters();
-            }
-        });
-    }
-
-    setupViewToggle() {
-        const gridViewBtn = document.getElementById('grid-view');
-        const listViewBtn = document.getElementById('list-view');
-        const gridContainer = document.getElementById('grid-view-container');
-        const listContainer = document.getElementById('list-view-container');
-
-        if (!gridViewBtn || !listViewBtn) return;
-
-        gridViewBtn.addEventListener('click', () => {
-            this.currentView = 'grid';
-            localStorage.setItem('coursesView', 'grid');
-            this.updateViewUI(gridViewBtn, listViewBtn, gridContainer, listContainer);
-        });
-
-        listViewBtn.addEventListener('click', () => {
-            this.currentView = 'list';
-            localStorage.setItem('coursesView', 'list');
-            this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
-        });
-    }
-
-    updateViewUI(activeBtn, inactiveBtn, showContainer, hideContainer) {
-        // Actualizar botones
-        activeBtn.classList.add('bg-blue-100', 'text-blue-600');
-        activeBtn.classList.remove('text-gray-500');
-
-        inactiveBtn.classList.remove('bg-blue-100', 'text-blue-600');
-        inactiveBtn.classList.add('text-gray-500');
-
-        // Actualizar contenedores
-        showContainer?.classList.remove('hidden');
-        hideContainer?.classList.add('hidden');
-    }
-
-    restoreView() {
-        const gridViewBtn = document.getElementById('grid-view');
-        const listViewBtn = document.getElementById('list-view');
-        const gridContainer = document.getElementById('grid-view-container');
-        const listContainer = document.getElementById('list-view-container');
-
-        if (this.currentView === 'list') {
-            this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
-        }
-    }
-
-    loadInitialFilters() {
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Cargar categoría
-        const categoryParam = urlParams.get('category');
-        if (categoryParam) {
-            this.filters.category = categoryParam;
-            const categoryFilter = document.getElementById('category-filter');
-            if (categoryFilter) categoryFilter.value = categoryParam;
-        }
-
-        // Cargar búsqueda
-        const searchParam = urlParams.get('search');
-        if (searchParam) {
-            this.filters.search = searchParam;
+        setupEventListeners() {
+            // Búsqueda con debounce
             const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.value = searchParam;
-        }
+            if (searchInput) {
+                searchInput.addEventListener('input', this.debounce(() => {
+                    this.filters.search = searchInput.value;
+                    this.applyFilters();
+                }, 500));
+            }
 
-        // Cargar ordenamiento
-        const sortParam = urlParams.get('sort');
-        if (sortParam) {
-            this.filters.sort = sortParam;
+            // Filtro de categoría
+            const categoryFilter = document.getElementById('category-filter');
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', (e) => {
+                    this.filters.category = e.target.value;
+                    this.applyFilters();
+                });
+            }
+
+            // Filtro de ordenamiento
             const sortFilter = document.getElementById('sort-filter');
-            if (sortFilter) sortFilter.value = sortParam;
+            if (sortFilter) {
+                sortFilter.addEventListener('change', (e) => {
+                    this.filters.sort = e.target.value;
+                    this.applyFilters();
+                });
+            }
+
+            // Botón limpiar filtros
+            const clearBtn = document.getElementById('clear-filters');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => this.clearFilters());
+            }
+
+            // Botón reset en empty state
+            const resetBtn = document.getElementById('reset-search');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => this.clearFilters());
+            }
+
+            // Navegación con teclado (Escape para limpiar)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && (this.filters.search || this.filters.category)) {
+                    this.clearFilters();
+                }
+            });
         }
 
-        this.updateActiveFilters();
-    }
+        setupViewToggle() {
+            const gridViewBtn = document.getElementById('grid-view');
+            const listViewBtn = document.getElementById('list-view');
+            const gridContainer = document.getElementById('grid-view-container');
+            const listContainer = document.getElementById('list-view-container');
 
-    async applyFilters() {
-        if (this.isLoading) return;
+            if (!gridViewBtn || !listViewBtn) return;
 
-        this.isLoading = true;
-        this.updateURL();
-        this.updateActiveFilters();
-        await this.filterCourses();
-        this.isLoading = false;
-    }
+            gridViewBtn.addEventListener('click', () => {
+                this.currentView = 'grid';
+                localStorage.setItem('coursesView', 'grid');
+                this.updateViewUI(gridViewBtn, listViewBtn, gridContainer, listContainer);
+            });
 
-    async filterCourses() {
-        const coursesContainer = document.getElementById('courses-container');
-        if (!coursesContainer) return;
+            listViewBtn.addEventListener('click', () => {
+                this.currentView = 'list';
+                localStorage.setItem('coursesView', 'list');
+                this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
+            });
+        }
 
-        try {
-            // Construir parámetros
+        updateViewUI(activeBtn, inactiveBtn, showContainer, hideContainer) {
+            // Actualizar botones
+            activeBtn.classList.add('bg-blue-100', 'text-blue-600');
+            activeBtn.classList.remove('text-gray-500');
+
+            inactiveBtn.classList.remove('bg-blue-100', 'text-blue-600');
+            inactiveBtn.classList.add('text-gray-500');
+
+            // Actualizar contenedores
+            showContainer?.classList.remove('hidden');
+            hideContainer?.classList.add('hidden');
+        }
+
+        restoreView() {
+            const gridViewBtn = document.getElementById('grid-view');
+            const listViewBtn = document.getElementById('list-view');
+            const gridContainer = document.getElementById('grid-view-container');
+            const listContainer = document.getElementById('list-view-container');
+
+            if (this.currentView === 'list') {
+                this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
+            }
+        }
+
+        loadInitialFilters() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Cargar categoría
+            const categoryParam = urlParams.get('category');
+            if (categoryParam) {
+                this.filters.category = categoryParam;
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) categoryFilter.value = categoryParam;
+            }
+
+            // Cargar búsqueda
+            const searchParam = urlParams.get('search');
+            if (searchParam) {
+                this.filters.search = searchParam;
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) searchInput.value = searchParam;
+            }
+
+            // Cargar ordenamiento
+            const sortParam = urlParams.get('sort');
+            if (sortParam) {
+                this.filters.sort = sortParam;
+                const sortFilter = document.getElementById('sort-filter');
+                if (sortFilter) sortFilter.value = sortParam;
+            }
+
+            this.updateActiveFilters();
+        }
+
+        async applyFilters() {
+            if (this.isLoading) return;
+
+            this.isLoading = true;
+            this.updateURL();
+            this.updateActiveFilters();
+            await this.filterCourses();
+            this.isLoading = false;
+        }
+
+        async filterCourses() {
+            const coursesContainer = document.getElementById('courses-container');
+            if (!coursesContainer) return;
+
+            try {
+                // Construir parámetros
+                const params = new URLSearchParams();
+                if (this.filters.search)    params.append('search', this.filters.search);
+                if (this.filters.category)  params.append('category', this.filters.category);
+                if (this.filters.sort)      params.append('sort', this.filters.sort);
+
+                // Mostrar loading
+                this.showLoading();
+
+                // Realizar petición AJAX
+                const response = await fetch(`/cursos?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+
+                const html = await response.text();
+
+                // Actualizar contenido
+                coursesContainer.innerHTML = html;
+
+                // Actualizar contador y UI
+                this.updateResultsCount();
+                this.restoreView();
+
+                // Scroll suave al contenedor
+                coursesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (error) {
+                console.error('Error filtering courses:', error);
+                this.showError();
+            }
+        }
+
+        updateResultsCount() {
+            const courseCards = document.querySelectorAll('.course-card');
+            const resultsCount = document.getElementById('results-count');
+            const filterDescription = document.getElementById('filter-description');
+            const emptyState = document.getElementById('empty-state');
+            const gridContainer = document.getElementById('grid-view-container');
+            const listContainer = document.getElementById('list-view-container');
+            const paginationInfo = document.getElementById('pagination-info');
+
+            const count = courseCards.length;
+            const total = paginationInfo?.dataset.total || count;
+
+            if (count === 0) {
+                // Mostrar estado vacío
+                if (gridContainer) gridContainer.style.display = 'none';
+                if (listContainer) listContainer.style.display = 'none';
+                if (emptyState) emptyState.classList.remove('hidden');
+                if (resultsCount) resultsCount.textContent = '0 cursos encontrados';
+            } else {
+                // Mostrar resultados
+                if (emptyState) emptyState.classList.add('hidden');
+                if (resultsCount) resultsCount.textContent = `${total} ${total === 1 ? 'curso encontrado' : 'cursos encontrados'}`;
+            }
+
+            // Actualizar descripción de filtros
+            this.updateFilterDescription(filterDescription);
+        }
+
+        updateFilterDescription(filterDescription) {
+            if (!filterDescription) return;
+
+            let description = 'Mostrando todos los cursos disponibles';
+            const parts = [];
+
+            if (this.filters.search) {
+                parts.push(`búsqueda: "${this.filters.search}"`);
+            }
+
+            if (this.filters.category) {
+                const categoryFilter    = document.getElementById('category-filter');
+                const categoryName      = categoryFilter?.selectedOptions[0]?.text;
+                if (categoryName) {
+                    parts.push(`categoría: ${categoryName}`);
+                }
+            }
+
+            if (parts.length > 0) {
+                description = `Resultados para ${parts.join(' y ')}`;
+            }
+
+            filterDescription.textContent = description;
+        }
+
+        updateActiveFilters() {
+            const container = document.getElementById('active-filters');
+            if (!container) return;
+
+            container.innerHTML = '';
+            let hasFilters = false;
+
+            // Filtro de búsqueda
+            if (this.filters.search) {
+                this.addActiveFilter('search', `Búsqueda: "${this.filters.search}"`, container);
+                hasFilters = true;
+            }
+
+            // Filtro de categoría
+            if (this.filters.category) {
+                const categoryFilter = document.getElementById('category-filter');
+                const categoryName = categoryFilter?.selectedOptions[0]?.text;
+                if (categoryName) {
+                    this.addActiveFilter('category', `Categoría: ${categoryName}`, container);
+                    hasFilters = true;
+                }
+            }
+
+            container.classList.toggle('hidden', !hasFilters);
+        }
+
+        addActiveFilter(type, text, container) {
+            const filterElement = document.createElement('div');
+            filterElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 animate-fade-in';
+            filterElement.innerHTML = `
+                <span>${text}</span>
+                <button type="button"
+                        onclick="coursesPage.removeFilter('${type}')"
+                        class="text-blue-600 hover:text-blue-800 focus:outline-none"
+                        aria-label="Eliminar filtro">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(filterElement);
+        }
+
+        removeFilter(type) {
+            switch(type) {
+                case 'search':
+                    this.filters.search = '';
+                    const searchInput   = document.getElementById('search-input');
+                    if (searchInput) searchInput.value = '';
+                    break;
+                case 'category':
+                    this.filters.category = '';
+                    const categoryFilter = document.getElementById('category-filter');
+                    if (categoryFilter) categoryFilter.value = '';
+                    break;
+            }
+            this.applyFilters();
+        }
+
+        clearFilters() {
+            this.filters = {
+                search: '',
+                category: '',
+                sort: 'newest'
+            };
+
+            // Limpiar inputs
+            const searchInput       = document.getElementById('search-input');
+            const categoryFilter    = document.getElementById('category-filter');
+            const sortFilter        = document.getElementById('sort-filter');
+
+            if (searchInput) searchInput.value = '';
+            if (categoryFilter) categoryFilter.value = '';
+            if (sortFilter) sortFilter.value = 'newest';
+
+            this.applyFilters();
+        }
+
+        updateURL() {
             const params = new URLSearchParams();
+
             if (this.filters.search) params.append('search', this.filters.search);
             if (this.filters.category) params.append('category', this.filters.category);
-            if (this.filters.sort) params.append('sort', this.filters.sort);
+            if (this.filters.sort && this.filters.sort !== 'newest') {
+                params.append('sort', this.filters.sort);
+            }
 
-            // Mostrar loading
-            this.showLoading();
+            const newURL = params.toString() ? `/cursos?${params.toString()}` : '/cursos';
+            window.history.replaceState({}, '', newURL);
+        }
 
-            // Realizar petición AJAX
-            const response = await fetch(`/cursos?${params.toString()}`, {
-                method: 'GET',
+        showLoading() {
+            const container = document.getElementById('courses-container');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="flex flex-col justify-center items-center py-16">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
+                    <p class="text-gray-600 text-lg">Cargando cursos...</p>
+                </div>
+            `;
+        }
+
+        showError() {
+            const container = document.getElementById('courses-container');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="text-center py-16 bg-white rounded-lg shadow-lg">
+                    <svg class="mx-auto h-20 w-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.082 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Error al cargar los cursos</h3>
+                    <p class="text-gray-600 mb-6">Ocurrió un problema al obtener los cursos. Por favor, intenta nuevamente.</p>
+                    <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                        Recargar Página
+                    </button>
+                </div>
+            `;
+        }
+
+        debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    }
+
+    // Inicializar cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        window.coursesPage = new CoursesPage();
+    });
+
+    // Función global para agregar al carrito
+    async function addToCart(courseId) {
+        const btn = event?.target;
+        if (btn) {
+            btn.disabled    = true;
+            btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+        }
+
+        try {
+            const response = await fetch(`/cart/add/${courseId}`, {
+                method: 'POST',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             });
 
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✓ Curso agregado al carrito', 'success');
+                updateCartCount();
+            } else if(data.success == false) {
+                showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+            } else {
+                throw new Error(data.message || 'Error al agregar el curso');
             }
-
-            const html = await response.text();
-
-            // Actualizar contenido
-            coursesContainer.innerHTML = html;
-
-            // Actualizar contador y UI
-            this.updateResultsCount();
-            this.restoreView();
-
-            // Scroll suave al contenedor
-            coursesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
         } catch (error) {
-            console.error('Error filtering courses:', error);
-            this.showError();
-        }
-    }
+            console.error('Error:', error);
 
-    updateResultsCount() {
-        const courseCards = document.querySelectorAll('.course-card');
-        const resultsCount = document.getElementById('results-count');
-        const filterDescription = document.getElementById('filter-description');
-        const emptyState = document.getElementById('empty-state');
-        const gridContainer = document.getElementById('grid-view-container');
-        const listContainer = document.getElementById('list-view-container');
-        const paginationInfo = document.getElementById('pagination-info');
-
-        const count = courseCards.length;
-        const total = paginationInfo?.dataset.total || count;
-
-        if (count === 0) {
-            // Mostrar estado vacío
-            if (gridContainer) gridContainer.style.display = 'none';
-            if (listContainer) listContainer.style.display = 'none';
-            if (emptyState) emptyState.classList.remove('hidden');
-            if (resultsCount) resultsCount.textContent = '0 cursos encontrados';
-        } else {
-            // Mostrar resultados
-            if (emptyState) emptyState.classList.add('hidden');
-            if (resultsCount) resultsCount.textContent = `${total} ${total === 1 ? 'curso encontrado' : 'cursos encontrados'}`;
-        }
-
-        // Actualizar descripción de filtros
-        this.updateFilterDescription(filterDescription);
-    }
-
-    updateFilterDescription(filterDescription) {
-        if (!filterDescription) return;
-
-        let description = 'Mostrando todos los cursos disponibles';
-        const parts = [];
-
-        if (this.filters.search) {
-            parts.push(`búsqueda: "${this.filters.search}"`);
-        }
-
-        if (this.filters.category) {
-            const categoryFilter    = document.getElementById('category-filter');
-            const categoryName      = categoryFilter?.selectedOptions[0]?.text;
-            if (categoryName) {
-                parts.push(`categoría: ${categoryName}`);
+            if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+                showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showNotification('Error al agregar el curso al carrito', 'error');
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Agregar';
             }
         }
-
-        if (parts.length > 0) {
-            description = `Resultados para ${parts.join(' y ')}`;
-        }
-
-        filterDescription.textContent = description;
     }
 
-    updateActiveFilters() {
-        const container = document.getElementById('active-filters');
-        if (!container) return;
+    function showNotification(message, type = 'info') {
+        // Remover notificaciones existentes
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
 
-        container.innerHTML = '';
-        let hasFilters = false;
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
 
-        // Filtro de búsqueda
-        if (this.filters.search) {
-            this.addActiveFilter('search', `Búsqueda: "${this.filters.search}"`, container);
-            hasFilters = true;
-        }
-
-        // Filtro de categoría
-        if (this.filters.category) {
-            const categoryFilter = document.getElementById('category-filter');
-            const categoryName = categoryFilter?.selectedOptions[0]?.text;
-            if (categoryName) {
-                this.addActiveFilter('category', `Categoría: ${categoryName}`, container);
-                hasFilters = true;
-            }
-        }
-
-        container.classList.toggle('hidden', !hasFilters);
-    }
-
-    addActiveFilter(type, text, container) {
-        const filterElement = document.createElement('div');
-        filterElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 animate-fade-in';
-        filterElement.innerHTML = `
-            <span>${text}</span>
-            <button type="button"
-                    onclick="coursesPage.removeFilter('${type}')"
-                    class="text-blue-600 hover:text-blue-800 focus:outline-none"
-                    aria-label="Eliminar filtro">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-lg">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         `;
-        container.appendChild(filterElement);
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
-    removeFilter(type) {
-        switch(type) {
-            case 'search':
-                this.filters.search = '';
-                const searchInput   = document.getElementById('search-input');
-                if (searchInput) searchInput.value = '';
-                break;
-            case 'category':
-                this.filters.category = '';
-                const categoryFilter = document.getElementById('category-filter');
-                if (categoryFilter) categoryFilter.value = '';
-                break;
-        }
-        this.applyFilters();
-    }
+    async function updateCartCount() {
+        try {
+            const response = await fetch('/api/cart/count', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
 
-    clearFilters() {
-        this.filters = {
-            search: '',
-            category: '',
-            sort: 'newest'
-        };
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount && data.count !== undefined) {
+                cartCount.textContent = data.count;
 
-        // Limpiar inputs
-        const searchInput       = document.getElementById('search-input');
-        const categoryFilter    = document.getElementById('category-filter');
-        const sortFilter        = document.getElementById('sort-filter');
-
-        if (searchInput) searchInput.value = '';
-        if (categoryFilter) categoryFilter.value = '';
-        if (sortFilter) sortFilter.value = 'newest';
-
-        this.applyFilters();
-    }
-
-    updateURL() {
-        const params = new URLSearchParams();
-
-        if (this.filters.search) params.append('search', this.filters.search);
-        if (this.filters.category) params.append('category', this.filters.category);
-        if (this.filters.sort && this.filters.sort !== 'newest') {
-            params.append('sort', this.filters.sort);
-        }
-
-        const newURL = params.toString() ? `/cursos?${params.toString()}` : '/cursos';
-        window.history.replaceState({}, '', newURL);
-    }
-
-    showLoading() {
-        const container = document.getElementById('courses-container');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="flex flex-col justify-center items-center py-16">
-                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-                <p class="text-gray-600 text-lg">Cargando cursos...</p>
-            </div>
-        `;
-    }
-
-    showError() {
-        const container = document.getElementById('courses-container');
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="text-center py-16 bg-white rounded-lg shadow-lg">
-                <svg class="mx-auto h-20 w-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.082 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Error al cargar los cursos</h3>
-                <p class="text-gray-600 mb-6">Ocurrió un problema al obtener los cursos. Por favor, intenta nuevamente.</p>
-                <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
-                    Recargar Página
-                </button>
-            </div>
-        `;
-    }
-
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-}
-
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    window.coursesPage = new CoursesPage();
-});
-
-// Función global para agregar al carrito
-async function addToCart(courseId) {
-    const btn = event?.target;
-    if (btn) {
-        btn.disabled    = true;
-        btn.innerHTML   = '<span class="animate-spin">⏳</span>';
-    }
-
-    try {
-        const response = await fetch(`/cart/add/${courseId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                'X-Requested-With': 'XMLHttpRequest'
+                // Animación del contador
+                cartCount.classList.add('animate-bounce');
+                setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
             }
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showNotification('✓ Curso agregado al carrito', 'success');
-            updateCartCount();
-        } else if(data.success == false) {
-            showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
-        } else {
-            throw new Error(data.message || 'Error al agregar el curso');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-
-        if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
-            showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
-            setTimeout(() => {
-                window.location.href = '/login';
-            }, 2000);
-        } else {
-            showNotification('Error al agregar el curso al carrito', 'error');
-        }
-    } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = 'Agregar';
+        } catch (error) {
+            console.error('Error updating cart count:', error);
         }
     }
-}
-
-function showNotification(message, type = 'info') {
-    // Remover notificaciones existentes
-    const existing = document.querySelectorAll('.custom-notification');
-    existing.forEach(n => n.remove());
-
-    const colors = {
-        success: 'bg-green-500',
-        error: 'bg-red-500',
-        warning: 'bg-yellow-500',
-        info: 'bg-blue-500'
-    };
-
-    const notification = document.createElement('div');
-    notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
-    notification.innerHTML = `
-        <span class="text-lg">${message}</span>
-        <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-    `;
-
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.classList.add('animate-fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-async function updateCartCount() {
-    try {
-        const response = await fetch('/api/cart/count', {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        const data = await response.json();
-
-        const cartCount = document.getElementById('cart-count');
-        if (cartCount && data.count !== undefined) {
-            cartCount.textContent = data.count;
-
-            // Animación del contador
-            cartCount.classList.add('animate-bounce');
-            setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
-        }
-    } catch (error) {
-        console.error('Error updating cart count:', error);
-    }
-}
 </script>
 
 <style>

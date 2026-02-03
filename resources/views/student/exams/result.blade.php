@@ -57,7 +57,7 @@
 
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>0%</span>
-                            <span>Puntaje mínimo: {{ round(($exam->passing_score / $attempt->total_points) * 100, 1) }}%</span>
+                            <span>Puntaje mínimo: {{ round((($exam->passing_score * $attempt->total_points) / 100), 2).' = '.((int) $exam->passing_score).'%' }}</span>
                             <span>100%</span>
                         </div>
                     </div>

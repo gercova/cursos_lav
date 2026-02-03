@@ -56,9 +56,4 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
     // Obtener lección anterior/siguiente
     Route::get('/lesson/{lesson}/previous', [LessonController::class, 'previous']);
     Route::get('/lesson/{lesson}/next', [LessonController::class, 'next']);
-
-    // Manejar notas
-    Route::post('/course/{course}/notes', [NoteController::class, 'store']);
-    Route::get('/course/{course}/notes', [NoteController::class, 'index']);
-    Route::delete('/notes/{note}', [\NoteController::class, 'destroy']);
 });

@@ -28,25 +28,25 @@ class UserActivity extends Model {
     ];
 
     protected $casts = [
-        'data' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'data'          => 'array',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime'
     ];
 
     // Tipos de actividad predefinidos
-    const TYPE_LOGIN = 'login';
-    const TYPE_LOGOUT = 'logout';
-    const TYPE_COURSE_ENROLLED = 'course_enrolled';
-    const TYPE_LESSON_COMPLETED = 'lesson_completed';
-    const TYPE_EXAM_STARTED = 'exam_started';
-    const TYPE_EXAM_COMPLETED = 'exam_completed';
-    const TYPE_CERTIFICATE_EARNED = 'certificate_earned';
-    const TYPE_PROFILE_UPDATED = 'profile_updated';
-    const TYPE_PAYMENT_COMPLETED = 'payment_completed';
-    const TYPE_CART_ADDED = 'cart_added';
-    const TYPE_WISHLIST_ADDED = 'wishlist_added';
-    const TYPE_COURSE_ACCESSED = 'course_accessed';
-    const TYPE_PASSWORD_CHANGED = 'password_changed';
+    const TYPE_LOGIN                = 'login';
+    const TYPE_LOGOUT               = 'logout';
+    const TYPE_COURSE_ENROLLED      = 'course_enrolled';
+    const TYPE_LESSON_COMPLETED     = 'lesson_completed';
+    const TYPE_EXAM_STARTED         = 'exam_started';
+    const TYPE_EXAM_COMPLETED       = 'exam_completed';
+    const TYPE_CERTIFICATE_EARNED   = 'certificate_earned';
+    const TYPE_PROFILE_UPDATED      = 'profile_updated';
+    const TYPE_PAYMENT_COMPLETED    = 'payment_completed';
+    const TYPE_CART_ADDED           = 'cart_added';
+    const TYPE_WISHLIST_ADDED       = 'wishlist_added';
+    const TYPE_COURSE_ACCESSED      = 'course_accessed';
+    const TYPE_PASSWORD_CHANGED     = 'password_changed';
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
@@ -71,26 +71,26 @@ class UserActivity extends Model {
     // Métodos estáticos para registrar actividades comunes
     public static function logLogin($userId, $ip, $userAgent) {
         return self::create([
-            'user_id' => $userId,
-            'type' => self::TYPE_LOGIN,
-            'action' => 'Inicio de sesión',
-            'description' => 'El usuario inició sesión en el sistema',
-            'ip_address' => $ip,
-            'user_agent' => $userAgent,
+            'user_id'       => $userId,
+            'type'          => self::TYPE_LOGIN,
+            'action'        => 'Inicio de sesión',
+            'description'   => 'El usuario inició sesión en el sistema',
+            'ip_address'    => $ip,
+            'user_agent'    => $userAgent,
             'data' => [
-                'login_time' => now()->toDateTimeString(),
-                'device' => self::detectDevice($userAgent),
-                'browser' => self::detectBrowser($userAgent)
+                'login_time'    => now()->toDateTimeString(),
+                'device'        => self::detectDevice($userAgent),
+                'browser'       => self::detectBrowser($userAgent)
             ]
         ]);
     }
 
     public static function logLogout($userId) {
         return self::create([
-            'user_id' => $userId,
-            'type' => self::TYPE_LOGOUT,
-            'action' => 'Cierre de sesión',
-            'description' => 'El usuario cerró sesión',
+            'user_id'       => $userId,
+            'type'          => self::TYPE_LOGOUT,
+            'action'        => 'Cierre de sesión',
+            'description'   => 'El usuario cerró sesión',
             'data' => [
                 'logout_time' => now()->toDateTimeString()
             ]
@@ -99,31 +99,31 @@ class UserActivity extends Model {
 
     public static function logCourseEnrollment($userId, $course) {
         return self::create([
-            'user_id' => $userId,
-            'type' => self::TYPE_COURSE_ENROLLED,
-            'action' => 'Inscripción a curso',
-            'description' => "Se inscribió en el curso: {$course->title}",
-            'course_id' => $course->id,
+            'user_id'       => $userId,
+            'type'          => self::TYPE_COURSE_ENROLLED,
+            'action'        => 'Inscripción a curso',
+            'description'   => "Se inscribió en el curso: {$course->title}",
+            'course_id'     => $course->id,
             'data' => [
-                'course_title' => $course->title,
-                'course_price' => $course->final_price,
-                'enrollment_date' => now()->toDateTimeString()
+                'course_title'      => $course->title,
+                'course_price'      => $course->final_price,
+                'enrollment_date'   => now()->toDateTimeString()
             ]
         ]);
     }
 
     public static function logLessonCompleted($userId, $lesson, $course) {
         return self::create([
-            'user_id' => $userId,
-            'type' => self::TYPE_LESSON_COMPLETED,
-            'action' => 'Lección completada',
-            'description' => "Completó la lección: {$lesson->title}",
-            'course_id' => $course->id,
-            'lesson_id' => $lesson->id,
+            'user_id'       => $userId,
+            'type'          => self::TYPE_LESSON_COMPLETED,
+            'action'        => 'Lección completada',
+            'description'   => "Completó la lección: {$lesson->title}",
+            'course_id'     => $course->id,
+            'lesson_id'     => $lesson->id,
             'data' => [
-                'lesson_title' => $lesson->title,
-                'course_title' => $course->title,
-                'completion_time' => now()->toDateTimeString()
+                'lesson_title'      => $lesson->title,
+                'course_title'      => $course->title,
+                'completion_time'   => now()->toDateTimeString()
             ]
         ]);
     }
@@ -136,7 +136,7 @@ class UserActivity extends Model {
             'description'   => $passed
                 ? "Aprobó el examen: {$exam->title} con {$score} puntos"
                 : "Inició el examen: {$exam->title}",
-            'exam_id' => $exam->id,
+            'exam_id'       => $exam->id,
             'data' => [
                 'exam_title'    => $exam->title,
                 'score'         => $score,

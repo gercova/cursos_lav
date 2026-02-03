@@ -93,21 +93,6 @@
                 @enderror
             </div>
 
-            <!-- Nivel -->
-            <div>
-                <label for="level" class="block text-sm font-medium text-gray-700 mb-1">Nivel *</label>
-                <select name="level" id="level" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                    <option value="">Seleccionar nivel</option>
-                    <option value="beginner" {{ old('level', $course->level ?? '') == 'beginner' ? 'selected' : '' }}>Principiante</option>
-                    <option value="intermediate" {{ old('level', $course->level ?? '') == 'intermediate' ? 'selected' : '' }}>Intermedio</option>
-                    <option value="advanced" {{ old('level', $course->level ?? '') == 'advanced' ? 'selected' : '' }}>Avanzado</option>
-                    <option value="all" {{ old('level', $course->level ?? '') == 'all' ? 'selected' : '' }}>Todos los niveles</option>
-                </select>
-                @error('level')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
             <!-- Duración -->
             <div>
                 <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Duración (horas) *</label>
@@ -293,7 +278,7 @@
 
                 @if(isset($course) && $course->image_url)
                     <div class="mb-4">
-                        <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-xl border border-gray-300">
+                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-xl border border-gray-300">
                     </div>
                 @endif
 

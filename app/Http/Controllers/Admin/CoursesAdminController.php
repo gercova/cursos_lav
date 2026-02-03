@@ -203,9 +203,9 @@ class CoursesAdminController extends Controller {
         $this->logActivity("{$status} el curso: {$course->title}");
 
         return response()->json([
-            'success' => true,
+            'success'   => true,
             'is_active' => $course->is_active,
-            'message' => 'Estado del curso actualizado.'
+            'message'   => 'Estado del curso actualizado.'
         ]);
     }
 

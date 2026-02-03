@@ -30,76 +30,6 @@ class AppController extends Controller {
         return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
 
-    // public function courses(Request $request, $code = null) {
-
-    //     $exists = User::where('code', $code)->where('is_active', true)->first();
-    //     if($code == null){
-    //         $query = Course::with(['category', 'instructor'])->where('is_active', true);
-    //     } else if($exists) {
-    //         $query  = Course::with(['category', 'instructor', 'coursePromotionCode'])
-    //             ->join('course_promotion_code as cpc', 'courses.id', '=', 'cpc.course_id')
-    //             ->where('cpc.code', $exists->code)
-    //             ->where('courses.is_active', true);
-    //     }
-
-    //     // Filtro por búsqueda
-    //     if ($request->has('search') && $request->search) {
-    //         $searchTerm = $request->search;
-    //         $query->where(function($q) use ($searchTerm) {
-    //             $q->where('title', 'like', '%' . $searchTerm . '%')
-    //                 ->orWhere('description', 'like', '%' . $searchTerm . '%')
-    //                 ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
-    //                 ->orWhereHas('category', function($q) use ($searchTerm) {
-    //                     $q->where('name', 'like', '%' . $searchTerm . '%');
-    //                 })
-    //                 ->orWhereHas('instructor', function($q) use ($searchTerm) {
-    //                     $q->where('names', 'like', '%' . $searchTerm . '%');
-    //                 });
-    //         });
-    //     }
-
-    //     // Filtrar por categoría
-    //     if ($request->has('category') && $request->category) {
-    //         $query->where('category_id', $request->category);
-    //     }
-
-    //     // Ordenar
-    //     $sort = $request->get('sort', 'newest');
-    //     switch ($sort) {
-    //         case 'oldest':
-    //             $query->orderBy('courses.created_at', 'asc');
-    //             break;
-    //         case 'popular':
-    //             $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
-    //             break;
-    //         case 'price_low':
-    //             $query->orderBy('courses.price', 'asc');
-    //             break;
-    //         case 'price_high':
-    //             $query->orderBy('courses.price', 'desc');
-    //             break;
-    //         case 'name_asc':
-    //             $query->orderBy('title', 'asc');
-    //             break;
-    //         case 'name_desc':
-    //             $query->orderBy('title', 'desc');
-    //             break;
-    //         default: // newest
-    //             $query->orderBy('courses.created_at', 'desc');
-    //     }
-
-    //     $courses    = $query->paginate(12);
-    //     $categories = Category::where('is_active', true)->get();
-    //     $enterprise = Enterprise::first();
-
-    //     // Si es una petición AJAX, retornar solo la vista parcial
-    //     if ($request->ajax()) {
-    //         return view('student.partials.courses-grid', compact('courses'))->render();
-    //     }
-
-    //     return view('student.courses', compact('courses', 'categories', 'enterprise'));
-    // }
-
     public function courses(Request $request, $code = null) {
         $query = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
 
@@ -178,20 +108,20 @@ class AppController extends Controller {
 
                 // Usar precio promocional si está disponible y es menor
                 if ($promoCode->promotion_price < $course->price) {
-                    $course->final_price = $promoCode->promotion_price;
-                    $course->original_price = $course->price;
-                    $course->has_promotion = true;
-                    $course->discount_percentage = $promoCode->discount_percentage;
-                    $course->promo_code = $promoCode->code;
+                    $course->final_price            = $promoCode->promotion_price;
+                    $course->original_price         = $course->price;
+                    $course->has_promotion          = true;
+                    $course->discount_percentage    = $promoCode->discount_percentage;
+                    $course->promo_code             = $promoCode->code;
                 } else {
                     // Mantener precio normal
-                    $course->final_price = $course->getFinalPriceAttribute();
-                    $course->has_promotion = $course->getIsOnPromotionAttribute();
+                    $course->final_price    = $course->getFinalPriceAttribute();
+                    $course->has_promotion  = $course->getIsOnPromotionAttribute();
                 }
             } else {
                 // Sin código o sin partner válido, usar precio normal
-                $course->final_price = $course->getFinalPriceAttribute();
-                $course->has_promotion = $course->getIsOnPromotionAttribute();
+                $course->final_price        = $course->getFinalPriceAttribute();
+                $course->has_promotion      = $course->getIsOnPromotionAttribute();
             }
 
             return $course;

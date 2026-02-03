@@ -3,33 +3,57 @@
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Bienvenida y resumen rápido -->
-    <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+    <div class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 shadow-sm">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
-            <div>
-                <div class="flex items-center mb-2">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800 mr-3">
-                        <i class="fas fa-user-graduate mr-1"></i> Estudiante
+            <div class="flex-1">
+                <div class="flex items-center mb-3">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm mr-3">
+                        <i class="fas fa-user-graduate mr-2"></i> Estudiante
                     </span>
-                    <span class="text-sm text-gray-600" id="current-date">
-                        {{ now()->format('l, d F Y') }}
+                    <span class="text-sm text-gray-600">
+                        <i class="far fa-calendar mr-1"></i> {{ now()->translatedFormat('l, d F Y') }}
                     </span>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">¡Bienvenido de nuevo, {{ auth()->user()->names }}! 👋</h1>
-                <p class="text-gray-600 mb-4">Tu progreso actual y próximas actividades</p>
-            </div>
-            <div class="mt-4 md:mt-0">
-                <div class="bg-white rounded-lg shadow-sm p-4">
+                <p class="text-gray-600 mb-6">Continúa tu aprendizaje y alcanza tus metas</p>
+                
+                <!-- Stats en línea -->
+                <div class="flex flex-wrap gap-4">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                        <div class="flex-shrink-0 w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center border border-blue-100">
+                            <i class="fas fa-book-open text-blue-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-gray-500">Cursos Activos</p>
+                            <p class="text-xl font-bold text-gray-900" id="stats-courses">0</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center border border-green-100">
+                            <i class="fas fa-chart-line text-green-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-gray-500">Progreso Global</p>
+                            <p class="text-xl font-bold text-gray-900" id="global-progress-text">0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 md:mt-0 md:ml-6">
+                <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-trophy text-white text-xl"></i>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm text-gray-500">Progreso Global</p>
-                            <div class="flex items-center">
-                                <div class="w-32 bg-gray-200 rounded-full h-2 mr-2">
-                                    <div id="global-progress-bar" class="bg-green-600 h-2 rounded-full progress-bar" style="width: 0%"></div>
+                            <p class="text-sm font-medium text-gray-500">Próximo objetivo</p>
+                            <div class="flex items-center mt-2">
+                                <div class="w-40 bg-gray-200 rounded-full h-2 mr-3">
+                                    <div id="global-progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full progress-bar" style="width: 0%"></div>
                                 </div>
-                                <span id="global-progress-text" class="text-lg font-bold text-gray-900">0%</span>
+                                <button class="text-xs font-semibold text-blue-600 hover:text-blue-800">
+                                    Ver metas
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -38,186 +62,277 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-200">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-blue-100 p-3 rounded-lg">
-                    <i class="fas fa-book-open text-blue-600 text-xl"></i>
+    <!-- Grid principal -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Columna izquierda - Cursos y Actividad -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Cursos Inscritos -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900">Mis Cursos Inscritos</h2>
+                        <p class="text-sm text-gray-600 mt-1">Continúa tu aprendizaje donde lo dejaste</p>
+                    </div>
+                    <a href="{{ route('student.my-courses') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow">
+                        <i class="fas fa-book-open mr-2"></i>
+                        Ver todos
+                    </a>
                 </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Cursos Activos</h3>
-                    <p class="text-2xl font-bold text-gray-900" id="stats-courses">0</p>
-                    <div class="mt-1">
-                        <span class="text-xs text-green-600" id="courses-trend">
-                            <i class="fas fa-arrow-up mr-1"></i>0% este mes
-                        </span>
+                <div class="p-6">
+                    @if(count($coursesData) > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @foreach($coursesData->take(4) as $course)
+                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-200 card-hover">
+                            <div class="p-5">
+                                <!-- Encabezado del curso -->
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-2">
+                                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
+                                                {{ $course['status'] === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                                {{ $course['status'] === 'completed' ? 'Completado' : 'En progreso' }}
+                                            </span>
+                                            <span class="ml-2 text-xs text-gray-500">
+                                                <i class="far fa-clock mr-1"></i>{{ $course['duration'] }}
+                                            </span>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ $course['title'] }}</h3>
+                                        <p class="text-sm text-gray-600 mt-1">{{ $course['category'] }}</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ml-3">
+                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center border border-blue-200">
+                                            <i class="fas fa-book text-blue-600"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Progreso -->
+                                <div class="mb-5">
+                                    <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                        <span class="font-medium">Tu progreso</span>
+                                        <span class="font-bold text-gray-900">{{ $course['progress'] }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="h-2.5 rounded-full progress-bar 
+                                            {{ $course['status'] === 'completed' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600' }}" 
+                                            style="width: {{ $course['progress'] }}%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                                        <span>{{ $course['completed_lessons'] }}/{{ $course['total_lessons'] }} lecciones</span>
+                                        <span>{{ $course['modules'] }} módulos</span>
+                                    </div>
+                                </div>
+
+                                <!-- Acciones -->
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <div class="text-sm text-gray-600">
+                                        <i class="far fa-calendar mr-1"></i>
+                                        Inscrito: {{ $course['enrolled_date'] }}
+                                    </div>
+                                    <a href="{{ $course['continue_url'] }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow">
+                                        <i class="fas fa-play mr-2"></i>
+                                        Continuar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    
+                    @if(count($coursesData) > 4)
+                    <div class="mt-6 text-center">
+                        <a href="{{ route('student.my-courses') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                            <span>Ver {{ count($coursesData) - 4 }} cursos más</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                    @endif
+                    
+                    @else
+                    <div class="text-center py-12">
+                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-book-open text-3xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Aún no estás inscrito en ningún curso</h3>
+                        <p class="text-gray-600 mb-6 max-w-md mx-auto">Descubre nuestra variedad de cursos y comienza tu viaje de aprendizaje hoy mismo.</p>
+                        <a href="{{ route('cursos') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+                            <i class="fas fa-search mr-3"></i>
+                            Explorar cursos disponibles
+                        </a>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Actividad Reciente -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <h2 class="text-lg font-semibold text-gray-900">Actividad Reciente</h2>
+                </div>
+                <div class="p-6">
+                    <div id="recent-activity" class="space-y-4">
+                        <!-- Las actividades se cargarán via JavaScript -->
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                            <p class="mt-4 text-gray-500">Cargando actividad...</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-200">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-purple-100 p-3 rounded-lg">
-                    <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+        <!-- Columna derecha - Logros, Exámenes y Certificados -->
+        <div class="space-y-8">
+            <!-- Exámenes Pendientes -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-white">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-100 to-red-50 rounded-xl flex items-center justify-center border border-red-200">
+                            <i class="fas fa-file-alt text-red-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Exámenes Pendientes</h2>
+                            <p class="text-sm text-gray-600">Próximas evaluaciones</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Exámenes Próximos</h3>
-                    <p class="text-2xl font-bold text-gray-900" id="stats-exams">0</p>
-                    <div class="mt-1">
-                        <span class="text-xs text-gray-500" id="next-exam-date">Sin próximos exámenes</span>
+                <div class="p-6">
+                    <div id="upcoming-exams" class="space-y-4">
+                        <!-- Los exámenes se cargarán via JavaScript -->
+                        <div class="text-center py-4">
+                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600 mx-auto"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-200">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-yellow-100 p-3 rounded-lg">
-                    <i class="fas fa-certificate text-yellow-600 text-xl"></i>
+            <!-- Certificados Obtenidos -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-white">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-xl flex items-center justify-center border border-yellow-200">
+                            <i class="fas fa-certificate text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Certificados Obtenidos</h2>
+                            <p class="text-sm text-gray-600">Tus logros certificados</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Certificados</h3>
-                    <p class="text-2xl font-bold text-gray-900" id="stats-certificates">0</p>
-                    <div class="mt-1">
-                        <span class="text-xs text-yellow-600">
-                            <i class="fas fa-award mr-1"></i>Logros
-                        </span>
+                <div class="p-6">
+                    <div id="certificates-list" class="space-y-4">
+                        <!-- Los certificados se cargarán via JavaScript -->
+                        <div class="text-center py-4">
+                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600 mx-auto"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-200">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-green-100 p-3 rounded-lg">
-                    <i class="fas fa-clock text-green-600 text-xl"></i>
+            <!-- Acciones Rápidas -->
+            <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                    <h2 class="text-lg font-semibold text-gray-900">Acciones Rápidas</h2>
                 </div>
-                <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-500">Horas de Estudio</h3>
-                    <p class="text-2xl font-bold text-gray-900" id="stats-hours">0h</p>
-                    <div class="mt-1">
-                        <span class="text-xs text-gray-500">Este mes</span>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <a href="{{ route('cursos') }}" class="bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-xl p-4 flex flex-col items-center justify-center transition-all duration-200 border border-blue-200 card-hover group">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-3 group-hover:shadow-md transition-shadow duration-200">
+                                <i class="fas fa-search text-white text-lg"></i>
+                            </div>
+                            <span class="text-sm font-semibold">Buscar Cursos</span>
+                            <span class="text-xs text-blue-600 mt-1">Nuevas oportunidades</span>
+                        </a>
+                        <a href="{{ route('student.exams') }}" class="bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-xl p-4 flex flex-col items-center justify-center transition-all duration-200 border border-red-200 card-hover group">
+                            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center mb-3 group-hover:shadow-md transition-shadow duration-200">
+                                <i class="fas fa-file-alt text-white text-lg"></i>
+                            </div>
+                            <span class="text-sm font-semibold">Exámenes</span>
+                            <span class="text-xs text-red-600 mt-1">Evaluaciones</span>
+                        </a>
+                        <a href="{{ route('student.certificates') }}" class="bg-gradient-to-br from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 text-yellow-700 rounded-xl p-4 flex flex-col items-center justify-center transition-all duration-200 border border-yellow-200 card-hover group">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mb-3 group-hover:shadow-md transition-shadow duration-200">
+                                <i class="fas fa-certificate text-white text-lg"></i>
+                            </div>
+                            <span class="text-sm font-semibold">Certificados</span>
+                            <span class="text-xs text-yellow-600 mt-1">Tus logros</span>
+                        </a>
+                        <a href="{{ route('student.profile') }}" class="bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 rounded-xl p-4 flex flex-col items-center justify-center transition-all duration-200 border border-gray-200 card-hover group">
+                            <div class="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl flex items-center justify-center mb-3 group-hover:shadow-md transition-shadow duration-200">
+                                <i class="fas fa-user text-white text-lg"></i>
+                            </div>
+                            <span class="text-sm font-semibold">Mi Perfil</span>
+                            <span class="text-xs text-gray-600 mt-1">Configuración</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metas del Día -->
+            <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200">
+                <div class="flex items-center mb-6">
+                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <i class="fas fa-bullseye text-white"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="font-semibold text-gray-900">Metas del Día</h3>
+                        <p class="text-sm text-gray-600">Completa tus objetivos diarios</p>
+                    </div>
+                </div>
+                <div class="space-y-5">
+                    <div>
+                        <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                            <span>Lecciones completadas</span>
+                            <span id="daily-lessons">0/3</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="daily-lessons-bar" class="bg-gradient-to-r from-purple-500 to-indigo-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm font-medium text-gray-700 mb-2">
+                            <span>Minutos de estudio</span>
+                            <span id="daily-minutes">0/60 min</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="daily-minutes-bar" class="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-200">
+                        <button onclick="updateDailyGoals()" class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white py-2.5 rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Marcar como completado
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Cursos en progreso -->
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-900">Cursos en Progreso</h2>
-                    <a href="{{ route('student.my-courses') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                        Ver todos <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+<!-- Modal para Detalles del Curso -->
+<div id="course-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden transition-opacity duration-300">
+    <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h3 id="modal-course-title" class="text-xl font-bold text-gray-900"></h3>
+                    <p id="modal-course-category" class="text-sm text-gray-600 mt-1"></p>
                 </div>
-                <div class="p-6">
-                    <div id="dashboard-courses-list" class="space-y-4">
-                        <!-- Los cursos se cargarán via JavaScript -->
-                        <div class="text-center py-8">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                            <p class="mt-4 text-gray-500">Cargando tus cursos...</p>
-                        </div>
-                    </div>
-                </div>
+                <button onclick="closeCourseModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
-
-            <!-- Actividad reciente -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden mt-8 border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-900">Actividad Reciente</h2>
-                    <button onclick="loadRecentActivity()" class="text-sm text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-                <div class="p-6">
-                    <div id="recent-activity" class="space-y-4">
-                        <!-- La actividad se cargará via JavaScript -->
-                    </div>
-                </div>
+            
+            <div id="modal-course-content" class="space-y-4">
+                <!-- El contenido se llenará dinámicamente -->
             </div>
-        </div>
-
-        <!-- Panel derecho -->
-        <div class="space-y-8">
-            <!-- Próximos eventos -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Próximos Eventos</h2>
-                </div>
-                <div class="p-6">
-                    <div id="upcoming-events" class="space-y-4">
-                        <!-- Eventos se cargarán via JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Logros -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Mis Logros</h2>
-                </div>
-                <div class="p-6">
-                    <div id="achievements" class="space-y-4">
-                        <!-- Logros se cargarán via JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Acciones rápidas -->
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">Acciones Rápidas</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-2 gap-4">
-                        <a href="{{ route('cursos') }}" class="bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 text-blue-700 rounded-lg p-4 flex flex-col items-center justify-center transition-all duration-200 border border-blue-200 card-hover">
-                            <i class="fas fa-search text-xl mb-2"></i>
-                            <span class="text-sm font-medium">Buscar Cursos</span>
-                        </a>
-                        <a href="{{ route('student.my-courses') }}" class="bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 text-green-700 rounded-lg p-4 flex flex-col items-center justify-center transition-all duration-200 border border-green-200 card-hover">
-                            <i class="fas fa-play text-xl mb-2"></i>
-                            <span class="text-sm font-medium">Continuar</span>
-                        </a>
-                        <a href="{{ route('student.exams') }}" class="bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-700 rounded-lg p-4 flex flex-col items-center justify-center transition-all duration-200 border border-red-200 card-hover">
-                            <i class="fas fa-file-alt text-xl mb-2"></i>
-                            <span class="text-sm font-medium">Exámenes</span>
-                        </a>
-                        <a href="{{ route('student.certificates') }}" class="bg-gradient-to-r from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 text-yellow-700 rounded-lg p-4 flex flex-col items-center justify-center transition-all duration-200 border border-yellow-200 card-hover">
-                            <i class="fas fa-certificate text-xl mb-2"></i>
-                            <span class="text-sm font-medium">Certificados</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Metas del día -->
-            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200">
-                <h3 class="font-semibold text-gray-900 mb-4">Metas del Día</h3>
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm text-gray-600 mb-1">
-                            <span>Lecciones completadas</span>
-                            <span>0/3</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-purple-600 h-2 rounded-full" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm text-gray-600 mb-1">
-                            <span>Minutos de estudio</span>
-                            <span>0/60min</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end">
+                <a id="modal-course-link" href="#" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-sm hover:shadow">
+                    <i class="fas fa-play mr-3"></i>
+                    Continuar con el curso
+                </a>
             </div>
         </div>
     </div>
@@ -235,95 +350,168 @@
     // Actualizar fecha actual
     document.getElementById('current-date').textContent = formatDate(new Date());
 
-    // Cargar datos específicos de la página de dashboard
-    async function loadDashboardCourses() {
-        try {
-            const response = await axios.get('/api/student/dashboard-courses');
-            const courses = response.data;
-            const container = document.getElementById('dashboard-courses-list');
+    // Funciones para el modal de curso
+    function openCourseModal(courseId) {
+        // Aquí puedes cargar los detalles específicos del curso si es necesario
+        const modal = document.getElementById('course-modal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-            if (courses.length > 0) {
-                container.innerHTML = courses.map(course => `
-                    <a href="/course/${course.slug}/learn" class="flex items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 card-hover">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-${course.color || 'blue'}-100 flex items-center justify-center">
-                            <i class="fas fa-${course.icon || 'book'} text-${course.color || 'blue'}-600 text-lg"></i>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <div class="flex justify-between items-start">
-                                <h3 class="font-medium text-gray-900 truncate">${course.title}</h3>
-                                <span class="text-sm font-bold text-${course.color || 'blue'}-600 ml-2">${course.progress}%</span>
+    function closeCourseModal() {
+        const modal = document.getElementById('course-modal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Cargar exámenes pendientes
+    async function loadUpcomingExams() {
+        try {
+            const response  = await axios.get('/api/student/dashboard-exams');
+            const exams     = response.data;
+            const container = document.getElementById('upcoming-exams');
+
+            if (exams && exams.length > 0) {
+                container.innerHTML = exams.map(exam => `
+                    <a href="${exam.link || '#'}" class="block bg-gradient-to-r from-red-50 to-white hover:from-red-100 hover:to-red-50 border border-red-200 rounded-xl p-4 transition-all duration-200 card-hover">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-lg flex flex-col items-center justify-center border border-red-200">
+                                <span class="text-xs font-bold text-red-700">${exam.day || 'Próximo'}</span>
+                                <span class="text-sm font-bold text-red-700">${exam.date || ''}</span>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">${course.instructor}</p>
-                            <div class="flex items-center mt-3">
-                                <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                    <div class="bg-${course.color || 'blue'}-600 h-2 rounded-full progress-bar" style="width: ${course.progress}%"></div>
+                            <div class="ml-4 flex-1">
+                                <div class="flex justify-between items-start">
+                                    <h4 class="text-sm font-semibold text-gray-900">${exam.title}</h4>
+                                    <span class="ml-2 px-2 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">
+                                        ${exam.time || 'Próximo'}
+                                    </span>
                                 </div>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                <span class="flex items-center">
-                                    <i class="far fa-clock mr-1"></i>${course.last_activity}
-                                </span>
-                                <span>${course.next_lesson || 'Próxima lección'}</span>
+                                <p class="text-xs text-gray-600 mt-1">${exam.course || 'Curso'}</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
+                                        <i class="fas fa-clock mr-1 text-xs"></i>
+                                        ${exam.duration || 'Tiempo pendiente'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </a>
                 `).join('');
+                
+                // Actualizar contador de exámenes en stats
+                document.getElementById('stats-exams').textContent = exams.length;
             } else {
                 container.innerHTML = `
                     <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-book-open text-2xl text-gray-400"></i>
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-100 to-red-50 rounded-2xl flex items-center justify-center border border-red-200">
+                            <i class="fas fa-file-alt text-2xl text-red-400"></i>
                         </div>
-                        <p class="text-gray-500 mb-4">No tienes cursos activos</p>
-                        <a href="{{ route('cursos') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm">
-                            <i class="fas fa-search mr-2"></i>
-                            Explorar cursos
-                        </a>
+                        <p class="text-gray-900 font-medium mb-2">No hay exámenes pendientes</p>
+                        <p class="text-sm text-gray-600">¡Buen trabajo! Estás al día con tus evaluaciones.</p>
                     </div>
                 `;
+                document.getElementById('stats-exams').textContent = '0';
             }
         } catch (error) {
-            console.error('Error loading dashboard courses:', error);
-            document.getElementById('dashboard-courses-list').innerHTML = `
+            console.error('Error loading upcoming exams:', error);
+            container.innerHTML = `
                 <div class="text-center py-8">
-                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
-                    </div>
-                    <p class="text-red-500">Error cargando los cursos</p>
-                    <button onclick="loadDashboardCourses()" class="mt-2 text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-redo mr-1"></i> Reintentar
-                    </button>
+                    <p class="text-red-500">Error cargando exámenes</p>
                 </div>
             `;
         }
     }
 
-    async function loadRecentActivity() {
+    // Cargar certificados
+    async function loadCertificates() {
         try {
-            const container = document.getElementById('recent-activity');
-            container.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
-                </div>
-            `;
+            const response = await axios.get('/api/student/certificates');
+            const certificates = response.data;
+            const container = document.getElementById('certificates-list');
 
-            const response = await axios.get('/api/student/recent-activity');
-            const activities = response.data;
-
-            if (activities.length > 0) {
-                container.innerHTML = activities.map(activity => `
-                    <div class="flex items-start p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                        <div class="flex-shrink-0 mt-1">
-                            <div class="w-8 h-8 rounded-full bg-${activity.color || 'blue'}-100 flex items-center justify-center">
-                                <i class="fas fa-${activity.icon || 'circle'} text-${activity.color || 'blue'}-600 text-xs"></i>
+            if (certificates && certificates.length > 0) {
+                container.innerHTML = certificates.slice(0, 3).map(cert => `
+                    <div class="bg-gradient-to-r from-yellow-50 to-white border border-yellow-200 rounded-xl p-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg flex items-center justify-center border border-yellow-200">
+                                <i class="fas fa-certificate text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <h4 class="text-sm font-semibold text-gray-900 truncate">${cert.title || 'Certificado'}</h4>
+                                <p class="text-xs text-gray-600 mt-1">${cert.course || 'Curso completado'}</p>
+                                <div class="flex justify-between items-center mt-3">
+                                    <span class="text-xs text-yellow-700 font-medium">
+                                        <i class="fas fa-award mr-1"></i>
+                                        Obtenido: ${cert.date || 'Fecha'}
+                                    </span>
+                                    <a href="${cert.link || '#'}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                        Ver <i class="fas fa-external-link-alt ml-1"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm text-gray-900">${activity.description}</p>
-                            <div class="flex justify-between items-center mt-1">
-                                <p class="text-xs text-gray-500">${activity.time}</p>
+                    </div>
+                `).join();
+                
+                // Si hay más de 3 certificados, mostrar enlace
+                if (certificates.length > 3) {
+                    container.innerHTML += `
+                        <div class="text-center pt-4 border-t border-yellow-100">
+                            <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
+                                <span>Ver ${certificates.length - 3} certificados más</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    `;
+                }
+                
+                // Actualizar contador de certificados en stats
+                document.getElementById('stats-certificates').textContent = certificates.length;
+            } else {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-2xl flex items-center justify-center border border-yellow-200">
+                            <i class="fas fa-certificate text-2xl text-yellow-400"></i>
+                        </div>
+                        <p class="text-gray-900 font-medium mb-2">Aún no tienes certificados</p>
+                        <p class="text-sm text-gray-600">Completa cursos y exámenes para obtener certificados.</p>
+                    </div>
+                `;
+                document.getElementById('stats-certificates').textContent = '0';
+            }
+        } catch (error) {
+            console.error('Error loading certificates:', error);
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <p class="text-red-500">Error cargando certificados</p>
+                </div>
+            `;
+        }
+    }
+
+    // Cargar actividad reciente
+    async function loadRecentActivity() {
+        try {
+            const response = await axios.get('/api/student/recent-activity');
+            const activities = response.data;
+            const container = document.getElementById('recent-activity');
+
+            if (activities && activities.length > 0) {
+                container.innerHTML = activities.map(activity => `
+                    <div class="flex items-start p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 border border-gray-100">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-10 h-10 bg-gradient-to-br from-${activity.color || 'blue'}-100 to-${activity.color || 'blue'}-50 rounded-xl flex items-center justify-center border border-${activity.color || 'blue'}-200">
+                                <i class="fas fa-${activity.icon || 'circle'} text-${activity.color || 'blue'}-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-900">${activity.description}</p>
+                            <div class="flex justify-between items-center mt-2">
+                                <p class="text-xs text-gray-500">
+                                    <i class="far fa-clock mr-1"></i>${activity.time}
+                                </p>
                                 ${activity.badge ? `
-                                    <span class="ml-2 px-2 py-1 text-xs rounded-full ${activity.badge_color || 'bg-blue-100 text-blue-800'}">
+                                    <span class="ml-2 px-2 py-1 text-xs font-medium rounded-full ${activity.badge_color || 'bg-blue-100 text-blue-800'}">
                                         ${activity.badge}
                                     </span>
                                 ` : ''}
@@ -334,11 +522,11 @@
             } else {
                 container.innerHTML = `
                     <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
                             <i class="fas fa-history text-2xl text-gray-400"></i>
                         </div>
-                        <p class="text-gray-500">No hay actividad reciente</p>
-                        <p class="text-sm text-gray-400 mt-1">Empieza a explorar cursos</p>
+                        <p class="text-gray-900 font-medium mb-2">No hay actividad reciente</p>
+                        <p class="text-sm text-gray-600">Comienza a interactuar con los cursos para ver actividad.</p>
                     </div>
                 `;
             }
@@ -352,85 +540,7 @@
         }
     }
 
-    async function loadUpcomingEvents() {
-        try {
-            const response = await axios.get('/api/student/upcoming-events');
-            const events = response.data;
-            const container = document.getElementById('upcoming-events');
-
-            if (events.length > 0) {
-                container.innerHTML = events.map(event => `
-                    <a href="${event.link || '#'}" class="flex items-start p-3 rounded-lg border border-gray-200 hover:border-${event.color || 'red'}-300 hover:bg-${event.color || 'red'}-50 transition-colors duration-200">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-${event.color || 'red'}-100 rounded-lg flex flex-col items-center justify-center">
-                                <span class="text-xs font-semibold text-${event.color || 'red'}-700">${event.day}</span>
-                                <span class="text-sm font-bold text-${event.color || 'red'}-700">${event.date}</span>
-                            </div>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <h4 class="text-sm font-medium text-gray-900">${event.title}</h4>
-                            <p class="text-xs text-gray-500 mt-1">${event.course}</p>
-                            <p class="text-xs text-gray-400 mt-1">
-                                <i class="far fa-clock mr-1"></i>${event.time}
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0 ml-2">
-                            <i class="fas fa-chevron-right text-gray-400"></i>
-                        </div>
-                    </a>
-                `).join('');
-            } else {
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="far fa-calendar-alt text-2xl text-gray-400"></i>
-                        </div>
-                        <p class="text-gray-500">No hay eventos próximos</p>
-                        <p class="text-sm text-gray-400 mt-1">Disfruta tu tiempo de estudio</p>
-                    </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Error loading upcoming events:', error);
-        }
-    }
-
-    async function loadAchievements() {
-        try {
-            const response = await axios.get('/api/student/achievements');
-            const achievements = response.data;
-            const container = document.getElementById('achievements');
-
-            if (achievements.length > 0) {
-                container.innerHTML = achievements.map(achievement => `
-                    <div class="flex items-center p-3 rounded-lg border border-gray-200 bg-gradient-to-r from-${achievement.color || 'yellow'}-50 to-white">
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 bg-${achievement.color || 'yellow'}-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-${achievement.icon || 'trophy'} text-${achievement.color || 'yellow'}-600"></i>
-                            </div>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            <h4 class="text-sm font-medium text-gray-900">${achievement.title}</h4>
-                            <p class="text-xs text-gray-500 mt-1">${achievement.description}</p>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-award text-2xl text-gray-400"></i>
-                        </div>
-                        <p class="text-gray-500">Aún no tienes logros</p>
-                        <p class="text-sm text-gray-400 mt-1">Completa cursos para desbloquear</p>
-                    </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Error loading achievements:', error);
-        }
-    }
-
+    // Cargar estadísticas del dashboard
     async function loadStats() {
         try {
             const response = await axios.get('/api/student/dashboard-stats');
@@ -438,8 +548,9 @@
 
             // Actualizar valores en las cards con animación
             animateCounter('stats-courses', stats.activeCourses || 0);
-            animateCounter('stats-exams', stats.upcomingExams || 0);
+            animateCounter('stats-exams', stats.pendingExams || 0);
             animateCounter('stats-certificates', stats.certificatesCount || 0);
+            animateCounter('stats-hours', stats.studyHours || 0);
 
             // Progreso global
             const progressBar = document.getElementById('global-progress-bar');
@@ -451,16 +562,44 @@
                 animateCounterText('global-progress-text', progress, '%');
             }, 500);
 
+            // Metas diarias (ejemplo)
+            updateDailyGoalsStats(stats.dailyGoals || {});
+
         } catch (error) {
             console.error('Error loading stats:', error);
         }
     }
 
+    function updateDailyGoalsStats(goals) {
+        // Actualizar lecciones diarias
+        const lessonsCompleted = goals.lessonsCompleted || 0;
+        const totalLessons = goals.totalLessons || 3;
+        const lessonsProgress = (lessonsCompleted / totalLessons) * 100;
+        
+        document.getElementById('daily-lessons').textContent = `${lessonsCompleted}/${totalLessons}`;
+        document.getElementById('daily-lessons-bar').style.width = `${lessonsProgress}%`;
+
+        // Actualizar minutos de estudio
+        const minutesStudied = goals.minutesStudied || 0;
+        const targetMinutes = goals.targetMinutes || 60;
+        const minutesProgress = (minutesStudied / targetMinutes) * 100;
+        
+        document.getElementById('daily-minutes').textContent = `${minutesStudied}/${targetMinutes} min`;
+        document.getElementById('daily-minutes-bar').style.width = `${minutesProgress}%`;
+    }
+
+    function updateDailyGoals() {
+        // Aquí iría la lógica para actualizar las metas diarias
+        alert('Funcionalidad para marcar metas como completadas - Por implementar');
+    }
+
     // Animaciones para contadores
     function animateCounter(elementId, targetValue) {
         const element = document.getElementById(elementId);
+        if (!element) return;
+        
         const currentValue = parseInt(element.textContent) || 0;
-        const duration = 1000;
+        const duration = 800;
         const startTime = Date.now();
 
         function updateCounter() {
@@ -482,8 +621,10 @@
 
     function animateCounterText(elementId, targetValue, suffix = '') {
         const element = document.getElementById(elementId);
+        if (!element) return;
+        
         const currentValue = parseFloat(element.textContent.replace(suffix, '')) || 0;
-        const duration = 1000;
+        const duration = 800;
         const startTime = Date.now();
 
         function updateCounter() {
@@ -505,18 +646,66 @@
 
     // Cargar todo al iniciar
     document.addEventListener('DOMContentLoaded', function() {
-        loadDashboardCourses();
         loadRecentActivity();
-        loadUpcomingEvents();
-        loadAchievements();
+        loadUpcomingExams();
+        loadCertificates();
         loadStats();
 
         // Actualizar cada 30 segundos
         setInterval(() => {
             loadRecentActivity();
-            loadUpcomingEvents();
+            loadUpcomingExams();
             loadStats();
         }, 30000);
+        
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('course-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCourseModal();
+            }
+        });
     });
+
+    // Función para actualizar las metas diarias (simulación)
+    function simulateDailyProgress() {
+        // Simular progreso aleatorio para demostración
+        const randomLessons = Math.floor(Math.random() * 4);
+        const randomMinutes = Math.floor(Math.random() * 61);
+        
+        updateDailyGoalsStats({
+            lessonsCompleted: randomLessons,
+            totalLessons: 3,
+            minutesStudied: randomMinutes,
+            targetMinutes: 60
+        });
+    }
+
+    // Ejecutar simulación cada 10 segundos para demostración
+    setInterval(simulateDailyProgress, 10000);
 </script>
+
+<!-- Estilos adicionales -->
+<style>
+    .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .progress-bar {
+        transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    #course-modal {
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
 @endsection

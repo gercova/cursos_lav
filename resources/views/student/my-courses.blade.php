@@ -3,140 +3,140 @@
 @section('content')
 {{-- Mover el script AQUÍ, antes del div --}}
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('myCoursesApp', () => ({
-        search: '',
-        filter: 'all',
-        courses: @json($coursesData),
-        stats: {
-            totalCourses: 0,
-            inProgress: 0,
-            completed: 0,
-            hoursStudied: 0
-        },
-        recentCourses: [],
-        selectedCourse: null,
-        showModal: false,
-        searchTimeout: null,
-        itemsPerPage: 5,
-        currentPage: 1,
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('myCoursesApp', () => ({
+            search: '',
+            filter: 'all',
+            courses: @json($coursesData),
+            stats: {
+                totalCourses: 0,
+                inProgress: 0,
+                completed: 0,
+                hoursStudied: 0
+            },
+            recentCourses: [],
+            selectedCourse: null,
+            showModal: false,
+            searchTimeout: null,
+            itemsPerPage: 5,
+            currentPage: 1,
 
-        get filteredCourses() {
-            let filtered = this.courses;
+            get filteredCourses() {
+                let filtered = this.courses;
 
-            if (this.filter === 'in_progress') {
-                filtered = filtered.filter(course => course.progress < 100);
-            } else if (this.filter === 'completed') {
-                filtered = filtered.filter(course => course.progress >= 100);
-            }
+                if (this.filter === 'in_progress') {
+                    filtered = filtered.filter(course => course.progress < 100);
+                } else if (this.filter === 'completed') {
+                    filtered = filtered.filter(course => course.progress >= 100);
+                }
 
-            if (this.search.trim()) {
-                const searchTerm = this.search.toLowerCase();
-                filtered = filtered.filter(course =>
-                    course.title.toLowerCase().includes(searchTerm) ||
-                    course.description.toLowerCase().includes(searchTerm) ||
-                    course.category.toLowerCase().includes(searchTerm)
-                );
-            }
+                if (this.search.trim()) {
+                    const searchTerm = this.search.toLowerCase();
+                    filtered = filtered.filter(course =>
+                        course.title.toLowerCase().includes(searchTerm) ||
+                        course.description.toLowerCase().includes(searchTerm) ||
+                        course.category.toLowerCase().includes(searchTerm)
+                    );
+                }
 
-            const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = start + this.itemsPerPage;
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                const end = start + this.itemsPerPage;
 
-            return filtered.slice(start, end);
-        },
+                return filtered.slice(start, end);
+            },
 
-        get totalPages() {
-            let filtered = this.courses;
+            get totalPages() {
+                let filtered = this.courses;
 
-            if (this.filter === 'in_progress') {
-                filtered = filtered.filter(course => course.progress < 100);
-            } else if (this.filter === 'completed') {
-                filtered = filtered.filter(course => course.progress >= 100);
-            }
+                if (this.filter === 'in_progress') {
+                    filtered = filtered.filter(course => course.progress < 100);
+                } else if (this.filter === 'completed') {
+                    filtered = filtered.filter(course => course.progress >= 100);
+                }
 
-            if (this.search.trim()) {
-                const searchTerm = this.search.toLowerCase();
-                filtered = filtered.filter(course =>
-                    course.title.toLowerCase().includes(searchTerm) ||
-                    course.description.toLowerCase().includes(searchTerm) ||
-                    course.category.toLowerCase().includes(searchTerm)
-                );
-            }
+                if (this.search.trim()) {
+                    const searchTerm = this.search.toLowerCase();
+                    filtered = filtered.filter(course =>
+                        course.title.toLowerCase().includes(searchTerm) ||
+                        course.description.toLowerCase().includes(searchTerm) ||
+                        course.category.toLowerCase().includes(searchTerm)
+                    );
+                }
 
-            return Math.ceil(filtered.length / this.itemsPerPage) || 1;
-        },
+                return Math.ceil(filtered.length / this.itemsPerPage) || 1;
+            },
 
-        init() {
-            this.calculateStats();
-            this.getRecentCourses();
-        },
+            init() {
+                this.calculateStats();
+                this.getRecentCourses();
+            },
 
-        calculateStats() {
-            this.stats.totalCourses = this.courses.length;
-            this.stats.inProgress = this.courses.filter(course => course.progress < 100).length;
-            this.stats.completed = this.courses.filter(course => course.progress >= 100).length;
-            this.stats.hoursStudied = Math.floor(this.courses.reduce((total, course) =>
-                total + (course.lessons * 0.5), 0
-            ));
-        },
+            calculateStats() {
+                this.stats.totalCourses = this.courses.length;
+                this.stats.inProgress = this.courses.filter(course => course.progress < 100).length;
+                this.stats.completed = this.courses.filter(course => course.progress >= 100).length;
+                this.stats.hoursStudied = Math.floor(this.courses.reduce((total, course) =>
+                    total + (course.lessons * 0.5), 0
+                ));
+            },
 
-        getRecentCourses() {
-            this.recentCourses = [...this.courses]
-                .sort((a, b) => {
-                    const dateA = a.last_accessed ? new Date(a.last_accessed.split('/').reverse().join('-')) : new Date(0);
-                    const dateB = b.last_accessed ? new Date(b.last_accessed.split('/').reverse().join('-')) : new Date(0);
+            getRecentCourses() {
+                this.recentCourses = [...this.courses]
+                    .sort((a, b) => {
+                        const dateA = a.last_accessed ? new Date(a.last_accessed.split('/').reverse().join('-')) : new Date(0);
+                        const dateB = b.last_accessed ? new Date(b.last_accessed.split('/').reverse().join('-')) : new Date(0);
 
-                    if (a.last_accessed || b.last_accessed) {
-                        return dateB - dateA;
-                    }
-                    return b.id - a.id;
-                })
-                .slice(0, 3);
-        },
+                        if (a.last_accessed || b.last_accessed) {
+                            return dateB - dateA;
+                        }
+                        return b.id - a.id;
+                    })
+                    .slice(0, 3);
+            },
 
-        debounceSearch() {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-                this.currentPage = 1;
-            }, 300);
-        },
+            debounceSearch() {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => {
+                    this.currentPage = 1;
+                }, 300);
+            },
 
-        showCourseDetails(courseId) {
-            this.selectedCourse = this.courses.find(course => course.id === courseId);
-            this.showModal = true;
-            document.body.style.overflow = 'hidden';
-        },
+            showCourseDetails(courseId) {
+                this.selectedCourse = this.courses.find(course => course.id === courseId);
+                this.showModal = true;
+                document.body.style.overflow = 'hidden';
+            },
 
-        closeModal() {
-            this.showModal = false;
-            this.selectedCourse = null;
-            document.body.style.overflow = 'auto';
-        },
+            closeModal() {
+                this.showModal = false;
+                this.selectedCourse = null;
+                document.body.style.overflow = 'auto';
+            },
 
-        prevPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.scrollToTop();
+                }
+            },
+
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    this.scrollToTop();
+                }
+            },
+
+            goToPage(page) {
+                this.currentPage = page;
                 this.scrollToTop();
+            },
+
+            scrollToTop() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        },
-
-        nextPage() {
-            if (this.currentPage < this.totalPages) {
-                this.currentPage++;
-                this.scrollToTop();
-            }
-        },
-
-        goToPage(page) {
-            this.currentPage = page;
-            this.scrollToTop();
-        },
-
-        scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }));
-});
+        }));
+    });
 </script>
 <div x-data="myCoursesApp" x-init="init()">
     <!-- Header -->

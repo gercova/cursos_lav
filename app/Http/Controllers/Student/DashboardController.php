@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Exam;
+use App\Models\LessonProgress;
 use App\Models\UserActivity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +20,44 @@ class DashboardController extends Controller {
     }
 
     public function index(): View {
-        return view('student.dashboard');
+        $user           = Auth::user(); 
+        $enrollments    = Enrollment::with(['course.category', 'course.sections.lessons'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $coursesData        = $enrollments->map(function($enrollment) {
+            $course         = $enrollment->course;
+            $progress       = $enrollment->progress ?: 0;
+            $totalLessons   = 0;
+
+            // Calcular total de lecciones
+            if ($course->sections) {
+                $totalLessons = $course->sections->sum(function($section) {
+                    return $section->lessons ? $section->lessons->count() : 0;
+                });
+            }
+
+            return [
+                'id'                => $enrollment->id,
+                'course_id'         => $course->id,
+                'title'             => $course->title,
+                'description'       => $course->description,
+                'category'          => $course->category ? $course->category->name : 'Sin categoría',
+                'image'             => $course->image_url ?: null,
+                'progress'          => $progress,
+                'status'            => $progress >= 100 ? 'completed' : 'in_progress',
+                'modules'           => $course->sections ? $course->sections->count() : 0,
+                'lessons'           => $totalLessons,
+                'duration'          => $course->duration ?: '0 horas',
+                'enrolled_date'     => $enrollment->created_at->format('d/m/Y'),
+                'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : null,
+                'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
+                'total_lessons'     => $totalLessons,
+                'continue_url'      => route('student.course.learn', $course)
+            ];
+        });
+        return view('student.dashboard', compact('coursesData'));
     }
 
     public function stats(Request $request) {
@@ -36,9 +74,7 @@ class DashboardController extends Controller {
         $certificatesCount = Certificate::where('user_id', $user->id)->count();
 
         // Progreso mensual (ejemplo simple)
-        $monthlyProgress = Enrollment::where('user_id', $user->id)
-            ->whereMonth('created_at', now()->month)
-            ->avg('progress') ?? 0;
+        $monthlyProgress = Enrollment::where('user_id', $user->id)->whereMonth('created_at', now()->month)->avg('progress') ?? 0;
 
         return response()->json([
             'activeCourses'         => $activeCourses,
@@ -219,5 +255,133 @@ class DashboardController extends Controller {
         ];
 
         return $colors[$type] ?? 'gray';
+    }
+
+    // Nuevas funciones 
+    public function dashboardExams(): JsonResponse {
+        $user = Auth::user();
+        
+        // Obtener exámenes pendientes del estudiante
+        $exams = Exam::whereHas('course.enrollments', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->where('start_date', '>=', now())
+            ->whereDoesntHave('examAttempts', function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                ->where('passed', true);
+            })
+            ->orderBy('start_date', 'asc')
+            ->limit(5)
+            ->get();
+
+        $formattedExams = $exams->map(function($exam) {
+            $daysUntil = now()->diffInDays($exam->start_date);
+            
+            return [
+                'id'        => $exam->id,
+                'title'     => $exam->title,
+                'course'    => $exam->course->title ?? 'Sin curso',
+                'day'       => $exam->start_date->format('D'),
+                'date'      => $exam->start_date->format('d/m'),
+                'time'      => $exam->start_date->format('H:i'),
+                'duration'  => $exam->duration ? $exam->duration . ' min' : 'Sin duración',
+                'link'      => route('student.exam.show', $exam->id),
+                'urgency'   => $daysUntil <= 2 ? 'high' : ($daysUntil <= 7 ? 'medium' : 'low')
+            ];
+        });
+
+        return response()->json($formattedExams);
+    }
+
+    public function dashboardCertificates(): JsonResponse {
+        $user = Auth::user();
+        
+        // Obtener certificados del estudiante
+        $certificates = Certificate::with(['course', 'exam'])
+            ->where('user_id', $user->id)
+            ->orderBy('issued_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        $formattedCertificates = $certificates->map(function($certificate) {
+            return [
+                'id'            => $certificate->id,
+                'title'         => $certificate->title ?? 'Certificado de Finalización',
+                'course'        => $certificate->course->title ?? ($certificate->exam->title ?? 'Curso'),
+                'date'          => $certificate->issued_at ? $certificate->issued_at->format('d/m/Y') : 'No emitido',
+                'score'         => $certificate->score ? round($certificate->score, 1) . '%' : null,
+                'link'          => route('student.certificate.show', $certificate->id),
+                'download_link' => route('student.certificate.download', $certificate->id)
+            ];
+        });
+
+        return response()->json($formattedCertificates);
+    }
+
+    public function dashboardStats(Request $request): JsonResponse {
+        $user = Auth::user();
+        
+        // Cursos activos
+        $activeCourses = Enrollment::where('user_id', $user->id)
+            ->whereHas('course', function($q) {
+                $q->where('is_active', true);
+            })
+            ->count();
+
+        // Exámenes pendientes
+        $pendingExams = Exam::whereHas('course.enrollments', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->where('start_date', '>=', now())
+            ->whereDoesntHave('examAttempts', function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                ->where('passed', true);
+            })
+            ->count();
+
+        // Certificados obtenidos
+        $certificatesCount = Certificate::where('user_id', $user->id)->count();
+
+        // Horas de estudio (ejemplo - deberías tener un campo o calcularlo)
+        $studyHours = Enrollment::where('user_id', $user->id)
+            ->with(['course' => function($q) {
+                $q->select('id', 'duration');
+            }])
+            ->get()
+            ->sum(function($enrollment) {
+                // Convertir duración del curso a horas estimadas
+                if ($enrollment->course && $enrollment->course->duration) {
+                    preg_match('/(\d+)/', $enrollment->course->duration, $matches);
+                    return $matches[1] ?? 0;
+                }
+                return 0;
+            });
+
+        // Progreso mensual promedio
+        $monthlyProgress = Enrollment::where('user_id', $user->id)
+            ->whereMonth('updated_at', now()->month)
+            ->avg('progress') ?? 0;
+
+        // Metas diarias (ejemplo)
+        $today = now()->toDateString();
+        $dailyGoals = [
+            'lessonsCompleted'  => LessonProgress::where('user_id', $user->id)
+                ->whereDate('completed_at', $today)
+                ->count(),
+            'totalLessons'      => 3, // Meta diaria
+            'minutesStudied'    => LessonProgress::where('user_id', $user->id)
+                ->whereDate('completed_at', $today)
+                ->sum('time_watched') ?? 0,
+            'targetMinutes'     => 60 // 1 hora de estudio diaria
+        ];
+
+        return response()->json([
+            'activeCourses'     => $activeCourses,
+            'pendingExams'      => $pendingExams,
+            'certificatesCount' => $certificatesCount,
+            'studyHours'        => $studyHours,
+            'monthlyProgress'   => round($monthlyProgress, 1),
+            'dailyGoals'        => $dailyGoals
+        ]);
     }
 }

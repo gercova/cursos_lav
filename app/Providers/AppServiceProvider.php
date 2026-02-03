@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['enterprise' => $enterprise]);
         });
 
+        View::composer('layouts.admin', function ($view) {
+            $enterprise = Enterprise::first();
+            $view->with(['enterprise' => $enterprise]);
+        });
+
         View::composer('layouts.student', function ($view) {
             $enterprise = Enterprise::first();
             $view->with(['enterprise' => $enterprise]);

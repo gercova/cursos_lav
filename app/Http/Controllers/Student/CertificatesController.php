@@ -44,7 +44,7 @@ class CertificatesController extends Controller {
                 // Recomendado para que wkhtmltopdf pueda leer imágenes locales (public_path/storage/...)
                 'enable-local-file-access' => true,
                 // Recomendado para caracteres especiales
-                'encoding' => 'UTF-8',
+                'encoding'      => 'UTF-8',
             ]);
 
         $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';

@@ -53,7 +53,6 @@ class RegisterController extends Controller {
             'country_code'  => $validated['country_code'],
             'phone'         => $validated['phone'],
             'nationality'   => $validated['nationality'],
-            'ubigeo'        => $validated['ubigeo'],
             'address'       => $validated['address'],
             'profession'    => $validated['profession'],
             'role'          => 'student',

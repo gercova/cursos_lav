@@ -19,7 +19,6 @@ class UserStudentValidate extends FormRequest {
             'country_code'  => 'required|string|max:5',
             'phone'         => 'required|string|max:20',
             'nationality'   => 'required|string|max:100',
-            'ubigeo'        => 'required|string|max:10',
             'address'       => 'required|string|max:500',
             'profession'    => 'required|string|max:255',
         ];
@@ -37,12 +36,14 @@ class UserStudentValidate extends FormRequest {
             'email.unique'          => 'El email ya está registrado',
             'phone.required'        => 'El teléfono es requerido',
             'phone.max'             => 'El teléfono tiene una longitud máxima de 20 dígitos',
+            'nationality.required'  => 'La nacionalidad es olbigatoria',
             'nationality.max'       => 'La nacionalidad tiene una longitud máxima de 100 caracteres',
             'address.max'           => 'La dirección tiene una longitud máxima de 500 caracteres',
             'profession.max'        => 'La profesión tiene una longitud máxima de 500 caracteres',
             'password.required'     => 'La contraseña es requerida',
             'password.min'          => 'La contraseña tiene una longitud mínima de 8 caracteres',
             'password.confirmed'    => 'Debe confirmar la contraseña',
+            'country_code.required' => 'El código de país es obligatorio',
         ];
     }
 }

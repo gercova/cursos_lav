@@ -403,29 +403,14 @@ class StudentExamsController extends Controller {
         }
 
         // Puntos mínimos para aprobar
-        $minimumPointsToPass = round((($attempt->total_points * (int) $exam->passing_score)/100), 2);
-        $percentageOfPointsEarned = round((($score * 100)/$attempt->total_points), 2);
+        $minimumPointsToPass        = round((($attempt->total_points * (int) $exam->passing_score)/100), 2);
+        $percentageOfPointsEarned   = round((($score * 100)/$attempt->total_points), 2);
 
-        /* $percentageAllowed  = (((int) $exam->passing_score * $score) / 100);
-        $percentage         = round($attempt->total_points > 0 ? ($score / $attempt->total_points) * 100 : 0, 2); */
-        /* if($score > 0 && $score >= $percentageAllowed){ */
         if($score > 0 && $minimumPointsToPass <= $score){
             $passed = true; 
         } else {
             $passed = false;
         }
-        
-        /* dd(
-            'puntos acertados: '.$score, 
-            'porcentaje de puntos para aprobar: '. $percentageAllowed, 
-            $passed, 
-            'puntos mínimos para aprobar: '. $minimumPointsToPass,
-            'porcentaje de puntos acertados: '. $percentage, 
-            'porcentaje de puntos obtenidos: '. $percentageOfPointsEarned,
-            'porcentaje mínimo para aprobar: '. (int) $exam->passing_score, 
-            'total de puntos del examen: '. $attempt->total_points);
-
-        die(); */
 
         // Log del resultado
         Log::info('Resultado del examen calculado', [

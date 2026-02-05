@@ -30,7 +30,71 @@ class AppController extends Controller {
         return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
 
-    public function courses(Request $request, $code = null) {
+    public function courses(Request $request) {
+        $query = Course::with(['category', 'instructor'])->where('is_active', true);
+        // Filtro por búsqueda
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('category', function($q) use ($searchTerm) {
+                        $q->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('instructor', function($q) use ($searchTerm) {
+                        $q->where('names', 'like', '%' . $searchTerm . '%');
+                    });
+            });
+        }
+
+        // Filtrar por categoría
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Ordenar
+        $sort = $request->get('sort', 'newest');
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'popular':
+                $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
+                break;
+            case 'rating':
+                // Asumiendo que tienes un campo de rating o reviews
+                $query->orderBy('rating', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            default: // newest
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $courses    = $query->paginate(12);
+        $categories = Category::where('is_active', true)->get();
+        $enterprise = Enterprise::first();
+
+        // Si es una petición AJAX, retornar solo la vista parcial
+        if ($request->ajax()) {
+            return view('student.partials.courses-grid', compact('courses'))->render();
+        }
+
+        return view('student.courses', compact('courses', 'categories', 'enterprise'));
+    }
+
+    public function coursesPartner(Request $request, $code = null) {
         $query = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
 
         // 2. Lógica del Código Promocional / Partner

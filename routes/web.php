@@ -42,7 +42,8 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/',                         [AppController::class, 'home'])->name('home');
-Route::get('/cursos/{code?}',           [AppController::class, 'courses'])->name('cursos');
+Route::get('/cursos',                    [AppController::class, 'courses'])->name('cursos');
+Route::get('/cursos/{code?}',           [AppController::class, 'coursesPartner'])->name('cursos');
 Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
 Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
 Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
@@ -106,6 +107,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/certificate',                          [CertificatesController::class, 'index'])->name('student.certificates');
     Route::get('/certificate/{certificateId}',          [CertificatesController::class, 'show'])->name('student.certificates.show');
     Route::get('/certificate/print/{certificateId}',    [CertificatesController::class, 'print'])->name('student.certificates.print');
+    Route::get('/certificate/exact/{certificateId}/download', [CertificatesController::class, 'download'])->name('student.certificates.download-exact');
+    
+    Route::get('/certificate/exact/{certificateId}/view', [CertificatesController::class, 'viewExact'])->name('student.certificates.view-exact');
     Route::get('/{certificateId}/descargar',            [CertificatesController::class, 'download'])->name('student.certificates.download');
     Route::post('/generar/{enrollmentId}',              [CertificatesController::class, 'generateCertificate'])->name('generate');
 

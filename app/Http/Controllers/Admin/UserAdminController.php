@@ -9,6 +9,7 @@ use App\Http\Requests\UserValidate;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\User;
+use App\Services\StudentTrackingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -100,6 +101,30 @@ class UserAdminController extends Controller {
         return redirect()->route('admin.users.index')->with('success', "Usuario {$message} exitosamente.");
     }
 
+    // public function show(User $user): View {
+    //     $user->load([
+    //         'enrollments.course.category',
+    //         'courses.category',
+    //         'certificates.course',
+    //         'examAttempts.exam.course',
+    //         'cartItems.course'
+    //     ]);
+
+    //     $enrollmentStats = $user->enrollments()
+    //         ->selectRaw('
+    //             COUNT(*) as total,
+    //             SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
+    //             AVG(progress) as avg_progress
+    //         ')
+    //         ->first();
+
+    //     $certificateStats = $user->certificates()
+    //         ->selectRaw('COUNT(*) as total')
+    //         ->first();
+
+    //     return view('admin.users.show', compact('user', 'enrollmentStats', 'certificateStats'));
+    // }
+
     public function show(User $user): View {
         $user->load([
             'enrollments.course.category',
@@ -121,7 +146,27 @@ class UserAdminController extends Controller {
             ->selectRaw('COUNT(*) as total')
             ->first();
 
-        return view('admin.users.show', compact('user', 'enrollmentStats', 'certificateStats'));
+        // Nuevo: Obtener estadísticas de seguimiento para estudiantes
+        $trackingData = [];
+        if ($user->role === 'student') {
+            $trackingService = new StudentTrackingService($user);
+            $trackingData = [
+                'sessions'          => $trackingService->getSessionsByDay(),
+                'course_progress'   => $trackingService->getCourseProgress(),
+                'activity_by_type'  => $trackingService->getActivityByType(),
+                'active_hours'      => $trackingService->getActiveHours(),
+                'devices_used'      => $trackingService->getDevicesUsed(),
+                'overall_stats'     => $trackingService->getOverallStats(),
+                'avg_session_time'  => $trackingService->getAverageSessionTime()
+            ];
+        }
+
+        return view('admin.users.show', compact(
+            'user', 
+            'enrollmentStats', 
+            'certificateStats',
+            'trackingData'
+        ));
     }
 
     public function updatePassword(PasswordValidate $request, User $user): JsonResponse {

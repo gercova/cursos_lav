@@ -68,34 +68,34 @@ class UserActivity extends Model {
         return $this->morphTo('model', 'model_type', 'model_id');
     }
 
-    // Métodos estáticos para registrar actividades comunes
-    public static function logLogin($userId, $ip, $userAgent) {
-        return self::create([
-            'user_id'       => $userId,
-            'type'          => self::TYPE_LOGIN,
-            'action'        => 'Inicio de sesión',
-            'description'   => 'El usuario inició sesión en el sistema',
-            'ip_address'    => $ip,
-            'user_agent'    => $userAgent,
-            'data' => [
-                'login_time'    => now()->toDateTimeString(),
-                'device'        => self::detectDevice($userAgent),
-                'browser'       => self::detectBrowser($userAgent)
-            ]
-        ]);
-    }
+    // // Métodos estáticos para registrar actividades comunes
+    // public static function logLogin($userId, $ip, $userAgent) {
+    //     return self::create([
+    //         'user_id'       => $userId,
+    //         'type'          => self::TYPE_LOGIN,
+    //         'action'        => 'Inicio de sesión',
+    //         'description'   => 'El usuario inició sesión en el sistema',
+    //         'ip_address'    => $ip,
+    //         'user_agent'    => $userAgent,
+    //         'data' => [
+    //             'login_time'    => now()->toDateTimeString(),
+    //             'device'        => self::detectDevice($userAgent),
+    //             'browser'       => self::detectBrowser($userAgent)
+    //         ]
+    //     ]);
+    // }
 
-    public static function logLogout($userId) {
-        return self::create([
-            'user_id'       => $userId,
-            'type'          => self::TYPE_LOGOUT,
-            'action'        => 'Cierre de sesión',
-            'description'   => 'El usuario cerró sesión',
-            'data' => [
-                'logout_time' => now()->toDateTimeString()
-            ]
-        ]);
-    }
+    // public static function logLogout($userId) {
+    //     return self::create([
+    //         'user_id'       => $userId,
+    //         'type'          => self::TYPE_LOGOUT,
+    //         'action'        => 'Cierre de sesión',
+    //         'description'   => 'El usuario cerró sesión',
+    //         'data' => [
+    //             'logout_time' => now()->toDateTimeString()
+    //         ]
+    //     ]);
+    // }
 
     public static function logCourseEnrollment($userId, $course) {
         return self::create([
@@ -274,5 +274,35 @@ class UserActivity extends Model {
         ];
 
         return $colors[$this->type] ?? 'gray';
+    }
+
+    public static function logLogin($userId, $ip, $userAgent, $sessionDuration = null) {
+        return self::create([
+            'user_id'       => $userId,
+            'type'          => self::TYPE_LOGIN,
+            'action'        => 'Inicio de sesión',
+            'description'   => 'El usuario inició sesión en el sistema',
+            'ip_address'    => $ip,
+            'user_agent'    => $userAgent,
+            'data'          => [
+                'login_time'        => now()->toDateTimeString(),
+                'session_duration'  => $sessionDuration,
+                'device'            => self::detectDevice($userAgent),
+                'browser'           => self::detectBrowser($userAgent)
+            ]
+        ]);
+    }
+
+    public static function logLogout($userId, $sessionDuration = null) {
+        return self::create([
+            'user_id'       => $userId,
+            'type'          => self::TYPE_LOGOUT,
+            'action'        => 'Cierre de sesión',
+            'description'   => 'El usuario cerró sesión',
+            'data'          => [
+                'logout_time'       => now()->toDateTimeString(),
+                'session_duration'  => $sessionDuration
+            ]
+        ]);
     }
 }

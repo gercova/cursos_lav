@@ -3,22 +3,28 @@
         <p class="text-sm font-medium text-gray-900">{{ auth()->user()->names }}</p>
         <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
     </div>
-    <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-        <i class="fas fa-solid fa-gauge-high"></i> Mi Dashboard
-    </a>
-    <a href="{{ route('student.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-        <i class="fas fa-user mr-2"></i> Mi Perfil
-    </a>
-    <a href="{{ route('student.my-courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-        <i class="fas fa-book mr-2"></i> Mis Cursos
-    </a>
-    <a href="{{ route('student.certificates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-        <i class="fas fa-certificate mr-2"></i> Certificados
-    </a>
-    <a href="{{ route('student.progress') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-        <i class="fas fa-chart-line mr-2"></i> Mi Progreso
-    </a>
-    <div class="border-t border-gray-100"></div>
+    @if(auth()->user()->role == 'student')
+        <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-solid fa-gauge-high"></i> Mi Dashboard
+        </a>
+        <a href="{{ route('student.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-user mr-2"></i> Mi Perfil
+        </a>
+        <a href="{{ route('student.my-courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-book mr-2"></i> Mis Cursos
+        </a>
+        <a href="{{ route('student.certificates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-certificate mr-2"></i> Certificados
+        </a>
+        <a href="{{ route('student.progress') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-chart-line mr-2"></i> Mi Progreso
+        </a>
+        <div class="border-t border-gray-100"></div>
+    @elseif (auth()->user()->role == 'admin')
+        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="fas fa-solid fa-gauge-high"></i> Dashboard admin
+        </a>
+    @endif
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200">

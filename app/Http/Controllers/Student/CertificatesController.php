@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF; // Cambio importante
+// use Barryvdh\Snappy\Facades\SnappyPdf as PDF; // Cambio importante
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,7 +28,7 @@ class CertificatesController extends Controller {
         return view('student.certificates.show', compact('certificate', 'enterprise'));
     }
 
-    public function download($certificateId) {
+    /* ublic function download($certificateId) {
         $enterprise     = Enterprise::first();
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
 
@@ -50,7 +51,44 @@ class CertificatesController extends Controller {
         $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
 
         return $pdf->download($fileName);
+    } */
+
+    public function downloadExact($certificateId) {
+        $certificate = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
+
+        $enterprise = Enterprise::first();
+        
+        // Incrementar contador de descargas
+        $certificate->increment('download_count');
+
+        // Configurar PDF con DomPDF
+        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise'))
+            ->setPaper('A4', 'landscape')
+            ->setOption('isRemoteEnabled', true)
+            ->setOPtion('enable-local-file-access', true);
+        $fileName = 'certificado-exacto-' . $certificate->certificate_code . '.pdf';
+
+        // Retornar descarga
+        return $pdf->download($fileName);
     }
+
+    public function viewExact($certificateId) {
+        $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
+        $enterprise     = Enterprise::first();
+        $logoPath       = storage_path('app/public/ipf-logo.png');
+
+        // Configurar PDF con DomPDF
+        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
+            ->setPaper('A4', 'landscape')
+            ->setOptions([
+                'isRemoteEnabled'       => true,
+                'isHtml5ParserEnabled'  => true,
+                'chroot'                => base_path(),
+            ]);
+        // Mostrar en el navegador
+        return $pdf->stream('certificado-exacto-' . $certificate->certificate_code . '.pdf');
+    }
+
 
     public function print($certificateId) {
         $enterprise     = Enterprise::first();

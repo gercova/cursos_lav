@@ -33,7 +33,7 @@
                     <div class="flex justify-between items-center mb-2">
                         <div class="text-lg font-semibold text-gray-900">Tu puntuación</div>
                         <div class="text-2xl font-bold {{ $attempt->passed ? 'text-emerald-600' : 'text-rose-600' }}">
-                            {{ round($percentage, 1) }}%
+                            {{ round($attempt->score, 1).' '.round($percentage, 1) }}%
                         </div>
                     </div>
 
@@ -139,10 +139,11 @@
                     </a>
 
                     @php
-
+                        $certificate    = App\Models\Certificate::where('exam_attempt_id', $attempt->id)->first();
+                        $certificateId  = $certificate->id;
                     @endphp
 
-                    <a href="{{ route('student.certificates.show', $attempt->id) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
+                    <a href="{{ route('student.certificates.show', $certificateId) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
                         <i class="fas fa-certificate text-white-600"></i>
                         &nbsp;Ver certificado
                     </a>

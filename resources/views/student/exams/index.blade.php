@@ -79,8 +79,8 @@
                             <!-- Puntaje para aprobar -->
                             <div class="mb-6">
                                 <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-gray-600">Puntaje para aprobar:</span>
-                                    <span class="font-semibold text-gray-900">{{ $exam->passing_score }} puntos</span>
+                                    <span class="text-gray-600">Porcentaje para aprobar:</span>
+                                    <span class="font-semibold text-gray-900">{{ round($exam->passing_score, 1) }}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
                                     <div class="bg-emerald-500 h-2 rounded-full" style="width: 60%"></div>

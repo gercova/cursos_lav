@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -42,7 +43,7 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::get('/',                         [AppController::class, 'home'])->name('home');
-Route::get('/cursos',                    [AppController::class, 'courses'])->name('cursos');
+Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
 Route::get('/cursos/{code?}',           [AppController::class, 'coursesPartner'])->name('cursos');
 Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
 Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
@@ -193,6 +194,14 @@ Route::prefix('admin')->group(function () {
         Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
+
+        // Rutas para Roles y Permisos
+        // Rutas para asignar permisos a usuarios
+        Route::get('/roles/home',               [RoleController::class, 'index'])->name('admin.roles.index');
+        Route::post('/roles/store',             [RoleController::class, 'store'])->name('admin.roles.store');
+        Route::get('/users/{user}/permissions', [RoleController::class, 'assignPermissions'])->name('users.permissions.assign');
+        Route::put('/users/{user}/permissions', [RoleController::class, 'updatePermissions'])->name('users.permissions.update');
+        Route::delete('/roles/{role}',          [RoleController::class, 'destroy'])->name('admin.permissiones.delete');
 
         // Rutas para categorias
         Route::get('categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');

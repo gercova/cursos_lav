@@ -226,7 +226,7 @@
     </div>
 </section>
 
-<!-- Equipo de Liderazgo -->
+{{-- <!-- Equipo de Liderazgo -->
 <section class="py-16 sm:py-20 lg:py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 sm:mb-16">
@@ -292,9 +292,9 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
-<!-- Carousel de Fotos - Galería -->
+{{-- <!-- Carousel de Fotos - Galería -->
 <section class="py-16 sm:py-20 lg:py-24 bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 sm:mb-16">
@@ -402,7 +402,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- CTA Final -->
 <section class="py-16 sm:py-20 lg:py-24 bg-gradient-to-r from-blue-600 to-purple-700">

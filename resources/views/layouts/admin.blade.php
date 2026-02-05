@@ -109,6 +109,10 @@
                 <a href="{{ route('admin.users.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-solid fa-users"></i> Usuarios
                 </a>
+                <!-- Añadir este enlace en el sidebar -->
+                <a href="{{ route('admin.roles.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.roles.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-user-shield mr-2"></i>Roles y Permisos
+                </a>
                 <a href="{{ route('admin.enrollments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enrollments.*') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-solid fa-address-book"></i> Gestión de inscripciones
                 </a>

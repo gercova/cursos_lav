@@ -119,10 +119,6 @@
                         <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Limpiar
                         </button>
-
-                        <!--<button @click="exportUsers()" class="px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl font-medium transition duration-200">
-                            Exportar
-                        </button>-->
                     </div>
                 </div>
             </div>
@@ -164,9 +160,6 @@
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                 Actividad
                             </th>
-                            <!--<th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                Estado
-                            </th>-->
                             <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider text-right">
                                 Acciones
                             </th>
@@ -348,20 +341,14 @@
                                                 </button>
                                             @endif
 
-                                            <!-- Crear código de descuento -->
-                                            {{-- <button @click="createCode({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                                                </svg>
-                                                Crear código
-                                            </button> --}}
-
-                                            <button @click="$dispatch('open-code-user-modal', { userId: {{ $user->id }} })" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                                                </svg>
-                                                Crear código
-                                            </button>
+                                            @if($user->code == NULL)
+                                                <button @click="$dispatch('open-code-user-modal', { userId: {{ $user->id }} })" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-emerald-600 hover:bg-emerald-50 transition-colors duration-150">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                                    </svg>
+                                                    Crear código
+                                                </button>
+                                            @endif
 
                                             <!-- Eliminar -->
                                             <button @click="deleteUser({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
@@ -772,22 +759,8 @@
         }
     }
 
-    // async function createCode(userId) {
-    //     try {
-    //         const response = await axios.put(`${API_URL}/admin/users/create-code/${userId}`);
-
-    //         if (response.data.success) {
-    //             showNotification('Código creado exitosamente', 'success');
-    //             setTimeout(() => window.location.reload(), 1000);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error al crear el código:', error);
-    //         showNotification('Error al crear el código', 'error');
-    //     }
-    // }
-
     function copyPromoLink(code, button) {
-        const promoLink = `${API_URL}/cursos/${code}`;
+        const promoLink = `${API_URL}/cursos-promo/${code}`;
 
         // Crear un input temporal para copiar el texto
         const tempInput = document.createElement('input');

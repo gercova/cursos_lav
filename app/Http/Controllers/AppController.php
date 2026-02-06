@@ -95,37 +95,36 @@ class AppController extends Controller {
     }
 
     public function coursesPartner(Request $request, $code = null) {
-        $query = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
+        if($code == null) {
+            return redirect()->route('cursos');
+        }
 
-        // 2. Lógica del Código Promocional / Partner
-        $partner = null;
-        if ($code) {
-            $partner = User::where('code', $code)->where('is_active', true)->first();
+        $query      = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
+        $partner    = User::where('code', $code)->where('is_active', true)->first();
 
-            if ($partner) {
-                // Obtener todos los códigos promocionales asociados a este partner
-                $promoCodes = CoursePromotionCode::where('user_id', $partner->id)->where('is_active', true)->pluck('code')->toArray();
+        if ($partner) {
+            // Obtener todos los códigos promocionales asociados a este partner
+            $promoCodes = CoursePromotionCode::where('user_id', $partner->id)->where('is_active', true)->pluck('code')->toArray();
 
-                if (!empty($promoCodes)) {
-                    // Filtrar cursos que tienen este código promocional del partner
-                    $query->whereHas('coursePromotionCode', function ($q) use ($promoCodes) {
-                        $q->whereIn('code', $promoCodes);
-                    });
-                    // Cargamos la relación con el código promocional activo
-                    $query->with(['coursePromotionCode' => function($q) use ($promoCodes) {
-                        $q->whereIn('code', $promoCodes)->where('is_active', true);
-                    }]);
-                } else {
-                    // Si el partner existe pero no tiene códigos promocionales
-                    // Mostramos cursos normales (sin descuento)
-                    $partner = null;
-                }
+            if (!empty($promoCodes)) {
+                // Filtrar cursos que tienen este código promocional del partner
+                $query->whereHas('coursePromotionCode', function ($q) use ($promoCodes) {
+                    $q->whereIn('code', $promoCodes);
+                });
+                // Cargamos la relación con el código promocional activo
+                $query->with(['coursePromotionCode' => function($q) use ($promoCodes) {
+                    $q->whereIn('code', $promoCodes)->where('is_active', true);
+                }]);
             } else {
-                // Código inválido - mostrar cursos normales sin descuento
-                // O si prefieres no mostrar nada, descomenta la siguiente línea:
-                // $query->whereRaw('0 = 1');
+                // Si el partner existe pero no tiene códigos promocionales
+                // Mostramos cursos normales (sin descuento)
                 $partner = null;
             }
+        } else {
+            // Código inválido - mostrar cursos normales sin descuento
+            // O si prefieres no mostrar nada, descomenta la siguiente línea:
+            // $query->whereRaw('0 = 1');
+            $partner = null;
         }
 
         // 3. Filtro por búsqueda
@@ -193,13 +192,13 @@ class AppController extends Controller {
 
         // 8. Respuesta AJAX o normal
         if ($request->ajax()) {
-            return view('student.partials.courses-grid', compact('courses'))->render();
+            return view('student.partials.courses-grid', compact('courses', 'partner'))->render();
         }
 
         $categories = Category::where('is_active', true)->get();
         $enterprise = Enterprise::first();
 
-        return view('student.courses', compact('courses', 'categories', 'enterprise', 'partner'));
+        return view('student.courses-partner', compact('courses', 'categories', 'enterprise', 'partner'));
     }
 
     public function show(string $slug): View {
@@ -227,6 +226,34 @@ class AppController extends Controller {
             : false;
 
         return view('student.course-detail', compact('course', 'isEnrolled'));
+    }
+
+    public function showPartner(string $slug, string $code): View {
+        $partner    = User::where('code', $code)->where('is_active', true)->first();
+        $course     = Course::with([
+                'sections' => function($query) {
+                    $query->where('is_active', true)->orderBy('order');
+                },
+                'sections.lessons' => function($query) {
+                    $query->where('is_active', true)->orderBy('order');
+                },
+                'category',
+                'instructor',
+                'documents' => function($query) {
+                    $query->where('is_active', true);
+                }
+            ])
+            ->where('is_active', true)
+            ->where('slug', $slug)
+            ->firstOrFail(); // Usar firstOrFail para 404 automático
+
+        $isEnrolled = Auth::check()
+            ? Enrollment::where('user_id', Auth::id())
+                ->where('course_id', $course->id)
+                ->exists()
+            : false;
+
+        return view('student.course-detail-partner', compact('course', 'partner', 'isEnrolled'));
     }
 
     public function aboutus(): View {

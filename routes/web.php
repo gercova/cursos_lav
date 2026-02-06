@@ -44,8 +44,9 @@ use Illuminate\Support\Facades\Route;
 // Rutas públicas
 Route::get('/',                         [AppController::class, 'home'])->name('home');
 Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
-Route::get('/cursos/{code?}',           [AppController::class, 'coursesPartner'])->name('cursos');
 Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
+Route::get('/cursos/{code}',            [AppController::class, 'coursesPartner'])->name('cursos-promo');
+Route::get('/curso-promo/{slug}/{code}', [AppController::class, 'showPartner'])->name('curso-promo');
 Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
 Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
 Route::post('/contact/send',            [AppController::class, 'sendMessage'])->name('contact.send');

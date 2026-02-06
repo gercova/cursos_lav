@@ -24,7 +24,7 @@
                 </h2>
                 <div class="space-y-4 text-lg text-gray-600">
                     <p>
-                        Fundada en 2020, <span class="font-semibold text-gray-900">EduPlatform</span> nació con la visión de democratizar la educación de calidad y hacerla accesible para todos. Lo que comenzó como un pequeño proyecto educativo se ha convertido en una de las plataformas de aprendizaje online más reconocidas de Latinoamérica.
+                        Fundada en 2020, <span class="font-semibold text-gray-900">IFP Educa</span> nació con la visión de democratizar la educación de calidad y hacerla accesible para todos. Lo que comenzó como un pequeño proyecto educativo se ha convertido en una de las plataformas de aprendizaje con gran auge.
                     </p>
                     <p>
                         Nuestro equipo está compuesto por <span class="font-semibold text-gray-900">educadores apasionados, desarrolladores innovadores y profesionales de la industria</span> que comparten un objetivo común: crear experiencias de aprendizaje transformadoras que empoderen a nuestros estudiantes.

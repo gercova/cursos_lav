@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'PPF Consultores - Contáctanos')
+@section('title', $enterprise->trade_name.' - Contáctanos')
 @section('content')
 <!-- Hero Section -->
 <div class="bg-gradient-to-r from-blue-600 to-purple-700 py-16 sm:py-20">

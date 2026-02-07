@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PasswordValidate;
-use App\Http\Requests\UserValidate;
 use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Exam;
+use App\Models\ExamAttempt;
 use App\Models\Payment;
 use App\Models\User;
+use App\Models\UserActivity;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -19,8 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 
 class AdminController extends Controller {
 
@@ -36,7 +34,17 @@ class AdminController extends Controller {
         $recentEnrollments  = $this->getRecentEnrollments();
         $popularCourses     = $this->getPopularCourses();
         $revenueData        = $this->getRevenueData();
-        return view('admin.dashboard', compact('stats', 'recentEnrollments', 'popularCourses', 'revenueData'));
+        $enrollmentChart    = $this->getEnrollmentChartData();
+        $topCoursesChart    = $this->getTopCoursesChartData();
+        
+        return view('admin.dashboard', compact(
+            'stats', 
+            'recentEnrollments', 
+            'popularCourses', 
+            'revenueData',
+            'enrollmentChart',
+            'topCoursesChart'
+        ));
     }
 
     /**
@@ -45,6 +53,21 @@ class AdminController extends Controller {
     private function getDashboardStats() {
         $today = Carbon::today();
         $firstDayOfMonth = Carbon::now()->firstOfMonth();
+        $firstDayOfWeek = Carbon::now()->startOfWeek();
+        $oneWeekAgo = Carbon::now()->subWeek();
+
+        // Estudiantes activos en la última semana (basado en user_activities)
+        $activeStudentsWeek = UserActivity::where('type', UserActivity::TYPE_LOGIN)
+            ->where('created_at', '>=', $oneWeekAgo)
+            ->distinct('user_id')
+            ->count('user_id');
+
+        // Promedio de calificación de cursos (si existe tabla course_reviews)
+        try {
+            $avgCourseRating = DB::table('course_reviews')->avg('rating') ?? 0;
+        } catch (\Exception $e) {
+            $avgCourseRating = 0; // Si la tabla no existe
+        }
 
         return [
             'total_students'        => User::where('role', 'student')->count(),
@@ -56,10 +79,22 @@ class AdminController extends Controller {
             'monthly_revenue'       => Payment::where('status', 'completed')
                 ->where('created_at', '>=', $firstDayOfMonth)
                 ->sum('amount'),
+            'weekly_revenue'        => Payment::where('status', 'completed')
+                ->where('created_at', '>=', $firstDayOfWeek)
+                ->sum('amount'),
             'pending_payments'      => Payment::where('status', 'pending')->count(),
             'active_instructors'    => User::where('role', 'instructor')->count(),
             'total_certificates'    => Certificate::count(),
             'total_exams'           => Exam::count(),
+            'completed_exams'       => ExamAttempt::where('passed', true)->count(),
+            'failed_exams'          => ExamAttempt::where('passed', false)->count(),
+            'avg_exam_score'        => ExamAttempt::whereNotNull('score')->avg('score') ?? 0,
+            'avg_course_rating'     => $avgCourseRating,
+            'active_students_week'  => $activeStudentsWeek,
+            'instructors_with_courses' => User::where('role', 'instructor')
+                ->whereHas('courses')
+                ->count(),
+            'enrollments_today'     => Enrollment::whereDate('created_at', $today)->count(),
         ];
     }
 
@@ -107,6 +142,76 @@ class AdminController extends Controller {
         return [
             'revenue'       => $revenue,
             'enrollments'   => $enrollments
+        ];
+    }
+
+    /**
+     * Obtener datos para gráfico de inscripciones por mes
+     */
+    private function getEnrollmentChartData() {
+        $enrollments = Enrollment::select(
+                DB::raw('COUNT(*) as count'),
+                DB::raw('MONTH(enrolled_at) as month'),
+                DB::raw('YEAR(enrolled_at) as year'),
+                DB::raw('DATE_FORMAT(enrolled_at, "%b") as month_name')
+            )
+            ->where('enrolled_at', '>=', Carbon::now()->subMonths(11))
+            ->groupBy('year', 'month', 'month_name')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        $labels = [];
+        $data = [];
+        
+        foreach ($enrollments as $enrollment) {
+            $labels[]   = $enrollment->month_name . ' ' . $enrollment->year;
+            $data[]     = $enrollment->count;
+        }
+
+        return [
+            'labels'    => $labels,
+            'data'      => $data
+        ];
+    }
+
+    /**
+     * Obtener datos para gráfico de cursos con mayor demanda
+     */
+    private function getTopCoursesChartData() {
+        $courses = Course::select('title', 'id')
+            ->withCount('enrollments')
+            ->orderBy('enrollments_count', 'desc')
+            ->take(10)
+            ->get();
+
+        $labels = [];
+        $data = [];
+        $colors = [];
+        
+        // Generar colores pastel para el gráfico
+        $pastelColors = [
+            'rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)', 'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+            'rgba(199, 199, 199, 0.7)', 'rgba(83, 102, 255, 0.7)', 'rgba(40, 159, 64, 0.7)',
+            'rgba(210, 199, 199, 0.7)'
+        ];
+
+        foreach ($courses as $index => $course) {
+            // Acortar títulos largos para el gráfico
+            $shortTitle = strlen($course->title) > 20 
+                ? substr($course->title, 0, 20) . '...' 
+                : $course->title;
+            
+            $labels[] = $shortTitle;
+            $data[] = $course->enrollments_count;
+            $colors[] = $pastelColors[$index % count($pastelColors)];
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => $colors
         ];
     }
 
@@ -270,13 +375,13 @@ class AdminController extends Controller {
      */
     private function logActivity($action) {
         DB::table('activity_logs')->insert([
-            'action' => $action,
-            'description' => $action,
-            'user_id' => Auth::id(),
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'action'        => $action,
+            'description'   => $action,
+            'user_id'       => Auth::id(),
+            'ip_address'    => request()->ip(),
+            'user_agent'    => request()->userAgent(),
+            'created_at'    => now(),
+            'updated_at'    => now(),
         ]);
     }
 }

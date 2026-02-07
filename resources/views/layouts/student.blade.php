@@ -132,6 +132,21 @@
                     <i class="fas fa-user mr-3 text-gray-600 text-base"></i>
                     <span class="sidebar-text">Mi Perfil</span>
                 </a>
+
+                @if(auth()->user()->hasPromotionCode())
+                    <a href="{{ route('student.affiliate.dashboard') }}"  class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg {{ request()->routeIs('student.affiliate.*') ? 'text-gray-900 bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all duration-200 group sidebar-link-hover' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-all duration-200 group sidebar-link-hover' }}">
+                        <i class="fas fa-users mr-3 text-purple-600 text-base"></i>
+                        <span class="sidebar-text">Mis Ventas</span>
+                        @php
+                            $salesCount = auth()->user()->courses_sold_count ?? 0;
+                        @endphp
+                        @if($salesCount > 0)
+                            <span class="ml-auto bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full font-medium">
+                                {{ $salesCount }}
+                            </span>
+                        @endif
+                    </a>
+                @endif
             </nav>
 
             <!-- Sección de metas -->

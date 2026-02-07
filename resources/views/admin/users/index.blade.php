@@ -760,7 +760,7 @@
     }
 
     function copyPromoLink(code, button) {
-        const promoLink = `${API_URL}/cursos-promo/${code}`;
+        const promoLink = `${API_URL}/cursos/${code}`;
 
         // Crear un input temporal para copiar el texto
         const tempInput = document.createElement('input');

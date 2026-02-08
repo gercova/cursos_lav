@@ -14,7 +14,7 @@ class LessonValidate extends FormRequest
         return [
             'title'             => 'required|string|max:255',
             'description'       => 'required|string',
-            'video_url'         => 'required|url|max:500',
+            //'video_url'         => 'required|url|max:500',
             'duration'          => 'required|integer|min:1',
             'order'             => 'required|integer|min:1',
             'is_free'           => 'boolean',

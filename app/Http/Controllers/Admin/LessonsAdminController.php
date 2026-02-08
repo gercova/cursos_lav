@@ -7,6 +7,7 @@ use App\Http\Requests\LessonValidate;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
+use App\Models\Vimeo;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,8 +39,10 @@ class LessonsAdminController extends Controller {
             $data['course_section_id']  = $section->id;
             $data['is_free']            = $request->boolean('is_free');
             $data['is_active']          = $request->boolean('is_active');
+            $data['video_url']='';
 
             $lesson = Lesson::create($data);
+            (new Vimeo())->upload($lesson,$request->file('video'));
 
             DB::commit();
             return redirect()

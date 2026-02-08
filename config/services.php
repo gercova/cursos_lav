@@ -36,4 +36,10 @@ return [
         'access_token' => env('VIMEO_ACCESS_TOKEN'),
     ],
 
+    'culqi' => [
+        'public_key'        => env('CULQI_PUBLIC_KEY'),
+        'secret_key'        => env('CULQI_SECRET_KEY'),
+        'webhook_secret'    => env('CULQI_WEBHOOK_SECRET'),
+    ],
+
 ];

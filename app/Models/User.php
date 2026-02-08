@@ -35,6 +35,9 @@ class User extends Authenticatable {
         'code',
         'promotion_price_is_active',
         'is_active',
+        'last_login_at',
+        'courses_sold_count', // Campo nuevo agregado
+        'total_commission',   // Campo nuevo agregado
     ];
 
     protected $hidden = [
@@ -43,8 +46,11 @@ class User extends Authenticatable {
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password'          => 'hashed',
+        'email_verified_at'     => 'datetime',
+        'last_login_at'         => 'datetime',
+        'password'              => 'hashed',
+        'courses_sold_count'    => 'integer',
+        'total_commission'      => 'decimal:2',
     ];
 
     public function isAdmin(): bool {
@@ -85,5 +91,46 @@ class User extends Authenticatable {
 
     public function unreadNotifications() {
         return $this->notifications()->unread();
+    }
+
+    public function promotedSales(): HasMany {
+        return $this->hasMany(CourseSale::class, 'user_id');
+    }
+
+    /**
+     * Relación con cursos comprados usando códigos de otros usuarios
+     */
+    public function purchasesWithCode(): HasMany {
+        return $this->hasMany(CourseSale::class, 'buyer_id');
+    }
+
+    /**
+     * Verificar si el usuario tiene código de promoción
+     */
+    public function hasPromotionCode(): bool {
+        return !empty($this->code);
+    }
+
+    /**
+     * Obtener URL de afiliado
+     */
+    public function getAffiliateUrlAttribute(): string {
+        return route('cursos-promo', ['code' => $this->code]);
+    }
+
+    /**
+     * Incrementar contador de ventas
+     */
+    public function incrementSalesCount(): void {
+        $this->increment('courses_sold_count');
+        $this->save();
+    }
+
+    /**
+     * Agregar comisión
+     */
+    public function addCommission(float $amount): void {
+        $this->total_commission = ($this->total_commission ?? 0) + $amount;
+        $this->save();
     }
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Student\AffiliateController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
@@ -96,6 +97,10 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Webhook (sin autenticación)
     Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
 
+    // Rutas para código de promoción
+    Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
+    Route::post('/remove-promo-code',               [PaymentController::class, 'removePromoCode'])->name('payment.remove-promo-code');
+
     // Listar exámenes
     Route::get('/exams/home',                   [StudentExamsController::class, 'index'])->name('student.exams');
     Route::get('/exams/{id}',                   [StudentExamsController::class, 'show'])->name('student.exams.show');
@@ -137,6 +142,13 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::put('/password',                         [StudentProfileController::class, 'updatePassword'])->name('student.profile.update-password');
     Route::post('/photo',                           [StudentProfileController::class, 'updateProfilePhoto'])->name('student.profile.update-photo');
     Route::delete('/photo',                         [StudentProfileController::class, 'deleteProfilePhoto'])->name('student.profile.delete-photo');
+
+    // Estudiante afiliado
+    Route::get('/affiliate/dashboard',              [AffiliateController::class, 'dashboard'])->name('student.affiliate.dashboard');
+    Route::get('/affiliate/sales',                  [AffiliateController::class, 'sales'])->name('student.affiliate.sales');
+    Route::get('/affiliate/reports',                [AffiliateController::class, 'reports'])->name('student.affiliate.reports');
+    Route::get('/affiliate/links',                  [AffiliateController::class, 'links'])->name('student.affiliate.links');
+    Route::get('/affiliate/api/stats',              [AffiliateController::class, 'getStats'])->name('student.affiliate.api.stats');
 
     // Mis cursos
     Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');

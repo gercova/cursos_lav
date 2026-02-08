@@ -16,6 +16,7 @@ class Enrollment extends Model {
     protected $fillable     = [
         'user_id',
         'course_id',
+        'payment_id',
         'enrolled_at',
         'completed_at',
         'progress',

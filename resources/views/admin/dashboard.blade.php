@@ -1,146 +1,228 @@
 @extends('layouts.admin')
-
 @section('title', 'Dashboard - Panel Administrativo')
-
 @section('content')
 <div class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p class="text-gray-600 mt-1">Bienvenido al panel de control de la plataforma</p>
+            <p class="text-gray-600 mt-1">Resumen completo de la plataforma educativa</p>
         </div>
         <div class="flex items-center space-x-3">
-            <div class="text-sm text-gray-500">
-                {{ now()->format('l, d F Y') }}
-            </div>
-            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                En línea
+            <div class="text-sm text-gray-500 bg-white px-3 py-1 rounded-lg shadow-sm">
+                <i class="far fa-calendar-alt mr-2"></i>
+                {{ now()->format('d/m/Y - H:i') }}
             </div>
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Stats Grid Mejorado -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Total Estudiantes -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-lg p-5 transform hover:scale-105 transition-transform duration-300">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Total Estudiantes</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['total_students'] }}</p>
-                    <div class="flex items-center mt-2">
-                        <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                        <span class="text-sm text-green-600">+12% este mes</span>
+                    <p class="text-sm font-medium opacity-90">Estudiantes</p>
+                    <p class="text-3xl font-bold mt-2">{{ $stats['total_students'] }}</p>
+                    <div class="flex items-center mt-3">
+                        <span class="text-xs bg-blue-700 px-2 py-1 rounded-full">
+                            <i class="fas fa-user-graduate mr-1"></i>Activos: {{ $stats['active_students_week'] }}
+                        </span>
                     </div>
                 </div>
-                <div class="bg-blue-100 p-3 rounded-xl">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
+                <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                    <i class="fas fa-users text-2xl"></i>
                 </div>
             </div>
         </div>
 
         <!-- Total Cursos -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl shadow-lg p-5 transform hover:scale-105 transition-transform duration-300">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Total Cursos</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['total_courses'] }}</p>
-                    <div class="flex items-center mt-2">
-                        <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                        <span class="text-sm text-green-600">+5% este mes</span>
+                    <p class="text-sm font-medium opacity-90">Cursos</p>
+                    <p class="text-3xl font-bold mt-2">{{ $stats['total_courses'] }}</p>
+                    <div class="flex items-center mt-3">
+                        <span class="text-xs bg-green-700 px-2 py-1 rounded-full">
+                            <i class="fas fa-star mr-1"></i>Rating: {{ number_format($stats['avg_course_rating'], 1) }}/5
+                        </span>
                     </div>
                 </div>
-                <div class="bg-green-100 p-3 rounded-xl">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
+                <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                    <i class="fas fa-book-open text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exámenes -->
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl shadow-lg p-5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium opacity-90">Exámenes</p>
+                    <p class="text-3xl font-bold mt-2">{{ $stats['total_exams'] }}</p>
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <span class="text-xs bg-purple-700 px-2 py-1 rounded-full text-center">
+                            <i class="fas fa-check mr-1"></i>{{ $stats['completed_exams'] }}
+                        </span>
+                        <span class="text-xs bg-purple-800 px-2 py-1 rounded-full text-center">
+                            <i class="fas fa-times mr-1"></i>{{ $stats['failed_exams'] }}
+                        </span>
+                    </div>
+                </div>
+                <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                    <i class="fas fa-clipboard-list text-2xl"></i>
                 </div>
             </div>
         </div>
 
         <!-- Ingresos Mensuales -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg p-5 transform hover:scale-105 transition-transform duration-300">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-600">Ingresos Mensuales</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">S/ {{ number_format($stats['monthly_revenue'], 2) }}</p>
-                    <div class="flex items-center mt-2">
-                        <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                        <span class="text-sm text-green-600">+18% este mes</span>
+                    <p class="text-sm font-medium opacity-90">Ingresos Mensuales</p>
+                    <p class="text-2xl font-bold mt-2">S/ {{ number_format($stats['monthly_revenue'], 2) }}</p>
+                    <div class="flex items-center mt-3">
+                        <span class="text-xs bg-orange-700 px-2 py-1 rounded-full">
+                            <i class="fas fa-chart-line mr-1"></i>Semanal: S/ {{ number_format($stats['weekly_revenue'], 2) }}
+                        </span>
                     </div>
                 </div>
-                <div class="bg-purple-100 p-3 rounded-xl">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inscripciones Hoy -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-orange-500">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600">Inscripciones Hoy</p>
-                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['today_enrollments'] }}</p>
-                    <div class="flex items-center mt-2">
-                        <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
-                        </svg>
-                        <span class="text-sm text-green-600">+3 hoy</span>
-                    </div>
-                </div>
-                <div class="bg-orange-100 p-3 rounded-xl">
-                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
+                <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                    <i class="fas fa-wallet text-2xl"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts and Main Content -->
+    <!-- Segunda Fila de Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Inscripciones Hoy -->
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Inscripciones Hoy</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['today_enrollments'] }}</p>
+                    <div class="flex items-center mt-2">
+                        <i class="fas fa-calendar-day text-green-500 mr-2"></i>
+                        <span class="text-sm text-gray-500">Total: {{ $stats['total_enrollments'] }}</span>
+                    </div>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-user-plus text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructores Activos -->
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Instructores</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['active_instructors'] }}</p>
+                    <div class="flex items-center mt-2">
+                        <i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>
+                        <span class="text-sm text-gray-500">Cursos: {{ $stats['total_courses'] }}</span>
+                    </div>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-user-tie text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificados -->
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Certificados</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['total_certificates'] }}</p>
+                    <div class="flex items-center mt-2">
+                        <i class="fas fa-award text-yellow-500 mr-2"></i>
+                        <span class="text-sm text-gray-500">Emitidos</span>
+                    </div>
+                </div>
+                <div class="bg-yellow-100 p-3 rounded-full">
+                    <i class="fas fa-certificate text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pago Pendientes -->
+        <div class="bg-white rounded-xl shadow-lg p-5 border border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Pagos Pendientes</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['pending_payments'] }}</p>
+                    <div class="flex items-center mt-2">
+                        <i class="fas fa-clock text-red-500 mr-2"></i>
+                        <span class="text-sm text-gray-500">Por procesar</span>
+                    </div>
+                </div>
+                <div class="bg-red-100 p-3 rounded-full">
+                    <i class="fas fa-exclamation-circle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Gráfico de Inscripciones por Mes -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Inscripciones por Mes</h2>
+                    <p class="text-sm text-gray-500">Últimos 12 meses</p>
+                </div>
+                <div class="text-sm text-blue-600 font-medium">
+                    <i class="fas fa-chart-bar mr-2"></i>Gráfico de Barras
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="enrollmentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico de Cursos con Mayor Demanda -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Top 10 Cursos Más Demandados</h2>
+                    <p class="text-sm text-gray-500">Por número de inscripciones</p>
+                </div>
+                <div class="text-sm text-green-600 font-medium">
+                    <i class="fas fa-chart-pie mr-2"></i>Gráfico de Barras Horizontal
+                </div>
+            </div>
+            <div class="h-80">
+                <canvas id="topCoursesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tercera Sección: Gráfico de Ingresos y Actividad Reciente -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Gráfico de Ingresos -->
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-semibold text-gray-900">Ingresos últimos 6 meses</h2>
-                <select class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option>Últimos 6 meses</option>
-                    <option>Este año</option>
-                    <option>Último año</option>
-                </select>
+                <div class="text-sm text-purple-600 font-medium">
+                    <i class="fas fa-money-bill-wave mr-2"></i>Tendencia de Ingresos
+                </div>
             </div>
             <div class="h-80">
-                <!-- Gráfico placeholder - En producción usarías Chart.js o similar -->
-                <div class="w-full h-full flex items-end justify-between space-x-2">
-                    @foreach($revenueData['revenue'] as $data)
-                    <div class="flex flex-col items-center flex-1">
-                        <div class="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg" style="height: {{ ($data->revenue / max(array_column($revenueData['revenue']->toArray(), 'revenue'))) * 80 }}%">
-                        </div>
-                        <span class="text-xs text-gray-500 mt-2">{{ $data->month }}/{{ $data->year }}</span>
-                    </div>
-                    @endforeach
-                </div>
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
 
         <!-- Actividad Reciente -->
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-6">Actividad Reciente</h2>
-            <div class="space-y-4">
+            <div class="space-y-4 max-h-80 overflow-y-auto pr-2">
                 @foreach($recentEnrollments as $enrollment)
-                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span class="text-sm font-semibold text-blue-600">
+                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 border border-gray-100">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-sm font-semibold text-white">
                             {{ strtoupper(substr($enrollment->user->names, 0, 1)) }}
                         </span>
                     </div>
@@ -149,17 +231,22 @@
                             {{ $enrollment->user->names }}
                         </p>
                         <p class="text-sm text-gray-500 truncate">
-                            Se inscribió en {{ $enrollment->course->title }}
+                            <i class="fas fa-book mr-1"></i>{{ Str::limit($enrollment->course->title, 30) }}
                         </p>
                         <p class="text-xs text-gray-400 mt-1">
-                            {{ $enrollment->enrolled_at->diffForHumans() }}
+                            <i class="far fa-clock mr-1"></i>{{ $enrollment->enrolled_at->diffForHumans() }}
                         </p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-800">
+                            S/ {{ number_format($enrollment->course->price, 2) }}
+                        </span>
                     </div>
                 </div>
                 @endforeach
             </div>
             <a href="{{ route('admin.enrollments.index') }}" class="block text-center mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                Ver todas las inscripciones
+                <i class="fas fa-list mr-1"></i>Ver todas las inscripciones
             </a>
         </div>
     </div>
@@ -171,30 +258,39 @@
             <h2 class="text-lg font-semibold text-gray-900 mb-6">Cursos Más Populares</h2>
             <div class="space-y-4">
                 @foreach($popularCourses as $course)
-                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                    <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-16 h-12 object-cover rounded-lg">
+                <div class="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 border border-gray-100">
+                    <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-16 h-12 object-cover rounded-lg shadow-sm">
                     <div class="flex-1 min-w-0">
                         <h3 class="text-sm font-medium text-gray-900 truncate">{{ $course->title }}</h3>
-                        <p class="text-sm text-gray-500">{{ $course->category->name }}</p>
-                        <div class="flex items-center space-x-2 mt-1">
+                        <p class="text-xs text-gray-500">{{ $course->category->name ?? 'Sin categoría' }}</p>
+                        <div class="flex items-center space-x-3 mt-1">
                             <div class="flex items-center text-xs text-gray-500">
-                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                </svg>
-                                <span>4.8</span>
+                                <i class="fas fa-users mr-1"></i>
+                                <span>{{ $course->enrollments_count }} estudiantes</span>
                             </div>
                             <span class="text-xs text-gray-400">•</span>
-                            <span class="text-xs text-gray-500">{{ $course->enrollments_count }} estudiantes</span>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-money-bill-wave mr-1"></i>
+                                <span>S/ {{ number_format($course->price, 2) }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <span class="text-sm font-semibold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
+                        @if($course->is_active)
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-800">
+                                Activo
+                            </span>
+                        @else
+                            <span class="text-xs font-medium px-2 py-1 rounded-full bg-red-100 text-red-800">
+                                Inactivo
+                            </span>
+                        @endif
                     </div>
                 </div>
                 @endforeach
             </div>
             <a href="{{ route('admin.courses.index') }}" class="block text-center mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                Gestionar todos los cursos
+                <i class="fas fa-cogs mr-1"></i>Gestionar todos los cursos
             </a>
         </div>
 
@@ -202,72 +298,62 @@
         <div class="bg-white rounded-2xl shadow-lg p-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h2>
             <div class="grid grid-cols-2 gap-4">
-                <a href="{{ route('admin.courses.create') }}" class="p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors duration-200 group">
+                <a href="{{ route('admin.courses.create') }}" class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all duration-300 group border border-blue-200">
                     <div class="text-center">
-                        <div class="bg-blue-100 p-3 rounded-lg inline-flex group-hover:bg-blue-200 transition-colors duration-200">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
+                        <div class="bg-white p-3 rounded-lg inline-flex group-hover:bg-blue-50 transition-colors duration-200 shadow-sm">
+                            <i class="fas fa-plus text-blue-600 text-xl"></i>
                         </div>
                         <p class="mt-2 text-sm font-medium text-gray-900">Nuevo Curso</p>
+                        <p class="text-xs text-gray-500">Crear nuevo contenido</p>
                     </div>
                 </a>
 
-                <a href="{{ route('admin.users.index') }}" class="p-4 bg-green-50 rounded-xl hover:bg-green-100 transition-colors duration-200 group">
+                <a href="{{ route('admin.users.index') }}" class="p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-200 transition-all duration-300 group border border-green-200">
                     <div class="text-center">
-                        <div class="bg-green-100 p-3 rounded-lg inline-flex group-hover:bg-green-200 transition-colors duration-200">
-                            <i class="fa-solid fa-users"></i>
+                        <div class="bg-white p-3 rounded-lg inline-flex group-hover:bg-green-50 transition-colors duration-200 shadow-sm">
+                            <i class="fas fa-users text-green-600 text-xl"></i>
                         </div>
-                        <p class="mt-2 text-sm font-medium text-gray-900">Gestionar Usuarios</p>
+                        <p class="mt-2 text-sm font-medium text-gray-900">Usuarios</p>
+                        <p class="text-xs text-gray-500">Gestionar usuarios</p>
                     </div>
                 </a>
 
-                <a href="{{ route('admin.payments.index') }}" class="p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors duration-200 group">
+                <a href="{{ route('admin.payments.index') }}" class="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all duration-300 group border border-purple-200">
                     <div class="text-center">
-                        <div class="bg-purple-100 p-3 rounded-lg inline-flex group-hover:bg-purple-200 transition-colors duration-200">
-                            <i class="fa-solid fa-dollar-sign"></i>
+                        <div class="bg-white p-3 rounded-lg inline-flex group-hover:bg-purple-50 transition-colors duration-200 shadow-sm">
+                            <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
                         </div>
-                        <p class="mt-2 text-sm font-medium text-gray-900">Ver Pagos</p>
+                        <p class="mt-2 text-sm font-medium text-gray-900">Pagos</p>
+                        <p class="text-xs text-gray-500">Ver transacciones</p>
                     </div>
                 </a>
 
-                <a href="{{ route('admin.reports') }}" class="p-4 bg-orange-50 rounded-xl hover:bg-orange-100 transition-colors duration-200 group">
+                <a href="{{ route('admin.reports') }}" class="p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl hover:from-orange-100 hover:to-orange-200 transition-all duration-300 group border border-orange-200">
                     <div class="text-center">
-                        <div class="bg-orange-100 p-3 rounded-lg inline-flex group-hover:bg-orange-200 transition-colors duration-200">
-                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
+                        <div class="bg-white p-3 rounded-lg inline-flex group-hover:bg-orange-50 transition-colors duration-200 shadow-sm">
+                            <i class="fas fa-chart-bar text-orange-600 text-xl"></i>
                         </div>
                         <p class="mt-2 text-sm font-medium text-gray-900">Reportes</p>
+                        <p class="text-xs text-gray-500">Análisis detallados</p>
                     </div>
                 </a>
             </div>
-        </div>
-    </div>
-
-    <!-- Sistema Status -->
-    <div class="bg-white rounded-2xl shadow-lg p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-6">Estado del Sistema</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="text-center p-4 border border-gray-200 rounded-xl">
-                <div class="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-                <p class="text-sm font-medium text-gray-900">Servidor Web</p>
-                <p class="text-xs text-gray-500">En línea</p>
-            </div>
-            <div class="text-center p-4 border border-gray-200 rounded-xl">
-                <div class="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-                <p class="text-sm font-medium text-gray-900">Base de Datos</p>
-                <p class="text-xs text-gray-500">Conectado</p>
-            </div>
-            <div class="text-center p-4 border border-gray-200 rounded-xl">
-                <div class="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-                <p class="text-sm font-medium text-gray-900">Almacenamiento</p>
-                <p class="text-xs text-gray-500">65% usado</p>
-            </div>
-            <div class="text-center p-4 border border-gray-200 rounded-xl">
-                <div class="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
-                <p class="text-sm font-medium text-gray-900">Cache</p>
-                <p class="text-xs text-gray-500">Activo</p>
+            
+            <!-- Sistema Status -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Estado del Sistema</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mx-auto mb-2 animate-pulse"></div>
+                        <p class="text-xs font-medium text-gray-900">Servidor</p>
+                        <p class="text-xs text-gray-500">En línea</p>
+                    </div>
+                    <div class="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mx-auto mb-2 animate-pulse"></div>
+                        <p class="text-xs font-medium text-gray-900">Base de Datos</p>
+                        <p class="text-xs text-gray-500">Conectado</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -277,85 +363,274 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Datos para gráficos
+        const enrollmentData = @json($enrollmentChart);
+        const topCoursesData = @json($topCoursesChart);
+        const revenueData = @json($revenueData);
+
+        // 1. Gráfico de Inscripciones por Mes
+        const enrollmentCtx = document.getElementById('enrollmentChart').getContext('2d');
+        const enrollmentChart = new Chart(enrollmentCtx, {
+            type: 'bar',
+            data: {
+                labels: enrollmentData.labels,
+                datasets: [{
+                    label: 'Inscripciones',
+                    data: enrollmentData.data,
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: '#4F46E5',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.y} inscripciones`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return Number.isInteger(value) ? value : '';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Gráfico de Top 10 Cursos Más Demandados (Horizontal Bar)
+        const topCoursesCtx = document.getElementById('topCoursesChart').getContext('2d');
+        const topCoursesChart = new Chart(topCoursesCtx, {
+            type: 'bar',
+            data: {
+                labels: topCoursesData.labels,
+                datasets: [{
+                    label: 'Inscripciones',
+                    data: topCoursesData.data,
+                    backgroundColor: topCoursesData.colors,
+                    borderColor: topCoursesData.colors.map(color => color.replace('0.7', '1')),
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.parsed.x} inscripciones`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 3. Gráfico de Ingresos (Line Chart)
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        
+        // Preparar datos de ingresos
+        const revenueLabels = revenueData.revenue.map(item => 
+            `${item.month}/${item.year.toString().slice(-2)}`
+        );
+        const revenueAmounts = revenueData.revenue.map(item => parseFloat(item.revenue) || 0);
+        
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Ingresos (S/)',
+                    data: revenueAmounts,
+                    borderColor: 'rgb(139, 92, 246)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgb(139, 92, 246)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        callbacks: {
+                            label: function(context) {
+                                return `S/ ${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return 'S/ ' + value.toLocaleString('es-PE');
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                }
+            }
+        });
+
+        // Efectos de hover en las cards
+        const statCards = document.querySelectorAll('.transform');
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+                this.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '';
+            });
+        });
+
         // Actualizar la hora en tiempo real
         function updateTime() {
             const now = new Date();
             const options = {
-                weekday: 'long',
+                day: '2-digit',
+                month: '2-digit',
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
             };
-            document.getElementById('current-time').textContent =
-                now.toLocaleDateString('es-ES', options);
+            const timeString = now.toLocaleDateString('es-ES', options);
+            const timeElement = document.querySelector('.text-gray-500.bg-white');
+            if (timeElement) {
+                timeElement.innerHTML = `<i class="far fa-calendar-alt mr-2"></i>${timeString}`;
+            }
         }
 
         updateTime();
-        setInterval(updateTime, 1000);
+        setInterval(updateTime, 60000); // Actualizar cada minuto
 
-        // Efectos de hover en las cards
-        const statCards = document.querySelectorAll('.bg-white');
-        statCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-                this.style.transition = 'all 0.2s ease';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-
-        // Simular datos del gráfico (en producción usarías Chart.js)
-        function animateChart() {
-            const bars = document.querySelectorAll('.bg-gradient-to-t');
-            bars.forEach((bar, index) => {
+        // Simular animación de carga en los gráficos
+        function animateChartLoad() {
+            const charts = document.querySelectorAll('canvas');
+            charts.forEach((chart, index) => {
+                chart.style.opacity = '0';
+                chart.style.transform = 'translateY(20px)';
+                
                 setTimeout(() => {
-                    bar.style.opacity = '1';
+                    chart.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    chart.style.opacity = '1';
+                    chart.style.transform = 'translateY(0)';
                 }, index * 200);
             });
         }
 
-        animateChart();
+        animateChartLoad();
 
-        // Notificación de actualización en tiempo real
-        function checkNewEnrollments() {
-            // En producción, esto se conectaría con WebSockets
-            setTimeout(() => {
-                // Simular nueva inscripción
-                const notification = document.createElement('div');
-                notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-                notification.textContent = '🎉 Nueva inscripción recibida';
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }, 10000); // Simular cada 10 segundos
+        // Añadir efecto de contador animado en las stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.text-3xl.font-bold, .text-2xl.font-bold');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent.replace(/,/g, ''));
+                const increment = target / 50;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.textContent = Math.floor(current).toLocaleString();
+                }, 20);
+            });
         }
 
-        // checkNewEnrollments(); // Descomentar para simular notificaciones
+        // Ejecutar animación después de un breve retraso
+        setTimeout(animateCounters, 500);
     });
 </script>
 
 <style>
-    .stat-card {
-        transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-
-    .chart-bar {
-        transition: all 0.5s ease;
-        opacity: 0;
-    }
-
+    /* Animaciones personalizadas */
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -367,8 +642,59 @@
         }
     }
 
+    @keyframes pulse-glow {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+        }
+    }
+
     .animate-fade-in-up {
         animation: fadeInUp 0.6s ease-out;
+    }
+
+    .pulse-glow {
+        animation: pulse-glow 2s infinite;
+    }
+
+    /* Scrollbar personalizado para el área de actividad */
+    .overflow-y-auto::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: #a1a1a1;
+    }
+
+    /* Efecto de gradiente animado en las cards principales */
+    .gradient-card {
+        background: linear-gradient(45deg, var(--from-color), var(--to-color));
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
+    }
+
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
     }
 </style>
 @endsection

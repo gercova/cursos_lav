@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
+use App\Http\Controllers\Admin\VimeoWebhookController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -41,7 +42,8 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+//ruta webhook 
+Route::post('api/vimeo/webhook',[VimeoWebhookController::class,'handle'])->name('webhook');
 // Rutas públicas
 Route::get('/',                         [AppController::class, 'home'])->name('home');
 Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');

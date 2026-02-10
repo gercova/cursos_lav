@@ -40,227 +40,6 @@
     $isCompleted = $enrollment ? $enrollment->completedLessons->contains($currentLessonId) : false;
 @endphp
 
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('lessonPlayer', () => ({
-        videoId: null,
-        player: null,
-        isVideoLoaded: false,
-        isPlaying: false,
-        currentTime: 0,
-        duration: 0,
-        watchedPercent: 0,
-        minWatchPercent: 80, // Porcentaje mínimo que debe ver para marcar como completado
-        lessonId: {{ $lesson->id }},
-        enrollmentId: {{ $enrollment->id ?? 0 }},
-
-        init() {
-            this.initializeVideoPlayer();
-            this.setupProgressTracking();
-        },
-
-        initializeVideoPlayer() {
-            // Extraer ID de Vimeo de la URL
-            const videoUrl = "{{ $lesson->video_url }}";
-            if (videoUrl.includes('vimeo.com')) {
-                this.videoId = videoUrl.split('/').pop().split('?')[0];
-
-                // Cargar el script de Vimeo Player API si no está cargado
-                if (!window.Vimeo) {
-                    const script = document.createElement('script');
-                    script.src = 'https://player.vimeo.com/api/player.js';
-                    script.onload = () => this.setupVimeoPlayer();
-                    document.head.appendChild(script);
-                } else {
-                    this.setupVimeoPlayer();
-                }
-            }
-        },
-
-        setupVimeoPlayer() {
-            const iframe = document.getElementById('vimeo-player');
-            this.player = new Vimeo.Player(iframe);
-
-            this.player.on('loaded', () => {
-                this.isVideoLoaded = true;
-                this.player.getDuration().then(duration => {
-                    this.duration = duration;
-                });
-            });
-
-            this.player.on('play', () => {
-                this.isPlaying = true;
-                this.startProgressTracking();
-            });
-
-            this.player.on('pause', () => {
-                this.isPlaying = false;
-                this.stopProgressTracking();
-                this.saveProgress();
-            });
-
-            this.player.on('ended', () => {
-                this.isPlaying = false;
-                this.watchedPercent = 100;
-                this.saveProgress();
-                this.markAsCompleted();
-            });
-
-            // Actualizar tiempo actual
-            setInterval(() => {
-                if (this.isPlaying && this.player) {
-                    this.player.getCurrentTime().then(time => {
-                        this.currentTime = time;
-                        if (this.duration > 0) {
-                            this.watchedPercent = (time / this.duration) * 100;
-                        }
-                    });
-                }
-            }, 1000);
-        },
-
-        setupProgressTracking() {
-            // Recuperar progreso guardado
-            this.loadSavedProgress();
-
-            // Guardar progreso cuando el usuario salga de la página
-            window.addEventListener('beforeunload', () => {
-                this.saveProgress();
-            });
-
-            // Guardar progreso cada 30 segundos
-            setInterval(() => {
-                if (this.isVideoLoaded && this.watchedPercent > 0) {
-                    this.saveProgress();
-                }
-            }, 30000);
-        },
-
-        loadSavedProgress() {
-            // Usar el valor inicial del servidor si está disponible
-            const serverProgress = {{ $watchedPercent ?? 0 }};
-            this.watchedPercent = serverProgress;
-
-            // Intentar cargar del localStorage como respaldo
-            const savedProgress = localStorage.getItem(`lesson_${this.lessonId}_progress`);
-            if (savedProgress && parseFloat(savedProgress) > serverProgress) {
-                this.watchedPercent = parseFloat(savedProgress);
-            }
-
-            // Si hay progreso y el reproductor está listo, buscar ese punto
-            if (this.player && this.duration > 0 && this.watchedPercent > 0) {
-                const timeToSeek = (this.watchedPercent / 100) * this.duration;
-                this.player.setCurrentTime(timeToSeek);
-            }
-        },
-
-        saveProgress() {
-            if (!this.isVideoLoaded || this.watchedPercent <= 0) return;
-
-            // Guardar en localStorage
-            localStorage.setItem(`lesson_${this.lessonId}_progress`, this.watchedPercent.toFixed(2));
-
-            // Guardar en el servidor si tenemos enrollment
-            if (this.enrollmentId > 0) {
-                fetch('{{ route("lesson.progress.save") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        enrollment_id: this.enrollmentId,
-                        lesson_id: this.lessonId,
-                        progress: this.watchedPercent,
-                        time_watched: Math.floor(this.currentTime)
-                    })
-                });
-            }
-        },
-
-        startProgressTracking() {
-            // Iniciar tracking de progreso
-            console.log('Iniciando seguimiento de progreso...');
-        },
-
-        stopProgressTracking() {
-            // Detener tracking de progreso
-            console.log('Deteniendo seguimiento de progreso...');
-        },
-
-        async markAsCompleted() {
-            if (this.watchedPercent >= this.minWatchPercent) {
-                // Marcar como completado en el servidor
-                try {
-                    const response = await fetch('{{ route("lesson.complete") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            enrollment_id: this.enrollmentId,
-                            lesson_id: this.lessonId,
-                            time_spent_minutes: Math.floor(this.duration / 60)
-                        })
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        this.showCompletionMessage();
-
-                        // Habilitar botón siguiente
-                        const nextBtn = document.querySelector('#nextLessonBtn');
-                        if (nextBtn) {
-                            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                            nextBtn.classList.add('hover:bg-blue-600');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error al marcar como completado:', error);
-                }
-            }
-        },
-
-        showCompletionMessage() {
-            // Mostrar mensaje de éxito
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            messageDiv.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <span>¡Lección completada!</span>
-                </div>
-            `;
-            document.body.appendChild(messageDiv);
-
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
-        },
-
-        goToPreviousLesson() {
-            @if($previousLesson)
-            window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}";
-            @endif
-        },
-
-        goToNextLesson() {
-            @if($nextLesson)
-                window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}";
-            @endif
-        },
-
-        formatTime(seconds) {
-            if (!seconds) return '00:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-    }));
-});
-</script>
-
 <div x-data="lessonPlayer" x-init="init()">
     <!-- Header de navegación -->
     <div class="mb-6">
@@ -304,14 +83,16 @@ document.addEventListener('alpine:init', () => {
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <!-- Reproductor de video -->
                 <div class="relative bg-black">
-                    <div class="aspect-w-16 aspect-h-9">
-                        @if($lesson->video_url && str_contains($lesson->video_url, 'vimeo.com'))
+                    <div class="aspect-w-16 aspect-h-9" x-ignore>
+                        @if($lesson->vimeo?->vimeo_id && $lesson->vimeo?->status=='ready')
                         <iframe id="vimeo-player"
-                            src="https://player.vimeo.com/video/{{ explode('/', parse_url($lesson->video_url, PHP_URL_PATH))[1] }}?api=1&player_id=vimeo-player"
+                            x-ref="videoIframe" 
+                            src="{{$lesson->vimeo?->embed_url}}&api=1"
                             class="w-full h-[500px]"
                             frameborder="0"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowfullscreen
+                            referrerpolicy="strict-origin"
                         >
                         </iframe>
                         @else
@@ -542,6 +323,253 @@ document.addEventListener('alpine:init', () => {
         </div>
     </div>
 </div>
+<script src="https://player.vimeo.com/api/player.js"></script>
+<script>
+document.addEventListener('alpine:init', () => {
+    let vimeoInstance = null;
+    Alpine.data('lessonPlayer', () => ({
+        //videoId: null,
+       // player: null,
+        isVideoLoaded: false,
+        isPlaying: false,
+        currentTime: 0,
+        duration: 0,
+        watchedPercent: 0,
+        minWatchPercent: 80, // Porcentaje mínimo que debe ver para marcar como completado
+        lessonId: {{ $lesson->id }},
+        enrollmentId: {{ $enrollment->id ?? 0 }},
+        isCompleted: @json($isCompleted),
+        progressInterval: null,
+
+        init() {
+            this.$nextTick(() => {
+                this.initializeVideoPlayer();
+                this.setupProgressTracking();
+            })
+            
+        },
+
+        initializeVideoPlayer() {
+           @if($lesson->vimeo?->vimeo_id)
+                //this.videoId="{{$lesson->vimeo?->vimeo_id}}";
+                this.setupVimeoPlayer();
+           @endif
+        },
+
+        setupVimeoPlayer() {
+            const iframe = this.$refs.videoIframe || document.querySelector('#vimeo-player');
+            if (!iframe) {
+                console.error('Vimeo iframe no encontrado');
+                return;
+            }
+
+            try {
+                vimeoInstance = new Vimeo.Player(iframe);
+            } catch (e) {
+                console.error('Error creando instancia de Vimeo.Player:', e);
+                return;
+            }
+            vimeoInstance.ready().then(()=>{
+            }).catch(err => {
+                 console.error('Vimeo player ready failed after retries:', err);
+            });
+
+            vimeoInstance.on('loaded', () => {
+                this.isVideoLoaded = true;
+                vimeoInstance.getDuration().then(duration => {
+                    this.duration = duration;
+                });
+            });
+
+            /*
+            vimeoInstance.on('timeupdate', (data) => {
+                this.currentTime = data.seconds;
+                this.watchedPercent = (data.percent * 100);
+            });*/
+
+            vimeoInstance.on('play', () => {
+                this.isPlaying = true;
+                this.startProgressTracking();
+                // Iniciar intervalo de seguimiento si no existe
+                if (!this.progressInterval) {
+                    this.progressInterval = setInterval(() => {
+                        if (this.isPlaying && vimeoInstance) {
+                            vimeoInstance.getCurrentTime().then(time => {
+                                this.currentTime = time;
+                                if (this.duration > 0) {
+                                    this.watchedPercent = (time / this.duration) * 100;
+                                }
+                            });
+                        }
+                    }, 1000);
+                }
+            });
+
+            vimeoInstance.on('pause', () => {
+                this.isPlaying = false;
+                this.stopProgressTracking();
+                this.saveProgress();
+                // Limpiar intervalo
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            });
+
+            vimeoInstance.on('ended', () => {
+                this.isPlaying = false;
+                this.watchedPercent = 100;
+                this.saveProgress();
+                this.markAsCompleted();
+                // Limpiar intervalo
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                    this.progressInterval = null;
+                }
+            });
+        },
+
+        setupProgressTracking() {
+            // Recuperar progreso guardado
+            this.loadSavedProgress();
+
+            // Guardar progreso cuando el usuario salga de la página
+            window.addEventListener('beforeunload', () => {
+                this.saveProgress();
+            });
+
+            // Guardar progreso cada 30 segundos
+            setInterval(() => {
+                if (this.isVideoLoaded && this.watchedPercent > 0) {
+                    this.saveProgress();
+                }
+            }, 30000);
+        },
+
+        loadSavedProgress() {
+            // Usar el valor inicial del servidor si está disponible
+            const serverProgress = {{ $watchedPercent ?? 0 }};
+            this.watchedPercent = serverProgress;
+
+            // Intentar cargar del localStorage como respaldo
+            const savedProgress = localStorage.getItem(`lesson_${this.lessonId}_progress`);
+            if (savedProgress && parseFloat(savedProgress) > serverProgress) {
+                this.watchedPercent = parseFloat(savedProgress);
+            }
+
+            // Si hay progreso y el reproductor está listo, buscar ese punto
+            if (vimeoInstance && this.duration > 0 && this.watchedPercent > 0) {
+                const timeToSeek = (this.watchedPercent / 100) * this.duration;
+                vimeoInstance.setCurrentTime(timeToSeek);
+            }
+        },
+
+        saveProgress() {
+            if (!this.isVideoLoaded || this.watchedPercent <= 0) return;
+
+            // Guardar en localStorage
+            localStorage.setItem(`lesson_${this.lessonId}_progress`, this.watchedPercent.toFixed(2));
+
+            // Guardar en el servidor si tenemos enrollment
+            if (this.enrollmentId > 0) {
+                fetch('{{ route("lesson.progress.save") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        enrollment_id: this.enrollmentId,
+                        lesson_id: this.lessonId,
+                        progress: this.watchedPercent,
+                        time_watched: Math.floor(this.currentTime)
+                    })
+                });
+            }
+        },
+
+        startProgressTracking() {
+            // Iniciar tracking de progreso
+            console.log('Iniciando seguimiento de progreso...');
+        },
+
+        stopProgressTracking() {
+            // Detener tracking de progreso
+            console.log('Deteniendo seguimiento de progreso...');
+        },
+
+        async markAsCompleted() {
+            if (this.watchedPercent >= this.minWatchPercent) {
+                // Marcar como completado en el servidor
+                try {
+                    const response = await fetch('{{ route("lesson.complete") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            enrollment_id: this.enrollmentId,
+                            lesson_id: this.lessonId,
+                            time_spent_minutes: Math.floor(this.duration / 60)
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        this.showCompletionMessage();
+
+                        // Habilitar botón siguiente
+                        const nextBtn = document.querySelector('#nextLessonBtn');
+                        if (nextBtn) {
+                            nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                            nextBtn.classList.add('hover:bg-blue-600');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al marcar como completado:', error);
+                }
+            }
+        },
+
+        showCompletionMessage() {
+            // Mostrar mensaje de éxito
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            messageDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>¡Lección completada!</span>
+                </div>
+            `;
+            document.body.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        },
+
+        goToPreviousLesson() {
+            @if($previousLesson)
+            window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}";
+            @endif
+        },
+
+        goToNextLesson() {
+            @if($nextLesson)
+                window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}";
+            @endif
+        },
+
+        formatTime(seconds) {
+            if (!seconds) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+    }));
+});
+</script>
 
 <style>
     .aspect-w-16 {

@@ -96,7 +96,7 @@
 
                             <!-- Detalles de la lección -->
                             <div class="flex items-center gap-4 text-sm text-gray-500">
-                                @if($lesson->video_url)
+                                @if($lesson->vimeo?->vimeo_id)
                                     <div class="flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -117,7 +117,7 @@
                         <!-- Acciones -->
                         <div class="flex items-center gap-2">
                             <!-- Vista previa -->
-                            <a href="{{ $lesson->video_url }}"
+                            <a href="{{ $lesson->vimeo?->link }}"
                                target="_blank"
                                class="p-2 text-purple-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-purple-600 rounded-lg transition-all duration-200"
                                title="Ver video">
@@ -137,7 +137,7 @@
                             </a>
 
                             <!-- Cambiar estado -->
-                            <button onclick="toggleLessonStatus({{ $course->id }}, {{ $section->id }}, {{ $lesson->id }})"
+                                <button type="button" onclick="toggleLessonStatus({{ $course->id }}, {{ $section->id }}, {{ $lesson->id }})"
                                     class="p-2 {{ $lesson->is_active ? 'text-orange-600 hover:from-orange-500 hover:to-orange-600' : 'text-green-600 hover:from-green-500 hover:to-green-600' }} hover:text-white hover:bg-gradient-to-r rounded-lg transition-all duration-200"
                                     title="{{ $lesson->is_active ? 'Desactivar' : 'Activar' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,7 +151,7 @@
                             </button>
 
                             <!-- Eliminar lección -->
-                            <button onclick="deleteLesson({{ $course->id }}, {{ $section->id }}, {{ $lesson->id }})"
+                                <button type="button" onclick="deleteLesson({{ $course->id }}, {{ $section->id }}, {{ $lesson->id }})"
                                     class="p-2 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 rounded-lg transition-all duration-200"
                                     title="Eliminar lección">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,6 +223,7 @@
         }
 
         try {
+            
             const response = await axios.delete(`/admin/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}`);
             if (response.data.success) {
                 showNotification('Lección eliminada exitosamente', 'success');

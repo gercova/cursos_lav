@@ -44,8 +44,8 @@
                     </svg>
                     Volver a Lecciones
                 </a>
-                @if($lesson->video_url)
-                    <a href="{{ $lesson->video_url }}"
+                @if($lesson->vimeo?->vimeo_id)
+                    <a href="{{ $lesson->vimeo?->link }}"
                        target="_blank"
                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 rounded-xl font-medium transition duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -64,6 +64,7 @@
         <form action="{{ route('admin.courses.sections.lessons.update', [$course, $section, $lesson]) }}"
               method="POST"
               id="lessonForm"
+              enctype="multipart/form-data"
               class="p-6">
             @csrf
             @method('PUT')
@@ -128,33 +129,50 @@
 
                 <!-- URL del video -->
                 <div>
+                    <input type="hidden" id="video_id" name="video_id" value="{{$lesson->vimeo?->id}}">
                     <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">
-                        URL del Video (Opcional)
+                        Subir Video
                     </label>
-                    <input type="url"
-                           id="video_url"
-                           name="video_url"
-                           value="{{ old('video_url', $lesson->video_url) }}"
+                    <input type="file"
+                           id="video"
+                           name="video"
+                           value="{{ old('video') }}"
+                           accept="video/*"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                           placeholder="https://youtube.com/watch?v=... o URL de Vimeo">
-                    @error('video_url')
+                           placeholder="">
+                    @error('video')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
 
-                    @if($lesson->video_url)
+                    @if($lesson->vimeo?->vimeo_id)
                         <div class="mt-2">
                             <div class="flex items-center gap-2 text-sm text-green-600">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                                Video configurado correctamente
+                                {{$lesson->vimeo?->description_status}}
                             </div>
                         </div>
                     @endif
                 </div>
 
+                @if($lesson->vimeo?->vimeo_id)
+                    <div id="current-video-preview" class="border border-gray-200 rounded-xl p-4">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Video Actual</h3>
+                        <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden border border-gray-300">
+                            <iframe src="{{$lesson->vimeo?->embed_url}}"
+                                class="w-full h-full"
+                                frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                @endif
+
                 <!-- Vista previa del video actual -->
-                @if($lesson->video_url)
+                <!-- @if($lesson->video_url)
                     <div id="current-video-preview" class="border border-gray-200 rounded-xl p-4">
                         <h3 class="text-lg font-semibold text-gray-800 mb-3">Video Actual</h3>
                         <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden border border-gray-300">
@@ -205,7 +223,7 @@
                             @endif
                         </div>
                     </div>
-                @endif
+                @endif -->
 
                 <!-- Nueva vista previa de video -->
                 <div id="new-video-preview" class="hidden border border-gray-200 rounded-xl p-4 bg-blue-50">

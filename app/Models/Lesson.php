@@ -36,11 +36,15 @@ class Lesson extends Model
         $slugs=[
             $this->section->course->slug,
             Str::slug($this->section->title),
-            Str::slug($this->title),
-            date('Y-m-d-H-i-s')
+            Str::slug($this->title)
         ];
-
-        return implode('-',$slugs);
+        $title=implode('-',$slugs);
+        if(mb_strlen($title)>108){
+            $title=mb_substr($title,0,108);
+        }
+        //128 caracteres como maximo
+        return $title.'-'.date('Y-m-d-H-i-s');
+        //return implode('-',$slugs);
     }
 
     public function section(): BelongsTo {
@@ -49,5 +53,9 @@ class Lesson extends Model
 
     public function course(): HasOneThrough {
         return $this->hasOneThrough(Course::class, CourseSection::class, 'id', 'id', 'course_section_id', 'course_id');
+    }
+    public function vimeo()
+    {
+        return $this->hasOne(Video::class,'lesson_id');
     }
 }

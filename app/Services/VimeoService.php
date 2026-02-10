@@ -51,12 +51,6 @@ class VimeoService{
         return $this->client->request($uri, [], 'DELETE');
     }
 
-    public function getHash(array $videoData)
-    {
-        $parts = explode('/', parse_url($videoData['link'], PHP_URL_PATH));
-        $hash = end($parts);
-        return $hash;
-    }
     public function createProject(string $project)
     {
         $response = $this->client->request('/me/projects', [

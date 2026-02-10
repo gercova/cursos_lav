@@ -7,7 +7,7 @@ use App\Http\Requests\LessonValidate;
 use App\Models\Course;
 use App\Models\CourseSection;
 use App\Models\Lesson;
-use App\Models\Vimeo;
+use App\Models\VimeoAction as Vimeo;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +21,7 @@ class LessonsAdminController extends Controller {
 
     // Listar lecciones de una sección
     public function index(Course $course, CourseSection $section): View {
-        $lessons = $section->lessons()->orderBy('order')->get();
+        $lessons = $section->lessons()->with('vimeo')->orderBy('order')->get();
         return view('admin.courses.lessons.index', compact('course', 'section', 'lessons'));
     }
 
@@ -42,7 +42,10 @@ class LessonsAdminController extends Controller {
             $data['video_url']='';
 
             $lesson = Lesson::create($data);
-            (new Vimeo())->upload($lesson,$request->file('video'));
+            if($request->hasFile('video')){
+                (new Vimeo())->create($lesson,$request->file('video'));
+            }
+            
 
             DB::commit();
             return redirect()
@@ -57,6 +60,7 @@ class LessonsAdminController extends Controller {
 
     // Mostrar formulario para editar lección
     public function edit(Course $course, CourseSection $section, Lesson $lesson) {
+        $lesson->load('vimeo');
         return view('admin.courses.lessons.edit', compact('course', 'section', 'lesson'));
     }
 
@@ -67,6 +71,11 @@ class LessonsAdminController extends Controller {
         $validated['is_active'] = $request->has('is_active');
 
         $lesson->update($validated);
+        $file=null;
+        if($request->hasFile('video')){
+            $file=$request->file('video');
+        }
+        (new Vimeo())->update($request->input('video_id',-1),$lesson,$file);
 
         return redirect()
             ->route('admin.courses.sections.lessons.index', [$course, $section])
@@ -74,8 +83,19 @@ class LessonsAdminController extends Controller {
     }
 
     // Eliminar lección
-    public function destroy(Course $course, CourseSection $section, Lesson $lesson) {
+    public function destroy(Request $request, Course $course, CourseSection $section, Lesson $lesson) {
+        $video=$lesson->vimeo()->first();
+        if($video){
+            (new Vimeo())->delete($video);
+        }
         $lesson->delete();
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'   => true,
+                'mensaje'   => 'Lección eliminada exitosamente'
+            ]);
+        }
+
         return redirect()
             ->route('admin.courses.sections.lessons.index', [$course, $section])
             ->with('success', 'Lección eliminada exitosamente.');

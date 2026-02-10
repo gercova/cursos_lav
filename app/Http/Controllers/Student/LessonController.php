@@ -41,6 +41,7 @@ class LessonController extends Controller {
         $lesson = Lesson::where('id', $lessonId)
             ->where('is_active', true)
             ->with('section')
+            ->with('vimeo')
             ->firstOrFail();
 
         // Verificar que el usuario esté inscrito en el curso
@@ -69,6 +70,8 @@ class LessonController extends Controller {
     }
 
     public function saveProgress(Request $request): JsonResponse {
+        set_time_limit(0);
+        
         $request->validate([
             'enrollment_id' => 'required|exists:enrollments,id',
             'lesson_id'     => 'required|exists:lessons,id',

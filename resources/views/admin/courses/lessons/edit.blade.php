@@ -126,39 +126,26 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+                <input type="hidden" id="video_id" name="video_id" value="{{$lesson->vimeo?->id}}">
 
-                <!-- URL del video -->
-                <div>
-                    <input type="hidden" id="video_id" name="video_id" value="{{$lesson->vimeo?->id}}">
-                    <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">
-                        Subir Video
-                    </label>
-                    <input type="file"
-                           id="video"
-                           name="video"
-                           value="{{ old('video') }}"
-                           accept="video/*"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                           placeholder="">
-                    @error('video')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-
-                    @if($lesson->vimeo?->vimeo_id)
-                        <div class="mt-2">
-                            <div class="flex items-center gap-2 text-sm text-green-600">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                {{$lesson->vimeo?->description_status}}
-                            </div>
-                        </div>
-                    @endif
-                </div>
-
+                @include('admin/courses/lessons/partial-vimeo',[
+                    'vimeo_id'=>$lesson->vimeo?->vimeo_id,
+                    'class'=>isset($lesson->vimeo?->vimeo_id)?'hidden':''
+                ])
                 @if($lesson->vimeo?->vimeo_id)
                     <div id="current-video-preview" class="border border-gray-200 rounded-xl p-4">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Video Actual</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3 inline-block">Video Actual</h3>
+                        <div class="inline-block">
+                            <button 
+                                type="button" 
+                                id="btnEditCancelVimeo"
+                                class="inline-flex items-center h-7 px-2 text-sm font-semibold 
+                                    text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none 
+                                    focus:ring-2 focus:ring-red-500" 
+                                onclick="cancelEditVimeoUpload()">
+                                Eliminar
+                            </button>
+                        </div>
                         <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden border border-gray-300">
                             <iframe src="{{$lesson->vimeo?->embed_url}}"
                                 class="w-full h-full"
@@ -167,63 +154,24 @@
                                 allowfullscreen>
                             </iframe>
                         </div>
+
+                        @if($lesson->vimeo?->vimeo_id)
+                            <div class="mt-2">
+                                <div class="flex items-center gap-2 text-sm text-green-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    {{$lesson->vimeo?->description_status}}
+                                </div>
+                            </div>
+                        @endif
+                        
                     </div>
+                    
                     
                 @endif
 
-                <!-- Vista previa del video actual -->
-                <!-- @if($lesson->video_url)
-                    <div id="current-video-preview" class="border border-gray-200 rounded-xl p-4">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Video Actual</h3>
-                        <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden border border-gray-300">
-                            @if(str_contains($lesson->video_url, 'youtube.com') || str_contains($lesson->video_url, 'youtu.be'))
-                                @php
-                                    // Extraer ID de YouTube
-                                    $videoId = '';
-                                    if (str_contains($lesson->video_url, 'youtube.com/watch?v=')) {
-                                        $videoId = explode('v=', $lesson->video_url)[1];
-                                        $ampersandPosition = strpos($videoId, '&');
-                                        if ($ampersandPosition !== false) {
-                                            $videoId = substr($videoId, 0, $ampersandPosition);
-                                        }
-                                    } elseif (str_contains($lesson->video_url, 'youtu.be/')) {
-                                        $videoId = explode('youtu.be/', $lesson->video_url)[1];
-                                    }
-                                @endphp
-                                <iframe src="https://www.youtube.com/embed/{{ $videoId }}"
-                                        class="w-full h-full"
-                                        frameborder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowfullscreen>
-                                </iframe>
-                            @elseif(str_contains($lesson->video_url, 'vimeo.com'))
-                                @php
-                                    $videoId = explode('vimeo.com/', $lesson->video_url)[1];
-                                @endphp
-                                <iframe src="https://player.vimeo.com/video/{{ $videoId }}"
-                                        class="w-full h-full"
-                                        frameborder="0"
-                                        allow="autoplay; fullscreen; picture-in-picture"
-                                        allowfullscreen>
-                                </iframe>
-                            @elseif(str_ends_with($lesson->video_url, '.mp4'))
-                                <video controls class="w-full h-full">
-                                    <source src="{{ $lesson->video_url }}" type="video/mp4">
-                                    Tu navegador no soporta el elemento de video.
-                                </video>
-                            @else
-                                <div class="flex items-center justify-center h-full bg-gray-100">
-                                    <div class="text-center">
-                                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <p class="text-sm text-gray-500">Formato de video no soportado para vista previa</p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endif -->
+                
 
                 <!-- Nueva vista previa de video -->
                 <div id="new-video-preview" class="hidden border border-gray-200 rounded-xl p-4 bg-blue-50">
@@ -345,7 +293,7 @@
                            class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Cancelar
                         </a>
-                        <button type="submit"
+                        <button  type="submit" id="btnSave"
                                 class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition duration-200">
                             Actualizar Lección
                         </button>
@@ -358,6 +306,8 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/tus.min.js') }}"></script>
+<script src="{{ asset('js/vimeo-upload.js') }}"></script>
 <script>
     // Vista previa de video en tiempo real
     const videoUrlInput = document.getElementById('video_url');
@@ -365,7 +315,7 @@
     const videoIframe = document.getElementById('video-iframe');
     const currentVideoPreview = document.getElementById('current-video-preview');
 
-    videoUrlInput.addEventListener('input', function() {
+    /*videoUrlInput.addEventListener('input', function() {
         const url = this.value.trim();
         const originalUrl = "{{ old('video_url', $lesson->video_url) }}";
 
@@ -414,7 +364,7 @@
 
         videoIframe.src = embedUrl;
         newVideoPreview.classList.remove('hidden');
-    });
+    });*/
 
     // Cambiar estado del checkbox de lección gratis
     const isFreeCheckbox = document.getElementById('is_free');
@@ -504,11 +454,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Mostrar nueva vista previa si el URL ha cambiado
         const currentUrl = "{{ old('video_url', $lesson->video_url) }}";
-        const inputUrl = videoUrlInput.value.trim();
+        //const inputUrl = videoUrlInput.value.trim();
 
-        if (inputUrl && inputUrl !== currentUrl) {
-            videoUrlInput.dispatchEvent(new Event('input'));
-        }
+        //if (inputUrl && inputUrl !== currentUrl) {
+            //videoUrlInput.dispatchEvent(new Event('input'));
+        //}
     });
 </script>
 @endsection

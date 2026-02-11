@@ -15,6 +15,12 @@ class VimeoAction {
        $this->service=new VimeoService();
     }
 
+    public  function getUri($vimeoId)
+    {
+
+        return '/videos/'.$vimeoId;
+    }
+
     public function getHash(array $videoData)
     {
         $parts = explode('/', parse_url($videoData['link'], PHP_URL_PATH));
@@ -33,7 +39,7 @@ class VimeoAction {
         ];
         return $vimeoStatus[$status]??'pending';
     }
-    public function create($lesson,$file)
+    /*public function create($lesson,$file)
     {
         set_time_limit(0);
         $title=$lesson->title_vimeo;
@@ -105,7 +111,7 @@ class VimeoAction {
         }
         
         //si existe el archivo eliminamos el anterior del viemo y subimos nuevo
-    }
+    }*/
 
     public function delete(Video $vimeo)
     {
@@ -115,7 +121,7 @@ class VimeoAction {
 
     public function createDirect($lesson,$vimeoId)
     {
-        $uri='/videos/'.$vimeoId;
+        $uri=$this->getUri($vimeoId);
         $title=$lesson->title_vimeo;
         $this->service->update($uri,[
             'name'=>$title
@@ -125,6 +131,36 @@ class VimeoAction {
         $data['vimeo_id']=$vimeoId;
         $lesson->vimeo()->create($data);
         
+    }
+    public function updateDirect($id,$lesson,$vimeoId)
+    {
+        $obj=Video::find($id);
+        if(!$vimeoId && is_null($obj)){
+            return null;
+        }
+        if($vimeoId && is_null($obj)){
+            return $this->createDirect($lesson,$vimeoId);
+        }
+        $title=$lesson->title_vimeo;
+        $oldTitle = substr($obj->title, 0, -19); // Elimina la fecha (formato: -YYYY-MM-DD-HH-ii-ss)
+
+        // si el vime_id es diferente o el titulo es diferente y existe en tabla videos
+        if($vimeoId != $obj->vimeo_id || $oldTitle!=substr($title, 0, -19) ){
+            $uri=$this->getUri($vimeoId);
+            
+            $this->service->update($uri,[
+                'name'=>$title
+            ]);
+            $data=$this->getData($uri);
+            $data['title']=$title;
+            $data['vimeo_id']=$vimeoId;
+
+            $obj->title=$data['title'];
+            $obj->vimeo_id=$data['vimeo_id'];
+            $obj->status=$data['status'];
+            $obj->hash=$data['hash'];
+            $obj->update();
+        }
     }
     public function getData($uri)
     {

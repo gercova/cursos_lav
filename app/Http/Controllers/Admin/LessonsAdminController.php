@@ -42,9 +42,6 @@ class LessonsAdminController extends Controller {
             $data['video_url']='';
 
             $lesson = Lesson::create($data);
-            /*if($request->hasFile('video')){
-                (new Vimeo())->create($lesson,$request->file('video'));
-            }*/
             if($request->filled('vimeo_id')){
                 (new Vimeo())->createDirect($lesson,$request->input('vimeo_id'));
             }
@@ -74,11 +71,7 @@ class LessonsAdminController extends Controller {
         $validated['is_active'] = $request->has('is_active');
 
         $lesson->update($validated);
-        $file=null;
-        if($request->hasFile('video')){
-            $file=$request->file('video');
-        }
-        (new Vimeo())->update($request->input('video_id',-1),$lesson,$file);
+        (new Vimeo())->updateDirect($request->input('video_id',-1),$lesson,$request->input('vimeo_id'));
 
         return redirect()
             ->route('admin.courses.sections.lessons.index', [$course, $section])

@@ -84,7 +84,7 @@
                 <!-- Reproductor de video -->
                 <div class="relative bg-black">
                     <div class="aspect-w-16 aspect-h-9" x-ignore>
-                        @if($lesson->vimeo?->vimeo_id && $lesson->vimeo?->status=='ready')
+                        @if($lesson->vimeo?->vimeo_id)
                         <iframe id="vimeo-player"
                             x-ref="videoIframe" 
                             src="{{$lesson->vimeo?->embed_url}}&api=1"

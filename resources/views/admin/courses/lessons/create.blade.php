@@ -100,19 +100,93 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <!-- URL del video -->
-                <div>
+                
+                <div class="mx-auto">
                     <label for="video" class="block text-sm font-medium text-gray-700 mb-2">
-                        Subir Video
+                        Video
                     </label>
-                    <input type="file" id="video" name="video" value="{{ old('video') }}" accept="video/*" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="">
+                <!-- Contenedor input + botón -->
+                    <div class="flex items-center gap-4">
+                        <input type="hidden" id="vimeo_id" name="vimeo_id" value="{{old('vimeo_id')}}">
+                        <input
+                            type="file"
+                            id="video"
+                            name="video" value="{{ old('video') }}" 
+                            accept="video/*" 
+                            class="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-lg file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-gray-100 file:text-gray-700
+                                hover:file:bg-gray-200
+                                border border-gray-300 rounded-lg"
+                        />
+                        <!-- Botón subir -->
+                        <button
+                            type="button"
+                            class="inline-flex items-center h-10 px-4 text-sm font-semibold text-white
+                            bg-green-600 rounded-lg
+                            hover:bg-green-700
+                            focus:outline-none focus:ring-2 focus:ring-green-500"
+                            id="btnUpload" onclick="startDirectUpload()"
+                        >
+                        Subir
+                        </button> 
+                    </div>
                     @error('video')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-xs text-gray-500">
-                        Soporta archivos .mp4
-                    </p>
+                    <p class="text-xs text-gray-500 mt-1">Soporta archivos .mp4</p>
+
+                    <!-- Progreso -->
+                    <div class="mt-4 hidden" id="content-progress-bar">
+                        <div class="flex justify-between text-xs text-gray-600 mb-1">
+                            <span>Progreso</span>
+                            <span id="progress-text">0%</span>
+                        </div>
+
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div
+                                id="upload-progress-bar"
+                                class="bg-green-600 h-3 rounded-full transition-all duration-300"
+                                style="width: 0%"
+                            ></div>
+                        </div>
+                    </div>
+                    <!-- FILE INFO -->
+                    <!-- <div id="file-info" class="mt-2 border rounded-xl px-5 py-2 bg-gray-50">
+
+                        <div class="flex justify-between items-center">
+                            <div>
+                            <p id="file-name" class="font-semibold text-gray-800"></p>
+                            <p id="file-size" class="text-sm text-gray-500"></p>
+                            </div>
+
+                            <div class="flex items-center gap-4">
+                            <span id="percent" class="font-semibold text-gray-700">0%</span>
+
+                            <button id="cancelBtn"
+                                    class="w-8 h-8 rounded-lg bg-gray-200 hover:bg-gray-300 flex items-center justify-center">
+                                ✕
+                            </button>
+                            </div>
+                        </div>
+
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-3 mt-4 overflow-hidden">
+                            <div id="progress-bar"
+                                class="bg-green-600 h-3 rounded-full transition-all duration-300"
+                                style="width: 0%">
+                            </div>
+                        </div>
+
+                        <p id="statusText" class="text-sm text-gray-600 mt-3">
+                            Esperando...
+                        </p>
+
+                    </div>-->
                 </div>
+                
                 <!-- Descripción -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -173,7 +247,7 @@
                     <a href="{{ route('admin.courses.sections.lessons.index', [$course, $section]) }}" class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                         Cancelar
                     </a>
-                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition duration-200">
+                    <button type="submit" id="btnSave"  class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition duration-200">
                         Crear Lección
                     </button>
                 </div>
@@ -205,7 +279,10 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/tus.min.js') }}"></script>
+<script src="{{ asset('js/vimeo-upload.js') }}"></script>
 <script>
+    
     // Actualizar progreso del formulario
     function updateProgress() {
         const form      = document.getElementById('lessonForm');
@@ -226,11 +303,11 @@
     }
 
     // Vista previa de video en tiempo real
-    const videoUrlInput = document.getElementById('video_url');
-    const videoPreview  = document.getElementById('video-preview');
-    const videoIframe   = document.getElementById('video-iframe');
+    //const videoUrlInput = document.getElementById('video_url');
+    //const videoPreview  = document.getElementById('video-preview');
+    //const videoIframe   = document.getElementById('video-iframe');
 
-    videoUrlInput.addEventListener('input', function() {
+    /*videoUrlInput.addEventListener('input', function() {
         const url = this.value.trim();
 
         if (!url) {
@@ -270,7 +347,7 @@
 
         videoIframe.src = embedUrl;
         videoPreview.classList.remove('hidden');
-    });
+    });*/
 
     // Cambiar estado del checkbox de estado activo
     const isActiveCheckbox = document.getElementById('is_active');
@@ -291,9 +368,9 @@
         updateProgress();
 
         // Mostrar vista previa si ya hay un URL
-        if (videoUrlInput.value.trim()) {
+        /*if (videoUrlInput.value.trim()) {
             videoUrlInput.dispatchEvent(new Event('input'));
-        }
+        }*/
     });
 </script>
 @endsection

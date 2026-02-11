@@ -42,8 +42,11 @@ class LessonsAdminController extends Controller {
             $data['video_url']='';
 
             $lesson = Lesson::create($data);
-            if($request->hasFile('video')){
+            /*if($request->hasFile('video')){
                 (new Vimeo())->create($lesson,$request->file('video'));
+            }*/
+            if($request->filled('vimeo_id')){
+                (new Vimeo())->createDirect($lesson,$request->input('vimeo_id'));
             }
             
 
@@ -53,7 +56,7 @@ class LessonsAdminController extends Controller {
                 ->with('success', 'Lección creada exitosamente.');
         } catch (\Throwable $th) {
             DB::rollback();
-            Log::error('Error al crear lección: ' . $th->getMessage());
+            Log::error('Error al crear lección: ' . $th->getMessage().' archivo '.$th->getFile().'-'. $th->getLine());
             return back()->withInput()->with('error', 'Ocurrió un error...');
         }
     }

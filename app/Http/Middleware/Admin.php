@@ -14,10 +14,15 @@ class Admin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
-    {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            return redirect()->route('admin.login')->withErrors('Acceso denegado. Solo administradores.');
+    public function handle(Request $request, Closure $next) {
+
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        // Verificar si tiene algún rol permitido
+        if (!Auth::user()->hasAnyRole(['admin', 'instructor'])) {
+            return redirect()->route('login')->withErrors('Acceso denegado. Rol no autorizado.');
         }
 
         return $next($request);

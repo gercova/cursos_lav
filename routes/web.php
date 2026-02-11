@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Business\BusinessManagementController;
 use App\Http\Controllers\Student\AffiliateController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
@@ -61,7 +62,7 @@ Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->nam
 // Autenticación general (Admin / Instructor / Student)
 Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
 Route::post('/register',                [RegisterController::class, 'register']);
-Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login');
+Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest'); ;
 Route::post('/login',                   [LoginController::class, 'login']);
 Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
 Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -168,6 +169,13 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Notificaciones
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
+});
+
+Route::middleware(['auth', 'business'])->group(function() {
+    
+    Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+    Route::post('/mis-colaboradores/crear',      [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+    Route::post('/mis-colaboradores/importar',   [BusinessManagementController::class, 'importFile'])->name('company.import');
 });
 
 Route::prefix('admin')->group(function () {

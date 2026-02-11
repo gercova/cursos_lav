@@ -100,19 +100,9 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <!-- URL del video -->
-                <div>
-                    <label for="video" class="block text-sm font-medium text-gray-700 mb-2">
-                        Subir Video
-                    </label>
-                    <input type="file" id="video" name="video" value="{{ old('video') }}" accept="video/*" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" placeholder="">
-                    @error('video')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <p class="mt-1 text-xs text-gray-500">
-                        Soporta archivos .mp4
-                    </p>
-                </div>
+                
+                @include('admin/courses/lessons/partial-vimeo',['vimeo_id'=>'','class'=>''])
+                
                 <!-- Descripción -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -173,7 +163,7 @@
                     <a href="{{ route('admin.courses.sections.lessons.index', [$course, $section]) }}" class="px-6 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                         Cancelar
                     </a>
-                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition duration-200">
+                    <button type="submit" id="btnSave"  class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-medium transition duration-200">
                         Crear Lección
                     </button>
                 </div>
@@ -205,7 +195,10 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/tus.min.js') }}"></script>
+<script src="{{ asset('js/vimeo-upload.js') }}"></script>
 <script>
+    
     // Actualizar progreso del formulario
     function updateProgress() {
         const form      = document.getElementById('lessonForm');
@@ -226,11 +219,11 @@
     }
 
     // Vista previa de video en tiempo real
-    const videoUrlInput = document.getElementById('video_url');
-    const videoPreview  = document.getElementById('video-preview');
-    const videoIframe   = document.getElementById('video-iframe');
+    //const videoUrlInput = document.getElementById('video_url');
+    //const videoPreview  = document.getElementById('video-preview');
+    //const videoIframe   = document.getElementById('video-iframe');
 
-    videoUrlInput.addEventListener('input', function() {
+    /*videoUrlInput.addEventListener('input', function() {
         const url = this.value.trim();
 
         if (!url) {
@@ -270,7 +263,7 @@
 
         videoIframe.src = embedUrl;
         videoPreview.classList.remove('hidden');
-    });
+    });*/
 
     // Cambiar estado del checkbox de estado activo
     const isActiveCheckbox = document.getElementById('is_active');
@@ -291,9 +284,9 @@
         updateProgress();
 
         // Mostrar vista previa si ya hay un URL
-        if (videoUrlInput.value.trim()) {
+        /*if (videoUrlInput.value.trim()) {
             videoUrlInput.dispatchEvent(new Event('input'));
-        }
+        }*/
     });
 </script>
 @endsection

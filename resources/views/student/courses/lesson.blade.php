@@ -84,17 +84,17 @@
                 <!-- Reproductor de video -->
                 <div class="relative bg-black">
                     <div class="aspect-w-16 aspect-h-9" x-ignore>
-                        @if($lesson->vimeo?->vimeo_id && $lesson->vimeo?->status=='ready')
-                        <iframe id="vimeo-player"
-                            x-ref="videoIframe" 
-                            src="{{$lesson->vimeo?->embed_url}}&api=1"
-                            class="w-full h-[500px]"
-                            frameborder="0"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            referrerpolicy="strict-origin"
-                        >
-                        </iframe>
+                        @if($lesson->vimeo?->vimeo_id)
+                            <iframe id="vimeo-player"
+                                x-ref="videoIframe" 
+                                src="{{$lesson->vimeo?->embed_url}}&api=1"
+                                class="w-full h-[500px]"
+                                frameborder="0"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowfullscreen
+                                referrerpolicy="strict-origin"
+                            >
+                            </iframe>
                         @else
                         <div class="w-full h-[500px] flex items-center justify-center bg-gray-900">
                             <div class="text-center">

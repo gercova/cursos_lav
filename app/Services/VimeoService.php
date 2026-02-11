@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Vimeo\Vimeo;
 
 class VimeoService{
@@ -49,6 +51,35 @@ class VimeoService{
     public function delete(string $uri)
     {
         return $this->client->request($uri, [], 'DELETE');
+    }
+    public function getUploadLink($fileSize,$name=null)
+    {
+        try{
+            $response = $this->client->request('/me/videos', [
+                'upload' => [
+                    'approach' => 'tus',
+                    'size' => $fileSize
+                ],
+                //'name' => $request->name,
+            ], 'POST');
+            if($response['status']==200){
+                return [
+                    'upload_link'=>$response['body']['upload']['upload_link'],
+                    'vimeo_uri'=>$response['body']['uri']
+                ];
+            }
+            return [
+                'upload_link'=>null,
+                'vimeo_uri'=>null
+            ];
+        }catch(Exception $e){
+            Log::error('Error al crear lección: ' . $e->getMessage().' archivo '.$e->getFile().'-'. $e->getLine());
+            return [
+                'upload_link'=>null,
+                'vimeo_uri'=>null
+            ];
+        }
+        
     }
 
     public function createProject(string $project)

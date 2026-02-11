@@ -112,4 +112,31 @@ class VimeoAction {
         $this->service->delete($vimeo->uri);
         $vimeo->delete();
     }
+
+    public function createDirect($lesson,$vimeoId)
+    {
+        $uri='/videos/'.$vimeoId;
+        $title=$lesson->title_vimeo;
+        $this->service->update($uri,[
+            'name'=>$title
+        ]);
+        $data=$this->getData($uri);
+        $data['title']=$title;
+        $data['vimeo_id']=$vimeoId;
+        $lesson->vimeo()->create($data);
+        
+    }
+    public function getData($uri)
+    {
+        $response=$this->service->get($uri);
+        $data=[];
+        $data['status']='pending';
+        $data['hash']='';
+        if($response['status']==200){
+            $videoData = $response['body'];
+            $data['status']=$this->getLocalStatus($videoData['status']);
+            $data['hash']=$this->getHash($videoData);
+        }
+        return $data;
+    }
 }

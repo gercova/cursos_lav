@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
+use App\Http\Controllers\Admin\VimeoController;
 use App\Http\Controllers\Admin\VimeoWebhookController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -259,7 +260,10 @@ Route::prefix('admin')->group(function () {
         Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',      [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
         Route::post('/courses/{course}/sections/{section}/lessons/{lesson}/toggle-status', [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
         Route::post('/courses/{course}/sections/{section}/lessons/reorder',         [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
-
+        
+        // rutas vimeo directo
+        Route::post('/vimeo/upload-link',[VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
+        Route::delete('/vimeo/{vimeoId}',[VimeoController::class,'destroy'])->name('vimeo.destroy');
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
         Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');

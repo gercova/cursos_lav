@@ -42,6 +42,8 @@ class LoginController extends Controller
     public function login(LoginValidate $request) {
         $validated = $request->validated();
 
+        
+
         $user = User::where('email', $request['email'])->first();
         if (!$user) {
             RateLimiter::hit($this->throttleKey($request));
@@ -59,6 +61,8 @@ class LoginController extends Controller
                 return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido al panel administrativo!');
             } else if ($user->isStudent()) {
                 return redirect()->intended('dashboard');
+            } else if ($user->isBusiness()) {
+                return redirect()->intended('company.list');
             }
         }
 

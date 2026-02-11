@@ -65,6 +65,10 @@ class User extends Authenticatable {
         return $this->role === 'instructor';
     }
 
+    public function isBusiness() {
+        return $this->role === 'business';
+    }
+
     public function enrollments(): HasMany {
         return $this->hasMany(Enrollment::class, 'user_id', 'id');
     }

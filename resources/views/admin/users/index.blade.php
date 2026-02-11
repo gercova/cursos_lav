@@ -111,9 +111,12 @@
                             class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
                         >
                             <option value="">Todos los roles</option>
-                            <option value="student">Estudiante</option>
+                            @foreach ($roles as $rol)
+                                <option value="{{ $rol->name }}">{{ ucwords($rol->name) }}</option>
+                            @endforeach
+                            {{-- <option value="student">Estudiante</option>
                             <option value="instructor">Instructor</option>
-                            <option value="admin">Administrador</option>
+                            <option value="admin">Administrador</option> --}}
                         </select>
 
                         <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
@@ -390,6 +393,8 @@
 
                     <div class="flex items-center space-x-2">
                         {{ $users->links() }}
+
+                        {{-- {{ $users->onEachSide(5)->links() }} --}}
                     </div>
                 </div>
             </div>

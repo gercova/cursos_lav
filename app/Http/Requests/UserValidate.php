@@ -21,7 +21,7 @@ class UserValidate extends FormRequest {
             'nationality'   => 'nullable|string|max:100',
             'address'       => 'nullable|string|max:500',
             'profession'    => 'nullable|string|max:255',
-            'role'          => ['required', Rule::in(['student', 'instructor', 'admin'])],
+            'role'          => ['required', Rule::in(['student', 'instructor', 'admin', 'business'])],
         ];
     }
 

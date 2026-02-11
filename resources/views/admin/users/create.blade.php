@@ -169,9 +169,9 @@
                             </label>
                             <select name="role" id="role" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                 <option value="">Seleccionar rol</option>
-                                @foreach($roles as $value => $label)
-                                    <option value="{{ $value }}" {{ old('role') == $value ? 'selected' : '' }}>
-                                        {{ $label }}
+                                @foreach($roles as $rol)
+                                    <option value="{{ $rol->name }}" {{ old('role') == $rol->name ? 'selected' : '' }}>
+                                        {{ ucwords($rol->name) }}
                                     </option>
                                 @endforeach
                             </select>

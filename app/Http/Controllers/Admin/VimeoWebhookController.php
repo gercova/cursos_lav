@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Vimeo;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class VimeoWebhookController {
 
-    public function handle(Request $request)
-    {
+    public function handle(Request $request) {
+
         Log::info('requets webhook',$request->all());
-        $event = $request->input('webhook_type');
-        $videoUri = $request->input('data.video_uri'); 
+        $event      = $request->input('webhook_type');
+        $videoUri   = $request->input('data.video_uri'); 
 
         if (!$videoUri) {
             return response('no se proporciono la url del video', 400);
         }
-        $vimeoId = str_replace('/videos/', '', $videoUri);
+        $vimeoId    = str_replace('/videos/', '', $videoUri);
         if ($event === 'video-transcode-complete') {
-            Vimeo::where('vimeo_id', $vimeoId)->update(['status' => 'ready']);
+            Video::where('vimeo_id', $vimeoId)->update(['status' => 'ready']);
         }
 
         if ($event === 'video-upload-failed') {
-            Vimeo::where('vimeo_id', $vimeoId)->update(['status' => 'error']);
+            Video::where('vimeo_id', $vimeoId)->update(['status' => 'error']);
             Log::info('Webhook de Vimeo recibido error: '.$request->input('error_type'));
         }
 

@@ -6,18 +6,26 @@
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Usuarios</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Mis usuarios</h1>
                 <p class="text-gray-600 mt-2">Gestiona todos los usuarios de la plataforma</p>
             </div>
 
-            <!-- Botón para crear usuario -->
-            <a href="{{ route('admin.users.create') }}"
-               class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Nuevo Usuario
-            </a>
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <a href="{{ route('company.import') }}"
+                class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-file-excel"></i>
+                    Importar usuarios desde excel
+                </a>
+                &nbsp;
+                <!-- Botón para crear usuario -->
+                <a href="{{ route('company.create') }}"
+                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Nuevo Usuario
+                </a>
+            </div>
         </div>
 
         <!-- Tarjetas de estadísticas -->
@@ -47,37 +55,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Instructores -->
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-2xl p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-purple-800">Instructores</p>
-                        <p class="text-2xl font-bold text-purple-900 mt-1">{{ $stats['instructors'] }}</p>
-                    </div>
-                    <div class="bg-purple-600 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Administradores -->
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-orange-800">Administradores</p>
-                        <p class="text-2xl font-bold text-orange-900 mt-1">{{ $stats['admins'] }}</p>
-                    </div>
-                    <div class="bg-orange-600 p-3 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -103,25 +80,6 @@
                             placeholder="Buscar por nombre, email o DNI..."
                             class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
                         >
-                    </div>
-
-                    <div class="flex gap-2">
-                        <select x-model="roleFilter"
-                            @change="performSearch()"
-                            class="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
-                        >
-                            <option value="">Todos los roles</option>
-                            @foreach ($roles as $rol)
-                                <option value="{{ $rol->name }}">{{ ucwords($rol->name) }}</option>
-                            @endforeach
-                            {{-- <option value="student">Estudiante</option>
-                            <option value="instructor">Instructor</option>
-                            <option value="admin">Administrador</option> --}}
-                        </select>
-
-                        <button @click="resetFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
-                            Limpiar
-                        </button>
                     </div>
                 </div>
             </div>
@@ -300,20 +258,22 @@
                                             x-transition:leave-end="opacity-0 scale-95"
                                             style="display: none;"
                                         >
-                                            <!-- Activar / Desactivar -->
-                                            <button @click="toggleUserStatus({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium {{ $user->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }} transition-colors duration-150">
-                                                @if($user->is_active)
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
-                                                    </svg>
-                                                    Desactivar
-                                                @else
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                    </svg>
-                                                    Activar
-                                                @endif
-                                            </button>
+                                            @if($user->id !== auth()->user()->id)
+                                                <!-- Activar / Desactivar -->
+                                                <button @click="toggleUserStatus({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium {{ $user->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }} transition-colors duration-150">
+                                                    @if($user->is_active)
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                        </svg>
+                                                        Desactivar
+                                                    @else
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        Activar
+                                                    @endif
+                                                </button>
+                                            @endif
 
                                             <!-- Ver detalles -->
                                             <a href="{{ route('admin.users.show', $user) }}" class="block w-full px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 flex items-center gap-3 transition-colors duration-150">
@@ -353,13 +313,15 @@
                                                 </button>
                                             @endif
 
-                                            <!-- Eliminar -->
-                                            <button @click="deleteUser({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                                Eliminar
-                                            </button>
+                                            @if($user->id !== auth()->user()->id)
+                                                <!-- Eliminar -->
+                                                <button @click="deleteUser({{ $user->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
 

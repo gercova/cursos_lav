@@ -13,13 +13,14 @@ use App\Http\Controllers\Admin\LessonsAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
+use App\Http\Controllers\Admin\VimeoController;
 use App\Http\Controllers\Admin\VimeoWebhookController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\PaymentController as ControllersPaymentController;
+use App\Http\Controllers\Business\BusinessManagementController;
 use App\Http\Controllers\Student\AffiliateController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
@@ -62,7 +63,7 @@ Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->nam
 // Autenticación general (Admin / Instructor / Student)
 Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
 Route::post('/register',                [RegisterController::class, 'register']);
-Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login');
+Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest'); ;
 Route::post('/login',                   [LoginController::class, 'login']);
 Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
 Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -178,6 +179,13 @@ Route::middleware(['auth', 'student'])->group(function () {
 
 });
 
+Route::middleware(['auth', 'business'])->group(function() {
+    
+    Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+    Route::post('/mis-colaboradores/crear',      [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+    Route::post('/mis-colaboradores/importar',   [BusinessManagementController::class, 'importFile'])->name('company.import');
+});
+
 Route::prefix('admin')->group(function () {
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -267,7 +275,10 @@ Route::prefix('admin')->group(function () {
         Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',      [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
         Route::post('/courses/{course}/sections/{section}/lessons/{lesson}/toggle-status', [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
         Route::post('/courses/{course}/sections/{section}/lessons/reorder',         [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
-
+        
+        // rutas vimeo directo
+        Route::post('/vimeo/upload-link',[VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
+        Route::delete('/vimeo/{vimeoId}',[VimeoController::class,'destroy'])->name('vimeo.destroy');
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
         Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');

@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
         'prevent.back' => \App\Http\Middleware\PreventBackHistory::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'student' => \App\Http\Middleware\Student::class,
+        'business' => \App\Http\Middleware\Business::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,

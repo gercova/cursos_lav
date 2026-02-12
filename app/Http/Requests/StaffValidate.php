@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UserValidate extends FormRequest {
+class StaffValidate extends FormRequest {
 
     public function authorize(): bool {
         return true;
@@ -13,37 +12,38 @@ class UserValidate extends FormRequest {
 
     public function rules(): array {
         return [
-            'dni'           => 'required|string|max:20|unique:users,dni,'.$this->id,
+            'dni'           => 'required|string|max:20|unique:users',
             'names'         => 'required|string|max:255',
-            'email'         => 'required|email|unique:users,email,'.$this->id,
-            'country_code'  => 'required',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:8|confirmed',
+            'country_code'  => 'required|string|max:5',
             'phone'         => 'required|string|max:20',
-            'nationality'   => 'nullable|string|max:100',
-            'address'       => 'nullable|string|max:500',
-            'profession'    => 'nullable|string|max:255',
-            'role'          => ['required', Rule::in(['student', 'instructor', 'admin', 'business'])],
+            'nationality'   => 'required|string|max:100',
+            'address'       => 'required|string|max:500',
+            'profession'    => 'required|string|max:255',
         ];
     }
 
     public function messages(): array {
         return [
-            'dni.required'          => 'El DNI es requerido',
+            'dni.required'          => 'El DNI es obligatorio',
             'dni.max'               => 'El DNI tiene una longitud máxima de 20 dígitos',
-            'dni.unique'            => 'El DNI ya existe en el sistema',
-            'names.required'        => 'El nombre es requerido',
-            'names.max'             => 'El nombre tiene una longitud máxima de 255 caracteres',
+            'dni.unique'            => 'El DNI ya existe',
+            'names.required'        => 'Los Nombres son obligatorios',
+            'names.max'             => 'Los Nombres tienen una longitud máxima de 255 caracteres',
             'email.required'        => 'El email es requerido',
             'email.email'           => 'El formato ingresado no corresponde al de un correo',
             'email.unique'          => 'El email ya está registrado',
             'phone.required'        => 'El teléfono es requerido',
             'phone.max'             => 'El teléfono tiene una longitud máxima de 20 dígitos',
+            'nationality.required'  => 'La nacionalidad es olbigatoria',
             'nationality.max'       => 'La nacionalidad tiene una longitud máxima de 100 caracteres',
             'address.max'           => 'La dirección tiene una longitud máxima de 500 caracteres',
             'profession.max'        => 'La profesión tiene una longitud máxima de 500 caracteres',
-            'role.required'         => 'El rol es requerido',
-            'role.in'               => 'El rol seleccionado no es válido',
-            'country_code.required' => 'El código país es requerido',
-            'country_code.max'      => 'El código país tiene una longitud máxima de 10 caracteres',
+            'password.required'     => 'La contraseña es requerida',
+            'password.min'          => 'La contraseña tiene una longitud mínima de 8 caracteres',
+            'password.confirmed'    => 'Debe confirmar la contraseña',
+            'country_code.required' => 'El código de país es obligatorio',
         ];
     }
 }

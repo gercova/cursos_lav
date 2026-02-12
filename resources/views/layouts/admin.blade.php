@@ -88,37 +88,71 @@
                 </button>
             </div>
             <nav class="mt-6">
-                <a href="{{ route('admin.dashboard') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                </a>
-                <a href="{{ route('admin.enterprise.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enterprise.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-building mr-2"></i>Datos de Empresa
-                </a>
-                <a href="{{ route('admin.categories.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-folder mr-2"></i>Categorías
-                </a>
-                <a href="{{ route('admin.courses.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-book mr-2"></i>Cursos
-                </a>
-                <a href="{{ route('admin.documents.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-file-alt mr-2"></i>Documentos
-                </a>
-                <a href="{{ route('admin.exams.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-clipboard-list mr-2"></i>Exámenes
-                </a>
-                <a href="{{ route('admin.users.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-solid fa-users"></i> Usuarios
-                </a>
-                <!-- Añadir este enlace en el sidebar -->
-                <a href="{{ route('admin.roles.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.roles.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-user-shield mr-2"></i>Roles y Permisos
-                </a>
-                <a href="{{ route('admin.enrollments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enrollments.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-solid fa-address-book"></i> Gestión de inscripciones
-                </a>
-                <a href="{{ route('admin.payments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.payments.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-solid fa-dollar-sign"></i> Gestión de pagos
-                </a>
+                @role('admin|instructor')
+                    <a href="{{ route('admin.dashboard') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </a>
+                @endrole
+
+                @role('business')
+                    <a href="{{ route('company.list') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
+                        <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
+                    </a>
+                @endrole
+
+                @role('admin')
+                    <a href="{{ route('admin.enterprise.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enterprise.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-building mr-2"></i>Datos de Empresa
+                    </a>
+                @endrole
+                
+                @role('admin|instructor')
+                    <a href="{{ route('admin.categories.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-folder mr-2"></i>Categorías
+                    </a>
+                @endrole
+                
+                @role('admin|instructor')
+                    <a href="{{ route('admin.courses.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-book mr-2"></i>Cursos
+                    </a>
+                @endrole
+                
+                @role('admin|instructor')
+                    <a href="{{ route('admin.documents.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-file-alt mr-2"></i>Documentos
+                    </a>
+                @endrole
+                
+                @role('admin|instructor')
+                    <a href="{{ route('admin.exams.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-clipboard-list mr-2"></i>Exámenes
+                    </a>
+                @endrole
+                
+                @role('admin')
+                    <a href="{{ route('admin.users.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-solid fa-users"></i> Usuarios
+                    </a>
+                    
+                    <!-- Añadir este enlace en el sidebar -->
+                    <a href="{{ route('admin.roles.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.roles.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-user-shield mr-2"></i>Roles y Permisos
+                    </a>
+                @endrole
+                
+                @role('admin|instructor')
+                    <a href="{{ route('admin.enrollments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enrollments.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-solid fa-address-book mr-2"></i> Gestión de inscripciones
+                    </a>
+                @endrole
+                    
+                @role('admin')
+                    <a href="{{ route('admin.payments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.payments.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-solid fa-dollar-sign mr-2"></i> Gestión de pagos
+                    </a>
+                @endrole
+
             </nav>
         </div>
 

@@ -14,14 +14,20 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserAdminController extends Controller {
 
     public function __construct() {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
+        $this->middleware('permission:view_users')->only('index');
+		$this->middleware('permission:create_users')->only('create');
+		$this->middleware('permission:edit_users')->only('edit');
+		$this->middleware('permission:delete_users')->only('detroy');
     }
 
     public function index(Request $request): View {
+        $roles = Role::get();
         $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])->orderBy('created_at', 'desc');
 
         // Filtros
@@ -52,16 +58,16 @@ class UserAdminController extends Controller {
             'admins'        => User::where('role', 'admin')->count(),
         ];
 
-        return view('admin.users.index', compact('users', 'stats'));
+        return view('admin.users.index', compact('users', 'stats', 'roles'));
     }
 
     public function create(): View {
-        $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
+        $roles = Role::get();
         return view('admin.users.create', compact('roles'));
     }
 
     public function edit(User $user): View {
-        $roles = ['student' => 'Estudiante', 'instructor' => 'Instructor', 'admin' => 'Administrador'];
+        $roles = Role::get();
         $originalArray = [
             ['code' => '+51', 'country' => '+51 - Perú'],
             ['code' => '+54', 'country' => '+54 - Argentina'],
@@ -100,30 +106,6 @@ class UserAdminController extends Controller {
         $message = $request->has('id') ? 'actualizado' : 'creado';
         return redirect()->route('admin.users.index')->with('success', "Usuario {$message} exitosamente.");
     }
-
-    // public function show(User $user): View {
-    //     $user->load([
-    //         'enrollments.course.category',
-    //         'courses.category',
-    //         'certificates.course',
-    //         'examAttempts.exam.course',
-    //         'cartItems.course'
-    //     ]);
-
-    //     $enrollmentStats = $user->enrollments()
-    //         ->selectRaw('
-    //             COUNT(*) as total,
-    //             SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
-    //             AVG(progress) as avg_progress
-    //         ')
-    //         ->first();
-
-    //     $certificateStats = $user->certificates()
-    //         ->selectRaw('COUNT(*) as total')
-    //         ->first();
-
-    //     return view('admin.users.show', compact('user', 'enrollmentStats', 'certificateStats'));
-    // }
 
     public function show(User $user): View {
         $user->load([

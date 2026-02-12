@@ -170,6 +170,13 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Notificaciones
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
+
+    Route::post('/mp/preference', [PaymentController::class, 'createPreference'])->name('mp.preference');
+    // Rutas de retorno de Mercado Pago
+    Route::get('/pago/exitoso', [PaymentController::class, 'success'])->name('pago.exitoso');
+    Route::get('/pago/fallido', [PaymentController::class, 'failure'])->name('pago.fallido');
+    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('pago.pendiente');
+
 });
 
 Route::prefix('company')->group(function() {

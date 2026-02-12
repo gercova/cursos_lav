@@ -14,6 +14,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.6",
+        "mercadopago/dx-php": "^3.8",
         "spatie/laravel-permission": "^6.23",
         "vimeo/laravel": "^5.10"
     },

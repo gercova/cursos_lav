@@ -218,66 +218,212 @@
                     x-transition:enter-start="opacity-0 transform -translate-x-4"
                     x-transition:enter-end="opacity-100 transform translate-x-0"
                     class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                    
                     <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
                         <div class="flex items-center">
                             <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                                <i class="fas fa-shield-alt text-purple-600"></i>
+                                <i class="fas fa-credit-card text-purple-600"></i>
                             </div>
                             <div>
-                                <h2 class="text-xl font-bold text-gray-900">Confirmar y Pagar</h2>
-                                <p class="text-gray-600 text-sm">Serás redirigido a la pasarela segura de Mercado Pago</p>
+                                <h2 class="text-xl font-bold text-gray-900">Método de pago</h2>
+                                <p class="text-gray-600 text-sm">Elige cómo quieres pagar tus cursos</p>
                             </div>
                         </div>
                     </div>
 
                     <form @submit.prevent="processPayment" class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                            <div class="flex items-start p-3 border border-gray-100 rounded-lg">
-                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
-                                <p class="text-xs text-gray-500">Aceptamos todas las tarjetas de crédito y débito.</p>
-                            </div>
-                            <div class="flex items-start p-3 border border-gray-100 rounded-lg">
-                                <i class="fas fa-university text-blue-500 mt-1 mr-3"></i>
-                                <p class="text-xs text-gray-500">Pagos en efectivo vía PagoEfectivo (BCP, BBVA, etc.).</p>
+                        <!-- Opciones de pago -->
+                        <div class="space-y-4 mb-8">
+                            <label @click="paymentMethod = 'card'" :class="paymentMethod === 'card' ? 'border-2 border-blue-500 bg-blue-50' : 'border border-gray-300 hover:border-blue-300 hover:bg-gray-50'" class="block p-5 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02]">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div :class="paymentMethod === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'" class="w-12 h-12 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <i class="fas fa-credit-card text-lg"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="font-semibold text-gray-900">Tarjeta de crédito/débito</h3>
+                                                <p class="text-sm text-gray-600 mt-1">Paga con Visa, Mastercard, American Express</p>
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <div class="w-10 h-6 bg-blue-500 rounded flex items-center justify-center">
+                                                    <span class="text-xs font-bold text-white">VISA</span>
+                                                </div>
+                                                <div class="w-10 h-6 bg-red-500 rounded flex items-center justify-center">
+                                                    <span class="text-xs font-bold text-white">MC</span>
+                                                </div>
+                                                <div class="w-10 h-6 bg-blue-800 rounded flex items-center justify-center">
+                                                    <span class="text-xs font-bold text-white">AX</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label @click="paymentMethod = 'pago_efectivo'" :class="paymentMethod === 'pago_efectivo' ? 'border-2 border-green-500 bg-green-50' : 'border border-gray-300 hover:border-green-300 hover:bg-gray-50'" class="block p-5 rounded-xl cursor-pointer transition-all duration-200 transform hover:scale-[1.02]">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div :class="paymentMethod === 'pago_efectivo' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-400'" class="w-12 h-12 rounded-lg flex items-center justify-center transition-colors duration-200">
+                                            <i class="fas fa-money-bill-wave text-lg"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h3 class="font-semibold text-gray-900">PagoEfectivo</h3>
+                                                <p class="text-sm text-gray-600 mt-1">Paga en agentes o banca por internet</p>
+                                            </div>
+                                            <div class="w-10 h-6 bg-green-500 rounded flex items-center justify-center">
+                                                <span class="text-xs font-bold text-white">PE</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Formulario de tarjeta -->
+                        <div x-show="paymentMethod === 'card'" x-transition class="space-y-6">
+                            <div class="p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+                                <h3 class="font-semibold text-blue-800 mb-3">Información de la tarjeta</h3>
+
+                                <!-- Número de tarjeta -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        Número de tarjeta <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-credit-card text-gray-400"></i>
+                                        </div>
+                                        <div id="card-number" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200"></div>
+                                    </div>
+                                    <div id="card-number-errors" class="text-red-500 text-sm mt-1"></div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Fecha de expiración -->
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-medium text-gray-700">
+                                            Expiración <span class="text-red-500">*</span>
+                                        </label>
+                                        <div id="card-expiry" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200"></div>
+                                        <div id="card-expiry-errors" class="text-red-500 text-sm mt-1"></div>
+                                    </div>
+
+                                    <!-- CVV -->
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-medium text-gray-700">
+                                            CVV <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <div id="card-cvv" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200"></div>
+                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                <button type="button" onclick="showCVVInfo()" class="text-gray-400 hover:text-gray-600">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="card-cvv-errors" class="text-red-500 text-sm mt-1"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Nombre en la tarjeta -->
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        Nombre en la tarjeta <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-user text-gray-400"></i>
+                                        </div>
+                                        <input type="text" id="card-holder-name" x-model="cardHolderName" required class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Como aparece en la tarjeta">
+                                    </div>
+                                </div>
+
+                                <!-- Información de seguridad -->
+                                <div class="mt-4 p-3 bg-white rounded-lg border border-blue-200">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                                        <span class="text-sm text-gray-700">
+                                            Tu información está protegida con encriptación de 256 bits
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
-                            <button type="button" @click="prevStep" :disabled="isProcessing"
-                                class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors duration-200 flex items-center disabled:opacity-50">
+                        <!-- Información de PagoEfectivo -->
+                        <div x-show="paymentMethod === 'pago_efectivo'" x-transition class="space-y-6">
+                            <div class="p-5 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl">
+                                <h3 class="font-semibold text-green-800 mb-3">¿Cómo funciona PagoEfectivo?</h3>
+
+                                <div class="space-y-4">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="font-bold text-green-600">1</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Generar código CIP</h4>
+                                            <p class="text-sm text-gray-600">Al confirmar, generaremos un código único para pagar</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="font-bold text-green-600">2</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Pagar en agentes</h4>
+                                            <p class="text-sm text-gray-600">Lleva el código a cualquier agente autorizado</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <span class="font-bold text-green-600">3</span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-medium text-gray-900">Activación automática</h4>
+                                            <p class="text-sm text-gray-600">Los cursos se activan al confirmar el pago</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-white rounded-lg border border-green-200">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                        <span class="text-sm text-gray-700">
+                                            El código CIP tiene validez de 24 horas
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de navegación -->
+                        <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
+                            <button type="button" @click="prevStep" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors duration-200 flex items-center">
                                 <i class="fas fa-arrow-left mr-2"></i>
-                                Volver
+                                Volver atrás
                             </button>
 
-                            <button type="submit" :disabled="isProcessing" 
-                                :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'" 
-                                class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200 flex items-center group">
-                                
+                            <button type="submit" :disabled="isProcessing" :class="isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl hover:-translate-y-0.5'" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 flex items-center">
                                 <template x-if="!isProcessing">
-                                    <span class="flex items-center">
-                                        <i class="fas fa-lock mr-2 group-hover:animate-pulse"></i>
-                                        <span>Pagar ahora S/ <span x-text="formatPrice(total)"></span></span>
+                                    <span>
+                                        <i class="fas fa-lock mr-2"></i>
+                                        Pagar S/ <span x-text="formatPrice(total)"></span>
                                     </span>
                                 </template>
-                                
                                 <template x-if="isProcessing">
-                                    <span class="flex items-center">
-                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Generando orden segura...
+                                    <span>
+                                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                                        Procesando...
                                     </span>
                                 </template>
                             </button>
-                        </div>
-
-                        <div class="mt-6 flex justify-center gap-6 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                            <i class="fab fa-cc-visa text-3xl"></i>
-                            <i class="fab fa-cc-mastercard text-3xl"></i>
-                            <i class="fas fa-money-bill-wave text-3xl"></i>
-                            <i class="fas fa-shield-alt text-3xl"></i>
                         </div>
                     </form>
                 </div>
@@ -347,6 +493,11 @@
                                     <span class="font-medium text-gray-900">S/ <span x-text="formatPrice(subtotal)"></span></span>
                                 </div>
 
+                                <div x-show="couponDiscount > 0" class="flex justify-between">
+                                    <span class="text-green-600">Descuento</span>
+                                    <span class="font-medium text-green-600">- S/ <span x-text="formatPrice(couponDiscount)"></span></span>
+                                </div>
+
                                 <div class="flex justify-between">
                                     <span class="text-gray-600">IGV (18%)</span>
                                     <span class="font-medium text-gray-900">S/ <span x-text="formatPrice(tax)"></span></span>
@@ -357,6 +508,31 @@
                                     <span class="text-gray-900">S/ <span x-text="formatPrice(total)"></span></span>
                                 </div>
                             </div>
+
+                            <!-- Cupón -->
+                            <!--<div class="mt-6">
+                                <div x-show="!couponApplied" class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700">¿Tienes un cupón?</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" x-model="couponCode" placeholder="Código de cupón" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                                        <button @click="applyCoupon" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200">
+                                            Aplicar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div x-show="couponApplied" class="p-3 bg-green-50 rounded-lg border border-green-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="text-green-800 font-medium" x-text="couponCode"></span>
+                                            <p class="text-sm text-green-600">Cupón aplicado</p>
+                                        </div>
+                                        <button @click="removeCoupon"
+                                                class="text-green-600 hover:text-green-800">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>-->
                         </div>
                     </div>
 
@@ -497,30 +673,175 @@
     </div>
 </div>
 
+<!-- Modal de confirmación de pago -->
+<div id="payment-success-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] hidden p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
+        <!-- Encabezado animado -->
+        <div class="p-8 text-center relative overflow-hidden">
+            <!-- Fondo animado -->
+            <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-600/10"></div>
+
+            <!-- Check animado -->
+            <div class="relative">
+                <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg animate-scale-up">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+
+                <h3 class="text-2xl font-bold text-gray-900 mb-2 animate-fade-in-up">¡Pago exitoso!</h3>
+                <p class="text-gray-600 animate-fade-in-up" x-text="paymentMessage"></p>
+            </div>
+        </div>
+
+        <!-- Detalles del pago -->
+        <div class="px-8 pb-8">
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">Número de orden</span>
+                    <span class="font-mono font-bold text-gray-900" x-text="orderNumber"></span>
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">Monto pagado</span>
+                    <span class="font-bold text-gray-900">S/ <span x-text="formatPrice(total)"></span></span>
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="text-gray-600">Fecha</span>
+                    <span class="font-medium text-gray-900" x-text="paymentDate"></span>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="space-y-3">
+                <a :href="redirectUrl" class="block w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center">
+                    <i class="fas fa-play-circle mr-2"></i>
+                    Comenzar a aprender
+                </a>
+
+                <button onclick="closeSuccessModal()" class="w-full px-6 py-3 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-medium rounded-lg transition-colors duration-200">
+                    Seguir explorando
+                </button>
+            </div>
+
+            <p class="text-center text-sm text-gray-500 mt-4">
+                Te hemos enviado un correo con los detalles de tu compra
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de información CVV -->
+<div id="cvv-info-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-[9998] hidden p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+        <div class="flex items-center mb-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                <i class="fas fa-credit-card text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900">¿Dónde encuentro el CVV?</h3>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <span class="text-sm font-bold text-blue-600">VISA</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Es un código de 3 dígitos en el reverso de tu tarjeta
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                    <div class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                        <span class="text-sm font-bold text-red-600">AMEX</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-700">
+                        American Express tiene 4 dígitos en el frente de la tarjeta
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagen de ejemplo -->
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div class="flex justify-between items-center">
+                <div class="w-16 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded"></div>
+                <div class="text-center">
+                    <div class="w-12 h-8 bg-gray-200 rounded mb-1 mx-auto"></div>
+                    <p class="text-xs text-gray-500">CVV</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+            <button onclick="closeCVVModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                Entendido
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
-<script src="https://sdk.mercadopago.com/js/v2"></script>
+<!-- Culqi JS -->
+<script src="https://checkout.culqi.com/js/v4"></script>
+
 <script>
+console.log(@json($cartItems));
+
 function checkoutApp() {
     return {
         cartItems: @json($cartItems),
         subtotal: {{ $subtotal }},
         tax: {{ $tax }},
         total: {{ $total }},
+        couponDiscount: {{ $discount ?? 0 }},
+        couponCode: '',
+        couponApplied: {{ isset($discount) && $discount > 0 ? 'true' : 'false' }},
         currentStep: 1,
         progress: 33,
-        isProcessing: false,
+        paymentMethod: 'card',
         customer: {
             first_name: '{{ auth()->user()->names }}'.split(' ')[0] || '',
             last_name: '{{ auth()->user()->names }}'.split(' ').slice(1).join(' ') || '',
             email: '{{ auth()->user()->email }}',
             phone: '',
             address: '',
+            city: '',
             country: 'PE',
+            document_type: '',
+            document_number: ''
         },
+        cardHolderName: '',
+        culqi: null,
+        isProcessing: false,
+        paymentMessage: '',
+        redirectUrl: '{{ route("student.my-courses") }}',
+        orderNumber: 'ORD-' + Date.now().toString().slice(-8),
+        paymentDate: new Date().toLocaleDateString('es-PE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }),
+
         init() {
+            this.initCulqi();
             this.loadFromLocalStorage();
+            this.calculateProgress();
+
+            // Configurar autoguardado
             this.$watch('customer', () => this.saveToLocalStorage(), { deep: true });
         },
 
@@ -541,6 +862,11 @@ function checkoutApp() {
                 this.currentStep = 2;
                 this.calculateProgress();
                 this.scrollToTop();
+
+                // Inicializar campos de Culqi si se selecciona tarjeta
+                if (this.paymentMethod === 'card' && this.culqi) {
+                    this.initCulqiFields();
+                }
             }
         },
 
@@ -589,35 +915,126 @@ function checkoutApp() {
             };
             return labels[field] || field;
         },
-        async processPayment() {
-            if (!this.validateStep1()) return;
-            this.isProcessing = true;
-            try {
-                // 1. Obtenemos la preferencia de Laravel (igual que antes)
-                const { data } = await axios.post("{{ route('mp.preference') }}", {
-                    customer: this.customer,
-                    total: this.total,
-                    items: this.cartItems
-                });
-                if (data.id) {
-                    //  Public Key panel de developers
-                    const mp = new MercadoPago("{{ config('services.mercadopago.public_key') }}");
 
-                    // Modal
-                    mp.checkout({
-                        preference: {
-                            id: data.id
-                        },
-                        autoOpen: true,
-                    });
-                }
+        initCulqi() {
+            Culqi.publicKey = '{{ env("CULQI_PUBLIC_KEY", "pk_test_xxx") }}';
+
+            Culqi.settings({
+                title: 'Plataforma de Cursos',
+                currency: 'PEN',
+                description: `Pago de ${this.cartItems.length} curso(s)`,
+                amount: this.total * 100
+            });
+
+            Culqi.options({
+                onToken: (token) => this.processCulqiToken(token),
+                onError: (error) => this.showToast(error.user_message || 'Error en el pago', 'error'),
+                onClose: () => this.isProcessing = false
+            });
+
+            this.culqi = Culqi;
+        },
+
+        initCulqiFields() {
+            // Solo inicializar si no están creados
+            if (!document.getElementById('card-number').hasChildNodes()) {
+                this.culqi.createToken();
+            }
+        },
+
+        async processPayment() {
+            this.isProcessing = true;
+
+            if (this.paymentMethod === 'card') {
+                await this.processCardPayment();
+            } else {
+                await this.processPagoEfectivo();
+            }
+        },
+
+        async processCardPayment() {
+            try {
+                await this.culqi.open();
             } catch (error) {
-                this.showToast('Error al abrir la pasarela de pago', 'error');
-            } finally {
-                // Nota: isProcessing se mantiene true hasta que el modal se cierra o redirige
+                this.showToast('Error al abrir el formulario de pago', 'error');
                 this.isProcessing = false;
             }
         },
+
+        async processCulqiToken(token) {
+            try {
+                const response = await axios.post('/payment/process-culqi', {
+                    token_id: token.id,
+                    customer: this.customer,
+                    cart_items: this.cartItems,
+                    amount: this.total,
+                    card_holder_name: this.cardHolderName,
+                    order_number: this.orderNumber
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.data.success) {
+                    this.showPaymentSuccess(response.data);
+                } else {
+                    throw new Error(response.data.message);
+                }
+            } catch (error) {
+                this.showToast(error.response?.data?.message || 'Error en el procesamiento del pago', 'error');
+            } finally {
+                this.isProcessing = false;
+            }
+        },
+
+        async processPagoEfectivo() {
+            try {
+                const response = await axios.post('/payment/process-pago-efectivo', {
+                    customer: this.customer,
+                    cart_items: this.cartItems,
+                    amount: this.total,
+                    order_number: this.orderNumber
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.data.success) {
+                    window.location.href = response.data.redirect_url;
+                } else {
+                    throw new Error(response.data.message);
+                }
+            } catch (error) {
+                this.showToast(error.response?.data?.message || 'Error al generar el CIP', 'error');
+                this.isProcessing = false;
+            }
+        },
+
+        showPaymentSuccess(data) {
+            this.paymentMessage = data.message || '¡Pago procesado exitosamente!';
+            this.redirectUrl = data.redirect_url || this.redirectUrl;
+            this.currentStep = 3;
+            this.calculateProgress();
+
+            // Mostrar modal de éxito
+            const modal = document.getElementById('payment-success-modal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Limpiar localStorage
+            localStorage.removeItem('checkout_data');
+            localStorage.removeItem('coupon_code');
+
+            // Redirigir automáticamente después de 10 segundos
+            setTimeout(() => {
+                window.location.href = this.redirectUrl;
+            }, 10000);
+        },
+
         showToast(message, type = 'info') {
             const colors = {
                 success: 'bg-gradient-to-r from-green-500 to-emerald-600',
@@ -639,6 +1056,7 @@ function checkoutApp() {
                     <i class="fas fa-times"></i>
                 </button>
             `;
+
             document.body.appendChild(toast);
 
             setTimeout(() => {
@@ -687,8 +1105,45 @@ function checkoutApp() {
             }
         },
 
-        
+        async applyCoupon() {
+            if (!this.couponCode.trim()) {
+                this.showToast('Ingresa un código de cupón', 'warning');
+                return;
+            }
 
+            try {
+                const response = await axios.post('/cart/apply-coupon', {
+                    coupon_code: this.couponCode
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (response.data.success) {
+                    this.couponApplied = true;
+                    this.couponDiscount = response.data.discount_amount || 0;
+                    this.total = this.subtotal - this.couponDiscount + this.tax;
+
+                    localStorage.setItem('coupon_code', this.couponCode);
+                    this.showToast('Cupón aplicado exitosamente', 'success');
+                } else {
+                    this.showToast(response.data.message || 'Cupón inválido', 'error');
+                }
+            } catch (error) {
+                this.showToast('Error al aplicar el cupón', 'error');
+            }
+        },
+
+        removeCoupon() {
+            this.couponApplied = false;
+            this.couponCode = '';
+            this.couponDiscount = 0;
+            this.total = this.subtotal + this.tax;
+
+            localStorage.removeItem('coupon_code');
+            this.showToast('Cupón removido', 'info');
+        },
 
         scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -697,6 +1152,21 @@ function checkoutApp() {
 }
 
 // Funciones auxiliares globales
+function showCVVInfo() {
+    document.getElementById('cvv-info-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCVVModal() {
+    document.getElementById('cvv-info-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function closeSuccessModal() {
+    document.getElementById('payment-success-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    window.location.href = '{{ route("student.my-courses") }}';
+}
 
 // Animaciones CSS
 document.addEventListener('DOMContentLoaded', function() {

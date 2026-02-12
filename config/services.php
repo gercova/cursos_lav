@@ -41,5 +41,9 @@ return [
         'secret_key'        => env('CULQI_SECRET_KEY'),
         'webhook_secret'    => env('CULQI_WEBHOOK_SECRET'),
     ],
+    'mercadopago' => [
+        'public_key' => env('MP_PUBLIC_KEY'),
+        'token' => env('MP_ACCESS_TOKEN'),
+    ],
 
 ];

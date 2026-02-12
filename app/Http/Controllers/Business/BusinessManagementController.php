@@ -50,6 +50,20 @@ class BusinessManagementController extends Controller {
         return view('business.index', compact('users', 'stats'));
     }
 
+    public function profile (User $user): View {
+        $originalArray = [
+            ['code' => '+51', 'country' => '+51 - Perú'],
+            ['code' => '+54', 'country' => '+54 - Argentina'],
+            ['code' => '+56', 'country' => '+56 - Chile'],
+            ['code' => '+591', 'country' => '+591 - Bolivia'],
+            ['code' => '+593', 'country' => '+593 - Ecuador'],
+            ['code' => '+598', 'country' => '+598 - Uruguay'],
+        ];
+
+        $codeCountries = collect($originalArray)->map(fn ($item) => (object) $item);
+        return view('business.profile', compact('user', 'codeCountries'));
+    }
+
     public function storeStaff(StaffValidate $request): JsonResponse {
         $codeE      = User::where('id', Auth::id())->first();
     
@@ -97,5 +111,9 @@ class BusinessManagementController extends Controller {
                 ], 500);
             }
         }
+    }
+
+    public function destroy(): JsonResponse {
+        
     }
 }

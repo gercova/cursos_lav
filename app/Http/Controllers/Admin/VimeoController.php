@@ -7,18 +7,16 @@ use App\Models\Video;
 use App\Services\VimeoService;
 use Illuminate\Http\Request;
 
-class VimeoController extends Controller
-{
-    public function uploadLink(Request $request,VimeoService $vimeoService)
-    {
+class VimeoController extends Controller {
+    
+    public function uploadLink(Request $request,VimeoService $vimeoService) {
 
         $response=$vimeoService->getUploadLink($request->input('size'),$request->input('name'));
 
         return response()->json($response);
     }
     
-    public function destroy($vimeoId,VimeoService $vimeoService)
-    {
+    public function destroy($vimeoId,VimeoService $vimeoService) {
         set_time_limit(0);
         $response=$vimeoService->delete("/videos/{$vimeoId}");
 

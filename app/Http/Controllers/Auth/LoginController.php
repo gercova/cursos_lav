@@ -40,11 +40,8 @@ class LoginController extends Controller
     }
 
     public function login(LoginValidate $request) {
-        $validated = $request->validated();
-
-        
-
-        $user = User::where('email', $request['email'])->first();
+        $validated  = $request->validated();
+        $user       = User::where('email', $request['email'])->first();
         if (!$user) {
             RateLimiter::hit($this->throttleKey($request));
             return back()->withErrors([
@@ -62,7 +59,7 @@ class LoginController extends Controller
             } else if ($user->isStudent()) {
                 return redirect()->intended('dashboard');
             } else if ($user->isBusiness()) {
-                return redirect()->intended('company.list');
+                return redirect()->intended(route('company.list'))->with('success', '!Bienvenido de nuevo¡');
             }
         }
 

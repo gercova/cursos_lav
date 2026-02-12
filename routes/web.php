@@ -172,11 +172,13 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
 });
 
-Route::middleware(['auth', 'business'])->group(function() {
-    
-    Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
-    Route::post('/mis-colaboradores/crear',      [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-    Route::post('/mis-colaboradores/importar',   [BusinessManagementController::class, 'importFile'])->name('company.import');
+Route::prefix('company')->group(function() {
+    Route::middleware(['auth', 'business'])->group(function() {
+        Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+        Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
+        Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
+    });
 });
 
 Route::prefix('admin')->group(function () {

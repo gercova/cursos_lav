@@ -10,7 +10,7 @@ class CompanyPolicy extends Model
 {
     use HasFactory;
 
-    protected $table        = 'company_policies';
+    protected $table        = 'business_policies';
     protected $primaryKey   = 'id';
     protected $fillable     = ['user_id', 'quantity'];
 

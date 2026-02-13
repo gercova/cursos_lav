@@ -251,7 +251,11 @@ class UserAdminController extends Controller {
         ], 200);
     }
 
-    public function createLimitUser(Request $request, User $user) {
+    public function getLimitUser(User $user): JsonResponse {
+        return response()->json(CompanyPolicy::where('user_id', $user->id)->first(), 200);
+    }
+
+    public function createLimitUser(Request $request, User $user): JsonResponse {
         $rules = [
             'quantity' => 'required|numeric|min:1',
         ];
@@ -268,12 +272,21 @@ class UserAdminController extends Controller {
     
         $request->validate($rules, $messages, $attributes);
         
-        $result = CompanyPolicy::create(['user_id' => $user->id, 'quantity' => $request->input('quantity')]);
-        
+        // Usamos updateOrCreate para manejar crear o actualizar
+        // Busca por user_id, y actualiza/crea con los campos especificados
+        $policy = CompanyPolicy::updateOrCreate(
+            ['user_id'  => $user->id], // Condiciones para encontrar el registro
+            ['quantity' => $request->input('quantity')] // Valores a insertar o actualizar
+        );
+
+        // Verificamos si la operación fue exitosa
+        $wasCreated     = $policy->wasRecentlyCreated; // Es true si se creó, false si se actualizó
+
         return response()->json([
-            'success'   => (bool) $result ? true : false,
-            'message'   => $result ? 'Código de promoción creado exitosamente' : 'Algo salió mal, intente de nuevo',
-        ], $result ? 200 : 400);
+            'success'   => true, // updateOrCreate debería funcionar si la validación pasa
+            'message'   => $wasCreated ? 'Política creada exitosamente.' : 'Política actualizada exitosamente.', // Mensaje distinto según acción
+            'data'      => $policy, // Opcional: devolver los datos guardados
+        ], 200);
     }
 
     public function createNickname($name): string {

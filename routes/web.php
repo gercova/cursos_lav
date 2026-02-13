@@ -172,11 +172,11 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Notificaciones
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
 
-    Route::post('/mp/preference', [PaymentController::class, 'createPreference'])->name('mp.preference');
+    Route::post('/mp/preference',       [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso', [PaymentController::class, 'success'])->name('pago.exitoso');
-    Route::get('/pago/fallido', [PaymentController::class, 'failure'])->name('pago.fallido');
-    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('pago.pendiente');
+    Route::get('/pago/exitoso',         [PaymentController::class, 'success'])->name('pago.exitoso');
+    Route::get('/pago/fallido',         [PaymentController::class, 'failure'])->name('pago.fallido');
+    Route::get('/pago/pendiente',       [PaymentController::class, 'pending'])->name('pago.pendiente');
 
 });
 
@@ -240,8 +240,8 @@ Route::prefix('admin')->group(function () {
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
         Route::put('/users/policy/{user}',          [UserAdminController::class, 'createLimitUser'])->name('admin.user.policy');
+        Route::get('/users/get-policy/{user}',      [UserAdminController::class, 'getLimitUser'])->name('admin.user.get-policy');
 
-        // Rutas para Roles y Permisos
         // Rutas para asignar permisos a usuarios
         Route::get('/roles/home',               [RoleController::class, 'index'])->name('admin.roles.index');
         Route::post('/roles/store',             [RoleController::class, 'store'])->name('admin.roles.store');

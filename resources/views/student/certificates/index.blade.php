@@ -138,9 +138,9 @@
                                         <i class="fas fa-calendar-alt mr-1.5 text-gray-400"></i>
                                         <span>Emitido: {{ $certificate->issue_date->format('d/m/Y') }}</span>
                                         @if($certificate->expiry_date)
-                                        <span class="mx-2">•</span>
-                                        <i class="fas fa-clock mr-1.5 text-gray-400"></i>
-                                        <span>Vence: {{ $certificate->expiry_date->format('d/m/Y') }}</span>
+                                            <span class="mx-2">•</span>
+                                            <i class="fas fa-clock mr-1.5 text-gray-400"></i>
+                                            <span>Vence: {{ $certificate->expiry_date->format('d/m/Y') }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -180,7 +180,7 @@
                                 </a>
 
                                 <!-- Descargar -->
-                                <a href="{{ route('student.certificates.download', $certificate->id) }}" class="action-btn group" title="Descargar PDF">
+                                <a href="{{ route('student.certificates.download-exact', $certificate->id) }}" class="action-btn group" title="Descargar PDF">
                                     <div class="w-8 h-8 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 group-hover:border-emerald-300 flex items-center justify-center transition-all duration-200">
                                         <i class="fas fa-download text-emerald-600 text-sm"></i>
                                     </div>

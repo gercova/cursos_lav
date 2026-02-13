@@ -182,9 +182,10 @@
                             <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
                                 Rol <span class="text-red-500">*</span>
                             </label>
+                            {{-- {{ dd($roles) }} --}}
                             <select name="role" id="role" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                 @foreach($roles as $rol)
-                                    <option value="{{ $rol->name }}" {{ old('role', $user->role) == $role->name ? 'selected' : '' }}>
+                                    <option value="{{ $rol->name }}" {{ old('role', $user->role) == $rol->name ? 'selected' : '' }}>
                                         {{ ucwords($rol->name) }}
                                     </option>
                                 @endforeach

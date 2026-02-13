@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Business\BusinessImportController;
 use App\Http\Controllers\Business\BusinessManagementController;
 use App\Http\Controllers\Student\AffiliateController;
 use App\Http\Controllers\Student\CartsController;
@@ -185,6 +186,17 @@ Route::prefix('company')->group(function() {
         Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
         Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
         Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
+
+        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import');
+        Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
+        Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
+
+        Route::get('/enroll/users',         [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
+        Route::post('/enroll/with-code',    [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
+        Route::post('/enroll/bulk',         [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
+        Route::get('/enroll/recent',        [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
+        Route::get('/users/without-code',   [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
+        Route::post('/enroll/super-bulk',   [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
     });
 });
 
@@ -234,7 +246,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/roles/store',             [RoleController::class, 'store'])->name('admin.roles.store');
         Route::get('/users/{user}/permissions', [RoleController::class, 'assignPermissions'])->name('users.permissions.assign');
         Route::put('/users/{user}/permissions', [RoleController::class, 'updatePermissions'])->name('users.permissions.update');
-        Route::delete('/roles/{role}',          [RoleController::class, 'destroy'])->name('admin.permissiones.delete');
+        Route::delete('/roles/{role}',          [RoleController::class, 'destroy'])->name('admin.roles.destroy');
 
         // Rutas para categorias
         Route::get('categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');

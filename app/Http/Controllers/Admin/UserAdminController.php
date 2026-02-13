@@ -13,6 +13,7 @@ use App\Services\StudentTrackingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -83,9 +84,11 @@ class UserAdminController extends Controller {
 
     public function store(UserValidate $request) {
         $validated = $request->validated();
-
         // Determinar si es creación por la presencia de ID en el request
         if (!$request->has('id') || empty($request->id)) {
+            $request->role == 'business' ? 
+                $proccessData['company_code'] = $this->createNickname($validated['names']) : 
+                $proccessData['company_code'] = '';
             $proccessData = [
                 'password'          => Hash::make('P4$$w0rd#.'),
                 'email_verified_at' => now(),
@@ -101,6 +104,18 @@ class UserAdminController extends Controller {
             // Actualización - usar ID del request
             $user = User::where('id', $request->id)->first();
             $user->update($validated);
+        }
+
+        if ($request->has('role')) {
+            // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
+            DB::table('model_has_roles')->where('model_id', $user->id)->delete();
+            // Asignar el nuevo rol
+            $findRoleId = DB::table('model_has_roles')->where('name', $request->role)->first();
+            DB::table('model_has_roles')->insert([
+                'role_id'       => $findRoleId->id,
+                'model_type'    => 'App\Models\User',
+                'model_id'      => $user->id
+            ]);
         }
 
         $message = $request->has('id') ? 'actualizado' : 'creado';

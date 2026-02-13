@@ -5,27 +5,30 @@
     <!-- Header -->
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Mis usuarios</h1>
-                <p class="text-gray-600 mt-2">Gestiona todos los usuarios de la plataforma</p>
-            </div>
-
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                <a href="{{ route('company.import') }}"
-                class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Botón para importar usuarios - CORREGIDO -->
+                <a href="{{ route('company.import') }}" class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                     <i class="fa-solid fa-file-excel"></i>
                     Importar usuarios desde excel
                 </a>
-                &nbsp;
-                <!-- Botón para crear usuario -->
-                <a href="{{ route('company.create') }}"
-                class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                
+                <!-- Botón para descargar plantilla - CORREGIDO -->
+                <a href="{{ route('company.import.template') }}" class="flex items-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
-                    Nuevo Usuario
+                    Descargar plantilla Excel
                 </a>
             </div>
+            
+            <!-- Botón para crear usuario -->
+            <a href="{{ route('company.create') }}"
+            class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 mt-3 sm:mt-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nuevo Usuario
+            </a>
         </div>
 
         <!-- Tarjetas de estadísticas -->

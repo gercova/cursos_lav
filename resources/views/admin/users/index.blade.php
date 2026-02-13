@@ -247,6 +247,7 @@
                                         <span class="px-3 py-1 rounded-full text-xs font-semibold text-center
                                             @if($user->role === 'admin') bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800
                                             @elseif($user->role === 'instructor') bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800
+                                            @elseif($user->role === 'business') bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800
                                             @else bg-gradient-to-r from-green-100 to-green-200 text-green-800
                                             @endif">
                                             {{ ucfirst($user->role) }}

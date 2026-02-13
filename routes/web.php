@@ -239,6 +239,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
+        Route::put('/users/policy/{user}',          [UserAdminController::class, 'createLimitUser'])->name('admin.user.policy');
 
         // Rutas para Roles y Permisos
         // Rutas para asignar permisos a usuarios
@@ -263,6 +264,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/courses/{course}/sections',                [CoursesAdminController::class, 'getSections']);
         Route::post('/courses/{course}/toggle-status',          [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
         Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
+        Route::get('/courses/{course}',                         [CoursesAdminController::class, 'show'])->name('admin.courses.show');
         Route::post('/courses/store',                           [CoursesAdminController::class, 'store'])->name('admin.courses.store');
         Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
         Route::put('/courses/update',                           [CoursesAdminController::class, 'update'])->name('admin.courses.update');

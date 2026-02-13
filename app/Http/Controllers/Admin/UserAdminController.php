@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CodeValidate;
 use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\UserValidate;
+use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\User;
@@ -206,14 +207,12 @@ class UserAdminController extends Controller {
     public function createCode(User $user, CodeValidate $request) {
         $validated = $request->validated();
 
-
-
         if($user->where('code', null)->where('id', $user->id)->first()){
             $newCode = $this->createNickname($user->names);
             $user->update(['code' => $newCode, 'promotion_price_is_active' => $validated['promotion_price_is_active']]);
         }
 
-        $code =$user->code;
+        $code = $user->code;
 
         $courses                = Course::where('is_active', true)->select(['id', 'price'])->get();
         $promotionData          = $courses->map(function ($course) use ($user, $code) {
@@ -250,6 +249,31 @@ class UserAdminController extends Controller {
                 'promotions_created'    => count($promotionData)
             ]
         ], 200);
+    }
+
+    public function createLimitUser(Request $request, User $user) {
+        $rules = [
+            'quantity' => 'required|numeric|min:1',
+        ];
+        
+        $messages = [
+            'quantity.required' => 'El campo cantidad es obligatorio.',
+            'quantity.numeric'  => 'La cantidad debe ser un número válido.',
+            'quantity.min'      => 'La cantidad debe ser al menos :min.',
+        ];
+        
+        $attributes = [
+            'quantity' => 'cantidad de usuarios',
+        ];
+    
+        $request->validate($rules, $messages, $attributes);
+        
+        $result = CompanyPolicy::create(['user_id' => $user->id, 'quantity' => $request->input('quantity')]);
+        
+        return response()->json([
+            'success'   => (bool) $result ? true : false,
+            'message'   => $result ? 'Código de promoción creado exitosamente' : 'Algo salió mal, intente de nuevo',
+        ], $result ? 200 : 400);
     }
 
     public function createNickname($name): string {

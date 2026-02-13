@@ -24,40 +24,9 @@ class BusinessManagementController extends Controller {
         $this->middleware(['auth:sanctum', 'business', 'prevent.back']);
     }
 
-    // public function index(Request $request): View {
-    //     $codeE = User::where('id', Auth::id())->first();
-    //     $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
-    //         ->where('users.company_code', $codeE->company_code)
-    //         ->where('users.id', '!=', Auth::id())
-    //         ->orderBy('created_at', 'desc');
-
-    //     // Filtros
-    //     if ($request->filled('search')) {
-    //         $search = $request->search;
-    //         $query->where(function ($q) use ($search) {
-    //             $q->where('names', 'like', "%{$search}%")
-    //                 ->orWhere('email', 'like', "%{$search}%")
-    //                 ->orWhere('dni', 'like', "%{$search}%")
-    //                 ->orWhere('phone', 'like', "%{$search}%");
-    //         });
-    //     }
-
-    //     if ($request->filled('status')) {
-    //         $query->where('is_active', $request->status);
-    //     }
-
-    //     $users = $query->paginate(10);
-
-    //     $stats = [
-    //         'total'         => User::where('users.company_code', $codeE->company_code)->where('users.id', '!=', Auth::id())->count(),
-    //         'students'      => User::where('users.company_code', $codeE->company_code)->where('users.id', '!=', Auth::id())->count(),
-    //     ];
-
-    //     return view('business.index', compact('users', 'stats'));
-    // }
-
     public function index(Request $request): View {
-        $codeE = User::where('id', Auth::id())->first();
+        $codeE  = User::where('id', Auth::id())->first();
+        $policy = CompanyPolicy::where('user_id', Auth::id())->first();
         
         // Obtener límite de usuarios
         $countUser = User::where('company_code', $codeE->company_code)->count();
@@ -93,7 +62,7 @@ class BusinessManagementController extends Controller {
             'limit'         => ($limitUser->quantity ?? 0) + 1,
         ];
 
-        return view('business.index', compact('users', 'stats'));
+        return view('business.index', compact('users', 'stats', 'policy'));
     }
 
     public function profile (User $user): View {
@@ -189,8 +158,6 @@ class BusinessManagementController extends Controller {
      * Vista para matricular usuarios con código
      */
     public function enrollUsers(): View {
-        // $codeE = User::where('id', Auth::id())->first();
-        
         // Obtener todos los colaboradores de la empresa
         $collaborators = User::where('company_code', auth()->user()->company_code)
             ->where('is_active', true)
@@ -331,8 +298,8 @@ class BusinessManagementController extends Controller {
         }
 
         $results = [
-            'success' => [],
-            'failed' => []
+            'success'   => [],
+            'failed'    => []
         ];
 
         DB::beginTransaction();
@@ -408,9 +375,9 @@ class BusinessManagementController extends Controller {
             }
 
             return response()->json([
-                'success' => true,
-                'message' => $message,
-                'data' => $results
+                'success'   => true,
+                'message'   => $message,
+                'data'      => $results
             ]);
 
         } catch (\Exception $e) {

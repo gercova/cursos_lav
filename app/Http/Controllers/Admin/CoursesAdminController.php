@@ -159,21 +159,21 @@ class CoursesAdminController extends Controller {
         return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
     }
 
-    public function show(Course $course): View {
-        $course->load(['category', 'instructor', 'sections.lessons', 'documents', 'exam', 'enrollments.user']);
+    // public function show(Course $course): View {
+    //     $course->load(['category', 'instructor', 'sections.lessons', 'documents', 'exam', 'enrollments.user']);
 
-        $stats = [
-            'total_students'        => $course->enrollments()->count(),
-            'completed_students'    => $course->enrollments()->where('status', 'completed')->count(),
-            'total_revenue'         => $course->enrollments()
-                ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
-                ->where('payments.status', 'completed')
-                ->sum('payments.amount'),
-            'average_rating' => 4.8, // Esto vendría de un sistema de reviews
-        ];
+    //     $stats = [
+    //         'total_students'        => $course->enrollments()->count(),
+    //         'completed_students'    => $course->enrollments()->where('status', 'completed')->count(),
+    //         'total_revenue'         => $course->enrollments()
+    //             ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
+    //             ->where('payments.status', 'completed')
+    //             ->sum('payments.amount'),
+    //         'average_rating' => 4.8, // Esto vendría de un sistema de reviews
+    //     ];
 
-        return view('admin.courses.show', compact('course', 'stats'));
-    }
+    //     return view('admin.courses.show', compact('course', 'stats'));
+    // }
 
     public function destroy(Course $course) {
         // Verificar si hay inscripciones activas

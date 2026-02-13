@@ -201,9 +201,7 @@
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <button type="submit" 
-                                    :disabled="loading"
-                                    class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button type="submit" :disabled="loading" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="fas fa-user-plus" x-show="!loading"></i>
                                 <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -286,9 +284,7 @@
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <button type="submit" 
-                                    :disabled="bulkLoading || bulkForm.user_ids.length === 0"
-                                    class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button type="submit" :disabled="bulkLoading || bulkForm.user_ids.length === 0" class="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="fas fa-users" x-show="!bulkLoading"></i>
                                 <svg x-show="bulkLoading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -416,7 +412,7 @@
 
                     <p class="text-xs text-gray-500 text-center mt-4">
                         <i class="fas fa-info-circle"></i> 
-                        Esta operación matriculará a TODOS los usuarios con código en TODOS los cursos disponibles.
+                        Esta operación matriculará a TODOS los usuarios en TODOS los cursos disponibles.
                         Los usuarios que ya estén matriculados en algún curso serán omitidos automáticamente.
                     </p>
                 </div>
@@ -538,14 +534,15 @@
 
     <!-- Modal de resultados de matriculación masiva -->
     <div x-show="showBulkResultsModal" 
-         x-transition:enter="ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-         @click.self="showBulkResultsModal = false">
+        x-transition:enter="ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
+        @click.self="showBulkResultsModal = false"
+    >
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -597,8 +594,7 @@
                     </div>
                 </div>
                 <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                    <button @click="showBulkResultsModal = false" 
-                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <button @click="showBulkResultsModal = false" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                         Cerrar
                     </button>
                 </div>

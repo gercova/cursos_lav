@@ -68,7 +68,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex-1">
                     <h2 class="text-lg font-semibold text-gray-800">Todos los Usuarios</h2>
-                    <p class="text-sm text-gray-600 mt-1">Administra estudiantes, instructores y administradores</p>
+                    <p class="text-sm text-gray-600 mt-1">Administra estudiantes, instructores y administradores, el perfil de este usuario solo puedes tener un máximo de <b>{{ $policy->quantity }}</b> {{ (int) $policy->quantity > 1 ? 'usuarios' : 'usuario' }}.</p>
                 </div>
 
                 <!-- Filtros y búsqueda -->

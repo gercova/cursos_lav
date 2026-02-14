@@ -225,7 +225,6 @@ class PaymentController extends Controller {
                             'payment_method' => $payment->payment_method_id, // Guarda 'yape', 'visa', etc.
                             'notes' => "Pago aprobado MP ID: {$id}"
                         ]);
-
                         Payment::create([
                             'order_id'       => $order->id,
                             'user_id'        => $order->user_id,

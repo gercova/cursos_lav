@@ -37,7 +37,7 @@ class MercadoPagoService {
                 ],
                 "payment_methods" => [
                     "excluded_payment_types" => [
-                        ["id" => "ticket"]
+                        // ["id" => "ticket"]
                     ],
                     "installments" => 1,            // Para Yape/Débito suele ser 1 cuota
                     "default_payment_method_id" => null

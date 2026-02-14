@@ -33,7 +33,7 @@ class MercadoPagoService {
                 "items" => $items,
                 "payer" => [
                     "name"  => $userData['name'] ?? 'Estudiante',
-                    "email" => 'test_user_peru_123@testuser.com',
+                    "email" => $userData['email'] ?? 'estudiante@ejemplo.com',
                 ],
                 "payment_methods" => [
                     "excluded_payment_types" => [

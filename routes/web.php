@@ -99,7 +99,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
 
     // Webhook (sin autenticación)
-    Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
+    // Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
 
     // Rutas para código de promoción
     Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
@@ -156,7 +156,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Mis cursos
     Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');
-
     Route::get('/courses/{course}/learn',           [CoursesController::class, 'learn'])->name('student.course.learn');
     // Vista de lección individual
     Route::get('/courses/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
@@ -164,19 +163,15 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/lesson/progress/save',            [LessonController::class, 'saveProgress'])->name('lesson.progress.save');
     // Marcar lección como completada
     Route::post('/lesson/complete',                 [LessonController::class, 'complete'])->name('lesson.complete');
-
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
-
     // Notificaciones
     Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
-
     Route::post('/mp/preference', [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso', [PaymentController::class, 'success'])->name('pago.exitoso');
-    Route::get('/pago/fallido', [PaymentController::class, 'failure'])->name('pago.fallido');
-    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('pago.pendiente');
-
+    Route::get('/pago/exitoso', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/pago/fallido', [PaymentController::class, 'failure'])->name('payment.failure');
+    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('payment.pending');
 });
 
 Route::middleware(['auth', 'business'])->group(function() {

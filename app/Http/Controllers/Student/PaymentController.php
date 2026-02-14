@@ -2,10 +2,20 @@
 namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Enrollment;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\User;
 use App\Services\MercadoPagoService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\MercadoPagoConfig;
 
 class PaymentController extends Controller {
     protected $mpService;
@@ -94,38 +104,81 @@ class PaymentController extends Controller {
     }
 
     public function createPreference(Request $request) {
-        // 1. Validar que el total llegue desde el frontend
         if (!$request->total) {
             return response()->json(['error' => 'El total es requerido'], 400);
         }
-
-        // 2. Preparar datos (pueden ser los que vienen de Alpine o de tu DB)
-        $userData = [
-            'name'  => Auth::user()->names ?? 'Usuario IPF',
-            'email' => Auth::user()->email ?? 'estudiante@ejemplo.com',
-        ];
-
-        $courseData = [
-            'id'    => 'CUR-IPF-001', // ID genérico o del curso real
-            'title' => 'Especialización en Ingeniería - IPF Educa',
-            'price' => $request->total // Usamos el total que calculó tu Alpine.js
-        ];
-
-        // 3. Crear la preferencia
-        $preference = $this->mpService->createCoursePreference($userData, $courseData);
-
-        if (!$preference) {
-            return response()->json([
-                'error' => 'No se pudo crear la preferencia',
-                'detail' => 'Revisa los logs del servidor para ver el error de la API'
-            ], 500);
+        $user = Auth::user();
+        $cartItems = Cart::getItems($user->id);
+        if ($cartItems->isEmpty()) {
+            return response()->json(['error' => 'Carrito vacío'], 400);
         }
 
-        // 4. Retornar el ID y el punto de inicio para la redirección
-        return response()->json([
-            'id' => $preference->id,
-            'init_point' => $preference->init_point
-        ]);
+        $subtotal = Cart::getTotal($user->id);
+        $tax = $subtotal * 0.18;
+        $total = $subtotal + $tax;
+        $discount = 0;
+
+        $date = Carbon::now()->format('Ymd'); // Ejemplo: 20251025
+        $random = strtoupper(Str::random(5)); // Ejemplo: XJ829
+        $orderNumber = "IPF-{$date}-{$random}";
+        //se crea la orden
+        try{
+            return DB::transaction(function () use ($user, $cartItems, $subtotal, $tax, $total, $discount, $orderNumber) {
+                $order = Order::create([
+                    'order_number' => $orderNumber,
+                    'user_id'      => $user->id,
+                    'subtotal'     => $subtotal,
+                    'tax'          => $tax,
+                    'discount'     => $discount,
+                    'total'        => $total,
+                    'currency'     => 'PEN',
+                    'status'       => 'pending',
+                ]);
+                $formattedCourses = [];
+                foreach ($cartItems as $item) {
+                    OrderItem::create([
+                        'order_id'        => $order->id,
+                        'course_id'       => $item->course_id,
+                        'course_title'    => $item->course->title,
+                        'course_image'    => $item->course->image_url,
+                        'price'           => $item->course->price,
+                        'promotion_price' => $item->course->promotion_price,
+                        'final_price'     => $item->course->final_price,
+                    ]);
+
+                    // Preparamos el array para el servicio de Mercado Pago
+                    $formattedCourses[] = [
+                        'id'    => $item->course_id,
+                        'title' => $item->course->title,
+                        'price' => $item->course->final_price
+                    ];
+                }
+
+                $userData = [
+                    'id'    => $user->id,
+                    'name'  => Auth::user()->names ?? 'Usuario IPF',
+                    'email' => Auth::user()->email ?? 'estudiante@ejemplo.com',
+                ];
+
+                //Crear la preferencia
+                $preference = $this->mpService->createCoursePreference(
+                    $userData, 
+                    $formattedCourses,
+                    $order->order_number
+                );
+
+                if (!$preference) {
+                    throw new \Exception("Error al conectar con Mercado Pago");
+                }
+                return response()->json([
+                    'id' => $preference->id,
+                    'init_point' => $preference->init_point
+                ]);
+            });
+        } catch (\Exception $e) {
+            Log::error("Error al crear la orden: " . $e->getMessage());
+            return response()->json(['error' => 'No se pudo procesar la orden'], 500);
+        }
     }
 
     public function success(Request $request) {
@@ -138,5 +191,74 @@ class PaymentController extends Controller {
 
     public function pending(Request $request) {
         return view('student.payments.pending'); // Asegúrate que la ruta del archivo sea correcta
+    }
+
+    public function webhook(Request $request) {
+        MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
+        $id = $request->input('data.id') ?? $request->input('id');
+        $type = $request->input('type');
+
+        // Solo procesamos si es una notificación de pago
+        if (!$id || ($type !== 'payment' && $type !== 'payment.created')) {
+            return response()->json(['status' => 'ignored'], 200);
+        }
+
+        try {
+            $client = new PaymentClient();
+            $payment = $client->get($id);
+
+            if ($payment->status === 'approved') {
+                //La external_reference ahora es el order_number (ej: IPF-20250213-ABCDE)
+                $orderNumber = $payment->external_reference;
+
+                //Buscamos la orden
+                $order = Order::with('items')->where('order_number', $orderNumber)->first();
+                if (!$order) {
+                    Log::error("Orden no encontrada en DB para la referencia: " . $orderNumber);
+                    return response()->json(['status' => 'not_found'], 200);
+                }
+                if ($order && $order->status !== 'completed') {
+                    DB::transaction(function () use ($order, $payment, $id) {
+                        // Actualizamos la orden
+                        $order->update([
+                            'status' => 'completed',
+                            'payment_method' => $payment->payment_method_id, // Guarda 'yape', 'visa', etc.
+                            'notes' => "Pago aprobado MP ID: {$id}"
+                        ]);
+
+                        Payment::create([
+                            'order_id'       => $order->id,
+                            'user_id'        => $order->user_id,
+                            'payment_id'     => $id, // ID de Mercado Pago
+                            'payment_method' => $payment->payment_method_id,
+                            'amount'         => $payment->transaction_amount,
+                            'currency'       => $payment->currency_id,
+                            'status'         => $order->status, // El enum que tienes en la imagen
+                            'paid_at'        => now(),
+                        ]);
+                        foreach ($order->items as $item) {
+                            Enrollment::updateOrCreate(
+                                [
+                                    'user_id'   => $order->user_id,
+                                    'course_id' => $item->course_id,
+                                ],
+                                [
+                                    // 'payment_id'   => $id,
+                                    'enrolled_at'  => now(),
+                                    'status'       => 'active', // Estado de la inscripción
+                                    'progress'     => 0,        // Iniciamos en 0%
+                                ]
+                            );
+                        }
+                        Cart::where('user_id', $order->user_id)->delete();
+                        Log::info("Pago Procesado: Orden {$order->order_number} pagada. Alumno {$order->user_id} inscrito.");
+                    });
+                }
+            }
+            return response()->json(['status' => 'ok'], 200);
+        } catch (\Exception $e) {
+            Log::error("Error en Webhook MP: " . $e->getMessage());
+            return response()->json(['status' => 'error'], 200); // Retornamos 200 para que MP no reintente fallidos
+        }
     }
 }

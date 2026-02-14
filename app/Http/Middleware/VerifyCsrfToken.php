@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/vimeo/webhook'
+        'api/vimeo/webhook',
+        'api/mp/webhook'
     ];
 }

@@ -5,7 +5,7 @@
     </div>
     @if(auth()->user()->role == 'student')
         <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-solid fa-gauge-high"></i> Mi Dashboard
+            <i class="fas fa-solid fa-gauge-high mr-2"></i> Mi Dashboard
         </a>
         <a href="{{ route('student.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
             <i class="fas fa-user mr-2"></i> Mi Perfil

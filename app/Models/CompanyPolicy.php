@@ -10,7 +10,7 @@ class CompanyPolicy extends Model
 {
     use HasFactory;
 
-    protected $table        = 'company_policies';
+    protected $table        = 'business_policies';
     protected $primaryKey   = 'id';
     protected $fillable     = ['user_id', 'quantity'];
 
@@ -22,6 +22,6 @@ class CompanyPolicy extends Model
     ];
 
     public function users(): BelongsTo {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

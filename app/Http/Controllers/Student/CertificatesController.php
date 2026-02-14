@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
-// use Barryvdh\Snappy\Facades\SnappyPdf as PDF; // Cambio importante
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -28,41 +27,17 @@ class CertificatesController extends Controller {
         return view('student.certificates.show', compact('certificate', 'enterprise'));
     }
 
-    /* ublic function download($certificateId) {
-        $enterprise     = Enterprise::first();
+    public function download($certificateId) {
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
+        $enterprise     = Enterprise::first();
+        $logoPath       = storage_path('app/public/ipf-logo.png');
 
-        $certificate->increment('download_count');
-
-        $pdf = PDF::loadView('student.certificates.pdf', compact('certificate', 'enterprise'))
-            ->setOptions([
-                'page-size'     => 'A4',
-                'orientation'   => 'Landscape',
-                'margin-top'    => '0mm',
-                'margin-right'  => '0mm',
-                'margin-bottom' => '0mm',
-                'margin-left'   => '0mm',
-                // Recomendado para que wkhtmltopdf pueda leer imágenes locales (public_path/storage/...)
-                'enable-local-file-access' => true,
-                // Recomendado para caracteres especiales
-                'encoding'      => 'UTF-8',
-            ]);
-
-        $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
-
-        return $pdf->download($fileName);
-    } */
-
-    public function downloadExact($certificateId) {
-        $certificate = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-
-        $enterprise = Enterprise::first();
         
         // Incrementar contador de descargas
         $certificate->increment('download_count');
 
         // Configurar PDF con DomPDF
-        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise'))
+        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
             ->setPaper('A4', 'landscape')
             ->setOption('isRemoteEnabled', true)
             ->setOPtion('enable-local-file-access', true);

@@ -38,10 +38,6 @@
             </div>
 
             <div class="flex items-center gap-2 mt-6 lg:mt-0">
-                <a href="{{ route('admin.users.show', $user) }}" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
-                    <i class="bi bi-eye"></i>
-                    Ver Detalles
-                </a>
                 <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                     <i class="bi bi-arrow-left"></i>
                     Volver
@@ -167,30 +163,6 @@
                             </label>
                             <textarea name="address" id="address" rows="2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('address', $user->address) }}</textarea>
                             @error('address')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Seguridad y Rol -->
-                <div class="mb-8">
-                    <h3 class="text-xl font-bold text-gray-900 mb-6">Seguridad y Rol</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Rol -->
-                        <div class="md:col-span-2">
-                            <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                                Rol <span class="text-red-500">*</span>
-                            </label>
-                            {{-- {{ dd($roles) }} --}}
-                            <select name="role" id="role" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                                @foreach($roles as $rol)
-                                    <option value="{{ $rol->name }}" {{ old('role', $user->role) == $rol->name ? 'selected' : '' }}>
-                                        {{ ucwords($rol->name) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('role')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -337,25 +309,6 @@
             showNotification('Error al cambiar el estado', 'error');
         }
     }
-
-    // Enviar mensaje
-    /*async function sendMessage(userId) {
-        const message = prompt('Escribe el mensaje que deseas enviar:');
-        if (!message) return;
-
-        try {
-            const response = await axios.post(`/admin/users/${userId}/send-message`, {
-                message: message
-            });
-
-            if (response.data.success) {
-                showNotification('Mensaje enviado exitosamente', 'success');
-            }
-        } catch (error) {
-            console.error('Error al enviar mensaje:', error);
-            showNotification('Error al enviar el mensaje', 'error');
-        }
-    }*/
 
     // Eliminar usuario
     async function deleteUser(userId) {

@@ -384,7 +384,7 @@ document.addEventListener('alpine:init', () => {
             }
             vimeoInstance.ready().then(()=>{
             }).catch(err => {
-                 console.error('Vimeo player ready failed after retries:', err);
+                console.error('Vimeo player ready failed after retries:', err);
             });
 
             vimeoInstance.on('loaded', () => {

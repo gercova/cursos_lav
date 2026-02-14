@@ -98,6 +98,13 @@
                     <a href="{{ route('company.list') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
                         <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
                     </a>
+                    <!-- Enlace corregido para inscribir usuarios -->
+                    <a href="{{ route('company.enroll.users') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('company.enroll.*') ? 'bg-blue-700' : '' }}">
+                        <i class="bi bi-book-fill mr-2"></i> Inscribir usuarios
+                    </a>
+                    <a href="{{ route('company.profile', [auth()->user()->id]) }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
+                        <i class="fa-solid fa-building mr-2"></i> Actualizar mi datos
+                    </a>
                 @endrole
 
                 @role('admin')
@@ -108,31 +115,31 @@
                 
                 @role('admin|instructor')
                     <a href="{{ route('admin.categories.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.categories.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-folder mr-2"></i>Categorías
+                        <i class="fas fa-folder mr-2"></i> Gestión de Categorías
                     </a>
                 @endrole
                 
                 @role('admin|instructor')
                     <a href="{{ route('admin.courses.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-book mr-2"></i>Cursos
+                        <i class="fas fa-book mr-2"></i>Gestión de Cursos
                     </a>
                 @endrole
                 
                 @role('admin|instructor')
                     <a href="{{ route('admin.documents.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-file-alt mr-2"></i>Documentos
+                        <i class="fas fa-file-alt mr-2"></i> Gestión de Documentos
                     </a>
                 @endrole
                 
                 @role('admin|instructor')
                     <a href="{{ route('admin.exams.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-clipboard-list mr-2"></i>Exámenes
+                        <i class="fas fa-clipboard-list mr-2"></i> Gestión de Exámenes
                     </a>
                 @endrole
                 
                 @role('admin')
                     <a href="{{ route('admin.users.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-solid fa-users"></i> Usuarios
+                        <i class="fas fa-solid fa-users mr-2"></i>Gestión de Usuarios
                     </a>
                     
                     <!-- Añadir este enlace en el sidebar -->
@@ -143,13 +150,13 @@
                 
                 @role('admin|instructor')
                     <a href="{{ route('admin.enrollments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enrollments.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-solid fa-address-book mr-2"></i> Gestión de inscripciones
+                        <i class="fas fa-solid fa-address-book mr-2"></i> Gestión de Inscripciones
                     </a>
                 @endrole
                     
                 @role('admin')
                     <a href="{{ route('admin.payments.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.payments.*') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-solid fa-dollar-sign mr-2"></i> Gestión de pagos
+                        <i class="fas fa-solid fa-dollar-sign mr-2"></i> Gestión de Pagos
                     </a>
                 @endrole
 
@@ -171,7 +178,7 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <span class="text-gray-700">{{ auth()->user()->names }}</span>
+                        <span class="text-gray-700"><b>{{ auth()->user()->names }}</b></span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-gray-500 hover:text-gray-700 flex items-center">

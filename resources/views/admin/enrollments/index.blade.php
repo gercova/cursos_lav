@@ -62,9 +62,7 @@
             <form method="GET" action="{{ route('admin.enrollments.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Usuario o Curso"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Usuario o Curso" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
@@ -194,9 +192,25 @@
         </div>
 
         <!-- Paginación -->
-        <div class="px-6 py-4 border-t border-gray-200">
-            {{ $enrollments->links() }}
-        </div>
+        @if($enrollments->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="text-sm text-gray-700">
+                        Mostrando
+                        <span class="font-medium">{{ $enrollments->firstItem() }}</span>
+                        a
+                        <span class="font-medium">{{ $enrollments->lastItem() }}</span>
+                        de
+                        <span class="font-medium">{{ $enrollments->total() }}</span>
+                        resultados
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        {{ $enrollments->links() }}
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 

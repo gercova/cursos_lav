@@ -30,4 +30,8 @@ class CompletedLessons extends Model
     public function lesson(): BelongsTo {
         return $this->belongsTo(Lesson::class, 'lesson_id', 'id');
     }
+
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

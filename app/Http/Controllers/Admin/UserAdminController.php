@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CodeValidate;
 use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\UserValidate;
+use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\User;
@@ -13,6 +14,7 @@ use App\Services\StudentTrackingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -83,9 +85,11 @@ class UserAdminController extends Controller {
 
     public function store(UserValidate $request) {
         $validated = $request->validated();
-
         // Determinar si es creación por la presencia de ID en el request
         if (!$request->has('id') || empty($request->id)) {
+            $request->role == 'business' ? 
+                $proccessData['company_code'] = $this->createNickname($validated['names']) : 
+                $proccessData['company_code'] = '';
             $proccessData = [
                 'password'          => Hash::make('P4$$w0rd#.'),
                 'email_verified_at' => now(),
@@ -101,6 +105,18 @@ class UserAdminController extends Controller {
             // Actualización - usar ID del request
             $user = User::where('id', $request->id)->first();
             $user->update($validated);
+        }
+
+        if ($request->has('role')) {
+            // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
+            DB::table('model_has_roles')->where('model_id', $user->id)->delete();
+            // Asignar el nuevo rol
+            $findRoleId = DB::table('model_has_roles')->where('name', $request->role)->first();
+            DB::table('model_has_roles')->insert([
+                'role_id'       => $findRoleId->id,
+                'model_type'    => 'App\Models\User',
+                'model_id'      => $user->id
+            ]);
         }
 
         $message = $request->has('id') ? 'actualizado' : 'creado';
@@ -191,14 +207,12 @@ class UserAdminController extends Controller {
     public function createCode(User $user, CodeValidate $request) {
         $validated = $request->validated();
 
-
-
         if($user->where('code', null)->where('id', $user->id)->first()){
             $newCode = $this->createNickname($user->names);
             $user->update(['code' => $newCode, 'promotion_price_is_active' => $validated['promotion_price_is_active']]);
         }
 
-        $code =$user->code;
+        $code = $user->code;
 
         $courses                = Course::where('is_active', true)->select(['id', 'price'])->get();
         $promotionData          = $courses->map(function ($course) use ($user, $code) {
@@ -234,6 +248,44 @@ class UserAdminController extends Controller {
                 'code'                  => $code,
                 'promotions_created'    => count($promotionData)
             ]
+        ], 200);
+    }
+
+    public function getLimitUser(User $user): JsonResponse {
+        return response()->json(CompanyPolicy::where('user_id', $user->id)->first(), 200);
+    }
+
+    public function createLimitUser(Request $request, User $user): JsonResponse {
+        $rules = [
+            'quantity' => 'required|numeric|min:1',
+        ];
+        
+        $messages = [
+            'quantity.required' => 'El campo cantidad es obligatorio.',
+            'quantity.numeric'  => 'La cantidad debe ser un número válido.',
+            'quantity.min'      => 'La cantidad debe ser al menos :min.',
+        ];
+        
+        $attributes = [
+            'quantity' => 'cantidad de usuarios',
+        ];
+    
+        $request->validate($rules, $messages, $attributes);
+        
+        // Usamos updateOrCreate para manejar crear o actualizar
+        // Busca por user_id, y actualiza/crea con los campos especificados
+        $policy = CompanyPolicy::updateOrCreate(
+            ['user_id'  => $user->id], // Condiciones para encontrar el registro
+            ['quantity' => $request->input('quantity')] // Valores a insertar o actualizar
+        );
+
+        // Verificamos si la operación fue exitosa
+        $wasCreated     = $policy->wasRecentlyCreated; // Es true si se creó, false si se actualizó
+
+        return response()->json([
+            'success'   => true, // updateOrCreate debería funcionar si la validación pasa
+            'message'   => $wasCreated ? 'Política creada exitosamente.' : 'Política actualizada exitosamente.', // Mensaje distinto según acción
+            'data'      => $policy, // Opcional: devolver los datos guardados
         ], 200);
     }
 

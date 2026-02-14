@@ -211,9 +211,25 @@
         </div>
 
         <!-- Paginación -->
-        <div class="px-6 py-4 border-t border-gray-200">
-            {{ $payments->links() }}
-        </div>
+        @if($payments->hasPages())
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="text-sm text-gray-700">
+                        Mostrando
+                        <span class="font-medium">{{ $payments->firstItem() }}</span>
+                        a
+                        <span class="font-medium">{{ $payments->lastItem() }}</span>
+                        de
+                        <span class="font-medium">{{ $payments->total() }}</span>
+                        resultados
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        {{ $payments->links() }}
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 

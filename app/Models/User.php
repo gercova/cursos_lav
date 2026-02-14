@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Traits\StudentActivityLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,6 +73,12 @@ class User extends Authenticatable {
 
     public function enrollments(): HasMany {
         return $this->hasMany(Enrollment::class, 'user_id', 'id');
+    }
+
+    // Cursos que el usuario estudia
+    public function studentCourses(): BelongsToMany {
+        return $this->belongsToMany(Course::class, 'enrollments')
+        ->withPivot('status', 'progress', 'enrolled_at');
     }
 
     public function courses(): HasMany {

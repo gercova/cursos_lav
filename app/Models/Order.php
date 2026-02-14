@@ -54,11 +54,11 @@ class Order extends Model
         return $this->hasMany(Enrollment::class);
     }
 
-    protected static function boot(){
-        parent::boot();
+    // protected static function boot(){
+    //     parent::boot();
 
-        static::creating(function ($order) {
-            $order->order_number = 'ORD-' . strtoupper(uniqid());
-        });
-    }
+    //     static::creating(function ($order) {
+    //         $order->order_number = 'ORD-' . strtoupper(uniqid());
+    //     });
+    // }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Student\LessonController;
+use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentExamsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -56,4 +57,7 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
     // Obtener lección anterior/siguiente
     Route::get('/lesson/{lesson}/previous', [LessonController::class, 'previous']);
     Route::get('/lesson/{lesson}/next', [LessonController::class, 'next']);
+
+
 });
+Route::post('/mp/webhook', [PaymentController::class, 'webhook'])->name('mp.webhook');

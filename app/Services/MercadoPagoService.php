@@ -14,38 +14,43 @@ class MercadoPagoService {
         MercadoPagoConfig::setAccessToken(config('services.mercadopago.token'));
     }
 
-    public function createCoursePreference(array $userData, array $courseData) {
+    public function createCoursePreference(array $userData, array $courses,$orderNumber) {
         $client = new PreferenceClient();
-        
+        $items = [];
+        $courseIds = [];
+        foreach ($courses as $course) {
+            $items[] = [
+                "id"         => (string) $course['id'],
+                "title"      => (string) $course['title'],
+                "quantity"   => 1,
+                "unit_price" => (float) number_format($course['price'], 2, '.', ''),
+                "currency_id" => "PEN"
+            ];
+            $courseIds[] = $course['id'];
+        }
         try {
             return $client->create([
-                "items" => [
-                    [
-                        "id"         => (string) $courseData['id'],
-                        "title"      => (string) $courseData['title'],
-                        "quantity"   => 1,
-                        // Forzamos float y 2 decimales
-                        "unit_price" => (float) number_format($courseData['price'], 2, '.', ''),
-                        "currency_id" => "PEN"
-                    ]
-                ],
+                "items" => $items,
                 "payer" => [
                     "name"  => $userData['name'] ?? 'Estudiante',
-                    "email" => $userData['email'] ?? 'test_user_ipf@test.com',
+                    "email" => 'test_user_peru_123@testuser.com',
                 ],
                 "payment_methods" => [
-                    "excluded_payment_types" => [], // Asegúrate de que no haya nada excluido
+                    "excluded_payment_types" => [
+                        // ["id" => "ticket"]
+                    ],
                     "installments" => 1,            // Para Yape/Débito suele ser 1 cuota
+                    "default_payment_method_id" => null
                 ],
                 // Esto ayuda a que el Smart Checkout de MP identifique mejor al usuario peruano
-                // "notification_url" => route('mp.webhook'),
+                "notification_url" => config('app.url') . '/api/mp/webhook',
                 "back_urls" => [
-                    "success" => "https://google.com", // Solo para probar si el error 400 desaparece
-                    "failure" => "https://google.com",
-                    "pending" => "https://google.com",
+                    "success" => config('app.url') . "/pago/exitoso",
+                    "failure" => config('app.url') . "/pago/fallido",
+                    "pending" => config('app.url') . "/pago/pendiente",
                 ],
                 "auto_return" => "approved",
-                "external_reference" => "ORDER-" . time(),
+                "external_reference" => $orderNumber,
                 "statement_descriptor" => "IPF EDUCA",
             ]);
         } catch (MPApiException $e) {

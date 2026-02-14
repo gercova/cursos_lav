@@ -196,20 +196,20 @@ class BusinessManagementController extends Controller {
         }
 
         // Verificar que el curso tenga precio de promoción
-        if (!$course->promotion_price) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Este curso no tiene precio de promoción activo'
-            ], 400);
-        }
+        // if (!$course->promotion_price) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Este curso no tiene precio de promoción activo'
+        //     ], 400);
+        // }
 
         // Verificar que el estudiante tenga código de promoción
-        if (!$student->code) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El usuario no tiene un código de promoción asignado'
-            ], 400);
-        }
+        // if (!$student->code) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'El usuario no tiene un código de promoción asignado'
+        //     ], 400);
+        // }
 
         DB::beginTransaction();
         try {
@@ -226,18 +226,18 @@ class BusinessManagementController extends Controller {
             }
 
             // Crear o obtener el código de promoción del curso
-            $coursePromotionCode = CoursePromotionCode::firstOrCreate(
-                [
-                    'course_id' => $course->id,
-                    'code'      => $student->code
-                ],
-                [
-                    'discount_percentage'   => 20, // Descuento por defecto
-                    'is_active'             => true,
-                    'max_uses'              => 1,
-                    'used_count'            => 0
-                ]
-            );
+            // $coursePromotionCode = CoursePromotionCode::firstOrCreate(
+            //     [
+            //         'course_id' => $course->id,
+            //         'code'      => $student->code
+            //     ],
+            //     [
+            //         'discount_percentage'   => 20, // Descuento por defecto
+            //         'is_active'             => true,
+            //         'max_uses'              => 1,
+            //         'used_count'            => 0
+            //     ]
+            // );
 
             // Crear la matrícula
             $enrollment = Enrollment::create([
@@ -249,21 +249,21 @@ class BusinessManagementController extends Controller {
             ]);
 
             // Registrar el uso del código de promoción
-            $coursePromotionCode->increment('used_count');
+            // $coursePromotionCode->increment('used_count');
 
             // Si el estudiante tiene código, incrementar sus ventas (opcional)
-            $student->increment('courses_sold_count');
+            // $student->increment('courses_sold_count');
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => "Usuario {$student->names} matriculado exitosamente en el curso {$course->title}",
+                'message' => "Usuario <b>{$student->names}</b> matriculado exitosamente en el curso <b>{$course->title}</b>",
                 'data' => [
                     'enrollment_id' => $enrollment->id,
-                    'student' => $student->names,
-                    'course' => $course->title,
-                    'code_used' => $student->code
+                    'student'       => $student->names,
+                    'course'        => $course->title,
+                    'code_used'     => $student->code
                 ]
             ]);
 
@@ -290,12 +290,12 @@ class BusinessManagementController extends Controller {
         $course = Course::find($request->course_id);
 
         // Verificar que el curso tenga precio de promoción
-        if (!$course->promotion_price) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Este curso no tiene precio de promoción activo'
-            ], 400);
-        }
+        // if (!$course->promotion_price) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Este curso no tiene precio de promoción activo'
+        //     ], 400);
+        // }
 
         $results = [
             'success'   => [],
@@ -317,13 +317,13 @@ class BusinessManagementController extends Controller {
                 }
 
                 // Verificar que tenga código
-                if (!$student->code) {
-                    $results['failed'][] = [
-                        'user'      => $student->names,
-                        'reason'    => 'No tiene código de promoción'
-                    ];
-                    continue;
-                }
+                // if (!$student->code) {
+                //     $results['failed'][] = [
+                //         'user'      => $student->names,
+                //         'reason'    => 'No tiene código de promoción'
+                //     ];
+                //     continue;
+                // }
 
                 // Verificar matrícula existente
                 $existingEnrollment = Enrollment::where('user_id', $student->id)
@@ -339,18 +339,18 @@ class BusinessManagementController extends Controller {
                 }
 
                 // Crear o obtener el código de promoción
-                $coursePromotionCode = CoursePromotionCode::firstOrCreate(
-                    [
-                        'course_id' => $course->id,
-                        'code'      => $student->code
-                    ],
-                    [
-                        'discount_percentage' => 20,
-                        'is_active'     => true,
-                        'max_uses'      => 1,
-                        'used_count'    => 0
-                    ]
-                );
+                // $coursePromotionCode = CoursePromotionCode::firstOrCreate(
+                //     [
+                //         'course_id' => $course->id,
+                //         'code'      => $student->code
+                //     ],
+                //     [
+                //         'discount_percentage' => 20,
+                //         'is_active'     => true,
+                //         'max_uses'      => 1,
+                //         'used_count'    => 0
+                //     ]
+                // );
 
                 // Crear matrícula
                 Enrollment::create([
@@ -361,8 +361,8 @@ class BusinessManagementController extends Controller {
                     'status'        => 'active',
                 ]);
 
-                $coursePromotionCode->increment('used_count');
-                $student->increment('courses_sold_count');
+                // $coursePromotionCode->increment('used_count');
+                // $student->increment('courses_sold_count');
 
                 $results['success'][] = $student->names;
             }
@@ -430,23 +430,24 @@ class BusinessManagementController extends Controller {
     /**
      * Mega matrícula - Todos los usuarios en todos los cursos
      */
+
     public function superBulkEnroll(Request $request): JsonResponse {
-        $codeE      = User::where('id', Auth::id())->first();
-        // Obtener todos los colaboradores con código de promoción
-        $students   = User::where('company_code', $codeE->company_code)
+        $codeE = User::where('id', Auth::id())->first();
+        
+        // Obtener todos los colaboradores (sin filtrar por código)
+        $students = User::where('company_code', $codeE->company_code)
             ->where('id', '!=', Auth::id())
-            ->whereNotNull('code')
-            ->get();
+            ->get(); // sin whereNotNull('code')
         
         // Obtener todos los cursos activos con precio de promoción
-        $courses    = Course::where('is_active', true)
+        $courses = Course::where('is_active', true)
             ->whereNotNull('promotion_price')
             ->get();
 
         if ($students->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No hay usuarios con código de promoción para matricular'
+                'message' => 'No hay usuarios para matricular'
             ], 400);
         }
 
@@ -468,6 +469,16 @@ class BusinessManagementController extends Controller {
         try {
             foreach ($students as $student) {
                 foreach ($courses as $course) {
+                    // Verificar si tiene código
+                    if (!$student->code) {
+                        $results['failed'][] = [
+                            'user'      => $student->names,
+                            'course'    => $course->title,
+                            'reason'    => 'No tiene código de promoción'
+                        ];
+                        continue;
+                    }
+
                     // Verificar si ya está matriculado
                     $existingEnrollment = Enrollment::where('user_id', $student->id)
                         ->where('course_id', $course->id)
@@ -483,18 +494,18 @@ class BusinessManagementController extends Controller {
                     }
 
                     // Crear o obtener el código de promoción
-                    $coursePromotionCode = CoursePromotionCode::firstOrCreate(
-                        [
-                            'course_id' => $course->id,
-                            'code'      => $student->code
-                        ],
-                        [
-                            'discount_percentage'   => 20,
-                            'is_active'             => true,
-                            'max_uses'              => 1,
-                            'used_count'            => 0
-                        ]
-                    );
+                    // $coursePromotionCode = CoursePromotionCode::firstOrCreate(
+                    //     [
+                    //         'course_id' => $course->id,
+                    //         'code'      => $student->code
+                    //     ],
+                    //     [
+                    //         'discount_percentage'   => 20,
+                    //         'is_active'             => true,
+                    //         'max_uses'              => 1,
+                    //         'used_count'            => 0
+                    //     ]
+                    // );
 
                     // Crear matrícula
                     Enrollment::create([
@@ -505,8 +516,8 @@ class BusinessManagementController extends Controller {
                         'status'        => 'active',
                     ]);
 
-                    $coursePromotionCode->increment('used_count');
-                    $student->increment('courses_sold_count');
+                    // $coursePromotionCode->increment('used_count');
+                    // $student->increment('courses_sold_count');
 
                     $results['success'][] = [
                         'user'      => $student->names,
@@ -519,10 +530,10 @@ class BusinessManagementController extends Controller {
 
             DB::commit();
 
-            $message = "🚀 Mega Matrícula completada: {$results['total_processed']} inscripciones realizadas exitosamente";
+            $message = "Matrículas completadas: {$results['total_processed']} inscripciones realizadas exitosamente";
             
             if (count($results['failed']) > 0) {
-                $message .= ". " . count($results['failed']) . " inscripciones omitidas (ya estaban matriculados).";
+                $message .= ". " . count($results['failed']) . " inscripciones fallidas.";
             }
 
             return response()->json([
@@ -532,9 +543,9 @@ class BusinessManagementController extends Controller {
                     'success'   => $results['success'],
                     'failed'    => $results['failed'],
                     'summary'   => "Total de usuarios: {$students->count()}<br>
-                                Total de cursos: {$courses->count()}<br>
-                                Matrículas realizadas: <span class='text-green-600 font-bold'>{$results['total_processed']}</span><br>
-                                Matrículas omitidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
+                        Total de cursos: {$courses->count()}<br>
+                        Matrículas realizadas: <span class='text-green-600 font-bold'>{$results['total_processed']}</span><br>
+                        Matrículas fallidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
                     'total_processed' => $results['total_processed']
                 ]
             ]);

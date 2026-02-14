@@ -74,6 +74,7 @@ Route::post('forgot-password',          [ForgotPasswordController::class, 'sendR
 Route::get('reset-password/{token}',    [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password',           [ResetPasswordController::class, 'reset'])->name('password.update');
 
+// Enlace para verificación del certificado
 Route::get('/verify/{code}',            [CertificatesController::class, 'verify'])->name('verify.certificate');
 
 // Rutas protegidas para estudiantes

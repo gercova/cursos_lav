@@ -68,10 +68,10 @@ class CertificatesController extends Controller {
     public function print($certificateId) {
         $enterprise     = Enterprise::first();
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-
+        $logoPath       = storage_path('app/public/ipf-logo.png');
         $certificate->increment('download_count');
 
-        $pdf = PDF::loadView('student.certificates.pdf', compact('certificate', 'enterprise'))
+        $pdf = PDF::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
             ->setOptions([
                 'page-size'     => 'A4',
                 'orientation'   => 'Landscape',

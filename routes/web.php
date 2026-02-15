@@ -187,12 +187,28 @@ Route::middleware(['auth', 'student'])->group(function () {
 
 Route::prefix('company')->group(function() {
     Route::middleware(['auth', 'business'])->group(function() {
+        // Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+        // Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
+        // Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+        // Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
+
+        // Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import');
+        // Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
+        // Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
+
+        // Route::get('/enroll/users',         [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
+        // Route::post('/enroll/with-code',    [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
+        // Route::post('/enroll/bulk',         [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
+        // Route::get('/enroll/recent',        [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
+        // Route::get('/users/without-code',   [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
+        // Route::post('/enroll/super-bulk',   [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
+
         Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
         Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
         Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
+        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file'); // ← CAMBIADO
 
-        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import');
+        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import.form'); // ← CAMBIADO
         Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
         Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
 

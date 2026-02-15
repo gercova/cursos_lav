@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BusinessImportController extends Controller {
@@ -97,8 +100,7 @@ class BusinessImportController extends Controller {
     /**
      * Descargar plantilla de importación
      */
-    public function downloadTemplate(): BinaryFileResponse
-    {
+    public function downloadTemplate(): BinaryFileResponse {
         $filePath = public_path('templates/plantilla_importacion_usuarios.xlsx');
         
         // Si el archivo no existe, crearlo dinámicamente
@@ -135,8 +137,9 @@ class BusinessImportController extends Controller {
             'DESARROLLADOR'
         ];
 
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        // $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $spreadsheet    = new Spreadsheet();
+        $sheet          = $spreadsheet->getActiveSheet();
 
         // Establecer encabezados
         foreach ($headers as $index => $header) {
@@ -146,7 +149,8 @@ class BusinessImportController extends Controller {
             // Estilo para encabezados
             $sheet->getStyle($column . '1')->getFont()->setBold(true);
             $sheet->getStyle($column . '1')->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('FF4CAF50');
             $sheet->getStyle($column . '1')->getFont()->getColor()->setARGB('FFFFFFFF');
         }
@@ -171,7 +175,8 @@ class BusinessImportController extends Controller {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        #$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer = new Xlsx($spreadsheet);
         
         if (!is_dir(public_path('templates'))) {
             mkdir(public_path('templates'), 0755, true);

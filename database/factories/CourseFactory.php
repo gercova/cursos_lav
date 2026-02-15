@@ -35,7 +35,7 @@ class CourseFactory extends Factory
             'promotion_price'   => $promotionPrice,
             'category_id'       => $category->id,
             'instructor_id'     => $user->id,
-            'level'             => 'profesional',
+            // 'level'             => 'profesional',
             'duration'          => 5,
             'is_active'         => true,
             'requirements'      => $this->generateRequirementsArray(6),

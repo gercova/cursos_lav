@@ -64,8 +64,8 @@ Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->nam
 // Autenticación general (Admin / Instructor / Student)
 Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
 Route::post('/register',                [RegisterController::class, 'register']);
-Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest'); ;
-Route::post('/login',                   [LoginController::class, 'login']);
+Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login',                   [LoginController::class, 'login'])->middleware('guest');
 Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
 Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('forgot-password',          [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

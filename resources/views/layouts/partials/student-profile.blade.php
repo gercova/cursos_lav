@@ -22,7 +22,7 @@
         <div class="border-t border-gray-100"></div>
     @elseif (auth()->user()->role == 'admin')
         <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-solid fa-gauge-high"></i> Dashboard admin
+            <i class="fas fa-solid fa-gauge-high mr-2"></i> Dashboard admin
         </a>
     @endif
     <form method="POST" action="{{ route('logout') }}">

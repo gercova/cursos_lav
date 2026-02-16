@@ -101,8 +101,19 @@ class AdminController extends Controller {
     /**
      * Obtener inscripciones recientes
      */
+    // private function getRecentEnrollments() {
+    //     return Enrollment::with(['user', 'course'])->latest()->take(10)->get();
+    // }
     private function getRecentEnrollments() {
-        return Enrollment::with(['user', 'course'])->latest()->take(10)->get();
+        return Enrollment::with(['user', 'course'])
+            ->latest()
+            ->take(10)
+            ->get()
+            ->filter(function($enrollment) {
+                // Filtramos después de la consulta para evitar errores en la vista
+                return !is_null($enrollment->user) && !is_null($enrollment->course);
+            })
+            ->values(); // Reindexa la colección
     }
 
     /**

@@ -139,7 +139,7 @@
                             <div class="flex items-center gap-6">
                                 <div class="flex-shrink-0">
                                     @if($user->profile_photo)
-                                        <img src="{{ Storage::url($user->profile_photo) }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                        <img src="{{ $user->profile_photo }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
                                     @endif
                                     <div id="preview-container" class="{{ $user->profile_photo ? 'mt-2' : '' }} hidden">
                                         <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>

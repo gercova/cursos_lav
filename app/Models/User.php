@@ -5,12 +5,15 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Traits\StudentActivityLogger;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -54,6 +57,8 @@ class User extends Authenticatable {
         'courses_sold_count'    => 'integer',
         'total_commission'      => 'decimal:2',
     ];
+
+    protected $appends = ['profile_photo_url'];
 
     public function isAdmin(): bool {
         return $this->role === 'admin';
@@ -148,5 +153,57 @@ class User extends Authenticatable {
     public function addCommission(float $amount): void {
         $this->total_commission = ($this->total_commission ?? 0) + $amount;
         $this->save();
+    }
+
+    // protected function profilePhotoUrl(): Attribute {
+    //     return Attribute::make(
+    //         get: function () {
+
+    //             // 1) Si tiene valor (guardado en DB)
+    //             $value = $this->profile_photo;
+
+    //             if (!empty($value)) {
+    //                 // Si ya es URL externa
+    //                 if (Str::startsWith($value, ['http://', 'https://'])) {
+    //                     return $value;
+    //                 }
+
+    //                 // Si es ruta relativa (ej: "instructors/xxx.png")
+    //                 return Storage::url($value);
+    //             }
+
+    //             // 2) Si NO tiene foto -> default por role
+    //             return match ($this->role) {
+    //                 'instructor' => Storage::url('instructors/instructor-ipf.png'),
+    //                 'admin'      => Storage::url('admin/admin-ipf.png'),
+    //                 default      => null, // student u otros: sin imagen (puedes devolver una genérica si quieres)
+    //             };
+    //         }
+    //     );
+    // }
+
+    protected function profilePhoto(): Attribute {
+        return Attribute::make(
+            get: function (?string $value, array $attributes) {
+                // 1. Si el usuario TIENE una foto subida en la base de datos
+                if (!empty($value)) {
+                    if (Str::startsWith($value, ['http://', 'https://'])) {
+                        return $value;
+                    }
+                    return Storage::url($value);
+                }
+
+                // 2. Si NO tiene foto, revisamos el rol
+                // OJO: Cambia '$attributes['role']' por la forma en que guardes el rol.
+                // Si usas Spatie Permission, podrías cambiar esto a $this->roles->first()->name u otra lógica.
+                $role = $attributes['role'] ?? null; 
+
+                return match ($role) {
+                    'instructor' => Storage::url('instructors/instructor-ipf.png'),
+                    'admin'      => Storage::url('admin/admin-ipf.png'),
+                    default      => null, // Los "student" (u otros) sin foto retornarán null
+                };
+            }
+        );
     }
 }

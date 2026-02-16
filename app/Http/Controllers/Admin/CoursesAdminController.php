@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CoursesAdminController extends Controller {
 
@@ -88,47 +89,98 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
     }
 
+    // public function store(CourseValidate $request) {
+    //     $validated = $request->validated();
+
+    //     // Procesar imagen
+    //     if ($request->hasFile('image')) {
+    //         $path = $request->file('image')->store('courses', 'public');
+    //         $validated['image_url'] = $path;
+    //     }
+
+    //     // Filtrar elementos vacíos de los arrays
+    //     if (isset($validated['requirements'])) {
+    //         $validated['requirements'] = array_filter($validated['requirements']);
+    //     }
+    //     if (isset($validated['what_you_learn'])) {
+    //         $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
+    //     }
+
+    //     // Crear slug si no se proporcionó
+    //     if (empty($validated['slug'])) {
+    //         $validated['slug'] = Str::slug($validated['title']);
+    //     }
+
+    //     DB::beginTransaction();
+
+    //     try {
+    //         $course = Course::create($validated);
+    //         DB::commit();
+    //         if($course && $course->is_active == true) {
+    //             // Notificar a todos los estudiantes activos
+    //             $students = User::where('role', 'student')->where('is_active', true)->get();
+
+    //             foreach ($students as $student) {
+    //                 NotificationService::sendNewCourseNotification($student, $course);
+    //             }
+    //         }
+
+    //         return redirect()->route('admin.courses.edit', $course)->with('success', 'Curso creado exitosamente');
+    //     } catch (\Throwable $th) {
+    //         // Log del error (opcional pero recomendado)
+    //         Log::error('Error al crear curso: ' . $th->getMessage());
+    //         return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+    //     }
+    // }
+
     public function store(CourseValidate $request) {
-        $validated = $request->validated();
-
-        // Procesar imagen
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('courses', 'public');
-            $validated['image_url'] = $path;
-        }
-
-        // Filtrar elementos vacíos de los arrays
-        if (isset($validated['requirements'])) {
-            $validated['requirements'] = array_filter($validated['requirements']);
-        }
-        if (isset($validated['what_you_learn'])) {
-            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
-        }
-
-        // Crear slug si no se proporcionó
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']);
-        }
-
-        DB::beginTransaction();
-
         try {
-            $course = Course::create($validated);
-            DB::commit();
-            if($course && $course->is_active == true) {
-                // Notificar a todos los estudiantes activos
-                $students = User::where('role', 'student')->where('is_active', true)->get();
+            $validated = $request->validated();
+            
+            // Procesar imagen
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('courses', 'public');
+                $validated['image_url'] = $path;
+            }
 
+            // Filtrar elementos vacíos de los arrays
+            if (isset($validated['requirements'])) {
+                $validated['requirements'] = array_values(array_filter($validated['requirements']));
+            }
+            if (isset($validated['what_you_learn'])) {
+                $validated['what_you_learn'] = array_values(array_filter($validated['what_you_learn']));
+            }
+
+            // Crear slug si no se proporcionó
+            if (empty($validated['slug'])) {
+                $validated['slug'] = Str::slug($validated['title']);
+            }
+
+            DB::beginTransaction();
+            
+            $course = Course::create($validated);
+            
+            DB::commit();
+            
+            if($course && $course->is_active == true) {
+                $students = User::where('role', 'student')->where('is_active', true)->get();
                 foreach ($students as $student) {
                     NotificationService::sendNewCourseNotification($student, $course);
                 }
             }
 
             return redirect()->route('admin.courses.edit', $course)->with('success', 'Curso creado exitosamente');
+                
+        } catch (ValidationException $e) {
+            // Si es error de validación, mostrar los errores específicos
+            return back()->withErrors($e->errors())->withInput();
+            
         } catch (\Throwable $th) {
-            // Log del error (opcional pero recomendado)
+            DB::rollBack();
             Log::error('Error al crear curso: ' . $th->getMessage());
-            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+            Log::error($th->getTraceAsString());
+            
+            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso: ' . $th->getMessage());
         }
     }
 

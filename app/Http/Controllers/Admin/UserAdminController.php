@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class UserAdminController extends Controller {
@@ -65,7 +66,17 @@ class UserAdminController extends Controller {
 
     public function create(): View {
         $roles = Role::get();
-        return view('admin.users.create', compact('roles'));
+        $originalArray = [
+            ['code' => '+51', 'country' => '+51 - Perú'],
+            ['code' => '+54', 'country' => '+54 - Argentina'],
+            ['code' => '+56', 'country' => '+56 - Chile'],
+            ['code' => '+591', 'country' => '+591 - Bolivia'],
+            ['code' => '+593', 'country' => '+593 - Ecuador'],
+            ['code' => '+598', 'country' => '+598 - Uruguay'],
+        ];
+
+        $codeCountries = collect($originalArray)->map(fn ($item) => (object) $item);
+        return view('admin.users.create', compact('roles', 'codeCountries'));
     }
 
     public function edit(User $user): View {
@@ -85,6 +96,13 @@ class UserAdminController extends Controller {
 
     public function store(UserValidate $request) {
         $validated = $request->validated();
+
+        // Manejar la subida de la foto de perfil
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile-photos', 'public');
+            $validated['profile_photo'] = $path;
+        }
+        
         // Determinar si es creación por la presencia de ID en el request
         if (!$request->has('id') || empty($request->id)) {
             $request->role == 'business' ? 
@@ -104,8 +122,35 @@ class UserAdminController extends Controller {
         } else {
             // Actualización - usar ID del request
             $user = User::where('id', $request->id)->first();
+            
+            // Si hay nueva foto, eliminar la anterior (opcional)
+            if ($request->hasFile('profile_photo') && $user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+            
             $user->update($validated);
         }
+        // Determinar si es creación por la presencia de ID en el request
+        // if (!$request->has('id') || empty($request->id)) {
+        //     $request->role == 'business' ? 
+        //         $proccessData['company_code'] = $this->createNickname($validated['names']) : 
+        //         $proccessData['company_code'] = '';
+        //     $proccessData = [
+        //         'password'          => Hash::make('P4$$w0rd#.'),
+        //         'email_verified_at' => now(),
+        //     ];
+
+        //     $data = array_merge($validated, $proccessData);
+        //     // Creación - usar email como identificador único
+        //     $user = User::updateOrCreate(
+        //         ['id' => $request->input('id')],
+        //         $data
+        //     );
+        // } else {
+        //     // Actualización - usar ID del request
+        //     $user = User::where('id', $request->id)->first();
+        //     $user->update($validated);
+        // }
 
         if ($request->has('role')) {
             // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)

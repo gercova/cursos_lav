@@ -22,6 +22,8 @@ class UserValidate extends FormRequest {
             'address'       => 'nullable|string|max:500',
             'profession'    => 'nullable|string|max:255',
             'role'          => ['required', Rule::in(['student', 'instructor', 'admin', 'business'])],
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_photo'  => 'nullable|in:0,1',
         ];
     }
 
@@ -44,6 +46,9 @@ class UserValidate extends FormRequest {
             'role.in'               => 'El rol seleccionado no es válido',
             'country_code.required' => 'El código país es requerido',
             'country_code.max'      => 'El código país tiene una longitud máxima de 10 caracteres',
+            'profile_photo.image'   => 'El archivo debe ser una imagen válida.',
+            'profile_photo.mimes'   => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
+            'profile_photo.max'     => 'La imagen no debe pesar más de 5MB.',
         ];
     }
 }

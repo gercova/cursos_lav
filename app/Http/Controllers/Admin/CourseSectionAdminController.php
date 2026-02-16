@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseSection;
+use App\Models\Lesson;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class CourseSectionAdminController extends Controller {
@@ -74,7 +77,8 @@ class CourseSectionAdminController extends Controller {
 
         CourseSection::create($validated);
 
-        return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección creada exitosamente.');
+        // return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección creada exitosamente.');
+        return redirect()->route('admin.courses.sections.index', $course)->with('success', 'Sección creada exitosamente.');
     }
 
     /**
@@ -131,20 +135,50 @@ class CourseSectionAdminController extends Controller {
     /**
      * Eliminar una sección.
      */
-    public function destroy(Course $course, CourseSection $section) {
+    // public function destroy(Course $course, CourseSection $section) {
+    //     // Eliminar archivo asociado si existe
+    //     if ($section->mediafile) {
+    //         Storage::disk('public')->delete($section->mediafile);
+    //     }
+
+    //     $lessons = Lesson::where('course_section_id', $section->id)->delete();
+    //     $section->delete();
+
+    //     // Reordenar las secciones restantes
+    //     $this->reorderAfterDelete($course);
+
+    //     return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección eliminada y lecciones exitosamente.');
+    // }
+
+    public function destroy(Course $course, CourseSection $section): RedirectResponse|JsonResponse {
         // Eliminar archivo asociado si existe
         if ($section->mediafile) {
             Storage::disk('public')->delete($section->mediafile);
         }
 
+        // Eliminar lecciones asociadas
+        Lesson::where('course_section_id', $section->id)->delete();
+        
+        // Guardar el ID antes de eliminar
+        $sectionId = $section->id;
         $section->delete();
 
         // Reordenar las secciones restantes
         $this->reorderAfterDelete($course);
 
-        return redirect()->route('admin.courses.edit', $course)
+        // Si es una petición AJAX, devolver JSON
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success'       => true,
+                'message'       => 'Sección eliminada exitosamente.',
+                'section_id'    => $sectionId
+            ]);
+        }
+
+        return redirect()->route('admin.courses.sections.index', $course)
             ->with('success', 'Sección eliminada exitosamente.');
     }
+
 
     /**
      * Reordenar secciones al insertar una nueva o cambiar el orden.

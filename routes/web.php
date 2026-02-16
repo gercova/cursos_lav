@@ -33,6 +33,7 @@ use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
+use App\Models\Course;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -187,22 +188,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 
 Route::prefix('company')->group(function() {
     Route::middleware(['auth', 'business'])->group(function() {
-        // Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
-        // Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
-        // Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-        // Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
-
-        // Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import');
-        // Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
-        // Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
-
-        // Route::get('/enroll/users',         [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
-        // Route::post('/enroll/with-code',    [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
-        // Route::post('/enroll/bulk',         [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
-        // Route::get('/enroll/recent',        [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
-        // Route::get('/users/without-code',   [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
-        // Route::post('/enroll/super-bulk',   [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
-
         Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
         Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
         Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
@@ -280,18 +265,19 @@ Route::prefix('admin')->group(function () {
         Route::post('categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
         Route::post('categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
-        // Rutas adicionales para cursos
-        Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');
-        Route::get('/courses/{course}/sections',                [CoursesAdminController::class, 'getSections']);
-        Route::post('/courses/{course}/toggle-status',          [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
-        Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
-        Route::get('/courses/{course}',                         [CoursesAdminController::class, 'show'])->name('admin.courses.show');
-        Route::post('/courses/store',                           [CoursesAdminController::class, 'store'])->name('admin.courses.store');
-        Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
-        Route::put('/courses/update',                           [CoursesAdminController::class, 'update'])->name('admin.courses.update');
-        Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
-        Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');
+        // Rutas para cursos
+        Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');
+        Route::get('/courses/{course}/sections',        [CoursesAdminController::class, 'getSections']);
+        Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
+        Route::get('/courses/create',                   [CoursesAdminController::class, 'create'])->name('admin.courses.create');
+        Route::get('/courses/{course}',                 [CoursesAdminController::class, 'show'])->name('admin.courses.show');
+        Route::post('/courses/store',                   [CoursesAdminController::class, 'store'])->name('admin.courses.store');
+        Route::get('/courses/{course}/edit',            [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
+        Route::put('/courses/update',                   [CoursesAdminController::class, 'update'])->name('admin.courses.update');
+        Route::delete('/courses/{course}',              [CoursesAdminController::class, 'destroy'])->name('admin.courses.destroy');
+        // Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
+        // Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
+        // Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');
 
         // Rutas para secciones de cursos
         Route::get('/courses/{course}/sections',                [CourseSectionAdminController::class, 'index'])->name('admin.courses.sections.index');
@@ -299,9 +285,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/courses/{course}/sections',               [CourseSectionAdminController::class, 'store'])->name('admin.courses.sections.store');
         Route::get('/courses/{course}/sections/{section}/edit', [CourseSectionAdminController::class, 'edit'])->name('admin.courses.sections.edit');
         Route::put('/courses/{course}/sections/{section}',      [CourseSectionAdminController::class, 'update'])->name('admin.courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',   [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
         Route::post('/courses/{course}/sections/{section}/toggle-status', [CourseSectionAdminController::class, 'toggleStatus'])->name('admin.courses.sections.toggle-status');
         Route::post('/courses/{course}/sections/reorder',       [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
+        Route::delete('/courses/{course}/sections/{section}',   [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
 
         // Rutas para lecciones
         Route::get('/courses/{course}/sections/{section}',                          [LessonsAdminController ::class, 'index'])->name('admin.courses.sections.lessons.index');

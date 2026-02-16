@@ -118,74 +118,94 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($enrollments as $enrollment)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-medium text-gray-900">#{{ $enrollment->id }}</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $enrollment->user->names }}</div>
-                                    <div class="text-sm text-gray-500">{{ $enrollment->user->email }}</div>
+                        @php
+                            $user = $enrollment->user;
+                            $course = $enrollment->course;
+                            $hasUser = !is_null($user);
+                            $hasCourse = !is_null($course);
+                        @endphp
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-medium text-gray-900">#{{ $enrollment->id }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ $hasUser ? $user->names : 'Usuario eliminado' }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ $hasUser ? $user->email : 'Email no disponible' }}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900">{{ $enrollment->course->title }}</div>
-                            <div class="text-sm text-gray-500">{{ $enrollment->course->category->name ?? 'Sin categoría' }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-full bg-gray-200 rounded-full h-2.5 mr-3">
-                                    <div class="bg-blue-600 h-2.5 rounded-full"
-                                         style="width: {{ $enrollment->progress ?? 0 }}%"></div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ $hasCourse ? $course->title : 'Curso eliminado' }}
                                 </div>
-                                <span class="text-sm font-medium text-gray-700">{{ $enrollment->progress ?? 0 }}%</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full
-                                {{ $enrollment->status == 'active' ? 'bg-green-100 text-green-800' :
-                                   ($enrollment->status == 'completed' ? 'bg-purple-100 text-purple-800' :
-                                   ($enrollment->status == 'cancelled' ? 'bg-red-100 text-red-800' :
-                                   'bg-yellow-100 text-yellow-800')) }}">
-                                @if($enrollment->status == 'active')
-                                    <i class="fas fa-play-circle mr-1"></i>
-                                @elseif($enrollment->status == 'completed')
-                                    <i class="fas fa-graduation-cap mr-1"></i>
-                                @elseif($enrollment->status == 'cancelled')
-                                    <i class="fas fa-times-circle mr-1"></i>
-                                @else
-                                    <i class="fas fa-clock mr-1"></i>
-                                @endif
-                                {{ ucfirst($enrollment->status) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $enrollment->enrolled_at->format('d/m/Y H:i') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <a href="{{ route('admin.enrollments.show', $enrollment) }}"
-                                   class="text-blue-600 hover:text-blue-900">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <button onclick="changeEnrollmentStatus({{ $enrollment->id }}, '{{ $enrollment->status }}')"
-                                        class="text-green-600 hover:text-green-900">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <a href="#" class="text-purple-600 hover:text-purple-900">
-                                    <i class="fas fa-chart-line"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+                                <div class="text-sm text-gray-500">
+                                    {{ $hasCourse && $course->category ? $course->category->name : 'Sin categoría' }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5 mr-3">
+                                        <div class="bg-blue-600 h-2.5 rounded-full"
+                                            style="width: {{ $enrollment->progress ?? 0 }}%"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700">{{ $enrollment->progress ?? 0 }}%</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs rounded-full
+                                    {{ $enrollment->status == 'active' ? 'bg-green-100 text-green-800' :
+                                    ($enrollment->status == 'completed' ? 'bg-purple-100 text-purple-800' :
+                                    ($enrollment->status == 'cancelled' ? 'bg-red-100 text-red-800' :
+                                    'bg-yellow-100 text-yellow-800')) }}">
+                                    @if($enrollment->status == 'active')
+                                        <i class="fas fa-play-circle mr-1"></i>
+                                    @elseif($enrollment->status == 'completed')
+                                        <i class="fas fa-graduation-cap mr-1"></i>
+                                    @elseif($enrollment->status == 'cancelled')
+                                        <i class="fas fa-times-circle mr-1"></i>
+                                    @else
+                                        <i class="fas fa-clock mr-1"></i>
+                                    @endif
+                                    {{ ucfirst($enrollment->status) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $enrollment->enrolled_at ? $enrollment->enrolled_at->format('d/m/Y H:i') : 'Fecha no disponible' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    @if($hasUser && $hasCourse)
+                                        <a href="{{ route('admin.enrollments.show', $enrollment) }}"
+                                        class="text-blue-600 hover:text-blue-900">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button onclick="changeEnrollmentStatus({{ $enrollment->id }}, '{{ $enrollment->status }}')"
+                                                class="text-green-600 hover:text-green-900">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <a href="#" class="text-purple-600 hover:text-purple-900">
+                                            <i class="fas fa-chart-line"></i>
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400" title="Inscripción incompleta">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                            No se encontraron inscripciones.
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                No se encontraron inscripciones.
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

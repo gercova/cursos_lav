@@ -441,7 +441,7 @@ class BusinessManagementController extends Controller {
         
         // Obtener todos los cursos activos con precio de promoción
         $courses = Course::where('is_active', true)
-            ->whereNotNull('promotion_price')
+            // ->whereNotNull('promotion_price')
             ->get();
 
         if ($students->isEmpty()) {
@@ -470,14 +470,14 @@ class BusinessManagementController extends Controller {
             foreach ($students as $student) {
                 foreach ($courses as $course) {
                     // Verificar si tiene código
-                    if (!$student->code) {
-                        $results['failed'][] = [
-                            'user'      => $student->names,
-                            'course'    => $course->title,
-                            'reason'    => 'No tiene código de promoción'
-                        ];
-                        continue;
-                    }
+                    // if (!$student->code) {
+                    //     $results['failed'][] = [
+                    //         'user'      => $student->names,
+                    //         'course'    => $course->title,
+                    //         'reason'    => 'No tiene código de promoción'
+                    //     ];
+                    //     continue;
+                    // }
 
                     // Verificar si ya está matriculado
                     $existingEnrollment = Enrollment::where('user_id', $student->id)

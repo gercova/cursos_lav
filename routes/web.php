@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\EnterpriseAdminController;
 use App\Http\Controllers\Admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
+use App\Http\Controllers\Admin\PackagesAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
@@ -33,7 +34,6 @@ use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
-use App\Models\Course;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -300,8 +300,9 @@ Route::prefix('admin')->group(function () {
         Route::post('/courses/{course}/sections/{section}/lessons/reorder',         [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
         
         // rutas vimeo directo
-        Route::post('/vimeo/upload-link',[VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
-        Route::delete('/vimeo/{vimeoId}',[VimeoController::class,'destroy'])->name('vimeo.destroy');
+        Route::post('/vimeo/upload-link',       [VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
+        Route::delete('/vimeo/{vimeoId}',       [VimeoController::class,'destroy'])->name('vimeo.destroy');
+        
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
         Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
@@ -312,6 +313,14 @@ Route::prefix('admin')->group(function () {
         Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
         Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
+
+        // Rutas para paquetes
+        Route::get('/packeges/home',                        [PackagesAdminController::class, 'index'])->name('admin.packages.index');
+        Route::get('/packeges/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
+        Route::get('/packeges/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
+        Route::post('/packeges/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
+        Route::delete('/packeges/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
+        Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');

@@ -44,8 +44,8 @@
                     </svg>
                     Volver a Lecciones
                 </a>
-                @if($lesson->vimeo?->vimeo_id)
-                    <a href="{{ $lesson->vimeo?->link }}"
+                @if($lesson->video?->vimeo_id)
+                    <a href="{{ $lesson->video?->link }}"
                        target="_blank"
                        class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 rounded-xl font-medium transition duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,13 +126,13 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-                <input type="hidden" id="video_id" name="video_id" value="{{$lesson->vimeo?->id}}">
+                <input type="hidden" id="video_id" name="video_id" value="{{$lesson->video?->id}}">
 
                 @include('admin/courses/lessons/partial-vimeo',[
-                    'vimeo_id'=>$lesson->vimeo?->vimeo_id,
-                    'class'=>isset($lesson->vimeo?->vimeo_id)?'hidden':''
+                    'vimeo_id'=>$lesson->video?->vimeo_id,
+                    'class'=>isset($lesson->video?->vimeo_id)?'hidden':''
                 ])
-                @if($lesson->vimeo?->vimeo_id)
+                @if($lesson->video?->vimeo_id)
                     <div id="current-video-preview" class="border border-gray-200 rounded-xl p-4">
                         <h3 class="text-lg font-semibold text-gray-800 mb-3 inline-block">Video Actual</h3>
                         <div class="inline-block">
@@ -147,7 +147,7 @@
                             </button>
                         </div>
                         <div class="aspect-w-16 aspect-h-9 rounded-xl overflow-hidden border border-gray-300">
-                            <iframe src="{{$lesson->vimeo?->embed_url}}"
+                            <iframe src="{{$lesson->video?->embed_url}}"
                                 class="w-full h-full"
                                 frameborder="0"
                                 allow="autoplay; fullscreen; picture-in-picture"
@@ -155,13 +155,13 @@
                             </iframe>
                         </div>
 
-                        @if($lesson->vimeo?->vimeo_id)
+                        @if($lesson->video?->vimeo_id)
                             <div class="mt-2">
                                 <div class="flex items-center gap-2 text-sm text-green-600">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
-                                    {{$lesson->vimeo?->description_status}}
+                                    {{$lesson->video?->description_status}}
                                 </div>
                             </div>
                         @endif

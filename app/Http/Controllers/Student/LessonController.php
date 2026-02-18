@@ -41,7 +41,7 @@ class LessonController extends Controller {
         $lesson = Lesson::where('id', $lessonId)
             ->where('is_active', true)
             ->with('section')
-            ->with('vimeo')
+            ->with('video')
             ->firstOrFail();
 
         // Verificar que el usuario esté inscrito en el curso

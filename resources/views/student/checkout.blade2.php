@@ -834,7 +834,7 @@ function checkoutApp() {
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-        }),
+        }),francisco llatas
 
         init() {
             this.initCulqi();

@@ -17,10 +17,22 @@ class CategorySeeder extends Seeder
         $categories = [
             'SST',
             'Residuos Sólidos',
-            'Forestales'
+            'Forestales',
+            'Package'
         ];
 
         foreach ($categories as $category) {
+            if ($category === 'Package') {
+                Category::create([
+                    'name'          => $category,
+                    'slug'          => Str::slug($category),
+                    'description'   => "Paquete de cursos.",
+                    'is_active'     => true,
+                ]);
+                
+                continue;
+            }
+            
             Category::create([
                 'name'          => $category,
                 'slug'          => Str::slug($category),

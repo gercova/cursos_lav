@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Str;
 
-class Lesson extends Model
-{
+class Lesson extends Model {
+    
     use HasFactory;
 
     protected $table        = 'lessons';

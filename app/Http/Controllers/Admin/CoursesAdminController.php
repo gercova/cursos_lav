@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseValidate;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\CourseSection;
-use App\Models\Document;
-use App\Models\Exam;
-use App\Models\Lesson;
+// use App\Models\CourseSection;
+// use App\Models\Document;
+// use App\Models\Exam;
+// use App\Models\Lesson;
 use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Contracts\View\View;
@@ -30,7 +30,9 @@ class CoursesAdminController extends Controller {
     public function index(Request $request): View {
         $query = Course::with(['category', 'sections'])
             ->withCount(['enrollments as students_count'])
-            ->withCount('sections');
+            ->withCount('sections')
+            ->where('category_id', '<>', 4)
+            ->where('type', 'course');
 
         // Búsqueda
         if ($search = $request->input('search')) {

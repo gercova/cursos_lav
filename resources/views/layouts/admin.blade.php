@@ -124,10 +124,11 @@
                         <i class="fas fa-book mr-2"></i>Gestión de Cursos
                     </a>
                 @endrole
-                    <a href="{{ route('admin.packages.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.courses.*') ? 'bg-blue-700' : '' }}">
+
+                @role('admin')
+                    <a href="{{ route('admin.packages.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.packages.*') ? 'bg-blue-700' : '' }}">
                         <i class="fa-solid fa-cubes mr-2"></i>Gestión de Paquetes
                     </a>
-                @role('admin')
                     
                 @endrole
                 

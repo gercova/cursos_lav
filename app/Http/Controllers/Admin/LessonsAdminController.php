@@ -21,7 +21,7 @@ class LessonsAdminController extends Controller {
 
     // Listar lecciones de una sección
     public function index(Course $course, CourseSection $section): View {
-        $lessons = $section->lessons()->with('vimeo')->orderBy('order')->get();
+        $lessons = $section->lessons()->with('video')->orderBy('order')->get();
         return view('admin.courses.lessons.index', compact('course', 'section', 'lessons'));
     }
 
@@ -60,7 +60,7 @@ class LessonsAdminController extends Controller {
 
     // Mostrar formulario para editar lección
     public function edit(Course $course, CourseSection $section, Lesson $lesson) {
-        $lesson->load('vimeo');
+        $lesson->load('video');
         return view('admin.courses.lessons.edit', compact('course', 'section', 'lesson'));
     }
 

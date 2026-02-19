@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
+use App\Models\Package;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +19,10 @@ use Illuminate\Support\Facades\Validator;
 class AppController extends Controller {
 
     public function home(Request $request): View {
-        $query = Course::with(['instructor'])->where('is_active', true);
+        $query = Course::with(['instructor'])
+            ->where('category_id', '<>', 4)
+            ->where('type', 'course')
+            ->where('is_active', true);
         // Filtrar por categoría
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
@@ -31,7 +35,10 @@ class AppController extends Controller {
     }
 
     public function courses(Request $request) {
-        $query = Course::with(['category', 'instructor'])->where('is_active', true);
+        $query = Course::with(['category', 'instructor'])
+            ->where('category_id', '<>', 4)
+            ->where('type', 'course')
+            ->where('is_active', true);
         // Filtro por búsqueda
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
@@ -92,6 +99,127 @@ class AppController extends Controller {
         }
 
         return view('student.courses', compact('courses', 'categories', 'enterprise'));
+    }
+
+    public function packages(Request $request) {
+        $query = Course::with(['categories'])->where('type', 'package')->where('is_active', true);
+
+        // 1. Búsqueda por nombre o descripción
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('meta_description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // 2. Filtro por categorías (relación muchos a muchos)
+        if ($request->filled('category')) {
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
+        }
+
+        // 3. Filtro por rango de precios
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // 4. Filtro por fecha de creación (últimos 30 días, último año, etc)
+        if ($request->filled('date_range')) {
+            switch ($request->date_range) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'week':
+                    $query->whereDate('created_at', '>=', now()->subWeek());
+                    break;
+                case 'month':
+                    $query->whereDate('created_at', '>=', now()->subMonth());
+                    break;
+                case 'year':
+                    $query->whereDate('created_at', '>=', now()->subYear());
+                    break;
+            }
+        }
+
+        // 5. Filtro por promociones (paquetes con precio promocional)
+        if ($request->boolean('on_promotion')) {
+            $query->whereNotNull('promotion_price')
+                ->where('promotion_price', '<', 'price')
+                ->where('promotion_price', '>', 0);
+        }
+
+        // 6. Ordenamiento
+        $sort = $request->get('sort', 'newest');
+        
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('name', 'desc');
+                break;
+            case 'popular':
+                // Asumiendo que tienes un contador de ventas o similar
+                $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
+                break;
+            default: // newest
+                $query->orderBy('created_at', 'desc');
+        }
+
+        // 7. Paginación (12 items por página como en cursos)
+        $packages = $query->paginate(12)->withQueryString();
+
+        // 8. Enriquecer los paquetes con información adicional
+        $packages->transform(function ($package) {
+            // Calcular precio final (promoción si existe)
+            $package->final_price = $package->promotion_price && $package->promotion_price < $package->price 
+                ? $package->promotion_price 
+                : $package->price;
+            
+            $package->has_promotion = $package->promotion_price && $package->promotion_price < $package->price;
+            
+            if ($package->has_promotion) {
+                $package->discount_percentage = round((($package->price - $package->promotion_price) / $package->price) * 100);
+            }
+            
+            // Contar cursos totales disponibles en el paquete
+            $package->total_courses = $package->getAllCoursesAttribute()->count();
+            
+            return $package;
+        });
+
+        // 9. Obtener categorías para el filtro (solo las que tienen paquetes activos)
+        // $categories = Category::whereHas('packages', function($q) {
+        //         $q->where('is_active', true);
+        //     })
+        //     ->where('is_active', true)
+        //     ->get();
+
+        $enterprise = Enterprise::first();
+
+        // 10. Si es petición AJAX, devolver solo la cuadrícula
+        if ($request->ajax()) {
+            return view('student.partials.packages-grid', compact('packages'))->render();
+        }
+
+        // return view('student.packages', compact('packages', 'categories', 'enterprise'));
+        return view('student.packages', compact('packages', 'enterprise'));
     }
 
     public function coursesPartner(Request $request, $code = null) {

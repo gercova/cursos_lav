@@ -46,34 +46,37 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 //ruta webhook 
-Route::post('api/vimeo/webhook',[VimeoWebhookController::class,'handle'])->name('webhook');
+Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'handle'])->name('webhook');
+
 // Rutas públicas
-Route::get('/',                         [AppController::class, 'home'])->name('home');
-Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
-Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
-Route::get('/cursos/{code}',            [AppController::class, 'coursesPartner'])->name('cursos-promo');
-Route::get('/curso-promo/{slug}/{code}', [AppController::class, 'showPartner'])->name('curso-promo');
-Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
-Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
-Route::post('/contact/send',            [AppController::class, 'sendMessage'])->name('contact.send');
-Route::get('/api/cart/count',           [CartsController::class, 'count'])->name('cart.count');
-Route::get('/terminos-y-condiciones',   [AppController::class, 'terms'])->name('terminos-y-condiciones');
-Route::get('/politicas-de-uso',         [AppController::class, 'policies'])->name('politicas-de-uso');
-Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->name('politicas-de-cookies');
+Route::get('/',                             [AppController::class, 'home'])->name('home');
+Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
+Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
+Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
+Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
+Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
+Route::get('/nosotros',                     [AppController::class, 'aboutus'])->name('nosotros');
+Route::get('/contacto',                     [AppController::class, 'contact'])->name('contacto');
+Route::post('/contact/send',                [AppController::class, 'sendMessage'])->name('contact.send');
+Route::get('/api/cart/count',               [CartsController::class, 'count'])->name('cart.count');
+Route::get('/terminos-y-condiciones',       [AppController::class, 'terms'])->name('terminos-y-condiciones');
+Route::get('/politicas-de-uso',             [AppController::class, 'policies'])->name('politicas-de-uso');
+Route::get('/politicas-de-cookies',         [AppController::class, 'policies'])->name('politicas-de-cookies');
 
 // Autenticación general (Admin / Instructor / Student)
-Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
-Route::post('/register',                [RegisterController::class, 'register']);
-Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
-Route::post('/login',                   [LoginController::class, 'login'])->middleware('guest');
-Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
-Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password',          [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/register',                     [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register',                    [RegisterController::class, 'register']);
+Route::get('/login',                        [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login',                       [LoginController::class, 'login'])->middleware('guest');
+Route::post('/logout',                      [LoginController::class, 'logout'])->name('logout');
+Route::get('forgot-password',               [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password',              [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Restablecer contraseña
-Route::get('reset-password/{token}',    [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password',           [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('reset-password/{token}',        [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password',               [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Enlace para verificación del certificado
 Route::get('/verify/{code}',            [CertificatesController::class, 'verify'])->name('verify.certificate');
@@ -315,11 +318,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
 
         // Rutas para paquetes
-        Route::get('/packeges/home',                        [PackagesAdminController::class, 'index'])->name('admin.packages.index');
-        Route::get('/packeges/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
-        Route::get('/packeges/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
-        Route::post('/packeges/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
-        Route::delete('/packeges/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
+        Route::get('/packages/home',                        [PackagesAdminController::class, 'index'])->name('admin.packages.index');
+        Route::get('/packages/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
+        Route::get('/packages/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
+        Route::post('/packages/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
+        Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
         Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
 
         // Rutas adicionales para exámenes

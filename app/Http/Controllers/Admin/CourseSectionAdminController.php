@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 class CourseSectionAdminController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'admin', 'prevent.back']);
+        $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
     public function index(Course $course) {
@@ -77,7 +77,6 @@ class CourseSectionAdminController extends Controller {
 
         CourseSection::create($validated);
 
-        // return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección creada exitosamente.');
         return redirect()->route('admin.courses.sections.index', $course)->with('success', 'Sección creada exitosamente.');
     }
 
@@ -135,21 +134,6 @@ class CourseSectionAdminController extends Controller {
     /**
      * Eliminar una sección.
      */
-    // public function destroy(Course $course, CourseSection $section) {
-    //     // Eliminar archivo asociado si existe
-    //     if ($section->mediafile) {
-    //         Storage::disk('public')->delete($section->mediafile);
-    //     }
-
-    //     $lessons = Lesson::where('course_section_id', $section->id)->delete();
-    //     $section->delete();
-
-    //     // Reordenar las secciones restantes
-    //     $this->reorderAfterDelete($course);
-
-    //     return redirect()->route('admin.courses.edit', $course)->with('success', 'Sección eliminada y lecciones exitosamente.');
-    // }
-
     public function destroy(Course $course, CourseSection $section): RedirectResponse|JsonResponse {
         // Eliminar archivo asociado si existe
         if ($section->mediafile) {
@@ -212,6 +196,25 @@ class CourseSectionAdminController extends Controller {
             $section->update(['order' => $order]);
             $order++;
         }
+    }
+
+    public function reorder(Request $request, Course $course): JsonResponse {
+        $request->validate([
+            'sections' => 'required|array',
+            'sections.*.id' => 'required|exists:course_sections,id',
+            'sections.*.order' => 'required|integer|min:1'
+        ]);
+
+        foreach ($request->sections as $sectionData) {
+            CourseSection::where('id', $sectionData['id'])
+                ->where('course_id', $course->id)
+                ->update(['order' => $sectionData['order']]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Secciones reordenadas exitosamente.'
+        ]);
     }
 
     public function toggleStatus(Course $course, CourseSection $section): JsonResponse {

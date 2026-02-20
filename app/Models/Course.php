@@ -200,7 +200,7 @@ class Course extends Model
     /**
      * Obtener la ruta clave para el modelo.
      */
-    public function getRouteKeyName() {
-        return 'slug';
-    }
+    // public function getRouteKeyName() {
+    //     return 'slug';
+    // }
 }

@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
-use App\Models\Package;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -444,7 +443,7 @@ class AppController extends Controller {
             // Ejemplo de envío de email (descomentar cuando configures mail)
 
             Mail::send('emails.contact', $contactData, function($message) use ($contactData) {
-                $message->to('info@eduplatform.com')
+                $message->to('consultores.ipf@gmail.com')
                     ->subject('Nuevo mensaje de contacto: ' . $contactData['subject'])
                     ->from($contactData['email'], $contactData['name']);
             });

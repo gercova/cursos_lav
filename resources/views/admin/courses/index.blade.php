@@ -310,7 +310,7 @@
                                             style="display: none;"
                                         >
                                             <!-- Ver secciones -->
-                                            <a href="{{ route('admin.courses.sections.index', $course) }}"
+                                            <a href="{{ route('admin.courses.sections.index', $course->id) }}"
                                             class="block px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -344,8 +344,7 @@
                                             </a>
 
                                             <!-- Documentos -->
-                                            <a href="#"
-                                            class="block px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2">
+                                            <a href="#" class="block px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
@@ -402,25 +401,10 @@
     <!-- Modal para gestionar secciones -->
     <div x-data="{ showSections: false, courseId: null, sections: [], loadingSections: false }" x-cloak>
         <!-- Modal overlay -->
-        <div x-show="showSections"
-            x-transition:enter="ease-out duration-300"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-            @click.self="showSections = false">
+        <div x-show="showSections" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm" @click.self="showSections = false">
 
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div x-show="showSections"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="ease-in duration-200"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                <div x-show="showSections" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
 
                     <!-- Header del modal -->
                     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -448,24 +432,16 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-                                        <input type="text"
-                                            x-model="newSectionTitle"
-                                            required
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                        <input type="text" x-model="newSectionTitle" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Orden</label>
-                                        <input type="number"
-                                            x-model="newSectionOrder"
-                                            min="1"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                                        <input type="number" x-model="newSectionOrder" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                                    <textarea x-model="newSectionDescription"
-                                    rows="2"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+                                    <textarea x-model="newSectionDescription" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
                                 </div>
                                 <div class="flex justify-end">
                                     <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2 px-6 rounded-lg transition duration-200">
@@ -483,19 +459,16 @@
                                     <div class="p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition duration-200">
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="flex items-center gap-3">
-                                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 font-bold"
-                                                      x-text="section.order"></span>
+                                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700 font-bold" x-text="section.order"></span>
                                                 <h5 class="font-medium text-gray-900" x-text="section.title"></h5>
                                             </div>
                                             <div class="flex items-center gap-2">
-                                                <button @click="editSection(section)"
-                                                        class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200">
+                                                <button @click="editSection(section)" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition duration-200">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                     </svg>
                                                 </button>
-                                                <button @click="deleteSection(section.id)"
-                                                        class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                                                <button @click="deleteSection(section.id)" class="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                     </svg>

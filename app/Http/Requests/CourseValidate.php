@@ -58,6 +58,7 @@ class CourseValidate extends FormRequest {
             'what_you_learn.*.string'   => 'Cada ítem a aprender debe ser una cadena de texto.',
             'image.image'               => 'El archivo ingresado debe ser una imagen válida.',
             'image.max'                 => 'El archivo no puede pesar más de 5MB.',
+            'image.mimes'               => 'El archivo debe ser jpeg, png, jpg o gif',
 
         ];
     }

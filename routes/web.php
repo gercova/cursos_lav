@@ -278,29 +278,6 @@ Route::prefix('admin')->group(function () {
         Route::get('/courses/{course}/edit',            [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
         Route::put('/courses/update',                   [CoursesAdminController::class, 'update'])->name('admin.courses.update');
         Route::delete('/courses/{course}',              [CoursesAdminController::class, 'destroy'])->name('admin.courses.destroy');
-        // Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
-        // Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
-        // Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');
-
-        // Rutas para secciones de cursos
-        // Route::get('/sections/{course}/sections',                            [CourseSectionAdminController::class, 'index'])->name('admin.courses.sections.index');
-        // Route::get('/sections/{course}/sections/create',                     [CourseSectionAdminController::class, 'create'])->name('admin.courses.sections.create');
-        // Route::post('/sections/{course}/sections',                           [CourseSectionAdminController::class, 'store'])->name('admin.courses.sections.store');
-        // Route::get('/sections/{course}/sections/{section}/edit',             [CourseSectionAdminController::class, 'edit'])->name('admin.courses.sections.edit');
-        // Route::put('/sections/{course}/sections/{section}',                  [CourseSectionAdminController::class, 'update'])->name('admin.courses.sections.update');
-        // Route::post('/sections/{course}/sections/{section}/toggle-status',   [CourseSectionAdminController::class, 'toggleStatus'])->name('admin.courses.sections.toggle-status');
-        // Route::post('/sections/{course}/sections/reorder',                   [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
-        // Route::delete('/sections/{course}/sections/{section}',               [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
-
-        // Rutas para lecciones
-        // Route::get('/lessons/{course}/sections/{section}',                                  [LessonsAdminController ::class, 'index'])->name('admin.courses.sections.lessons.index');
-        // Route::get('/lessons/{course}/sections/{section}/lessons/create',                   [LessonsAdminController::class, 'create'])->name('admin.courses.sections.lessons.create');
-        // Route::post('/lessons/{course}/sections/{section}/lessons/store',                   [LessonsAdminController::class, 'store'])->name('admin.courses.sections.lessons.store');
-        // Route::get('/lessons/{course}/sections/{section}/lessons/{lesson}/edit',            [LessonsAdminController::class, 'edit'])->name('admin.courses.sections.lessons.edit');
-        // Route::put('/lessons/{course}/sections/{section}/lessons/{lesson}',                 [LessonsAdminController::class, 'update'])->name('admin.courses.sections.lessons.update');
-        // Route::delete('/lessons/{course}/sections/{section}/lessons/{lesson}',              [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
-        // Route::post('/lessons/{course}/sections/{section}/lessons/{lesson}/toggle-status',  [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
-        // Route::post('/lessons/{course}/sections/{section}/lessons/reorder',                 [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
         
         // PRIMER GRUPO: Rutas de secciones SIN parámetro {section} (las más específicas primero)
         Route::get('/courses/{course}/sections/create',         [CourseSectionAdminController::class, 'create'])->name('admin.courses.sections.create');

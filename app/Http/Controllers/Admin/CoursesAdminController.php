@@ -142,30 +142,42 @@ class CoursesAdminController extends Controller {
     }
 
     public function update(CourseValidate $request, Course $course) {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        // Procesar imagen
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($course->image_url) {
-                Storage::disk('public')->delete($course->image_url);
+            // Procesar imagen
+            if ($request->hasFile('image')) {
+                // Eliminar imagen anterior si existe
+                if ($course->image_url) {
+                    Storage::disk('public')->delete($course->image_url);
+                }
+
+                $path = $request->file('image')->store('courses', 'public');
+                $validated['image_url'] = $path;
             }
 
-            $path = $request->file('image')->store('courses', 'public');
-            $validated['image_url'] = $path;
-        }
+            // Filtrar elementos vacíos de los arrays
+            if (isset($validated['requirements'])) {
+                $validated['requirements'] = array_filter($validated['requirements']);
+            }
+            if (isset($validated['what_you_learn'])) {
+                $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
+            }
 
-        // Filtrar elementos vacíos de los arrays
-        if (isset($validated['requirements'])) {
-            $validated['requirements'] = array_filter($validated['requirements']);
-        }
-        if (isset($validated['what_you_learn'])) {
-            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
-        }
+            $course = Course::updateOrCreate(['id' => $request->input('id')], $validated);
 
-        $course = Course::updateOrCreate(['id' => $request->input('id')], $validated);
-
-        return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
+            return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
+        } catch (ValidationException $e) {
+            // Si es error de validación, mostrar los errores específicos
+            return back()->withErrors($e->errors())->withInput();
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('Error al actualizar el curso: ' . $th->getMessage());
+            Log::error($th->getTraceAsString());
+            
+            return back()->withInput()->with('error', 'Ocurrió un error al actualizar el curso: ' . $th->getMessage());
+        }
     }
 
     // public function show(Course $course): View {

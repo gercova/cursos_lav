@@ -28,7 +28,7 @@ class AppController extends Controller {
         }
 
         $courses    = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+        $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
         $enterprise = Enterprise::first();
         return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
@@ -89,7 +89,7 @@ class AppController extends Controller {
         }
 
         $courses    = $query->paginate(12);
-        $categories = Category::where('is_active', true)->get();
+        $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
         $enterprise = Enterprise::first();
 
         // Si es una petición AJAX, retornar solo la vista parcial

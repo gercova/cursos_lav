@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\EnterpriseAdminController;
 use App\Http\Controllers\Admin\ExamQuestionAdminController;
 use App\Http\Controllers\Admin\ExamsAdminController;
 use App\Http\Controllers\Admin\LessonsAdminController;
+use App\Http\Controllers\Admin\PackagesAdminController;
 use App\Http\Controllers\Admin\PaymentsAdminController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserAdminController;
@@ -45,35 +46,39 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 //ruta webhook 
-Route::post('api/vimeo/webhook',[VimeoWebhookController::class,'handle'])->name('webhook');
+Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'handle'])->name('webhook');
+
 // Rutas públicas
-Route::get('/',                         [AppController::class, 'home'])->name('home');
-Route::get('/cursos',                   [AppController::class, 'courses'])->name('cursos');
-Route::get('/curso/{slug}',             [AppController::class, 'show'])->name('course.show');
-Route::get('/cursos/{code}',            [AppController::class, 'coursesPartner'])->name('cursos-promo');
-Route::get('/curso-promo/{slug}/{code}', [AppController::class, 'showPartner'])->name('curso-promo');
-Route::get('/nosotros',                 [AppController::class, 'aboutus'])->name('nosotros');
-Route::get('/contacto',                 [AppController::class, 'contact'])->name('contacto');
-Route::post('/contact/send',            [AppController::class, 'sendMessage'])->name('contact.send');
-Route::get('/api/cart/count',           [CartsController::class, 'count'])->name('cart.count');
-Route::get('/terminos-y-condiciones',   [AppController::class, 'terms'])->name('terminos-y-condiciones');
-Route::get('/politicas-de-uso',         [AppController::class, 'policies'])->name('politicas-de-uso');
-Route::get('/politicas-de-cookies',     [AppController::class, 'policies'])->name('politicas-de-cookies');
+Route::get('/',                             [AppController::class, 'home'])->name('home');
+Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
+Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
+Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
+Route::get('/cursos/{code?}',               [AppController::class, 'coursesPartner'])->name('cursos-promo');//code
+Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
+Route::get('/nosotros',                     [AppController::class, 'aboutus'])->name('nosotros');
+Route::get('/contacto',                     [AppController::class, 'contact'])->name('contacto');
+Route::post('/contact/send',                [AppController::class, 'sendMessage'])->name('contact.send');
+Route::get('/api/cart/count',               [CartsController::class, 'count'])->name('cart.count');
+Route::get('/terminos-y-condiciones',       [AppController::class, 'terms'])->name('terminos-y-condiciones');
+Route::get('/politicas-de-uso',             [AppController::class, 'policies'])->name('politicas-de-uso');
+Route::get('/politicas-de-cookies',         [AppController::class, 'policies'])->name('politicas-de-cookies');
 
 // Autenticación general (Admin / Instructor / Student)
-Route::get('/register',                 [RegisterController::class, 'showRegister'])->name('register');
-Route::post('/register',                [RegisterController::class, 'register']);
-Route::get('/login',                    [LoginController::class, 'showLogin'])->name('login')->middleware('guest'); ;
-Route::post('/login',                   [LoginController::class, 'login']);
-Route::post('/logout',                  [LoginController::class, 'logout'])->name('logout');
-Route::get('forgot-password',           [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password',          [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/register',                     [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register',                    [RegisterController::class, 'register']);
+Route::get('/login',                        [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login',                       [LoginController::class, 'login'])->middleware('guest');
+Route::post('/logout',                      [LoginController::class, 'logout'])->name('logout');
+Route::get('forgot-password',               [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password',              [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 // Restablecer contraseña
-Route::get('reset-password/{token}',    [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password',           [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('reset-password/{token}',        [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password',               [ResetPasswordController::class, 'reset'])->name('password.update');
 
+// Enlace para verificación del certificado
 Route::get('/verify/{code}',            [CertificatesController::class, 'verify'])->name('verify.certificate');
 
 // Rutas protegidas para estudiantes
@@ -189,9 +194,9 @@ Route::prefix('company')->group(function() {
         Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
         Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
         Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import');
+        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file'); // ← CAMBIADO
 
-        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import');
+        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import.form'); // ← CAMBIADO
         Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
         Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
 
@@ -263,42 +268,43 @@ Route::prefix('admin')->group(function () {
         Route::post('categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
         Route::post('categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
-        // Rutas adicionales para cursos
-        Route::get('/courses/home',                             [CoursesAdminController::class, 'index'])->name('admin.courses.index');
-        Route::get('/courses/{course}/sections',                [CoursesAdminController::class, 'getSections']);
-        Route::post('/courses/{course}/toggle-status',          [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
-        Route::get('/courses/create',                           [CoursesAdminController::class, 'create'])->name('admin.courses.create');
-        Route::get('/courses/{course}',                         [CoursesAdminController::class, 'show'])->name('admin.courses.show');
-        Route::post('/courses/store',                           [CoursesAdminController::class, 'store'])->name('admin.courses.store');
-        Route::get('/courses/{course}/edit',                    [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
-        Route::put('/courses/update',                           [CoursesAdminController::class, 'update'])->name('admin.courses.update');
-        Route::post('/courses/{course}/sections',               [CoursesAdminController::class, 'addSection'])->name('admin.courses.sections.add');
-        Route::put('/courses/{course}/sections/{section}',      [CoursesAdminController::class, 'updateSection'])->name('admin.courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',   [CoursesAdminController::class, 'deleteSection'])->name('admin.courses.sections.delete');
-
-        // Rutas para secciones de cursos
-        Route::get('/courses/{course}/sections',                [CourseSectionAdminController::class, 'index'])->name('admin.courses.sections.index');
-        Route::get('/courses/{course}/sections/create',         [CourseSectionAdminController::class, 'create'])->name('admin.courses.sections.create');
-        Route::post('/courses/{course}/sections',               [CourseSectionAdminController::class, 'store'])->name('admin.courses.sections.store');
-        Route::get('/courses/{course}/sections/{section}/edit', [CourseSectionAdminController::class, 'edit'])->name('admin.courses.sections.edit');
-        Route::put('/courses/{course}/sections/{section}',      [CourseSectionAdminController::class, 'update'])->name('admin.courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',   [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
-        Route::post('/courses/{course}/sections/{section}/toggle-status', [CourseSectionAdminController::class, 'toggleStatus'])->name('admin.courses.sections.toggle-status');
-        Route::post('/courses/{course}/sections/reorder',       [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
-
-        // Rutas para lecciones
-        Route::get('/courses/{course}/sections/{section}',                          [LessonsAdminController ::class, 'index'])->name('admin.courses.sections.lessons.index');
-        Route::get('/courses/{course}/sections/{section}/lessons/create',           [LessonsAdminController::class, 'create'])->name('admin.courses.sections.lessons.create');
-        Route::post('/courses/{course}/sections/{section}/lessons/store',           [LessonsAdminController::class, 'store'])->name('admin.courses.sections.lessons.store');
-        Route::get('/courses/{course}/sections/{section}/lessons/{lesson}/edit',    [LessonsAdminController::class, 'edit'])->name('admin.courses.sections.lessons.edit');
-        Route::put('/courses/{course}/sections/{section}/lessons/{lesson}',         [LessonsAdminController::class, 'update'])->name('admin.courses.sections.lessons.update');
-        Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',      [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
-        Route::post('/courses/{course}/sections/{section}/lessons/{lesson}/toggle-status', [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
-        Route::post('/courses/{course}/sections/{section}/lessons/reorder',         [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
+        // Rutas para cursos
+        Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');
+        Route::get('/courses/{course}/sections',        [CoursesAdminController::class, 'getSections']);
+        Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
+        Route::get('/courses/create',                   [CoursesAdminController::class, 'create'])->name('admin.courses.create');
+        Route::get('/courses/{course}',                 [CoursesAdminController::class, 'show'])->name('admin.courses.show');
+        Route::post('/courses/store',                   [CoursesAdminController::class, 'store'])->name('admin.courses.store');
+        Route::get('/courses/{course}/edit',            [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
+        Route::put('/courses/update',                   [CoursesAdminController::class, 'update'])->name('admin.courses.update');
+        Route::delete('/courses/{course}',              [CoursesAdminController::class, 'destroy'])->name('admin.courses.destroy');
         
+        // PRIMER GRUPO: Rutas de secciones SIN parámetro {section} (las más específicas primero)
+        Route::get('/courses/{course}/sections/create',         [CourseSectionAdminController::class, 'create'])->name('admin.courses.sections.create');
+        Route::post('/courses/{course}/sections/reorder',       [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
+        Route::post('/courses/{course}/sections',               [CourseSectionAdminController::class, 'store'])->name('admin.courses.sections.store');
+        Route::get('/courses/{course}/sections',                [CourseSectionAdminController::class, 'index'])->name('admin.courses.sections.index');
+
+        // SEGUNDO GRUPO: Rutas de secciones CON parámetro {section} (las más específicas primero)
+        Route::get('/courses/{course}/sections/{section}/edit',             [CourseSectionAdminController::class, 'edit'])->name('admin.courses.sections.edit');
+        Route::post('/courses/{course}/sections/{section}/toggle-status',   [CourseSectionAdminController::class, 'toggleStatus'])->name('admin.courses.sections.toggle-status');
+        Route::put('/courses/{course}/sections/{section}',                  [CourseSectionAdminController::class, 'update'])->name('admin.courses.sections.update');
+        Route::delete('/courses/{course}/sections/{section}',               [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
+
+        // TERCER GRUPO: Rutas de lecciones (las más específicas primero)
+        Route::get('/courses/{course}/sections/{section}/lessons/create',                   [LessonsAdminController::class, 'create'])->name('admin.courses.sections.lessons.create');
+        Route::post('/courses/{course}/sections/{section}/lessons/reorder',                 [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
+        Route::post('/courses/{course}/sections/{section}/lessons/store',                   [LessonsAdminController::class, 'store'])->name('admin.courses.sections.lessons.store');
+        Route::get('/courses/{course}/sections/{section}/lessons/{lesson}/edit',            [LessonsAdminController::class, 'edit'])->name('admin.courses.sections.lessons.edit');
+        Route::put('/courses/{course}/sections/{section}/lessons/{lesson}',                 [LessonsAdminController::class, 'update'])->name('admin.courses.sections.lessons.update');
+        Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',              [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
+        Route::post('/courses/{course}/sections/{section}/lessons/{lesson}/toggle-status',  [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
+        Route::get('/courses/{course}/sections/{section}',                                  [LessonsAdminController::class, 'index'])->name('admin.courses.sections.lessons.index');
+
         // rutas vimeo directo
-        Route::post('/vimeo/upload-link',[VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
-        Route::delete('/vimeo/{vimeoId}',[VimeoController::class,'destroy'])->name('vimeo.destroy');
+        Route::post('/vimeo/upload-link',       [VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
+        Route::delete('/vimeo/{vimeoId}',       [VimeoController::class,'destroy'])->name('vimeo.destroy');
+        
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
         Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
@@ -309,6 +315,14 @@ Route::prefix('admin')->group(function () {
         Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
         Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
         Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
+
+        // Rutas para paquetes
+        Route::get('/packages/home',                        [PackagesAdminController::class, 'index'])->name('admin.packages.index');
+        Route::get('/packages/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
+        Route::get('/packages/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
+        Route::post('/packages/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
+        Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
+        Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');

@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <a href="{{ url('/mis-cursos') }}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition duration-200">
+        <a href="{{ url('/') }}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition duration-200">
             Empezar a estudiar ahora
         </a>
     </div>

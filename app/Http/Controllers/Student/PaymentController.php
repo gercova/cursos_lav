@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\CourseSale;
 use App\Models\Enrollment;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -210,7 +211,7 @@ class PaymentController extends Controller {
             if ($payment->status === 'approved') {
                 //La external_reference ahora es el order_number (ej: IPF-20250213-ABCDE)
                 $orderNumber = $payment->external_reference;
-
+                
                 //Buscamos la orden
                 $order = Order::with('items')->where('order_number', $orderNumber)->first();
                 if (!$order) {
@@ -232,11 +233,23 @@ class PaymentController extends Controller {
                             'payment_method' => $payment->payment_method_id,
                             'amount'         => $payment->transaction_amount,
                             'currency'       => $payment->currency_id,
-                            'status'         => $order->status, // El enum que tienes en la imagen
+                            'status'         => $order->status,
                             'paid_at'        => now(),
                         ]);
+                        $metadata = $payment->metadata;
+                        $sellerCode = $metadata->seller_code ?? null;
+
+                        // 2. Si falla (es null), extraemos directamente del cuerpo de la respuesta de la API
+                        if (!$sellerCode) {
+                            // El método getResponse() nos da la respuesta cruda de Mercado Pago
+                            $rawResponse = $payment->getResponse()->getContent();
+                            $sellerCode = $rawResponse['metadata']['seller_code'] ?? null;
+                        }
+
+                        Log::info("DEBUG WEBHOOK - Código final extraído:", ['code' => $sellerCode]);
+                        $vendedor = User::where('code', $sellerCode)->first();
                         foreach ($order->items as $item) {
-                            Enrollment::updateOrCreate(
+                            $enrollment = Enrollment::updateOrCreate(
                                 [
                                     'user_id'   => $order->user_id,
                                     'course_id' => $item->course_id,
@@ -248,9 +261,29 @@ class PaymentController extends Controller {
                                     'progress'     => 0,        // Iniciamos en 0%
                                 ]
                             );
+
+                            if($sellerCode && $vendedor->id !== $order->user_id) {
+                                // Registro de la venta/comisión en course_sales (Imagen image_ccd6f5.png)
+                                CourseSale::create([
+                                    'user_id'           => $vendedor ? $vendedor->id : null, // Si no hay vendedor, queda null
+                                    'buyer_id'          => $order->user_id,
+                                    'course_id'         => $item->course_id,
+                                    'order_id'          => $order->id,
+                                    'enrollment_id'     => $enrollment->id,
+                                    'commission_amount' => $vendedor ? ($item->final_price * 0.20) : 0, // 20% del precio de ESTE curso
+                                    'sale_amount'       => $item->final_price,
+                                    'status'            => 'completed',
+                                    'promotion_code'    => $sellerCode, // Código del afiliado
+                                    'sold_at'           => now(),
+                                    'created_at'        => now(),
+                                    'updated_at'        => now(),
+                                ]);
+                            }
                         }
                         Cart::where('user_id', $order->user_id)->delete();
                         Log::info("Pago Procesado: Orden {$order->order_number} pagada. Alumno {$order->user_id} inscrito.");
+
+                        
                     });
                 }
             }

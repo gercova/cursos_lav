@@ -26,7 +26,6 @@ class EnterpriseValidate extends FormRequest {
             'vision'                    => 'nullable|string',
             'mission'                   => 'nullable|string',
             'phone_number_1'            => 'required|string|max:20',
-            'phone_number_2'            => 'nullable|string|max:20',
             'email'                     => 'required|email|max:100',
             'facebook_link'             => 'nullable|url|max:255',
             'linkedin_link'             => 'nullable|url|max:255',
@@ -35,6 +34,7 @@ class EnterpriseValidate extends FormRequest {
             'whatsapp_link'             => 'nullable|string|max:255',
             'logo'                      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'favicon'                   => 'nullable|image|mimes:ico,png|max:1024',
+            'signature'                 => 'nullable|image|mimes:ico,png|max:1024',
         ];
     }
 
@@ -56,7 +56,6 @@ class EnterpriseValidate extends FormRequest {
             'phrase.max'                        => 'La Frase tiene una longitud máxima de 500 caracteres',
             'phone_number_1.required'           => 'El Teléfono Principal es requerido',
             'phone_number_1.max'                => 'El Teléfono Principal tiene una longitud máxima de 20 caracteres',
-            'phone_number_2.max'                => 'El Teléfono Secundario tiene una longitud máxima de 20 caracteres',
             'email.required'                    => 'El E-mail es requerido',
             'email.email'                       => 'El E-mail no tiene el formato requerido',
             'email.max'                         => 'El E-mail tiene una longitud máxima de 100 caracteres',
@@ -75,6 +74,9 @@ class EnterpriseValidate extends FormRequest {
             'favicon.image'                     => 'El Favicon debe ser una imagen',
             'favicon.mimes'                     => 'El Favicon debe ser un archivo de tipo: ico, png',
             'favicon.max'                       => 'El Favicon no debe pesar más de 1MB',
+            'signature.image'                     => 'El Favicon debe ser una imagen',
+            'signature.mimes'                     => 'El Favicon debe ser un archivo de tipo: ico, png',
+            'signature.max'                       => 'El Favicon no debe pesar más de 1MB',
         ];
     }
 

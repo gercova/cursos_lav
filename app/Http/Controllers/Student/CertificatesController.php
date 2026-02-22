@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
+use App\Models\User;
+use App\Models\UserSignature;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -31,17 +33,22 @@ class CertificatesController extends Controller {
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
         $enterprise     = Enterprise::first();
         $logoPath       = storage_path('app/public/ipf-logo.png');
+        $managerSignature = storage_path('app/public/signature-photos/francisco-llactas-flores.png');
 
-        
-        // Incrementar contador de descargas
-        $certificate->increment('download_count');
+        $instructor     = User::where('id', $certificate->course->instructor->id)->first();
+
+        if($instructor->names == 'Erick B. Ruiz Odicio'){
+            $instructorSignature = storage_path('app/public/signature-photos/erick-b-ruiz-odicio.png');
+        } elseif ($instructor->names == 'Jhon L. Ramirez Cueva') {
+            $instructorSignature = storage_path('app/public/signature-photos/jhon-l-cueva-ramirez.png');
+        }
 
         // Configurar PDF con DomPDF
-        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
+        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath', 'instructor', 'managerSignature', 'instructorSignature'))
             ->setPaper('A4', 'landscape')
             ->setOption('isRemoteEnabled', true)
             ->setOPtion('enable-local-file-access', true);
-        $fileName = 'certificado-exacto-' . $certificate->certificate_code . '.pdf';
+        $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
 
         // Retornar descarga
         return $pdf->download($fileName);
@@ -51,43 +58,27 @@ class CertificatesController extends Controller {
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
         $enterprise     = Enterprise::first();
         $logoPath       = storage_path('app/public/ipf-logo.png');
+        $managerSignature = storage_path('app/public/signature-photos/francisco-llactas-flores.png');
+
+        $instructor     = User::where('id', $certificate->course->instructor->id)->first();
+
+        if($instructor->names == 'Erick B. Ruiz Odicio'){
+            $instructorSignature = storage_path('app/public/signature-photos/erick-b-ruiz-odicio.png');
+        } elseif ($instructor->names == 'Jhon L. Ramirez Cueva') {
+            $instructorSignature = storage_path('app/public/signature-photos/jhon-l-cueva-ramirez.png');
+        }
 
         // Configurar PDF con DomPDF
-        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
+        $pdf = Pdf::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath', 'instructor', 'managerSignature', 'instructorSignature'))
             ->setPaper('A4', 'landscape')
             ->setOptions([
                 'isRemoteEnabled'       => true,
                 'isHtml5ParserEnabled'  => true,
                 'chroot'                => base_path(),
+
             ]);
         // Mostrar en el navegador
-        return $pdf->stream('certificado-exacto-' . $certificate->certificate_code . '.pdf');
-    }
-
-
-    public function print($certificateId) {
-        $enterprise     = Enterprise::first();
-        $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
-        $logoPath       = storage_path('app/public/ipf-logo.png');
-        $certificate->increment('download_count');
-
-        $pdf = PDF::loadView('student.certificates.pdf_exacto', compact('certificate', 'enterprise', 'logoPath'))
-            ->setOptions([
-                'page-size'     => 'A4',
-                'orientation'   => 'Landscape',
-                'margin-top'    => '0mm',
-                'margin-right'  => '0mm',
-                'margin-bottom' => '0mm',
-                'margin-left'   => '0mm',
-                // Recomendado para que wkhtmltopdf pueda leer imágenes locales (public_path/storage/...)
-                'enable-local-file-access' => true,
-                // Recomendado para caracteres especiales
-                'encoding' => 'UTF-8',
-            ]);
-
-        $fileName = 'certificado-' . $certificate->certificate_code . '.pdf';
-
-        return $pdf->download($fileName);
+        return $pdf->stream('certificado-' . $certificate->certificate_code . '.pdf');
     }
 
     public function generateCertificate($enrollmentId) {

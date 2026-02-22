@@ -106,6 +106,10 @@ class User extends Authenticatable {
         return $this->hasMany(Notification::class)->latest();
     }
 
+    public function signature(): HasOne {
+        return $this->hasOne(UserSignature::class, 'user_id', 'id');
+    }
+
     public function unreadNotifications() {
         return $this->notifications()->unread();
     }
@@ -154,33 +158,6 @@ class User extends Authenticatable {
         $this->total_commission = ($this->total_commission ?? 0) + $amount;
         $this->save();
     }
-
-    // protected function profilePhotoUrl(): Attribute {
-    //     return Attribute::make(
-    //         get: function () {
-
-    //             // 1) Si tiene valor (guardado en DB)
-    //             $value = $this->profile_photo;
-
-    //             if (!empty($value)) {
-    //                 // Si ya es URL externa
-    //                 if (Str::startsWith($value, ['http://', 'https://'])) {
-    //                     return $value;
-    //                 }
-
-    //                 // Si es ruta relativa (ej: "instructors/xxx.png")
-    //                 return Storage::url($value);
-    //             }
-
-    //             // 2) Si NO tiene foto -> default por role
-    //             return match ($this->role) {
-    //                 'instructor' => Storage::url('instructors/instructor-ipf.png'),
-    //                 'admin'      => Storage::url('admin/admin-ipf.png'),
-    //                 default      => null, // student u otros: sin imagen (puedes devolver una genérica si quieres)
-    //             };
-    //         }
-    //     );
-    // }
 
     protected function profilePhoto(): Attribute {
         return Attribute::make(

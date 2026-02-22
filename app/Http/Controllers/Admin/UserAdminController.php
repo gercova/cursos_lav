@@ -10,6 +10,7 @@ use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\User;
+use App\Models\UserSignature;
 use App\Services\StudentTrackingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -80,7 +81,7 @@ class UserAdminController extends Controller {
     }
 
     public function edit(User $user): View {
-        $roles = Role::get();
+        $roles      = Role::get();
         $originalArray = [
             ['code' => '+51', 'country' => '+51 - Perú'],
             ['code' => '+54', 'country' => '+54 - Argentina'],
@@ -105,9 +106,7 @@ class UserAdminController extends Controller {
         
         // Determinar si es creación por la presencia de ID en el request
         if (!$request->has('id') || empty($request->id)) {
-            $request->role == 'business' ? 
-                $proccessData['company_code'] = $this->createNickname($validated['names']) : 
-                $proccessData['company_code'] = '';
+            $request->role == 'business' ? $proccessData['company_code'] = $this->createNickname($validated['names']) : $proccessData['company_code'] = '';
             $proccessData = [
                 'password'          => Hash::make('P4$$w0rd#.'),
                 'email_verified_at' => now(),
@@ -119,6 +118,16 @@ class UserAdminController extends Controller {
                 ['id' => $request->input('id')],
                 $data
             );
+
+            if ($request->hasFile('signature_photo')) {
+
+                $path_signature = $request->file('signature_photo')->store('signature-photos', 'public');
+
+                UserSignature::updateOrCreate(['id' => $request->input('signature_id')] ,[
+                    'user_id'   => $user->id,
+                    'signature' => $path_signature,
+                ]);
+            }
         } else {
             // Actualización - usar ID del request
             $user = User::where('id', $request->id)->first();

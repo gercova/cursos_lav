@@ -13,17 +13,18 @@ class UserValidate extends FormRequest {
 
     public function rules(): array {
         return [
-            'dni'           => 'required|string|max:20|unique:users,dni,'.$this->id,
-            'names'         => 'required|string|max:255',
-            'email'         => 'required|email|unique:users,email,'.$this->id,
-            'country_code'  => 'required',
-            'phone'         => 'required|string|max:20',
-            'nationality'   => 'nullable|string|max:100',
-            'address'       => 'nullable|string|max:500',
-            'profession'    => 'nullable|string|max:255',
-            'role'          => ['required', Rule::in(['student', 'instructor', 'admin', 'business'])],
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'remove_photo'  => 'nullable|in:0,1',
+            'dni'               => 'required|string|max:20|unique:users,dni,'.$this->id,
+            'names'             => 'required|string|max:255',
+            'email'             => 'required|email|unique:users,email,'.$this->id,
+            'country_code'      => 'required',
+            'phone'             => 'required|string|max:20',
+            'nationality'       => 'nullable|string|max:100',
+            'address'           => 'nullable|string|max:500',
+            'profession'        => 'nullable|string|max:255',
+            'role'              => ['required', Rule::in(['student', 'instructor', 'admin', 'business'])],
+            'profile_photo'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'signature_photo'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_photo'      => 'nullable|in:0,1',
         ];
     }
 
@@ -49,6 +50,10 @@ class UserValidate extends FormRequest {
             'profile_photo.image'   => 'El archivo debe ser una imagen válida.',
             'profile_photo.mimes'   => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
             'profile_photo.max'     => 'La imagen no debe pesar más de 5MB.',
+
+            'signature_photo.image'   => 'El archivo debe ser una imagen válida.',
+            'signature_photo.mimes'   => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
+            'signature_photo.max'     => 'La imagen no debe pesar más de 5MB.',
         ];
     }
 }

@@ -266,13 +266,13 @@
         </div>
 
         <!-- Paginación -->
-        @if($courses->hasPages())
+        {{-- @if($courses->hasPages())
             <div class="mt-12 flex justify-center">
                 <div class="bg-white px-6 py-4 rounded-lg shadow-lg">
                     {{ $courses->links() }}
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         <!-- Estado vacío -->
         <div id="empty-state" class="hidden text-center py-16">

@@ -121,14 +121,12 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/exams/view/{attemptId}',       [StudentExamsController::class, 'view'])->name('student.exams.view');
 
     // Certificados
-    Route::get('/certificate',                          [CertificatesController::class, 'index'])->name('student.certificates');
-    Route::get('/certificate/{certificateId}',          [CertificatesController::class, 'show'])->name('student.certificates.show');
-    Route::get('/certificate/print/{certificateId}',    [CertificatesController::class, 'print'])->name('student.certificates.print');
-    Route::get('/certificate/exact/{certificateId}/download', [CertificatesController::class, 'download'])->name('student.certificates.download-exact');
-    
-    Route::get('/certificate/exact/{certificateId}/view', [CertificatesController::class, 'viewExact'])->name('student.certificates.view-exact');
-    Route::get('/{certificateId}/descargar',            [CertificatesController::class, 'download'])->name('student.certificates.download');
-    Route::post('/generar/{enrollmentId}',              [CertificatesController::class, 'generateCertificate'])->name('generate');
+    Route::get('/certificate',                                  [CertificatesController::class, 'index'])->name('student.certificates');
+    Route::get('/certificate/{certificateId}',                  [CertificatesController::class, 'show'])->name('student.certificates.show');
+    Route::get('/certificate/exact/{certificateId}/download',   [CertificatesController::class, 'download'])->name('student.certificates.download-exact');
+    Route::get('/certificate/exact/{certificateId}/view',       [CertificatesController::class, 'viewExact'])->name('student.certificates.view-exact');
+    Route::get('/{certificateId}/descargar',                    [CertificatesController::class, 'download'])->name('student.certificates.download');
+    Route::post('/generar/{enrollmentId}',                      [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Dashboard principal
     Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
@@ -172,20 +170,19 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
     // Notificaciones
-    Route::get('/notifications',                [StudentNotificationController::class, 'index'])->name('student.notifications');
-  
-    
-    Route::post('/mp/preference', [PaymentController::class, 'createPreference'])->name('mp.preference');
-    // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/pago/fallido', [PaymentController::class, 'failure'])->name('payment.failure');
-    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('payment.pending');
+    Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
 
-    Route::post('/mp/preference',       [PaymentController::class, 'createPreference'])->name('mp.preference');
+    Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso',         [PaymentController::class, 'success'])->name('pago.exitoso');
-    Route::get('/pago/fallido',         [PaymentController::class, 'failure'])->name('pago.fallido');
-    Route::get('/pago/pendiente',       [PaymentController::class, 'pending'])->name('pago.pendiente');
+    Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('payment.failure');
+    Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('payment.pending');
+
+    Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
+    // Rutas de retorno de Mercado Pago
+    Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('pago.exitoso');
+    Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('pago.fallido');
+    Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('pago.pendiente');
 
 });
 

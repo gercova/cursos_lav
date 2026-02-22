@@ -147,11 +147,7 @@
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <input type="file" 
-                                        name="profile_photo" 
-                                        id="profile_photo" 
-                                        accept="image/*"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                                     <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
                                     @if($user->profile_photo)
                                         <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
@@ -165,13 +161,45 @@
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        @if($user->role == 'instructor')
+                            <!-- Foto de Firma -->
+                            <div class="md:col-span-2">
+                                <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Foto o Imagen de la firma
+                                </label>
+                                <div class="flex items-center gap-6">
+                                    <div class="flex-shrink-0">
+                                        @if($user->signature?->signature)
+                                            <img src="{{ $user->signature?->signature }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                        @endif
+                                        <div id="preview-container" class="{{ $user->signature?->signature ? 'mt-2' : '' }} hidden">
+                                            <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
+                                            <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                        <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
+                                        @if($user->signature?->signature)
+                                            <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                                                <i class="bi bi-trash"></i> Eliminar foto actual
+                                            </button>
+                                            <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+                                        @endif
+                                    </div>
+                                </div>
+                                @error('profile_photo')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Información adicional -->
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Información Adicional</h3>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Nacionalidad -->
                         <div>

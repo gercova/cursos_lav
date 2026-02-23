@@ -177,27 +177,19 @@
                                         </div>
                                     </div>
 
-                                    <!-- Contraseña -->
+                                    <!-- Profesión -->
                                     <div>
-                                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label for="profession" class="block text-sm font-semibold text-gray-700 mb-2">
                                             <span class="flex items-center">
-                                                <i class="fas fa-key mr-2 text-blue-500"></i>
-                                                Contraseña *
+                                                <i class="fas fa-briefcase mr-2 text-blue-500"></i>
+                                                Profesión u Ocupación *
                                             </span>
                                         </label>
                                         <div class="relative group">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
+                                                <i class="fas fa-user-tie text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="password" name="password" type="password" autocomplete="new-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Mínimo 8 caracteres">
-                                        </div>
-                                        <div id="password-strength" class="mt-3 hidden">
-                                            <div class="flex items-center space-x-2">
-                                                <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                                    <div id="strength-bar" class="h-full rounded-full transition-all duration-300"></div>
-                                                </div>
-                                                <span id="strength-text" class="text-xs font-medium"></span>
-                                            </div>
+                                            <input id="profession" name="profession" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Ej: Ingeniero, Estudiante, etc." value="{{ old('profession') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -269,19 +261,27 @@
                                         </div>
                                     </div>
 
-                                    <!-- Profesión -->
+                                    <!-- Contraseña -->
                                     <div>
-                                        <label for="profession" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
                                             <span class="flex items-center">
-                                                <i class="fas fa-briefcase mr-2 text-blue-500"></i>
-                                                Profesión u Ocupación *
+                                                <i class="fas fa-key mr-2 text-blue-500"></i>
+                                                Contraseña *
                                             </span>
                                         </label>
                                         <div class="relative group">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <i class="fas fa-user-tie text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
+                                                <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <input id="profession" name="profession" type="text" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Ej: Ingeniero, Estudiante, etc." value="{{ old('profession') }}">
+                                            <input id="password" name="password" type="password" autocomplete="new-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Mínimo 8 caracteres">
+                                        </div>
+                                        <div id="password-strength" class="mt-3 hidden">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                    <div id="strength-bar" class="h-full rounded-full transition-all duration-300"></div>
+                                                </div>
+                                                <span id="strength-text" class="text-xs font-medium"></span>
+                                            </div>
                                         </div>
                                     </div>
 

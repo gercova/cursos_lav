@@ -285,13 +285,9 @@
                                     </a>
                                 @else
                                     <!-- Si no hay siguiente lección, redirigir al examen -->
-                                    <form action="{{ route('student.exams.start', $course->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 font-medium">
-                                            <i class="fas fa-pencil-alt mr-2"></i>
-                                            Ir al examen final
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('student.exams.show', $exam->id) }}" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 font-medium">
+                                        <i class="fas fa-pencil-alt mr-2"></i>Ir al examen final
+                                    </a>
                                 @endif
                             </div>
 

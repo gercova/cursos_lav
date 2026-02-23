@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CompletedLessons;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Exam;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Illuminate\Contracts\View\View;
@@ -54,7 +55,10 @@ class LessonController extends Controller {
         // Registrar último acceso
         $enrollment->update(['last_accessed_at' => now()]);
 
-        return view('student.courses.lesson', compact('course', 'lesson', 'enrollment', 'lessonProgress', 'isCompleted', 'watchedPercent'));
+        //Buscar examen sí es ultima lección
+        $exam = Exam::where('course_id', $course->id)->first();
+
+        return view('student.courses.lesson', compact('course', 'lesson', 'enrollment', 'lessonProgress', 'isCompleted', 'watchedPercent', 'exam'));
     }
 
     // public function learn($slug){

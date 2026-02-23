@@ -41,6 +41,7 @@
                     <nav class="hidden md:ml-6 md:flex space-x-4">
                         <a href="{{ url('/') }}" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Inicio</a>
                         <a href="{{ route('cursos') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Cursos</a>
+                        <a href="{{ route('paquetes') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Servicios para empresas</a>
                         <a href="{{ url('nosotros') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Nosotros</a>
                         <a href="{{ url('contacto') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contacto</a>
                     </nav>
@@ -164,7 +165,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-lg font-semibold mb-4">{{ $enterprise->trade_name }}</h3>
-                    <p class="text-gray-300">Ofrecemos los mejores cursos especializados en SSOMA y Medio Ambiente online para tu desarrollo y crecimiento profesional.</p>
+                    <p class="text-gray-300">Ofrecemos los mejores cursos especializados en Seguradad y Salud en el Trabajo, Medio Ambiente y Calidad para tu desarrollo y crecimiento profesional.</p>
                 </div>
                 <div>
                     <h4 class="text-md font-semibold mb-4">Enlaces Rápidos</h4>

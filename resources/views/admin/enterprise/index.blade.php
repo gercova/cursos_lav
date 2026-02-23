@@ -124,6 +124,37 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Foto de Imagen de la Firma -->
+                    <div class="md:col-span-2">
+                        <label for="signature_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                            Foto de Imagen de la Firma
+                        </label>
+                        <div class="flex items-center gap-6">
+                            <div class="flex-shrink-0">
+                                @if($enterprise->manager_signature)
+                                    <img src="{{ $enterprise->manager_signature }}" alt="{{ $enterprise->legal_representative }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                @endif
+                                <div id="preview-container" class="{{ $enterprise->manager_signature ? 'mt-2' : '' }} hidden">
+                                    <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
+                                    <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <input type="file" name="signature_photo" id="signature_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
+                                @if($enterprise->manager_signature)
+                                    <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                                        <i class="bi bi-trash"></i> Eliminar foto actual
+                                    </button>
+                                    <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+                                @endif
+                            </div>
+                        </div>
+                        @error('signature_photo')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- Columna Derecha -->
@@ -259,6 +290,42 @@
 
 @section('scripts')
 <script>
+    // Vista previa de la imagen
+    document.getElementById('signature_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('photo-preview');
+                const previewContainer = document.getElementById('preview-container');
+                
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+                
+                // Si hay foto actual, ocultarla visualmente (opcional)
+                const currentPhoto = document.querySelector('.current-photo');
+                if (currentPhoto) {
+                    currentPhoto.style.opacity = '0.5';
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Función para eliminar la foto actual
+    function removeCurrentPhoto() {
+        if (confirm('¿Estás seguro de eliminar la foto de perfil actual?')) {
+            document.getElementById('remove_photo').value = '1';
+            const currentPhoto = document.querySelector('.current-photo');
+            if (currentPhoto) {
+                currentPhoto.remove();
+            }
+            // Resetear el input file
+            document.getElementById('profile_photo').value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+        }
+    }
+
     // Previsualización de imágenes antes de subir
     document.addEventListener('DOMContentLoaded', function() {
         const logoInput     = document.querySelector('input[name="logo"]');

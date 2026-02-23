@@ -13,8 +13,8 @@ class CourseValidate extends FormRequest {
     public function rules(): array {
         return [
             'title'             => 'required|string|max:255|unique:courses,title,'.$this->id,
-            'meta_description'  => 'nullable|string|max:255',
-            'meta_keywords'     => 'nullable|string|max:255',
+            'meta_description'  => 'nullable|string',
+            'meta_keywords'     => 'nullable|string',
             'slug'              => 'nullable|string|max:255|unique:courses,slug,'.$this->id,
             'description'       => 'required|string',
             'learning_outcomes' => 'required|string',
@@ -25,10 +25,11 @@ class CourseValidate extends FormRequest {
             'duration'          => 'required|numeric|min:0',
             'is_active'         => 'boolean',
             'requirements'      => 'nullable|array',
-            'requirements.*'    => 'string|max:255',
+            'requirements.*'    => 'string',
             'what_you_learn'    => 'required|array',
-            'what_you_learn.*'  => 'string|max:255',
-            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'what_you_learn.*'  => 'string',
+            // 'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'image'             => 'nullable|image|max:5120',
         ];
     }
 
@@ -54,12 +55,11 @@ class CourseValidate extends FormRequest {
             'requirements'              => 'nullable|array',
             'requirements.*.required'   => 'Cada requisito requiere una descripción.',
             'requirements.*.string'     => 'Cada requisito debe ser una cadena de texto.',
-            'requirements.*.max'        => 'Cada requisito no puede tener más de 255 caracteres.',
             'what_you_learn.required'   => 'Debes proporcionar al menos un ítem a aprender.',
             'what_you_learn.*.string'   => 'Cada ítem a aprender debe ser una cadena de texto.',
-            'what_you_learn.*.max'      => 'Cada ítem a aprender no puede tener más de 255 caracteres.',
             'image.image'               => 'El archivo ingresado debe ser una imagen válida.',
             'image.max'                 => 'El archivo no puede pesar más de 5MB.',
+            // 'image.mimes'               => 'El archivo debe ser jpeg, png, jpg o gif',
 
         ];
     }

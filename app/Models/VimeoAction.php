@@ -129,11 +129,11 @@ class VimeoAction {
         $data=$this->getData($uri);
         $data['title']=$title;
         $data['vimeo_id']=$vimeoId;
-        $lesson->vimeo()->create($data);
+        $lesson->video()->create($data);
         
     }
-    public function updateDirect($id,$lesson,$vimeoId)
-    {
+    
+    public function updateDirect($id,$lesson,$vimeoId) {
         $obj=Video::find($id);
         if(!$vimeoId && is_null($obj)){
             return null;

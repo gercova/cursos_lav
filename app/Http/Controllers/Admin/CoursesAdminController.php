@@ -6,10 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CourseValidate;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\CourseSection;
-use App\Models\Document;
-use App\Models\Exam;
-use App\Models\Lesson;
 use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Contracts\View\View;
@@ -19,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CoursesAdminController extends Controller {
 
@@ -29,7 +26,9 @@ class CoursesAdminController extends Controller {
     public function index(Request $request): View {
         $query = Course::with(['category', 'sections'])
             ->withCount(['enrollments as students_count'])
-            ->withCount('sections');
+            ->withCount('sections')
+            ->where('category_id', '<>', 4)
+            ->where('type', 'course');
 
         // Búsqueda
         if ($search = $request->input('search')) {
@@ -68,14 +67,14 @@ class CoursesAdminController extends Controller {
     }
 
     public function create(): View {
-        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $categories = Category::where('is_active', true)->where('id', '<>', 4)->orderBy('name')->get();
         $instructors = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
 
         return view('admin.courses.create', compact('categories', 'instructors'));
     }
 
     public function edit(Course $course): View {
-        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        $categories = Category::where('is_active', true)->where('id', '<>', 4)->orderBy('name')->get();
         $instructors = User::where('role', 'instructor')->orWhere('role', 'admin')->get();
 
         // Cargar relaciones necesarias
@@ -89,74 +88,93 @@ class CoursesAdminController extends Controller {
     }
 
     public function store(CourseValidate $request) {
-        $validated = $request->validated();
-
-        // Procesar imagen
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('courses', 'public');
-            $validated['image_url'] = $path;
-        }
-
-        // Filtrar elementos vacíos de los arrays
-        if (isset($validated['requirements'])) {
-            $validated['requirements'] = array_filter($validated['requirements']);
-        }
-        if (isset($validated['what_you_learn'])) {
-            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
-        }
-
-        // Crear slug si no se proporcionó
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['title']);
-        }
-
-        DB::beginTransaction();
-
         try {
-            $course = Course::create($validated);
-            DB::commit();
-            if($course && $course->is_active == true) {
-                // Notificar a todos los estudiantes activos
-                $students = User::where('role', 'student')->where('is_active', true)->get();
+            $validated = $request->validated();
+            
+            // Procesar imagen
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('courses', 'public');
+                $validated['image_url'] = $path;
+            }
 
+            // Filtrar elementos vacíos de los arrays
+            if (isset($validated['requirements'])) {
+                $validated['requirements'] = array_values(array_filter($validated['requirements']));
+            }
+            if (isset($validated['what_you_learn'])) {
+                $validated['what_you_learn'] = array_values(array_filter($validated['what_you_learn']));
+            }
+
+            // Crear slug si no se proporcionó
+            if (empty($validated['slug'])) {
+                $validated['slug'] = Str::slug($validated['title']);
+            }
+
+            DB::beginTransaction();
+            
+            $course = Course::create($validated);
+            
+            DB::commit();
+            
+            if($course && $course->is_active == true) {
+                $students = User::where('role', 'student')->where('is_active', true)->get();
                 foreach ($students as $student) {
                     NotificationService::sendNewCourseNotification($student, $course);
                 }
             }
 
             return redirect()->route('admin.courses.edit', $course)->with('success', 'Curso creado exitosamente');
+                
+        } catch (ValidationException $e) {
+            // Si es error de validación, mostrar los errores específicos
+            return back()->withErrors($e->errors())->withInput();
+            
         } catch (\Throwable $th) {
-            // Log del error (opcional pero recomendado)
+            DB::rollBack();
             Log::error('Error al crear curso: ' . $th->getMessage());
-            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso. Por favor, intenta nuevamente.');
+            Log::error($th->getTraceAsString());
+            
+            return back()->withInput()->with('error', 'Ocurrió un error al crear el curso: ' . $th->getMessage());
         }
     }
 
     public function update(CourseValidate $request, Course $course) {
-        $validated = $request->validated();
+        try {
+            $validated = $request->validated();
 
-        // Procesar imagen
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($course->image_url) {
-                Storage::disk('public')->delete($course->image_url);
+            // Procesar imagen
+            if ($request->hasFile('image')) {
+                // Eliminar imagen anterior si existe
+                if ($course->image_url) {
+                    Storage::disk('public')->delete($course->image_url);
+                }
+
+                $path = $request->file('image')->store('courses', 'public');
+                $validated['image_url'] = $path;
             }
 
-            $path = $request->file('image')->store('courses', 'public');
-            $validated['image_url'] = $path;
-        }
+            // Filtrar elementos vacíos de los arrays
+            if (isset($validated['requirements'])) {
+                $validated['requirements'] = array_filter($validated['requirements']);
+            }
+            if (isset($validated['what_you_learn'])) {
+                $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
+            }
 
-        // Filtrar elementos vacíos de los arrays
-        if (isset($validated['requirements'])) {
-            $validated['requirements'] = array_filter($validated['requirements']);
-        }
-        if (isset($validated['what_you_learn'])) {
-            $validated['what_you_learn'] = array_filter($validated['what_you_learn']);
-        }
+            $course = Course::updateOrCreate(['id' => $request->input('id')], $validated);
 
-        $course = Course::updateOrCreate(['id' => $request->input('id')], $validated);
-
-        return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
+            return redirect()->route('admin.courses.edit', $course->id)->with('success', 'Curso actualizado exitosamente');
+        } catch (ValidationException $e) {
+            // Si es error de validación, mostrar los errores específicos
+            return back()->withErrors($e->errors())->withInput();
+            
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error('Error al actualizar el curso: ' . $th->getMessage());
+            Log::error($th->getTraceAsString());
+            
+            return back()->withInput()->with('error', 'Ocurrió un error al actualizar el curso: ' . $th->getMessage());
+        }
     }
 
     // public function show(Course $course): View {
@@ -251,215 +269,6 @@ class CoursesAdminController extends Controller {
         return redirect()->route('admin.courses.index')->with('success', 'Curso duplicado exitosamente.');
     }
 
-    public function addSection(Request $request, Course $course): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-        ]);
-
-        // Obtener el último orden
-        $lastOrder = $course->sections()->max('order') ?? 0;
-
-        $section = CourseSection::create([
-            'course_id'     => $course->id,
-            'title'         => $validated['title'],
-            'description'   => $validated['description'],
-            'order'         => $lastOrder + 1,
-            'is_active'     => true,
-        ]);
-
-        $this->logActivity("Agregó sección '{$section->title}' al curso: {$course->title}");
-
-        return response()->json([
-            'success' => true,
-            'section' => $section,
-            'message' => 'Sección agregada exitosamente.'
-        ]);
-    }
-
-    public function updateSection(Request $request, Course $course, CourseSection $section): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'order'         => 'required|integer|min:0',
-        ]);
-
-        $section->update($validated);
-
-        $this->logActivity("Actualizó sección '{$section->title}' del curso: {$course->title}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Sección actualizada exitosamente.'
-        ]);
-    }
-
-    public function deleteSection(Course $course, CourseSection $section): JsonResponse {
-        // Verificar si la sección tiene lecciones
-        if ($section->lessons()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No se puede eliminar la sección porque contiene lecciones.'
-            ], 422);
-        }
-
-        $sectionTitle = $section->title;
-        $section->delete();
-
-        // Reordenar las secciones restantes
-        $this->reorderSections($course);
-
-        $this->logActivity("Eliminó sección '{$sectionTitle}' del curso: {$course->title}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Sección eliminada exitosamente.'
-        ]);
-    }
-
-    public function toggleSectionStatus(Course $course, CourseSection $section): JsonResponse {
-        $section->update([
-            'is_active' => !$section->is_active
-        ]);
-
-        $status = $section->is_active ? 'activó' : 'desactivó';
-        $this->logActivity("{$status} sección '{$section->title}' del curso: {$course->title}");
-
-        return response()->json([
-            'success' => true,
-            'is_active' => $section->is_active,
-            'message' => 'Estado de la sección actualizado.'
-        ]);
-    }
-
-    public function addLesson(Request $request, Course $course, CourseSection $section): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'video_url'     => 'nullable|url',
-            'duration'      => 'nullable|integer|min:0',
-            'is_free'       => 'boolean',
-        ]);
-
-        // Obtener el último orden
-        $lastOrder = $section->lessons()->max('order') ?? 0;
-
-        $lesson = Lesson::create([
-            'course_section_id' => $section->id,
-            'title'             => $validated['title'],
-            'description'       => $validated['description'],
-            'video_url'         => $validated['video_url'],
-            'duration'          => $validated['duration'],
-            'order'             => $lastOrder + 1,
-            'is_free'           => $request->has('is_free'),
-            'is_active'         => true,
-        ]);
-
-        $this->logActivity("Agregó lección '{$lesson->title}' a la sección '{$section->title}'");
-
-        return response()->json([
-            'success'   => true,
-            'lesson'    => $lesson,
-            'message'   => 'Lección agregada exitosamente.'
-        ]);
-    }
-
-    public function updateLesson(Request $request, Course $course, CourseSection $section, Lesson $lesson): JsonResponse {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'video_url'     => 'nullable|url',
-            'duration'      => 'nullable|integer|min:0',
-            'order'         => 'required|integer|min:0',
-            'is_free'       => 'boolean',
-        ]);
-
-        $lesson->update($validated);
-
-        $this->logActivity("Actualizó lección '{$lesson->title}' de la sección '{$section->title}'");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Lección actualizada exitosamente.'
-        ]);
-    }
-
-    public function deleteLesson(Course $course, CourseSection $section, Lesson $lesson): JsonResponse {
-        $lessonTitle = $lesson->title;
-        $lesson->delete();
-
-        // Reordenar las lecciones restantes
-        $this->reorderLessons($section);
-
-        $this->logActivity("Eliminó lección '{$lessonTitle}' de la sección '{$section->title}'");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Lección eliminada exitosamente.'
-        ]);
-    }
-
-    public function toggleLessonStatus(Course $course, CourseSection $section, Lesson $lesson): JsonResponse {
-        $lesson->update([
-            'is_active' => !$lesson->is_active
-        ]);
-
-        $status = $lesson->is_active ? 'activó' : 'desactivó';
-        $this->logActivity("{$status} lección '{$lesson->title}' de la sección '{$section->title}'");
-
-        return response()->json([
-            'success'   => true,
-            'is_active' => $lesson->is_active,
-            'message'   => 'Estado de la lección actualizado.'
-        ]);
-    }
-
-    /**
-     * Course Documents Management
-     */
-    public function uploadDocument(Request $request, Course $course) {
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'description'   => 'nullable|string',
-            'document'      => 'required|file|max:10240', // 10MB max
-        ]);
-
-        $file       = $request->file('document');
-        $filePath   = $file->store('documents', 'public');
-
-        $document = Document::create([
-            'course_id'     => $course->id,
-            'title'         => $validated['title'],
-            'description'   => $validated['description'],
-            'file_path'     => $filePath,
-            'file_type'     => $file->getClientMimeType(),
-            'file_size'     => $file->getSize(),
-            'is_active'     => true,
-        ]);
-
-        $this->logActivity("Subió documento '{$document->title}' al curso: {$course->title}");
-
-        return response()->json([
-            'success'   => true,
-            'document'  => $document,
-            'message'   => 'Documento subido exitosamente.'
-        ]);
-    }
-
-    public function deleteDocument(Course $course, Document $document): JsonResponse {
-        // Eliminar archivo físico
-        Storage::disk('public')->delete($document->file_path);
-        $documentTitle = $document->title;
-        $document->delete();
-
-        $this->logActivity("Eliminó documento '{$documentTitle}' del curso: {$course->title}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Documento eliminado exitosamente.'
-        ]);
-    }
-
     /**
      * Course Statistics
      */
@@ -533,25 +342,6 @@ class CoursesAdminController extends Controller {
             'success' => true,
             'message' => $message
         ]);
-    }
-
-    /**
-     * Helper Methods
-     */
-    private function reorderSections(Course $course) {
-        $sections = $course->sections()->orderBy('order')->get();
-
-        foreach ($sections as $index    => $section) {
-            $section->update(['order'   => $index + 1]);
-        }
-    }
-
-    private function reorderLessons(CourseSection $section) {
-        $lessons = $section->lessons()->orderBy('order')->get();
-
-        foreach ($lessons as $index => $lesson) {
-            $lesson->update(['order' => $index + 1]);
-        }
     }
 
     private function calculateCourseCompletionRate(Course $course) {

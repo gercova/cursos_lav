@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('system_settings', function (Blueprint $table) {
+        Schema::create('package_courses', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->text('value')->nullable();
-            $table->string('type')->default('string');
-            $table->text('description')->nullable();
+            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+
+            // opcionales pero útiles
+            $table->unsignedInteger('quantity')->default(1)->nullable();
+            $table->unsignedInteger('sort_order')->default(0);
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('system_settings');
+        Schema::dropIfExists('package_courses');
     }
 };

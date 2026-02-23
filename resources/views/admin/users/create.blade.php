@@ -24,16 +24,13 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.users.store') }}"
-              method="POST"
-              id="userForm">
+        <form action="{{ route('admin.users.store') }}" method="POST" id="userForm" enctype="multipart/form-data">
             @csrf
-
             <div class="p-8">
                 <!-- Información personal -->
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Información Personal</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- DNI -->
                         <div>
                             <label for="dni" class="block text-sm font-medium text-gray-700 mb-2">
@@ -73,12 +70,9 @@
                             </label>
                             <select name="country_code" id="country_code" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                 <option value="">-- Seleccione --</option>
-                                <option value="+51">+51 - Perú</option>
-                                <option value="+54">+54 - Argentina</option>
-                                <option value="+56">+56 - Chile</option>
-                                <option value="+591">+591 - Bolivia</option>
-                                <option value="+593">+593 - Ecuador</option>
-                                <option value="+598">+598 - Uruguay</option>
+                                @foreach($codeCountries as $country)
+                                    <option value="{{ $country->code }}" {{ old('country_code') == $country->code ? 'selected' : '' }} >{{ $country->country }}</option>
+                                @endforeach
                             </select>
                             @error('country_code')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -92,6 +86,57 @@
                             </label>
                             <input type="text" name="phone" id="phone" value="{{ old('phone') }}" placeholder="Ej: +51 987654321" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                             @error('phone')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Foto de perfil -->
+                        <div class="md:col-span-2">
+                            <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                Foto de Perfil
+                            </label>
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0">
+                                    <div id="preview-container" class="hidden">
+                                        <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-gray-300">
+                                    </div>
+                                    <div id="default-preview" class="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-300">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB.</p>
+                                </div>
+                            </div>
+                            @error('profile_photo')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="signature_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                Foto o Imagen de la Firma
+                            </label>
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0">
+                                    <div id="preview-signature-container" class="hidden">
+                                        <img id="signature-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-gray-300">
+                                    </div>
+                                    <div id="default-signature-preview" class="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-300">
+                                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" name="signature_photo" id="signature_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB.</p>
+                                </div>
+                            </div>
+                            @error('signature_photo')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -143,32 +188,13 @@
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Seguridad y Rol</h3>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Contraseña -->
-                        <!--<div>
-                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                                Contraseña <span class="text-red-500">*</span>
-                            </label>
-                            <input type="password" name="password" id="password" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                            @error('password')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>-->
-
-                        <!-- Confirmar Contraseña -->
-                        <!--<div>
-                            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                                Confirmar Contraseña <span class="text-red-500">*</span>
-                            </label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                        </div>-->
-
                         <!-- Rol -->
-                        <div class="md:col-span-2">
+                        <div>
                             <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
                                 Rol <span class="text-red-500">*</span>
                             </label>
                             <select name="role" id="role" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
-                                <option value="">Seleccionar rol</option>
+                                <option value="">Seleccione el rol para el usuario</option>
                                 @foreach($roles as $rol)
                                     <option value="{{ $rol->name }}" {{ old('role') == $rol->name ? 'selected' : '' }}>
                                         {{ ucwords($rol->name) }}
@@ -228,28 +254,28 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="p-4 bg-white rounded-xl">
-                    <h4 class="font-medium text-gray-900 mb-2">🔐 Contraseñas Seguras</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">Contraseñas Seguras</h4>
                     <p class="text-sm text-gray-600">
                         Usa contraseñas de al menos 8 caracteres que incluyan mayúsculas, minúsculas, números y símbolos.
                     </p>
                 </div>
 
                 <div class="p-4 bg-white rounded-xl">
-                    <h4 class="font-medium text-gray-900 mb-2">👥 Asignación de Roles</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">Asignación de Roles</h4>
                     <p class="text-sm text-gray-600">
                         Asigna el rol adecuado según las funciones del usuario: Estudiante, Instructor o Administrador.
                     </p>
                 </div>
 
                 <div class="p-4 bg-white rounded-xl">
-                    <h4 class="font-medium text-gray-900 mb-2">📧 Verificación de Email</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">Verificación de Email</h4>
                     <p class="text-sm text-gray-600">
                         Los usuarios nuevos recibirán un email de verificación para activar su cuenta.
                     </p>
                 </div>
 
                 <div class="p-4 bg-white rounded-xl">
-                    <h4 class="font-medium text-gray-900 mb-2">📝 Información Completa</h4>
+                    <h4 class="font-medium text-gray-900 mb-2">Información Completa</h4>
                     <p class="text-sm text-gray-600">
                         Proporciona información completa para un mejor seguimiento y comunicación con los usuarios.
                     </p>
@@ -262,6 +288,56 @@
 
 @section('scripts')
 <script>
+    // Vista previa de la imagen
+    document.getElementById('profile_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('photo-preview');
+                const previewContainer = document.getElementById('preview-container');
+                const defaultPreview = document.getElementById('default-preview');
+                
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+                defaultPreview.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('signature_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('signature-preview');
+                const previewContainer = document.getElementById('preview-signature-container');
+                const defaultPreview = document.getElementById('default-signature-preview');
+                
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+                defaultPreview.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Tu código existente de resetForm y togglePassword...
+    function resetForm() {
+        if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los datos ingresados.')) {
+            document.getElementById('userForm').reset();
+            // Resetear la vista previa
+            document.getElementById('preview-container').classList.add('hidden');
+            document.getElementById('default-preview').classList.remove('hidden');
+        }
+    }
+
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.type = field.type === 'password' ? 'text' : 'password';
+    }
+
     // Reiniciar formulario
     function resetForm() {
         if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los datos ingresados.')) {

@@ -27,17 +27,14 @@ return new class extends Migration
             $table->text('vision');
             $table->text('mission');
             $table->string('phone_number_1', 20);
-            $table->string('phonen_umber_2', 20);
             $table->string('email', 100)->unique();
             $table->string('facebook_link');
             $table->string('linkedin_link');
             $table->string('twitter_link');
             $table->string('instagram_link');
             $table->string('whatsapp_link');
-            $table->string('logo_principal');
-            $table->string('logo_mini');
-            $table->string('logotipo');
-            $table->string('isologo');
+            $table->string('logo_path')->nullable();
+            $table->string('favicon_path')->nullable();
             $table->timestamps();
         });
     }

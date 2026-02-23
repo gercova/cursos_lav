@@ -84,11 +84,11 @@
                 <!-- Reproductor de video -->
                 <div class="relative bg-black">
                     <div class="aspect-w-16 aspect-h-9" x-ignore>
-                        @if($lesson->vimeo?->vimeo_id)
+                        @if($lesson->video?->vimeo_id)
                         
                         <iframe id="vimeo-player"
                             x-ref="videoIframe" 
-                            src="{{$lesson->vimeo?->embed_url}}&api=1"
+                            src="{{$lesson->video?->embed_url}}&api=1"
                             class="w-full h-[500px]"
                             frameborder="0"
                             allow="autoplay; fullscreen; picture-in-picture"
@@ -99,7 +99,7 @@
                         
                             <iframe id="vimeo-player"
                                 x-ref="videoIframe" 
-                                src="{{$lesson->vimeo?->embed_url}}&api=1"
+                                src="{{$lesson->video?->embed_url}}&api=1"
                                 class="w-full h-[500px]"
                                 frameborder="0"
                                 allow="autoplay; fullscreen; picture-in-picture"
@@ -198,7 +198,7 @@
                                         <i class="fas fa-arrow-right ml-2"></i>
                                     </button>
                                 @else
-                                <a href="{{ route('course.learn', $course->slug) }}"
+                                <a href="{{ route('student.course.learn', $course->slug) }}"
                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200">
                                     <span>Completar Curso</span>
                                     <i class="fas fa-trophy ml-2"></i>
@@ -363,8 +363,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         initializeVideoPlayer() {
-           @if($lesson->vimeo?->vimeo_id)
-                //this.videoId="{{$lesson->vimeo?->vimeo_id}}";
+           @if($lesson->video?->vimeo_id)
+                //this.videoId="{{$lesson->video?->vimeo_id}}";
                 this.setupVimeoPlayer();
            @endif
         },

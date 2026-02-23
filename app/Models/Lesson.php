@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Str;
 
-class Lesson extends Model
-{
+class Lesson extends Model {
+    
     use HasFactory;
 
     protected $table        = 'lessons';
@@ -31,8 +31,7 @@ class Lesson extends Model
         'is_active' => 'boolean',
     ];
 
-    public function getTitleVimeoAttribute()
-    {
+    public function getTitleVimeoAttribute() {
         $slugs=[
             $this->section->course->slug,
             Str::slug($this->section->title),
@@ -54,8 +53,8 @@ class Lesson extends Model
     public function course(): HasOneThrough {
         return $this->hasOneThrough(Course::class, CourseSection::class, 'id', 'id', 'course_section_id', 'course_id');
     }
-    public function vimeo()
-    {
+
+    public function video(){
         return $this->hasOne(Video::class,'lesson_id');
     }
 }

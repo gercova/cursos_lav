@@ -22,10 +22,7 @@
             <!-- Búsqueda -->
             <div class="w-full lg:w-96">
                 <div class="relative">
-                    <input type="text"
-                        id="search-input"
-                        placeholder="Buscar cursos..."
-                        class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                    <input type="text" id="search-input" placeholder="Buscar cursos..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
                     <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -151,8 +148,9 @@
                                             </span>
                                         </div>
                                         <span class="text-sm text-gray-600">{{ $course->instructor->names }}</span>
+                                        
                                     </div>
-
+                                    {{-- <span class="text-sm text-gray-800">{{ $course->instructor->profession }}</span> --}}
                                     <div class="flex items-center justify-between mb-4">
                                         <div class="flex items-center space-x-2">
                                             {{-- <div class="flex items-center">
@@ -268,13 +266,13 @@
         </div>
 
         <!-- Paginación -->
-        @if($courses->hasPages())
+        {{-- @if($courses->hasPages())
             <div class="mt-12 flex justify-center">
                 <div class="bg-white px-6 py-4 rounded-lg shadow-lg">
                     {{ $courses->links() }}
                 </div>
             </div>
-        @endif
+        @endif --}}
 
         <!-- Estado vacío -->
         <div id="empty-state" class="hidden text-center py-16">

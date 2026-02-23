@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('company_code', 25)->default('IPF')->after('profile_photo');
+        Schema::table('package_courses', function (Blueprint $table) {
+            $table->unsignedBigInteger('package_id')->nullable()->after('id');
+            $table->foreign('package_id')->references('id')->on('courses');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['company_code']);
+        Schema::table('package_courses', function (Blueprint $table) {
+            $table->dropForeign('package_id');
         });
     }
 };

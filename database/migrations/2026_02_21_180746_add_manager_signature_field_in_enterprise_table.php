@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('lessons', function (Blueprint $table) {
-            $table->unsignedBigInteger('course_id')->after('id')->nullable();
-            $table->foreign('course_id')->references('id')->on('courses');
+        Schema::table('enterprise', function (Blueprint $table) {
+            $table->string('manager_signature')->nullable()->after('favicon_path');
         });
     }
 
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('lessons', function (Blueprint $table) {
-            $table->dropColumn('course_id');
+        Schema::table('enterprise', function (Blueprint $table) {
+            $table->dropColumn(['manager_signature']);
         });
     }
 };

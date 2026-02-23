@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CourseSection extends Model
-{
+class CourseSection extends Model {
+    
     use HasFactory;
 
     protected $table        = 'course_sections';

@@ -21,7 +21,7 @@
                     <!-- Información del curso -->
                     <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl">
                         @if($course->image_url)
-                            <img src="{{ Storage::url($course->image_url) }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-blue-300">
+                            <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-16 h-16 rounded-xl object-cover border border-blue-300">
                         @else
                             <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,12 +298,9 @@
             @endif
         </div>
     </div>
-</div>
 
-<!-- Modal de confirmación -->
-<div x-data="{ showModal: false, sectionToDelete: null }" x-cloak>
-    <!-- Overlay -->
-    <div x-show="showModal"
+    <!-- Modal de confirmación - Ahora dentro del mismo componente -->
+    <div x-show="showDeleteModal"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -311,10 +308,10 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-        @click.self="showModal = false">
+        @click.self="showDeleteModal = false">
 
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div x-show="showModal"
+            <div x-show="showDeleteModal"
                 x-transition:enter="ease-out duration-300"
                 x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"
@@ -327,7 +324,7 @@
                 <div class="px-6 py-4 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-semibold text-gray-900">Confirmar Eliminación</h3>
-                        <button @click="showModal = false" class="p-1 hover:bg-gray-100 rounded-lg">
+                        <button @click="showDeleteModal = false" class="p-1 hover:bg-gray-100 rounded-lg">
                             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
@@ -358,12 +355,10 @@
 
                 <!-- Footer -->
                 <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
-                    <button @click="showModal = false"
-                            class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition duration-200">
+                    <button @click="showDeleteModal = false" class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition duration-200">
                         Cancelar
                     </button>
-                    <button @click="confirmDelete()"
-                            class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-medium transition duration-200">
+                    <button @click="confirmDelete()" class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-medium transition duration-200">
                         Eliminar
                     </button>
                 </div>
@@ -371,6 +366,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('scripts')
@@ -432,41 +428,59 @@
             },
 
             deleteSection(section) {
-                const modalData = document.querySelector('[x-data]').__x.$data;
-                modalData.sectionToDelete = section;
-                modalData.showModal = true;
+                this.sectionToDelete = section;
+                this.showDeleteModal = true;
             },
-
+            
             async confirmDelete() {
-                const modalData = document.querySelector('[x-data]').__x.$data;
-                const section = modalData.sectionToDelete;
+                if (!this.sectionToDelete) return;
 
                 try {
-                    const response = await axios.delete(`/admin/courses/${section.course_id}/sections/${section.id}`, {
+                    // CORREGIDO: La URL debe incluir 'sections' en la ruta
+                    const url = `/admin/courses/${this.sectionToDelete.course_id}/sections/${this.sectionToDelete.id}`;
+                    
+                    const response = await axios.delete(url, {
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
                     });
 
-                    if (response.data.success) {
+                    // Verificar si la respuesta es exitosa (status 200 OK)
+                    if (response.status === 200) {
                         // Remover de la lista local
-                        this.sections = this.sections.filter(s => s.id !== section.id);
-                        this.filteredSections = this.filteredSections.filter(s => s.id !== section.id);
+                        this.sections = this.sections.filter(s => s.id !== this.sectionToDelete.id);
+                        this.filteredSections = this.filteredSections.filter(s => s.id !== this.sectionToDelete.id);
 
-                        modalData.showModal = false;
-                        showNotification('Sección eliminada correctamente', 'success');
+                        this.showDeleteModal = false;
+                        const deletedTitle = this.sectionToDelete.title;
+                        this.sectionToDelete = null;
+                        
+                        this.showNotification('Sección eliminada correctamente', 'success');
 
-                        // Si no quedan secciones, recargar la página
+                        // Si no quedan secciones, recargar la página después de un momento
                         if (this.sections.length === 0) {
-                            setTimeout(() => window.location.reload(), 1000);
+                            setTimeout(() => window.location.reload(), 1500);
                         }
                     }
                 } catch (error) {
                     console.error('Error al eliminar:', error);
-                    showNotification('Error al eliminar la sección', 'error');
-                    modalData.showModal = false;
+                    
+                    // Mostrar mensaje de error más específico si está disponible
+                    let errorMessage = 'Error al eliminar la sección';
+                    if (error.response && error.response.data && error.response.data.message) {
+                        errorMessage = error.response.data.message;
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    this.showNotification(errorMessage, 'error');
+                    this.showDeleteModal = false;
+                    this.sectionToDelete = null;
                 }
             },
+
 
             formatDate(dateString) {
                 const date = new Date(dateString);
@@ -475,6 +489,41 @@
                     month: 'short',
                     year: 'numeric'
                 });
+            },
+
+            showNotification(message, type = 'success') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${
+                    type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                }`;
+
+                notification.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${type === 'success'
+                                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                            }
+                        </svg>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+
+                setTimeout(() => {
+                    notification.classList.remove('translate-y-0', 'opacity-100');
+                    notification.classList.add('-translate-y-2', 'opacity-0');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
             }
         };
     }

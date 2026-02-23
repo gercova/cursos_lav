@@ -63,14 +63,14 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.users.store') }}" method="POST" id="userForm">
+        <form action="{{ route('admin.users.store') }}" method="POST" id="userForm" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="id" id="id" value="{{ $user->id }}">
             <div class="p-8">
                 <!-- Información personal -->
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Información Personal</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- DNI -->
                         <div>
                             <label for="dni" class="block text-sm font-medium text-gray-700 mb-2">
@@ -130,13 +130,76 @@
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- Foto de perfil -->
+                        <div class="md:col-span-2">
+                            <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                Foto de Perfil
+                            </label>
+                            <div class="flex items-center gap-6">
+                                <div class="flex-shrink-0">
+                                    @if($user->profile_photo)
+                                        <img src="{{ $user->profile_photo }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                    @endif
+                                    <div id="preview-container" class="{{ $user->profile_photo ? 'mt-2' : '' }} hidden">
+                                        <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
+                                        <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
+                                    @if($user->profile_photo)
+                                        <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                                            <i class="bi bi-trash"></i> Eliminar foto actual
+                                        </button>
+                                        <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+                                    @endif
+                                </div>
+                            </div>
+                            @error('profile_photo')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        @if($user->role == 'instructor')
+                            <!-- Foto de Firma -->
+                            <div class="md:col-span-2">
+                                <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Foto o Imagen de la firma
+                                </label>
+                                <div class="flex items-center gap-6">
+                                    <div class="flex-shrink-0">
+                                        @if($user->signature?->signature)
+                                            <img src="{{ $user->signature?->signature }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                        @endif
+                                        <div id="preview-container" class="{{ $user->signature?->signature ? 'mt-2' : '' }} hidden">
+                                            <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
+                                            <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                        <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
+                                        @if($user->signature?->signature)
+                                            <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                                                <i class="bi bi-trash"></i> Eliminar foto actual
+                                            </button>
+                                            <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+                                        @endif
+                                    </div>
+                                </div>
+                                @error('profile_photo')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Información adicional -->
                 <div class="mb-8">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Información Adicional</h3>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Nacionalidad -->
                         <div>
@@ -178,11 +241,10 @@
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Seguridad y Rol</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Rol -->
-                        <div class="md:col-span-2">
+                        <div>
                             <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
                                 Rol <span class="text-red-500">*</span>
                             </label>
-                            {{-- {{ dd($roles) }} --}}
                             <select name="role" id="role" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                                 @foreach($roles as $rol)
                                     <option value="{{ $rol->name }}" {{ old('role', $user->role) == $rol->name ? 'selected' : '' }}>
@@ -287,15 +349,6 @@
                         </span>
                     </button>
 
-                    <!--<button onclick="sendMessage({{ $user->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 transition duration-200 group">
-                        <div class="p-2 rounded-lg bg-gradient-to-br from-green-100 to-green-200">
-                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-                            </svg>
-                        </div>
-                        <span class="font-medium text-gray-900">Enviar Mensaje</span>
-                    </button>-->
-
                     <button onclick="deleteUser({{ $user->id }})" class="w-full flex items-center gap-3 p-3 bg-white hover:bg-red-50 rounded-lg border border-red-200 transition duration-200 group">
                         <div class="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200">
                             <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,6 +366,55 @@
 
 @section('scripts')
 <script>
+    // Vista previa de la nueva imagen
+    document.getElementById('profile_photo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('photo-preview');
+                const previewContainer = document.getElementById('preview-container');
+                
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+                
+                // Si hay foto actual, ocultarla visualmente (opcional)
+                const currentPhoto = document.querySelector('.current-photo');
+                if (currentPhoto) {
+                    currentPhoto.style.opacity = '0.5';
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Función para eliminar la foto actual
+    function removeCurrentPhoto() {
+        if (confirm('¿Estás seguro de eliminar la foto de perfil actual?')) {
+            document.getElementById('remove_photo').value = '1';
+            const currentPhoto = document.querySelector('.current-photo');
+            if (currentPhoto) {
+                currentPhoto.remove();
+            }
+            // Resetear el input file
+            document.getElementById('profile_photo').value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+        }
+    }
+
+    // Resto de tus funciones existentes...
+    function resetForm() {
+        if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los cambios no guardados.')) {
+            document.getElementById('userForm').reset();
+            // Resetear la vista previa
+            document.getElementById('preview-container').classList.add('hidden');
+            const currentPhoto = document.querySelector('.current-photo');
+            if (currentPhoto) {
+                currentPhoto.style.opacity = '1';
+            }
+        }
+    }
+
     // Reiniciar formulario
     function resetForm() {
         if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los cambios no guardados.')) {
@@ -337,25 +439,6 @@
             showNotification('Error al cambiar el estado', 'error');
         }
     }
-
-    // Enviar mensaje
-    /*async function sendMessage(userId) {
-        const message = prompt('Escribe el mensaje que deseas enviar:');
-        if (!message) return;
-
-        try {
-            const response = await axios.post(`/admin/users/${userId}/send-message`, {
-                message: message
-            });
-
-            if (response.data.success) {
-                showNotification('Mensaje enviado exitosamente', 'success');
-            }
-        } catch (error) {
-            console.error('Error al enviar mensaje:', error);
-            showNotification('Error al enviar el mensaje', 'error');
-        }
-    }*/
 
     // Eliminar usuario
     async function deleteUser(userId) {

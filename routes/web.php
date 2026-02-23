@@ -163,12 +163,15 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Mis cursos
     Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');
     Route::get('/courses/{course}/learn',           [CoursesController::class, 'learn'])->name('student.course.learn');
+    
     // Vista de lección individual
     Route::get('/courses/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
     // Guardar progreso de lección
     Route::post('/lesson/progress/save',            [LessonController::class, 'saveProgress'])->name('lesson.progress.save');
     // Marcar lección como completada
     Route::post('/lesson/complete',                 [LessonController::class, 'complete'])->name('lesson.complete');
+    
+
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
     // Notificaciones

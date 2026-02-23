@@ -182,6 +182,8 @@ class StudentExamsController extends Controller {
         $user = Auth::user();
         $exam = Exam::findOrFail($id);
 
+        // dd(!$user->enrollments()->where('course_id', $exam->course_id)->exists());
+
         // Verificar inscripción
         if (!$user->enrollments()->where('course_id', $exam->course_id)->exists()) {
             return redirect()->route('student.exams')->with('error', 'No estás inscrito en este curso.');

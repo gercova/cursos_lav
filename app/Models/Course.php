@@ -75,7 +75,7 @@ class Course extends Model
     }
 
     public function exams(): HasMany {
-        return $this->hasMany(Exam::class);
+        return $this->hasMany(Exam::class, 'course_id', 'id');
     }
 
     public function getIsOnPromotionAttribute(): bool {

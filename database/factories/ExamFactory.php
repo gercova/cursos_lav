@@ -13,8 +13,9 @@ class ExamFactory extends Factory {
 
     protected $model = Exam::class;
     public function definition() {
+        $course = Course::inRandomOrder()->first();
         return [
-            'course_id'     => Course::factory(),
+            'course_id'     => $course->id,
             'title'         => $this->faker->sentence(4),
             'description'   => $this->faker->paragraph(),
             'duration'      => $this->faker->numberBetween(30, 180),

@@ -24,9 +24,10 @@ class Enrollment extends Model {
     ];
 
     protected $casts = [
-        'enrolled_at'   => 'datetime',
-        'completed_at'  => 'datetime',
-        'progress'      => 'decimal:2',
+        'last_accessed_at'  => 'datetime',
+        'enrolled_at'       => 'datetime',
+        'completed_at'      => 'datetime',
+        'progress'          => 'decimal:2',
     ];
 
     public function user(): BelongsTo {

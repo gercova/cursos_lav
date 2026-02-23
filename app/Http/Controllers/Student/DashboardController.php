@@ -51,7 +51,7 @@ class DashboardController extends Controller {
                 'lessons'           => $totalLessons,
                 'duration'          => $course->duration ?: '0 horas',
                 'enrolled_date'     => $enrollment->created_at->format('d/m/Y'),
-                'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : null,
+                'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i'),
                 'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
                 'total_lessons'     => $totalLessons,
                 'continue_url'      => route('student.course.learn', $course)

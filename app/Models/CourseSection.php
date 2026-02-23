@@ -30,7 +30,7 @@ class CourseSection extends Model {
     }
 
     public function lessons(): HasMany {
-        return $this->hasMany(Lesson::class)->orderBy('order');
+        return $this->hasMany(Lesson::class, 'course_section_id', 'id')->orderBy('order');
     }
 
     public function previousSection() {

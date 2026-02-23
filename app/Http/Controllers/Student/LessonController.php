@@ -57,6 +57,11 @@ class LessonController extends Controller {
         return view('student.courses.lesson', compact('course', 'lesson', 'enrollment', 'lessonProgress', 'isCompleted', 'watchedPercent'));
     }
 
+    // public function learn($slug){
+    //     $course = Course::where('slug', $slug)->firstOrFail();
+    //     return view('student.courses.learn', compact('course'));
+    // }
+
     public function saveProgress(Request $request): JsonResponse {
         set_time_limit(0);
         

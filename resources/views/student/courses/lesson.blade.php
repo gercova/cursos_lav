@@ -141,7 +141,7 @@
                                     <i class="fas fa-play-circle mr-1"></i>
                                     <span x-text="watchedPercent.toFixed(1) + '% visto'"></span>
                                     @if($watchedPercent > 0)
-                                    <span class="text-xs text-gray-500">({{ $watchedPercent }}% visto previamente)</span>
+                                        <span class="text-xs text-gray-500">({{ $watchedPercent }}% visto previamente)</span>
                                     @endif
                                 </span>
                             </div>
@@ -163,13 +163,12 @@
                     @endif
 
                     <!-- Navegación entre lecciones -->
-                    <div class="mt-8 pt-6 border-t border-gray-200">
+                    {{-- <div class="mt-8 pt-6 border-t border-gray-200">
                         <div class="flex justify-between items-center">
                             <div>
                                 @if($previousLesson)
                                 <p class="text-sm text-gray-600 mb-1">Anterior</p>
-                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
-                                   class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
                                     <i class="fas fa-arrow-left mr-2"></i>
                                     {{ Str::limit($previousLesson->title, 50) }}
                                 </a>
@@ -178,8 +177,7 @@
 
                             <div class="flex space-x-3">
                                 @if($previousLesson)
-                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
-                                   class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                                     <i class="fas fa-arrow-left mr-2"></i>
                                     Anterior
                                 </a>
@@ -228,7 +226,116 @@
                                 </p>
                             </div>
                         </div>
+                    </div> --}}
+                    <!-- Navegación entre lecciones -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                @if($previousLesson)
+                                    <p class="text-sm text-gray-600 mb-1">Anterior</p>
+                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
+                                    class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                        <i class="fas fa-arrow-left mr-2"></i>
+                                        {{ Str::limit($previousLesson->title, 50) }}
+                                    </a>
+                                @endif
+                            </div>
+
+                            <div class="flex space-x-3">
+                                @if($previousLesson)
+                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
+                                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                        <i class="fas fa-arrow-left mr-2"></i>
+                                        Anterior
+                                    </a>
+                                @endif
+
+                                <!-- Botón para marcar como completada (visible cuando no está completada) -->
+                                <button id="completeLessonBtn"
+                                    @if(!$isCompleted)
+                                    @click="markAsCompleted()"
+                                    :disabled="watchedPercent < minWatchPercent"
+                                    :class="watchedPercent < minWatchPercent ? 
+                                        'opacity-50 cursor-not-allowed bg-green-400' : 
+                                        'bg-green-600 hover:bg-green-700'"
+                                    @endif
+                                    class="px-6 py-2 text-white rounded-lg transition-colors duration-200 font-medium"
+                                    @if($isCompleted) disabled style="opacity: 50; cursor: not-allowed;" @endif
+                                >
+                                    <span x-show="!$el.__x.$data.isCompleted && $el.__x.$data.watchedPercent < $el.__x.$data.minWatchPercent">
+                                        <i class="fas fa-lock mr-2"></i>
+                                        Ver al menos 80% para completar
+                                    </span>
+                                    <span x-show="!$el.__x.$data.isCompleted && $el.__x.$data.watchedPercent >= $el.__x.$data.minWatchPercent">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        Marcar como completada
+                                    </span>
+                                    <span x-show="$el.__x.$data.isCompleted">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        Completada
+                                    </span>
+                                </button>
+
+                                <!-- Botón siguiente (ahora siempre disponible si existe) -->
+                                @if($nextLesson)
+                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}"
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
+                                        <span>Siguiente</span>
+                                        <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                @else
+                                    <!-- Si no hay siguiente lección, redirigir al examen -->
+                                    <form action="{{ route('student.exams.start', $course->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 font-medium">
+                                            <i class="fas fa-pencil-alt mr-2"></i>
+                                            Ir al examen final
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+
+                            <div class="text-right">
+                                @if($nextLesson)
+                                <p class="text-sm text-gray-600 mb-1">Siguiente</p>
+                                <span class="text-blue-600 font-medium flex items-center justify-end">
+                                    {{ Str::limit($nextLesson->title, 50) }}
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </span>
+                                @else
+                                <p class="text-sm text-gray-600 mb-1">Final del curso</p>
+                                <span class="text-purple-600 font-medium flex items-center justify-end">
+                                    Examen final
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Mensaje de advertencia si no ha visto suficiente -->
+                        <div x-show="!isCompleted && watchedPercent < minWatchPercent && watchedPercent > 0"
+                            class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
+                                <p class="text-sm text-yellow-700">
+                                    Debes ver al menos el 80% de esta lección para poder marcarla como completada.
+                                    <span class="font-medium">Has visto el <span x-text="watchedPercent.toFixed(1)"></span>%</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje de éxito cuando se completa -->
+                        <div x-show="isCompleted" 
+                            class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <p class="text-sm text-green-700">
+                                    ¡Lección completada! Puedes continuar con la siguiente lección.
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                    <!-- Fin Navegación entre lecciones -->
                 </div>
             </div>
         </div>
@@ -240,7 +347,9 @@
                 <div class="bg-white rounded-xl shadow">
                     <div class="p-4 border-b border-gray-200">
                         <h3 class="font-bold text-gray-800">Contenido del curso</h3>
-                        <p class="text-sm text-gray-600">{{ $course->sections->count() }} módulos • {{ $totalLessons ?? 0 }} lecciones</p>
+                        <p class="text-sm text-gray-600">
+                            {{ $course->sections->count() }} módulos • {{ $course->lessons->count() ?? 0 }} {{ $course->lessons->count() > 1 ? 'lecciones' : 'lección' }}
+                        </p>
                     </div>
 
                     <div class="overflow-y-auto max-h-[500px]">
@@ -256,29 +365,29 @@
 
                                 <div class="space-y-2">
                                     @foreach($section->lessons as $lessonItem)
-                                    @php
-                                        $isItemCompleted = $enrollment ? $enrollment->completedLessons->contains($lessonItem->id) : false;
-                                    @endphp
-                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $lessonItem->id]) }}"
-                                       class="flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors duration-200 {{ $lessonItem->id == $lesson->id ? 'bg-blue-50 border border-blue-100' : '' }}">
-                                        <div class="flex items-center">
-                                            <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                                @if($isItemCompleted)
-                                                <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                                @elseif($lessonItem->id == $lesson->id)
-                                                <i class="fas fa-play-circle text-blue-500 text-sm"></i>
-                                                @else
-                                                <i class="far fa-circle text-gray-300 text-sm"></i>
-                                                @endif
+                                        @php
+                                            $isItemCompleted = $enrollment ? $enrollment->completedLessons->contains($lessonItem->id) : false;
+                                        @endphp
+                                        <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $lessonItem->id]) }}"
+                                        class="flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors duration-200 {{ $lessonItem->id == $lesson->id ? 'bg-blue-50 border border-blue-100' : '' }}">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 flex items-center justify-center mr-2">
+                                                    @if($isItemCompleted)
+                                                        <i class="fas fa-check-circle text-green-500 text-sm"></i>
+                                                    @elseif($lessonItem->id == $lesson->id)
+                                                        <i class="fas fa-play-circle text-blue-500 text-sm"></i>
+                                                    @else
+                                                        <i class="far fa-circle text-gray-300 text-sm"></i>
+                                                    @endif
+                                                </div>
+                                                <span class="text-sm {{ $lessonItem->id == $lesson->id ? 'font-medium text-blue-700' : 'text-gray-700' }}">
+                                                    {{ Str::limit($lessonItem->title, 40) }}
+                                                </span>
                                             </div>
-                                            <span class="text-sm {{ $lessonItem->id == $lesson->id ? 'font-medium text-blue-700' : 'text-gray-700' }}">
-                                                {{ Str::limit($lessonItem->title, 40) }}
-                                            </span>
-                                        </div>
-                                        @if($lessonItem->duration)
-                                        <span class="text-xs text-gray-500">{{ $lessonItem->duration }}</span>
-                                        @endif
-                                    </a>
+                                            @if($lessonItem->duration)
+                                            <span class="text-xs text-gray-500">{{ $lessonItem->duration }}</span>
+                                            @endif
+                                        </a>
                                     @endforeach
                                 </div>
                             </div>
@@ -295,10 +404,10 @@
                     </div>
                     <div class="p-4">
                         @if($lesson->description)
-                        <div class="mb-4">
-                            <h4 class="font-medium text-gray-700 mb-2">Descripción</h4>
-                            <p class="text-sm text-gray-600">{{ Str::limit($lesson->description, 150) }}</p>
-                        </div>
+                            <div class="mb-4">
+                                <h4 class="font-medium text-gray-700 mb-2">Descripción</h4>
+                                <p class="text-sm text-gray-600">{{ Str::limit($lesson->description, 150) }}</p>
+                            </div>
                         @endif
 
                         @php
@@ -306,28 +415,28 @@
                         @endphp
 
                         @if($lessonDocuments->count() > 0)
-                        <div>
-                            <h4 class="font-medium text-gray-700 mb-2">Documentos</h4>
-                            <div class="space-y-2">
-                                @foreach($lessonDocuments as $document)
-                                    <a href="{{ Storage::url($document->file_path) }}"
-                                    target="_blank"
-                                    class="flex items-center p-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200">
-                                        @php
-                                            $icon = match(strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION))) {
-                                                'pdf' => 'fa-file-pdf text-red-500',
-                                                'doc', 'docx' => 'fa-file-word text-blue-500',
-                                                'xls', 'xlsx' => 'fa-file-excel text-green-500',
-                                                default => 'fa-file text-gray-500'
-                                            };
-                                        @endphp
-                                        <i class="fas {{ $icon }} mr-2"></i>
-                                        <span class="text-sm text-gray-700 flex-1">{{ Str::limit($document->title, 30) }}</span>
-                                        <i class="fas fa-external-link-alt text-gray-400 text-xs"></i>
-                                    </a>
-                                @endforeach
+                            <div>
+                                <h4 class="font-medium text-gray-700 mb-2">Documentos</h4>
+                                <div class="space-y-2">
+                                    @foreach($lessonDocuments as $document)
+                                        <a href="{{ Storage::url($document->file_path) }}"
+                                        target="_blank"
+                                        class="flex items-center p-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200">
+                                            @php
+                                                $icon = match(strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION))) {
+                                                    'pdf' => 'fa-file-pdf text-red-500',
+                                                    'doc', 'docx' => 'fa-file-word text-blue-500',
+                                                    'xls', 'xlsx' => 'fa-file-excel text-green-500',
+                                                    default => 'fa-file text-gray-500'
+                                                };
+                                            @endphp
+                                            <i class="fas {{ $icon }} mr-2"></i>
+                                            <span class="text-sm text-gray-700 flex-1">{{ Str::limit($document->title, 30) }}</span>
+                                            <i class="fas fa-external-link-alt text-gray-400 text-xs"></i>
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                 </div>
@@ -363,10 +472,10 @@ document.addEventListener('alpine:init', () => {
         },
 
         initializeVideoPlayer() {
-           @if($lesson->video?->vimeo_id)
+            @if($lesson->video?->vimeo_id)
                 //this.videoId="{{$lesson->video?->vimeo_id}}";
                 this.setupVimeoPlayer();
-           @endif
+            @endif
         },
 
         setupVimeoPlayer() {
@@ -511,6 +620,7 @@ document.addEventListener('alpine:init', () => {
             console.log('Deteniendo seguimiento de progreso...');
         },
 
+        /*
         async markAsCompleted() {
             if (this.watchedPercent >= this.minWatchPercent) {
                 // Marcar como completado en el servidor
@@ -543,8 +653,59 @@ document.addEventListener('alpine:init', () => {
                     console.error('Error al marcar como completado:', error);
                 }
             }
+        },*/
+
+        async markAsCompleted() {
+            if (this.watchedPercent >= this.minWatchPercent && !this.isCompleted) {
+                try {
+                    const response = await fetch('{{ route("lesson.complete") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            enrollment_id: this.enrollmentId,
+                            lesson_id: this.lessonId,
+                            time_spent_minutes: Math.floor(this.currentTime / 60) || 1
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        // Actualizar estado local
+                        this.isCompleted = true;
+                        
+                        // Mostrar mensaje de éxito
+                        this.showCompletionMessage();
+                        
+                        // Recargar la página después de 1.5 segundos para actualizar todos los estados
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error('Error al marcar como completado:', error);
+                    
+                    // Mostrar mensaje de error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                    errorDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <span>Error al marcar la lección como completada</span>
+                        </div>
+                    `;
+                    document.body.appendChild(errorDiv);
+                    
+                    setTimeout(() => {
+                        errorDiv.remove();
+                    }, 3000);
+                }
+            }
         },
 
+        /*
         showCompletionMessage() {
             // Mostrar mensaje de éxito
             const messageDiv = document.createElement('div');
@@ -560,11 +721,24 @@ document.addEventListener('alpine:init', () => {
             setTimeout(() => {
                 messageDiv.remove();
             }, 3000);
-        },
+        },*/
+
+        showCompletionMessage() {
+            // Mostrar mensaje de éxito
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            messageDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>¡Lección completada! Actualizando...</span>
+                </div>
+            `;
+            document.body.appendChild(messageDiv);
+        }
 
         goToPreviousLesson() {
             @if($previousLesson)
-            window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}";
+                window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}";
             @endif
         },
 

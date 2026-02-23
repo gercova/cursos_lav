@@ -34,11 +34,8 @@
                 <div class="w-16 h-16">
                     <div class="relative">
                         <svg class="w-16 h-16" viewBox="0 0 36 36">
-                            <path class="text-gray-200" fill="none" stroke="currentColor" stroke-width="3"
-                                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                            <path class="text-blue-500" fill="none" stroke="currentColor" stroke-width="3"
-                                  stroke-dasharray="{{ $progress }}, 100"
-                                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-gray-200" fill="none" stroke="currentColor" stroke-width="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-blue-500" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="{{ $progress }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center">
                             <span class="text-sm font-bold text-blue-600">{{ number_format($progress, 0) }}%</span>
@@ -61,10 +58,7 @@
                 <div x-data="{ openSection: null }" class="space-y-4">
                     @foreach($course->sections as $index => $section)
                     <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button
-                            @click="openSection = openSection === {{ $index }} ? null : {{ $index }}"
-                            class="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex justify-between items-center text-left"
-                        >
+                        <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" class="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex justify-between items-center text-left">
                             <div class="flex items-center">
                                 <span class="text-blue-600 mr-3">
                                     <i class="fas" :class="openSection === {{ $index }} ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
@@ -171,9 +165,7 @@
                                         • {{ number_format($document->file_size / 1024, 1) }} KB
                                         @endif
                                     </span>
-                                    <a href="{{ Storage::url($document->file_path) }}"
-                                       target="_blank"
-                                       class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                         <i class="fas fa-download mr-1"></i>
                                         Descargar
                                     </a>
@@ -197,9 +189,7 @@
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Instructor</h3>
                 <div class="flex items-center">
                     <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                        <img src="{{ $course->instructor->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($course->instructor->name) . '&color=7F9CF5&background=EBF4FF' }}"
-                             alt="{{ $course->instructor->name }}"
-                             class="w-full h-full object-cover">
+                        <img src="{{ $course->instructor->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($course->instructor->name) . '&color=7F9CF5&background=EBF4FF' }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800">{{ $course->instructor->name }}</h4>
@@ -214,7 +204,7 @@
                     </div>
                 </div>
                 @if($course->instructor->bio)
-                <p class="text-gray-600 text-sm mt-4">{{ Str::limit($course->instructor->bio, 150) }}</p>
+                    <p class="text-gray-600 text-sm mt-4">{{ Str::limit($course->instructor->bio, 150) }}</p>
                 @endif
             </div>
             @endif
@@ -225,10 +215,10 @@
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Lo que aprenderás</h3>
                 <ul class="space-y-3">
                     @foreach($course->what_you_learn as $item)
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                        <span class="text-gray-700">{{ $item }}</span>
-                    </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                            <span class="text-gray-700">{{ $item }}</span>
+                        </li>
                     @endforeach
                 </ul>
             </div>
@@ -265,8 +255,7 @@
                             <span>{{ $completedLessons }}/{{ $totalLessons }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="h-2 rounded-full bg-green-500"
-                                 style="width: {{ $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0 }}%"></div>
+                            <div class="h-2 rounded-full bg-green-500" style="width: {{ $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0 }}%"></div>
                         </div>
                     </div>
 
@@ -288,8 +277,7 @@
                             </span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="h-2 rounded-full bg-blue-500"
-                                 style="width: {{ $course->sections->count() > 0 ? ($completedSections / $course->sections->count() * 100) : 0 }}%"></div>
+                            <div class="h-2 rounded-full bg-blue-500" style="width: {{ $course->sections->count() > 0 ? ($completedSections / $course->sections->count() * 100) : 0 }}%"></div>
                         </div>
                     </div>
                 </div>

@@ -55,7 +55,9 @@ Route::get('/',                             [AppController::class, 'home'])->nam
 Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
 Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
 Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
+
 Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
+
 Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
 Route::get('/nosotros',                     [AppController::class, 'aboutus'])->name('nosotros');
 Route::get('/contacto',                     [AppController::class, 'contact'])->name('contacto');

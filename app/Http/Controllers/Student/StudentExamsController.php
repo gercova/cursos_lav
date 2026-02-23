@@ -184,7 +184,7 @@ class StudentExamsController extends Controller {
 
         // Verificar inscripción
         if (!$user->enrollments()->where('course_id', $exam->course_id)->exists()) {
-            return redirect()->route('student.exams.index')->with('error', 'No estás inscrito en este curso.');
+            return redirect()->route('student.exams')->with('error', 'No estás inscrito en este curso.');
         }
 
         // Obtener todos los intentos previos
@@ -197,7 +197,7 @@ class StudentExamsController extends Controller {
 
         // Verificar intentos máximos
         if ($exam->max_attempts > 0 && $completedAttemptsCount >= $exam->max_attempts) {
-            return redirect()->route('student.exams.index')->with('error', 'Has alcanzado el número máximo de intentos permitidos.');
+            return redirect()->route('student.exams')->with('error', 'Has alcanzado el número máximo de intentos permitidos.');
         }
 
         // Verificar si ya hay un intento activo

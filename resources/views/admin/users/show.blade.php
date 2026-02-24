@@ -338,9 +338,7 @@
                                             <span class="text-xs text-gray-500">
                                                 Descargas: {{ $certificate->download_count ?? 0 }}
                                             </span>
-                                            <a href="{{ $certificate->verification_url ?? '#' }}" 
-                                               target="_blank"
-                                               class="text-xs text-blue-600 hover:text-blue-800">
+                                            <a href="{{ route('admin.certificates.show', $certificate) }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800">
                                                 Verificar →
                                             </a>
                                         </div>
@@ -421,9 +419,9 @@
                                                     </svg>
                                                     <span class="text-sm text-gray-700">Certificado generado</span>
                                                 </div>
-                                                <a href="{{ route('admin.certificates.show', $attempt->certificate) }}"
-                                                   class="text-sm text-blue-600 hover:text-blue-800">
-                                                    Ver certificado →
+                                                
+                                                <a href="{{ route('admin.certificates.show', $attempt->certificate) }}" class="text-sm text-blue-600 hover:text-blue-800" target="_blank">
+                                                    Ver certificado
                                                 </a>
                                             </div>
                                         </div>

@@ -159,7 +159,7 @@ class User extends Authenticatable {
         $this->save();
     }
 
-    protected function profilePhoto(): Attribute {
+    protected function getProfilePhotoUrlAttribute(): Attribute {
         return Attribute::make(
             get: function (?string $value, array $attributes) {
                 // 1. Si el usuario TIENE una foto subida en la base de datos

@@ -249,7 +249,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Instructor</h3>
                     <div class="flex items-start space-x-4">
                         <img class="h-16 w-16 rounded-full object-cover"
-                            src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/instructors/instructor-default.png') }}"
+                            src="{{ $course->instructor->photo ? Storage::url($course->instructor->photo) : asset('storage/instructors/instructor-default.png') }}"
                             alt="{{ $course->instructor->names }}">
                         <div>
                             <h4 class="font-semibold text-gray-900">{{ $course->instructor->names }}</h4>

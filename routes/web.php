@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoriesAdminController;
+use App\Http\Controllers\Admin\CertificatesAdminController;
 use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\CourseSectionAdminController;
 use App\Http\Controllers\Admin\DocumentsAdminController;
@@ -350,5 +351,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/exams/{exam}/questions/reorder',          [ExamQuestionAdminController::class, 'reorder'])->name('admin.exams.questions.reorder');
         Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('admin.exams.questions.move');
 
+        Route::get('/certificates/{certificate}/view',          [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
     });
 });

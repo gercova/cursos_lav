@@ -15,12 +15,15 @@ class CertificateFactory extends Factory {
 
     protected $model = Certificate::class;
     public function definition() {
-        $issueDate = $this->faker->dateTimeBetween('-1 year', 'now');
+        $issueDate  = $this->faker->dateTimeBetween('-1 year', 'now');
+        $user       = User::inRandomOrder()->first();
+        $course     = Course::inRandomOrder()->first();
+        $examAttempt = ExamAttempt::inRandomOrder()->first();
 
         return [
-            'user_id'               => User::factory(),
-            'course_id'             => Course::factory(),
-            'exam_attempt_id'       => ExamAttempt::factory(),
+            'user_id'               => $user->id,
+            'course_id'             => $course->id,
+            'exam_attempt_id'       => $examAttempt->id,
             'certificate_code'      => 'CERT-' . strtoupper($this->faker->bothify('??##??')) . '-' . date('Ymd'),
             'certificate_number'    => $this->faker->numerify('####-') . date('Y') . '-IPF-EDUCA',
             'issue_date'            => $issueDate,

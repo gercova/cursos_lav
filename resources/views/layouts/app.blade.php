@@ -180,8 +180,8 @@
                     <h4 class="text-md font-semibold mb-4">Contacto</h4>
                     <ul class="space-y-2 text-gray-300">
                         <li>Email: {{ $enterprise->email }}</li>
-                        <li>Teléfono: +51 123 456 789</li>
-                        <li>Dirección: Lima, Perú</li>
+                        <li>Teléfono: +51 {{ $enterprise->phone_number_1 }}</li>
+                        {{-- <li>Dirección: Lima, Perú</li> --}}
                     </ul>
                 </div>
                 <div>

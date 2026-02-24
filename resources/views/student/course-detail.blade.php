@@ -82,7 +82,7 @@
                             
                             @if($isEnrolled)
                                 @php
-                                    $lesson = Lesson::where('course_id', $course->id)->first();
+                                    $lesson = App\Models\Lesson::where('course_id', $course->id)->first();
                                 @endphp
                                 <a href="{{ route('lesson.show', [$course->slug, $lesson->id]) }}"
                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center mb-3">

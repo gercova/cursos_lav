@@ -37,7 +37,7 @@ class Certificate extends Model
     }
 
     public function examAttempt(): BelongsTo {
-        return $this->belongsTo(ExamAttempt::class);
+        return $this->belongsTo(ExamAttempt::class, 'exam_attempt_id', 'id');
     }
 
     public static function generateCertificateNumber($year = null) {

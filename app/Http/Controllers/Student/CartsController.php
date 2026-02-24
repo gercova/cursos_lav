@@ -113,8 +113,7 @@ class CartsController extends Controller {
         $cartItems  = Cart::getItems($userId);
 
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart')
-                ->with('error', 'Tu carrito está vacío');
+            return redirect()->route('cart')->with('error', 'Tu carrito está vacío');
         }
 
         // Aquí implementarías la lógica de checkout

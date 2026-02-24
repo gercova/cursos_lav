@@ -346,11 +346,7 @@ class AppController extends Controller {
             ->where('slug', $slug)
             ->firstOrFail(); // Usar firstOrFail para 404 automático
 
-        $isEnrolled = Auth::check()
-            ? Enrollment::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->exists()
-            : false;
+        $isEnrolled = Auth::check() ? Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->exists(): false;
 
         return view('student.course-detail', compact('course', 'isEnrolled'));
     }

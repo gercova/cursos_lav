@@ -12,7 +12,7 @@
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script src="{{ asset('js/alpine.js') }}" defer></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
-    <meta name="google-site-verification" content="-h09LWXRKrK1WffI1KgweQLJHKMi3RJMWfwoZihkLZ4" />
+    <meta name="google-site-verification" content="aMGrxQTlV-Zasf1Z3OoKmkT-u9prEHoNoUzhQ6zS0hc" />
 </head>
 <body class="bg-gray-50">
     <!-- Header Fijo -->

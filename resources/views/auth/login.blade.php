@@ -126,7 +126,7 @@
                     </div>
 
                     <!-- Separador -->
-                    <div class="relative my-6">
+                    {{-- <div class="relative my-6">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-300"></div>
                         </div>
@@ -135,10 +135,10 @@
                                 O continúa con
                             </span>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Social Login (opcional) -->
-                    <div class="grid grid-cols-2 gap-3">
+                    {{-- <div class="grid grid-cols-2 gap-3">
                         <button type="button" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                             <i class="fab fa-google text-red-500 mr-2"></i>
                             Google
@@ -147,7 +147,7 @@
                             <i class="fab fa-facebook text-blue-600 mr-2"></i>
                             Facebook
                         </button>
-                    </div>
+                    </div> --}}
                 </div>
             </form>
 

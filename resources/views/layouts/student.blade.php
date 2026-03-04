@@ -427,6 +427,18 @@
                     <span>Dashboard</span>
                 </a>
 
+                @if (strlen((auth()->user()->dni)) == 11)
+                    <hr>
+                    <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
+                        <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
+                    </a>
+                    
+                    <a href="{{ route('company.enroll.users') }}" class="sidebar-link {{ request()->routeIs('company.enroll.*') ? 'active bg-purple-300' : '' }}">
+                        <i class="bi bi-book-fill mr-2"></i> Inscribir mis usuarios
+                    </a>
+                    <hr>
+                @endif
+
                 <a href="{{ route('student.my-courses') }}" class="sidebar-link {{ request()->routeIs('student.my-courses') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Mis Cursos</span>
@@ -491,7 +503,7 @@
 
                 <div class="header-actions">
                     <!-- Notificaciones -->
-                    <div class="relative" x-data="{ open: false }">
+                    {{-- <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="action-button">
                             <i class="far fa-bell text-lg"></i>
                             <span id="notification-count" class="notification-badge">0</span>
@@ -510,7 +522,7 @@
                                 Ver todas
                             </a>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Carrito -->
                     <a href="{{ route('cart') }}" class="action-button">
@@ -540,6 +552,17 @@
         <!-- Contenido principal -->
         <main class="main-content" :class="{ 'sidebar-collapsed': !isDesktop && mobileMenuOpen }">
             <div class="content-wrapper">
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+                    </div>
+                @endif
                 @yield('content')
             </div>
 

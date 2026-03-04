@@ -70,12 +70,7 @@
 <body class="bg-gray-100">
     <div x-data="sidebar" class="flex h-screen">
         <!-- Overlay para móviles -->
-        <div x-show="open && window.innerWidth < 768"
-            x-transition:enter="sidebar-overlay"
-            x-transition:leave="sidebar-overlay"
-            @click="close()"
-            class="fixed inset-0 bg-black bg-opacity-50 z-20"
-            style="display: none;">
+        <div x-show="open && window.innerWidth < 768" x-transition:enter="sidebar-overlay" x-transition:leave="sidebar-overlay" @click="close()" class="fixed inset-0 bg-black bg-opacity-50 z-20" style="display: none;">
         </div>
 
         <!-- Sidebar -->

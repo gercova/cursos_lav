@@ -53,12 +53,60 @@
                     <input type="text" id="meta_keywords" x-model="form.meta_keywords" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="ej: cursos, desarrollo, programación">
                     <p class="text-xs text-gray-500 mt-1">Separar con comas</p>
                 </div>
+
+                <div class="mb-6" x-data="arrayField()">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        ¿Qué incluye este paquete? *
+                    </label>
+                    <div class="space-y-3" id="which_includes_container">
+                        @php
+                            $whichItems = old('which_includes', $course->which_includes ?? ['']);
+                            $learnItems = is_array($whichItems) ? $whichItems : [];
+                        @endphp
+
+                        @foreach($whichItems as $index => $item)
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1">
+                                    <input type="text" name="which_includes[]" value="{{ $item }}" placeholder="Ej: Crear aplicaciones web modernas" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                </div>
+                                @if($index > 0)
+                                    <button type="button" @click="removeItem($event)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                    <button type="button" @click="addItem('which_includes_container')" class="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Agregar otro elemento
+                    </button>
+                    @error('which_includes')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <!-- Columna Derecha -->
             <div class="space-y-6">
                 <!-- Precio y Cupos -->
                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cupos mínimos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="seats_min" x-model="form.seats_min" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="1" required>
+                    </div>
+                    <div>
+                        <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cupos máximos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="seats_max" x-model="form.seats_max" @input="calculatePrices" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="10" required>
+                    </div>
                     <div>
                         <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
                             Precio (S/) <span class="text-red-500">*</span>
@@ -69,10 +117,10 @@
                         </div>
                     </div>
                     <div>
-                        <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
-                            Cupos <span class="text-red-500">*</span>
+                        <label for="course_limit" class="block text-sm font-medium text-gray-700 mb-2">
+                            Límite de cursos para este paquete <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" id="seats" x-model="form.seats" @input="calculatePrices" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="10" required>
+                        <input type="number" id="course_limit" x-model="form.course_limit" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0" required>
                     </div>
                 </div>
 
@@ -166,9 +214,6 @@
                                         <p class="text-xs text-gray-500">ID: <span x-text="course.id"></span></p>
                                     </div>
                                 </div>
-                                {{-- <div class="sm:w-48">
-                                    <input type="number" x-model="course.quantity" placeholder="N° de sesiones" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                                </div> --}}
                                 <button type="button" @click="removeCourse(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -403,7 +448,10 @@
                 meta_keywords: '',
                 price: '',
                 promotion_price: '',
-                seats: '',
+                course_limit: '',
+                which_includes: [],
+                seats_min: '',
+                seats_max: '',
                 is_active: true,
                 courses: [],
                 categories: []
@@ -447,15 +495,18 @@
             // Generar slug
             generateSlug() {
                 this.form.slug = this.form.name
-                    .toLowerCase()
-                    .replace(/[^\w\s]/gi, '')
-                    .replace(/\s+/g, '-');
+                    .normalize('NFD')                     // Descompone letras con acentos (ej. á → a + ◌́)
+                    .replace(/[\u0300-\u036f]/g, '')     // Elimina los diacríticos (acentos, virgulillas, etc.)
+                    .toLowerCase()                        // Convierte a minúsculas
+                    .replace(/[^a-z0-9\s-]/g, '')         // Elimina todo excepto letras, números, espacios y guiones
+                    .replace(/[\s-]+/g, '-')              // Reemplaza espacios y múltiples guiones por un solo guion
+                    .replace(/^-+|-+$/g, '');             // Elimina guiones al inicio o al final
             },
 
             // Calcular precio por persona
             calculatePrices() {
-                if (this.form.price && this.form.seats) {
-                    this.pricePerPerson = this.form.price / this.form.seats;
+                if (this.form.price && this.form.seats_max) {
+                    this.pricePerPerson = this.form.price / this.form.seats_max;
                 }
             },
 
@@ -567,10 +618,98 @@
             },
 
             // Enviar formulario
+            // submitForm() {
+            //     this.loading = true;
+
+            //     // Crear FormData para enviar archivos
+            //     const formData = new FormData();
+
+            //     const whichIncludes = [];
+            //     document.querySelectorAll('input[name="which_includes[]"]').forEach(input => {
+            //         if (input.value.trim() !== '') {
+            //             whichIncludes.push(input.value.trim());
+            //         }
+            //     });
+                
+            //     // Agregar campos simples
+            //     formData.append('name', this.form.name);
+            //     formData.append('slug', this.form.slug);
+            //     formData.append('description', this.form.description || '');
+            //     formData.append('meta_description', this.form.meta_description || '');
+            //     formData.append('meta_keywords', this.form.meta_keywords || '');
+            //     formData.append('which_includes', JSON.stringify(whichIncludes));
+            //     formData.append('price', this.form.price);
+            //     formData.append('course_limit', this.form.course_limit);
+            //     formData.append('seats_min', this.form.seats_min);
+            //     formData.append('seats_max', this.form.seats_max);
+            //     formData.append('is_active', this.form.is_active ? '1' : '0');
+                
+            //     if (this.form.promotion_price) {
+            //         formData.append('promotion_price', this.form.promotion_price);
+            //     }
+                
+            //     // Agregar imagen si existe
+            //     if (this.imageFile) {
+            //         formData.append('image', this.imageFile);
+            //     }
+                
+            //     // Agregar cursos
+            //     const validCourses = this.form.courses.filter(c => c.id);
+            //     formData.append('courses', JSON.stringify(validCourses));
+                
+            //     // Agregar categorías
+            //     const validCategories = this.form.categories.filter(c => c.id);
+            //     formData.append('categories', JSON.stringify(validCategories));
+
+            //     axios.post('{{ route("admin.packages.store") }}', formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data'
+            //         }
+            //     })
+            //     .then(response => {
+            //         if (response.data.success) {
+            //             this.showAlert('success', response.data.message);
+            //             setTimeout(() => {
+            //                 window.location.href = response.data.redirect;
+            //             }, 1000);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         this.loading = false;
+                    
+            //         if (error.response?.data?.errors) {
+            //             const errors = Object.values(error.response.data.errors).flat();
+            //             this.showAlert('error', errors[0]);
+            //         } else {
+            //             this.showAlert('error', error.response?.data?.message || 'Error al guardar el paquete');
+            //         }
+            //     });
+            // }
+
             submitForm() {
                 this.loading = true;
 
-                // Crear FormData para enviar archivos
+                // Validar que haya al menos un curso
+                // if (this.form.courses.length === 0) {
+                //     this.showAlert('error', 'Debes agregar al menos un curso al paquete');
+                //     this.loading = false;
+                //     return;
+                // }
+
+                // Recolectar which_includes del DOM
+                const whichIncludes = [];
+                document.querySelectorAll('input[name="which_includes[]"]').forEach(input => {
+                    if (input.value.trim() !== '') {
+                        whichIncludes.push(input.value.trim());
+                    }
+                });
+                
+                if (whichIncludes.length === 0) {
+                    this.showAlert('error', 'Debes agregar al menos un elemento en "¿Qué incluye este paquete?"');
+                    this.loading = false;
+                    return;
+                }
+
                 const formData = new FormData();
                 
                 // Agregar campos simples
@@ -579,8 +718,14 @@
                 formData.append('description', this.form.description || '');
                 formData.append('meta_description', this.form.meta_description || '');
                 formData.append('meta_keywords', this.form.meta_keywords || '');
+                
+                // Enviar which_includes como JSON string
+                formData.append('which_includes', JSON.stringify(whichIncludes));
+                
                 formData.append('price', this.form.price);
-                formData.append('seats', this.form.seats);
+                formData.append('course_limit', this.form.course_limit || 0);
+                formData.append('seats_min', this.form.seats_min);
+                formData.append('seats_max', this.form.seats_max);
                 formData.append('is_active', this.form.is_active ? '1' : '0');
                 
                 if (this.form.promotion_price) {
@@ -592,12 +737,24 @@
                     formData.append('image', this.imageFile);
                 }
                 
-                // Agregar cursos
-                const validCourses = this.form.courses.filter(c => c.id);
+                // Preparar cursos con la estructura correcta
+                const validCourses = this.form.courses
+                    .filter(c => c.id)
+                    .map(c => ({
+                        id: c.id,
+                        quantity: c.quantity || 1
+                    }));
+                
                 formData.append('courses', JSON.stringify(validCourses));
                 
-                // Agregar categorías
-                const validCategories = this.form.categories.filter(c => c.id);
+                // Preparar categorías
+                const validCategories = this.form.categories
+                    .filter(c => c.id)
+                    .map(c => ({
+                        id: c.id,
+                        max_courses_per_category: c.max_courses_per_category || null
+                    }));
+                
                 formData.append('categories', JSON.stringify(validCategories));
 
                 axios.post('{{ route("admin.packages.store") }}', formData, {
@@ -617,14 +774,45 @@
                     this.loading = false;
                     
                     if (error.response?.data?.errors) {
+                        // Mostrar todos los errores de validación
                         const errors = Object.values(error.response.data.errors).flat();
                         this.showAlert('error', errors[0]);
+                        
+                        // Log para debugging
+                        console.error('Errores de validación:', error.response.data.errors);
                     } else {
                         this.showAlert('error', error.response?.data?.message || 'Error al guardar el paquete');
                     }
                 });
             }
         }
+    }
+
+    function arrayField() {
+        return {
+            addItem(containerId) {
+                const container = document.getElementById(containerId);
+                const newItem = document.createElement('div');
+                newItem.className = 'flex items-center gap-3';
+                newItem.innerHTML = `
+                    <div class="flex-1">
+                        <input type="text" name="${containerId.replace('_container', '')}[]" placeholder="${containerId.includes('which_includes') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    </div>
+                    <button type="button"
+                        onclick="this.parentElement.remove()"
+                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                container.appendChild(newItem);
+            },
+
+            removeItem(event) {
+                event.target.closest('.flex.items-center.gap-3').remove();
+            }
+        };
     }
 </script>
 

@@ -34,11 +34,7 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.courses.store') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            id="courseForm"
-            oninput="updateProgress()">
+        <form action="{{ route('admin.courses.store') }}" method="POST" enctype="multipart/form-data" id="courseForm" oninput="updateProgress()">
             @include('admin.courses.partials.form')
         </form>
     </div>

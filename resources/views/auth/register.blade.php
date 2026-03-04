@@ -134,7 +134,7 @@
                                         <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
                                             <span class="flex items-center">
                                                 <i class="fas fa-id-card mr-2 text-blue-500"></i>
-                                                DNI *
+                                                DNI / RUC *
                                             </span>
                                         </label>
                                         <div class="relative group">
@@ -150,7 +150,7 @@
                                         <label for="names" class="block text-sm font-semibold text-gray-700 mb-2">
                                             <span class="flex items-center">
                                                 <i class="fas fa-user-circle mr-2 text-blue-500"></i>
-                                                Nombres Completos *
+                                                Nombres Completos / Razón Social *
                                             </span>
                                         </label>
                                         <div class="relative group">
@@ -257,7 +257,7 @@
                                             <div class="absolute inset-y-0 left-0 pl-3 pt-3 pointer-events-none">
                                                 <i class="fas fa-home text-gray-400 group-hover:text-blue-500 transition-colors duration-200"></i>
                                             </div>
-                                            <textarea id="address" name="address" rows="2" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Av. Principal 123, Ciudad, Departamento">{{ old('address') }}</textarea>
+                                            <textarea id="address" name="address" rows="1" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200" placeholder="Av. Principal 123, Ciudad">{{ old('address') }}</textarea>
                                         </div>
                                     </div>
 
@@ -318,10 +318,10 @@
                                             <span class="font-semibold text-gray-900">Acepto los términos y condiciones</span>
                                             <p class="text-gray-600 mt-1 text-sm">
                                                 Confirmo que he leído y acepto los
-                                                <a href="{{ route('terminos-y-condiciones') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">términos de servicio</a>,
-                                                <a href="{{ route('politicas-de-uso') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">política de privacidad</a>
+                                                <a href="{{ route('terminos-y-condiciones') }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">términos de servicio</a>,
+                                                <a href="{{ route('politicas-de-uso') }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">política de privacidad</a>
                                                 y
-                                                <a href="{{ route('politicas-de-cookies') }}" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">política de cookies</a>
+                                                <a href="{{ route('politicas-de-cookies') }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200">política de cookies</a>
                                                 de {{ $enterprise->trade_name }}.
                                             </p>
                                         </label>

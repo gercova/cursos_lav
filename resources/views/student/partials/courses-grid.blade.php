@@ -73,7 +73,7 @@
     <div id="list-view-container" class="courses-view hidden">
         <div class="space-y-6">
             @foreach($courses as $course)
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
+                {{-- <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
                     <div class="flex flex-col md:flex-row">
                         <div class="md:w-64 md:flex-shrink-0">
                             <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
@@ -143,7 +143,94 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-200">
+                            <div class="md:flex">
+                                <!-- Imagen del curso -->
+                                <div class="md:w-1/4">
+                                    <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
+                                        <img x-show="course.image" :src="course.image" :alt="course.title" class="w-full h-full object-cover" src="/storage/courses/6h9LQEKHT1ar2tUHlX8Hpj24wwWoKkCFfJrESIOe.jpg" alt="MANEJO DEFENSIVO">
+                                        <div x-show="!course.image" class="absolute inset-0 flex items-center justify-center" style="display: none;">
+                                            <i class="fas fa-book text-white text-5xl opacity-20"></i>
+                                        </div>
+                                        <div class="absolute top-3 left-3">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-500 text-white" :class="course.status === 'completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'">
+                                                <span x-text="course.status === 'completed' ? 'Completado' : 'En progreso'">En progreso</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contenido del curso -->
+                                <div class="md:w-3/4 p-6">
+                                    <div class="flex flex-col h-full">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800" x-text="course.title">MANEJO DEFENSIVO</h3>
+                                                    <div class="flex items-center mt-2 space-x-4">
+                                                        <span class="text-sm text-gray-600">
+                                                            <i class="fas fa-layer-group mr-1"></i>
+                                                            <span x-text="course.modules">1</span> módulos
+                                                        </span>
+                                                        <span class="text-sm text-gray-600">
+                                                            <i class="fas fa-video mr-1"></i>
+                                                            <span x-text="course.lessons">1</span> lecciones
+                                                        </span>
+                                                        <span class="text-sm text-gray-600">
+                                                            <i class="fas fa-clock mr-1"></i>
+                                                            <span x-text="course.duration">1</span>
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-gray-600 mt-3" x-text="course.description">¿Sabías que el 90% de los accidentes viales se pueden evitar con la técnica correcta? No se trata solo de conducir, se trata de sobrevivir y proteger. Nuestro curso de Manejo Defensivo te transforma en un conductor de élite, capaz de anticipar peligros antes de que ocurran. Domina las normativas vigentes en Perú y adquiere las habilidades tácticas para reducir riesgos, ahorrar combustible y, lo más importante, salvar vidas en cada kilómetro. ¡No manejes por inercia, conduce con estrategia!</p>
+                                                </div>
+                                                <div class="flex flex-col items-end">
+                                                    <div class="w-16 h-16">
+                                                        <div class="relative">
+                                                            <svg class="w-16 h-16" viewBox="0 0 36 36">
+                                                                <path class="text-gray-200" fill="none" stroke="currentColor" stroke-width="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+                                                                <path :class="course.status === 'completed' ? 'text-green-500' : 'text-blue-500'" fill="none" stroke="currentColor" stroke-width="3" :stroke-dasharray="course.progress + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" class="text-blue-500" stroke-dasharray="0.00, 100"></path>
+                                                            </svg>
+                                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                                <span class="text-lg font-bold text-blue-600" :class="course.status === 'completed' ? 'text-green-600' : 'text-blue-600'" x-text="course.progress + '%'">0.00%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-xs text-gray-500 mt-2">Progreso</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-6 pt-6 border-t border-gray-100">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <div class="flex items-center text-sm text-gray-600">
+                                                        <i class="far fa-calendar mr-2"></i>
+                                                        <span>Inscrito: </span>
+                                                        <span class="font-medium ml-1" x-text="course.enrolled_date">22/02/2026</span>
+                                                    </div>
+                                                    <div class="flex items-center text-sm text-gray-600 mt-1">
+                                                        <i class="far fa-clock mr-2"></i>
+                                                        <span>Último acceso: </span>
+                                                        <span class="font-medium ml-1" x-text="course.last_accessed || 'No accedido'">No accedido</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex space-x-3">
+                                                    <button class="px-4 py-2 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200">
+                                                        <i class="fas fa-info-circle mr-2"></i>
+                                                        Detalles
+                                                    </button>
+                                                    <a :href="course.continue_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200" href="https://ipf-educa.com/courses/7/learn">
+                                                        <i class="fas fa-play" :class="course.status === 'completed' ? 'fa-certificate' : 'fa-play'"></i>
+                                                        <span class="ml-2" x-text="course.status === 'completed' ? 'Ver Certificado' : 'Continuar'">Continuar</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
             @endforeach
         </div>
     </div>

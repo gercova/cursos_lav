@@ -139,33 +139,23 @@
                                         <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
                                     </h3>
                                     <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: Str::limit($course->description, 120) }}</p>
-
-                                    <!-- Instructor -->
-                                    <div class="flex items-center mb-4">
-                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                            <span class="text-xs font-bold text-gray-600">
-                                                {{ strtoupper(substr($course->instructor->names, 0, 1)) }}
-                                            </span>
-                                        </div>
-                                        <span class="text-sm text-gray-600">{{ $course->instructor->names }}</span>
-                                        
-                                    </div>
-                                    {{-- <span class="text-sm text-gray-800">{{ $course->instructor->profession }}</span> --}}
-                                    <div class="flex items-center justify-between mb-4">
-                                        <div class="flex items-center space-x-2">
-                                            {{-- <div class="flex items-center">
-                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                                <span class="text-sm text-gray-600 ml-1">4.8</span>
+                                    <div class="flex items-center mb-6">
+                                        <div class="flex items-center">
+                                            <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{{ $course->instructor->names }}</p>
+                                                <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
                                             </div>
-                                            <span class="text-gray-300">•</span> --}}
+                                        </div>
+                                    </div>
+                                    {{-- <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center space-x-2">
                                             <span class="text-sm text-gray-600 students-count">{{ $course->students_count ?? 125 }} estudiantes</span>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="flex items-center justify-between">
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center space-x-2 px-4 py-3">
                                             @if($course->promotion_price)
                                                 <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->promotion_price, 2) }}</span>
                                                 <span class="text-sm text-gray-500 line-through">S/ {{ number_format($course->price, 2) }}</span>
@@ -173,8 +163,11 @@
                                                 <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                             @endif
                                         </div>
-                                        <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
-                                            Agregar
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                        <button onclick="addToCart({{ $course->id }})" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
+                                            Agregar al carrito
                                         </button>
                                     </div>
                                 </div>
@@ -188,60 +181,56 @@
             <div id="list-view-container" class="courses-view hidden">
                 <div class="space-y-6">
                     @foreach($courses as $course)
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100">
-                            <a href="{{ route('course.show', $course->slug) }}">
-                                <div class="flex flex-col md:flex-row">
-                                    <div class="md:w-64 md:flex-shrink-0">
-                                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 md:h-full object-cover">
-                                    </div>
-                                    <div class="p-6 flex-1">
-                                        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
-                                            <div class="flex-1">
+                        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-200">
+                            <div class="md:flex">
+                                <!-- Imagen del curso -->
+                                
+                                <div class="md:w-1/4">
+                                    <a href="{{ route('course.show', $course->slug) }}">
+                                        <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
+                                            <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                                            <div x-show="{{ $course->image_url }}" class="absolute inset-0 flex items-center justify-center" style="display: none;">
+                                                <i class="fas fa-book text-white text-5xl opacity-20"></i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <!-- Contenido del curso -->
+                                <div class="md:w-3/4 p-6">
+                                    <div class="flex flex-col h-full">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <a href="{{ route('course.show', $course->slug) }}">
+                                                        <h3 class="text-xl font-bold text-gray-800">{{ $course->title }}</h3>
+                                                    </a>
+                                                    <div class="flex items-center mt-2 space-x-4">
+                                                        <span class="text-sm text-gray-600">
+                                                            <i class="fas fa-layer-group mr-1"></i>
+                                                            <span x-text="course.modules">{{ $course->sections->count() }}</span> Módulos
+                                                        </span>
+                                                        <span class="text-sm text-gray-600">
+                                                            <i class="fas fa-video mr-1"></i>
+                                                            <span x-text="course.lessons">{{ $course->lessons->count() }}</span> Lecciones
+                                                        </span>
+                                                    </div>
+                                                    <p class="text-gray-600 mt-3" x-text="course.description">{{ $course->description }}</p>
+                                                </div>
                                                 <div class="flex items-center gap-2 mb-2">
-                                                    <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
-                                                        {{ $course->category->name }}
-                                                    </span>
-                                                    @if($course->level)
-                                                        <span class="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
-                                                            {{ ucfirst($course->level) }}
+                                                    <div class="lg:text-right">
+                                                        <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
+                                                            {{ $course->category->name }}
                                                         </span>
-                                                    @endif
-                                                    @if($course->promotion_price)
-                                                        <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                                                            Oferta Especial
-                                                        </span>
-                                                    @endif
-                                                </div>
-
-                                                <h3 class="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors duration-200">
-                                                    <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
-                                                </h3>
-
-                                                <p class="text-gray-600 mb-4">{{ $course->short_description ?: $course->description }}</p>
-
-                                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-4">
-                                                    <div class="flex items-center">
-                                                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                        <span>4.8 (250 reviews)</span>
+                                                        &nbsp;
+                                                        @if($course->promotion_price)
+                                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                                                Oferta Especial
+                                                            </span>
+                                                        @endif
                                                     </div>
-                                                    <span class="text-gray-300">•</span>
-                                                    <span>{{ $course->students_count ?? 125 }} estudiantes</span>
-                                                    <span class="text-gray-300">•</span>
-                                                    <span>{{ $course->duration ?? 10 }} horas</span>
-                                                </div>
-
-                                                <div class="flex items-center">
-                                                    <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                                        <span class="text-xs font-bold text-gray-600">
-                                                            {{ strtoupper(substr($course->instructor->names, 0, 1)) }}
-                                                        </span>
-                                                    </div>
-                                                    <span class="text-sm text-gray-600">Por {{ $course->instructor->names }}</span>
                                                 </div>
                                             </div>
-
                                             <div class="lg:text-right">
                                                 <div class="mb-4">
                                                     @if($course->promotion_price)
@@ -256,9 +245,21 @@
                                                 </button>
                                             </div>
                                         </div>
+
+                                        <div class="mt-6 pt-6 border-t border-gray-100">
+                                            <div class="flex items-center mb-6">
+                                                <div class="flex items-center">
+                                                    <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
+                                                    <div>
+                                                        <p class="text-sm font-medium text-gray-900">Instructor: {{ $course->instructor->names }}</p>
+                                                        <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -266,13 +267,13 @@
         </div>
 
         <!-- Paginación -->
-        {{-- @if($courses->hasPages())
+        @if($courses->hasPages())
             <div class="mt-12 flex justify-center">
                 <div class="bg-white px-6 py-4 rounded-lg shadow-lg">
                     {{ $courses->links() }}
                 </div>
             </div>
-        @endif --}}
+        @endif
 
         <!-- Estado vacío -->
         <div id="empty-state" class="hidden text-center py-16">

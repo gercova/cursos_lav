@@ -97,7 +97,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <i class="fas fa-user text-gray-400"></i>
                                     </div>
-                                    <input type="text" x-model="customer.first_name" required @input="saveToLocalStorage" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ingresa tus nombres"
+                                    <input type="text" x-model="customer.first_name" required @input="saveToLocals" class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" placeholder="Ingresa tus nombres"
                                     >
                                 </div>
                             </div>

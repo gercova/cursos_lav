@@ -1,0 +1,527 @@
+@extends('layouts.app')
+@section('title', $package->title . ' - ' . $enterprise->trade_name)
+@section('content')
+<div class="bg-gradient-to-b from-blue-50 to-white min-h-screen" 
+     x-data="packageDetail()" 
+     x-init="init({{ $package->id }}, {{ $package->final_price }})">
+    
+    <!-- Hero Section del Paquete -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-indigo-900 to-purple-900 py-12">
+        <!-- Elementos decorativos -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500 rounded-full opacity-20 animate-pulse"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500 rounded-full opacity-20 animate-pulse delay-1000"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Navegación y breadcrumb -->
+            <div class="mb-6">
+                <a href="{{ route('paquetes') }}" class="text-indigo-200 hover:text-white inline-flex items-center gap-2 transition-colors duration-200">
+                    <i class="fas fa-arrow-left text-sm"></i>
+                    <span>Volver a Paquetes</span>
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <!-- Información principal del paquete -->
+                <div class="text-white">
+                    <!-- Badge de tipo -->
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-500 bg-opacity-50 text-white border border-indigo-300">
+                            <i class="fas fa-box mr-1"></i>
+                            Paquete de Cursos
+                        </span>
+                    </div>
+                    
+                    <h1 class="text-3xl md:text-4xl font-extrabold mb-4">{{ $package->title }}</h1>
+                    
+                    <!-- Estadísticas rápidas -->
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-book text-indigo-300"></i>
+                            <span class="text-indigo-200">{{ $package->total_courses }} cursos incluidos</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-users text-indigo-300"></i>
+                            <span class="text-indigo-200">{{ $package->students_count ?? 0 }} estudiantes</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-clock text-indigo-300"></i>
+                            <span class="text-indigo-200">{{ $package->duration ?? 'A tu propio ritmo' }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Descripción corta -->
+                    <p class="text-indigo-200 text-lg mb-8">{{ $package->short_description ?? $package->description }}</p>
+                    
+                    <!-- Precios y acción -->
+                    <div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                @if($package->has_promotion)
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-3xl font-bold text-white">
+                                            S/ {{ number_format($package->final_price, 2) }}
+                                        </span>
+                                        <span class="text-lg text-indigo-300 line-through">
+                                            S/ {{ number_format($package->price, 2) }}
+                                        </span>
+                                        <span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            -{{ $package->discount_percentage }}%
+                                        </span>
+                                    </div>
+                                    <p class="text-indigo-200 text-sm">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        
+                                        Ahorras S/ {{ number_format($package->price - $package->final_price, 2) }}
+                                    </p>
+                                @else
+                                    <span class="text-3xl font-bold text-white">
+                                        S/ {{ number_format($package->price, 2) }}
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <!-- Botón Añadir al Carrito (MODIFICADO) -->
+                            <button @click="addToCart" 
+                                    :disabled="isInCart || loading"
+                                    class="group relative px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 min-w-[200px]">
+                                <template x-if="!loading && !isInCart">
+                                    <span class="flex items-center gap-2">
+                                        <i class="fas fa-cart-plus text-xl"></i>
+                                        <span>Añadir al Carrito</span>
+                                    </span>
+                                </template>
+                                <template x-if="!loading && isInCart">
+                                    <span class="flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-xl"></i>
+                                        <span>Ya está en el carrito</span>
+                                    </span>
+                                </template>
+                                <template x-if="loading">
+                                    <span class="flex items-center gap-2">
+                                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                                        <span>Añadiendo...</span>
+                                    </span>
+                                </template>
+                                
+                                <!-- Efecto hover -->
+                                <div class="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                            </button>
+                        </div>
+                        
+                        <!-- Cupos disponibles -->
+                        @if($package->seats)
+                        <div class="mt-4 flex items-center gap-2 text-indigo-200 text-sm">
+                            <i class="fas fa-chair"></i>
+                            <span>{{ $package->seats }} cupos disponibles</span>
+                            @if($package->seats <= 10)
+                                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                                    ¡Últimos cupos!
+                                </span>
+                            @endif
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                
+                <!-- Imagen del paquete (si existe) -->
+                <div class="hidden lg:block">
+                    @if($package->image_url)
+                        <img src="{{ $package->image_url }}" alt="{{ $package->title }}" class="rounded-2xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                    @else
+                        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <div class="aspect-w-16 aspect-h-9 flex items-center justify-center">
+                                <i class="fas fa-box-open text-8xl text-white opacity-50"></i>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ola decorativa inferior -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 80L60 70C120 60 240 40 360 35C480 30 600 40 720 50C840 60 960 70 1080 72.5C1200 75 1320 70 1380 67.5L1440 65V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="white"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Columna principal (2/3) -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Pestañas de información -->
+                <div x-data="{ activeTab: 'description' }" class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- Cabecera de pestañas -->
+                    <div class="border-b border-gray-200">
+                        <nav class="flex -mb-px">
+                            <button @click="activeTab = 'description'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'description' }" class="py-4 px-6 text-sm font-medium border-b-2 transition-colors duration-200">
+                                <i class="fas fa-info-circle mr-2" :class="{ 'text-indigo-500': activeTab === 'description' }"></i>
+                                Descripción
+                            </button>
+                            <button @click="activeTab = 'includes'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'includes', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'includes' }" class="py-4 px-6 text-sm font-medium border-b-2 transition-colors duration-200">
+                                <i class="fas fa-gift mr-2" :class="{ 'text-indigo-500': activeTab === 'includes' }"></i>
+                                ¿Qué incluye?
+                            </button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Contenido de pestañas -->
+                    <div class="p-6">
+                        <!-- Descripción -->
+                        <div x-show="activeTab === 'description'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                            <div class="prose max-w-none">
+                                {!! nl2br(e($package->description)) !!}
+                            </div>
+                        </div>
+                        
+                        <!-- Qué incluye -->
+                        <div x-show="activeTab === 'includes'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+                            @if(!empty($package->which_includes) && is_array($package->which_includes))
+                                <ul class="space-y-3">
+                                    @foreach($package->which_includes as $include)
+                                        <li class="flex items-start gap-3">
+                                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                            <span class="text-gray-700">{{ $include }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="text-gray-500 text-center py-8">No hay información adicional disponible</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cursos incluidos en el paquete (basado en create.blade.php) -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-book text-indigo-600"></i>
+                        Cursos incluidos en este paquete
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ $package->courses->count() }}
+                        </span>
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        @foreach($package->courses as $index => $course)
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
+                                <div class="flex-1 flex items-center gap-3">
+                                    <!-- Número de orden (como en create.blade.php) -->
+                                    <span class="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full text-sm font-bold">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-medium text-gray-900 truncate">{{ $course->title }}</h3>
+                                        <p class="text-sm text-gray-500">{{ $course->category->name ?? 'Sin categoría' }}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cantidad de sesiones (quantity del pivot) -->
+                                @if($course->pivot && $course->pivot->quantity)
+                                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                                        <i class="fas fa-video"></i>
+                                        <span>{{ $course->pivot->quantity }} sesiones</span>
+                                    </div>
+                                @endif
+                                
+                                <!-- Precio original del curso -->
+                                <div class="text-right">
+                                    <span class="text-sm text-gray-500">Curso valorizado en:</span>
+                                    <p class="font-semibold text-indigo-600">S/ {{ number_format($course->price, 2) }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <!-- Resumen de valor total (basado en create.blade.php) -->
+                    <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <p class="text-sm text-indigo-600 font-medium">Valor total de cursos por separado</p>
+                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($package->courses->sum('price'), 2) }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-green-600 font-medium">Ahorro con este paquete</p>
+                                <p class="text-2xl font-bold text-green-600">
+                                    - S/ {{ number_format($package->courses->sum('price') - $package->final_price, 2) }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categorías del paquete (como en create.blade.php) -->
+                @if($package->categories->isNotEmpty())
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <i class="fas fa-folder text-purple-600"></i>
+                            Categorías incluidas
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($package->categories as $category)
+                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                                    <div>
+                                        <p class="font-medium text-purple-900">{{ $category->name }}</p>
+                                        @if($category->pivot && $category->pivot->max_courses_per_category)
+                                            <p class="text-xs text-purple-600">
+                                                Máx. {{ $category->pivot->max_courses_per_category }} cursos
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <i class="fas fa-check-circle text-purple-400"></i>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Sidebar (1/3) - Sticky en desktop -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 space-y-6">
+                    <!-- Card de compra rápida (basada en create.blade.php) -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Compra este paquete</h3>
+                        
+                        <!-- Precios -->
+                        <div class="mb-6">
+                            @if($package->has_promotion)
+                                <div class="flex items-baseline gap-2 mb-2">
+                                    <span class="text-3xl font-bold text-gray-900">
+                                        S/ {{ number_format($package->final_price, 2) }}
+                                    </span>
+                                    <span class="text-lg text-gray-500 line-through">
+                                        S/ {{ number_format($package->price, 2) }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-green-600">
+                                    <i class="fas fa-tag mr-1"></i>
+                                    Ahorro de S/ {{ number_format($package->price - $package->final_price, 2) }}
+                                </p>
+                            @else
+                                <span class="text-3xl font-bold text-gray-900">
+                                    S/ {{ number_format($package->price, 2) }}
+                                </span>
+                            @endif
+                        </div>
+                        
+                        <!-- Botón de añadir al carrito (sidebar) -->
+                        <button @click="addToCart" 
+                                :disabled="isInCart || loading"
+                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mb-4">
+                            <template x-if="!loading && !isInCart">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-cart-plus"></i>
+                                    <span>Añadir al Carrito</span>
+                                </span>
+                            </template>
+                            <template x-if="!loading && isInCart">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Ya está en el carrito</span>
+                                </span>
+                            </template>
+                            <template x-if="loading">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Añadiendo...</span>
+                                </span>
+                            </template>
+                        </button>
+                        
+                        <!-- Beneficios (from create.blade.php structure) -->
+                        <div class="space-y-3 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-green-500"></i>
+                                <span>Acceso inmediato después de la compra</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-infinity text-green-500"></i>
+                                <span>Acceso de por vida a los cursos</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-certificate text-green-500"></i>
+                                <span>Certificados incluidos</span>
+                            </div>
+                            @if($package->seats)
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-users text-green-500"></i>
+                                <span>{{ $package->seats }} cupos disponibles</span>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <!-- Compartir (extra) -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-3">Compartir este paquete</h3>
+                        <div class="flex gap-2">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-center transition duration-150">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($package->title) }}" target="_blank" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 px-3 rounded-lg text-center transition duration-150">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://wa.me/?text={{ urlencode($package->title . ' - ' . request()->url()) }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-center transition duration-150">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notificación de éxito (opcional) -->
+    <div x-show="notification.show" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-x-full"
+         x-transition:enter-end="opacity-100 transform translate-x-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-x-0"
+         x-transition:leave-end="opacity-0 transform translate-x-full"
+         class="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3">
+        <i class="fas fa-check-circle text-xl"></i>
+        <div>
+            <p class="font-bold" x-text="notification.title"></p>
+            <p class="text-sm text-green-100" x-text="notification.message"></p>
+        </div>
+        <button @click="notification.show = false" class="ml-4 text-green-200 hover:text-white">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+@endsection
+
+@section('scripts')
+<script>
+function packageDetail() {
+    return {
+        // Estado del carrito
+        isInCart: false,
+        loading: false,
+        packageId: null,
+        packagePrice: 0,
+        
+        // Notificaciones
+        notification: {
+            show: false,
+            title: '',
+            message: ''
+        },
+        
+        // Inicialización
+        init(packageId, packagePrice) {
+            this.packageId = packageId;
+            this.packagePrice = packagePrice;
+            this.checkCartStatus();
+        },
+        
+        // Verificar si el paquete ya está en el carrito
+        checkCartStatus() {
+            // Aquí implementas la lógica para verificar el carrito
+            // Puede ser desde localStorage, sesión, o una petición AJAX
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            this.isInCart = cart.some(item => item.id === this.packageId && item.type === 'package');
+        },
+        
+        // Añadir al carrito
+        async addToCart() {
+            if (this.isInCart || this.loading) return;
+            
+            this.loading = true;
+            
+            try {
+                // Aquí implementas la lógica real de añadir al carrito
+                // Ejemplo con localStorage:
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                cart.push({
+                    id: this.packageId,
+                    type: 'package',
+                    price: this.packagePrice,
+                    quantity: 1,
+                    addedAt: new Date().toISOString()
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Actualizar contador del carrito si existe
+                if (window.updateCartCount) {
+                    window.updateCartCount();
+                }
+                
+                this.isInCart = true;
+                
+                // Mostrar notificación
+                this.showNotification('¡Éxito!', 'Paquete añadido al carrito');
+                
+                // Disparar evento personalizado
+                window.dispatchEvent(new CustomEvent('cart-updated', { 
+                    detail: { itemId: this.packageId, type: 'package' }
+                }));
+                
+            } catch (error) {
+                console.error('Error al añadir al carrito:', error);
+                this.showNotification('Error', 'No se pudo añadir al carrito', 'error');
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Mostrar notificación
+        showNotification(title, message, type = 'success') {
+            this.notification = {
+                show: true,
+                title: title,
+                message: message
+            };
+            
+            setTimeout(() => {
+                this.notification.show = false;
+            }, 3000);
+        }
+    }
+}
+</script>
+
+<style>
+    [x-cloak] { display: none !important; }
+    
+    /* Animaciones */
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in-down {
+        animation: fade-in-down 0.8s ease-out;
+    }
+    
+    .animate-fade-in-up {
+        animation: fade-in-up 0.8s ease-out;
+    }
+</style>
+@endsection

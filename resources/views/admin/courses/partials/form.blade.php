@@ -96,14 +96,7 @@
             <!-- Duración -->
             <div>
                 <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Duración (horas) *</label>
-                <input type="number"
-                    name="duration"
-                    id="duration"
-                    value="{{ old('duration', $course->duration ?? '') }}"
-                    min="1"
-                    step="0.5"
-                    required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <input type="number" name="duration" id="duration" value="{{ old('duration', $course->duration ?? '') }}" min="1" step="0.5" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                 @error('duration')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -171,11 +164,7 @@
             <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
                 Descripción del Curso *
             </label>
-            <textarea name="description"
-                id="description"
-                rows="4"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('description', $course->description ?? '') }}</textarea>
+            <textarea name="description" id="description" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('description', $course->description ?? '') }}</textarea>
             @error('description')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -283,12 +272,7 @@
                 @endif
 
                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition duration-200">
-                    <input type="file"
-                        name="image"
-                        id="image"
-                        accept="image/*"
-                        class="hidden"
-                        onchange="previewImage(event)">
+                    <input type="file" name="image" id="image" accept="image/*" class="hidden" onchange="previewImage(event)">
 
                     <label for="image" class="cursor-pointer">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,12 +310,7 @@
                     <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-300">
                         <div class="flex items-center">
                             <div class="flex items-center h-5">
-                                <input type="checkbox"
-                                    name="is_active"
-                                    id="is_active"
-                                    value="1"
-                                    {{ old('is_active', isset($course) ? $course->is_active : true) ? 'checked' : '' }}
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', isset($course) ? $course->is_active : true) ? 'checked' : '' }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             </div>
                             <div class="ml-3">
                                 <label for="is_active" class="text-sm font-medium text-gray-700">
@@ -407,10 +386,7 @@
                 newItem.className = 'flex items-center gap-3';
                 newItem.innerHTML = `
                     <div class="flex-1">
-                        <input type="text"
-                            name="${containerId.replace('_container', '')}[]"
-                            placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <input type="text" name="${containerId.replace('_container', '')}[]" placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
                     <button type="button"
                         onclick="this.parentElement.remove()"

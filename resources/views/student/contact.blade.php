@@ -219,7 +219,7 @@
 </section>
 
 <!-- Mapa Section -->
-<section class="py-16 bg-gray-100">
+{{-- <section class="py-16 bg-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-gray-900 mb-4">Visítanos</h2>
@@ -231,7 +231,6 @@
         <!-- Mapa -->
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div class="h-96 w-full bg-gray-200 relative">
-                <!-- Mapa de Google Maps placeholder -->
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
                     <div class="text-center text-white">
                         <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,7 +276,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- FAQ Section -->
 <section class="py-16 bg-white">
@@ -288,7 +287,6 @@
         </div>
 
         <div class="space-y-6">
-            <!-- FAQ Item 1 -->
             <div class="bg-gray-50 rounded-lg p-6">
                 <button class="faq-question w-full text-left flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-900">¿Cómo me inscribo en un curso?</h3>
@@ -308,7 +306,6 @@
                 </div>
             </div>
 
-            <!-- FAQ Item 2 -->
             <div class="bg-gray-50 rounded-lg p-6">
                 <button class="faq-question w-full text-left flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-900">¿Qué métodos de pago aceptan?</h3>
@@ -328,7 +325,6 @@
                 </div>
             </div>
 
-            <!-- FAQ Item 3 -->
             <div class="bg-gray-50 rounded-lg p-6">
                 <button class="faq-question w-full text-left flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-900">¿Puedo acceder al curso desde mi celular?</h3>
@@ -348,7 +344,6 @@
                 </div>
             </div>
 
-            <!-- FAQ Item 4 -->
             <div class="bg-gray-50 rounded-lg p-6">
                 <button class="faq-question w-full text-left flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-900">¿Los certificados son válidos?</h3>

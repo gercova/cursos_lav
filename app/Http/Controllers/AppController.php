@@ -221,6 +221,40 @@ class AppController extends Controller {
         return view('student.packages', compact('packages', 'enterprise'));
     }
 
+    public function showPackage(string $slug): View {
+        $package = Course::with([
+                'courses' => function($query) {
+                    $query->withPivot('quantity', 'sort_order')->where('is_active', true);
+                },
+                'courses.category',
+                'categories' => function($query) {
+                    $query->withPivot('max_courses_per_category');
+                }
+            ])
+            ->where('type', 'package')
+            ->where('is_active', true)
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        // Enriquecer con información adicional
+        $package->final_price = $package->promotion_price && $package->promotion_price < $package->price 
+            ? $package->promotion_price 
+            : $package->price;
+        
+        $package->has_promotion = $package->promotion_price && $package->promotion_price < $package->price;
+        
+        if ($package->has_promotion) {
+            $package->discount_percentage = round((($package->price - $package->promotion_price) / $package->price) * 100);
+        }
+        
+        // Total de cursos
+        $package->total_courses = $package->courses->count();
+        
+        $enterprise = Enterprise::first();
+
+        return view('student.package-detail', compact('package', 'enterprise'));
+    }
+
     public function coursesPartner(Request $request, $code = null) {
         if($code == null) {
             return redirect()->route('cursos');

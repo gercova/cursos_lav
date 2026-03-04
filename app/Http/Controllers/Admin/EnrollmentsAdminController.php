@@ -16,41 +16,6 @@ class EnrollmentsAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
-    // public function index(Request $request): View {
-    //     $query = Enrollment::with(['user', 'course.category'])->latest();
-    //     // Filtros
-    //     if ($request->filled('search')) {
-    //         $search = $request->search;
-    //         $query->where(function ($q) use ($search) {
-    //             $q->whereHas('user', function ($q) use ($search) {
-    //                 $q->where('names', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%");
-    //             })->orWhereHas('course', function ($q) use ($search) {
-    //                 $q->where('title', 'like', "%{$search}%");
-    //             });
-    //         });
-    //     }
-
-    //     if ($request->filled('status')) {
-    //         $query->where('status', $request->status);
-    //     }
-
-    //     if ($request->filled('course')) {
-    //         $query->where('course_id', $request->course);
-    //     }
-
-    //     $enrollments    = $query->paginate(10);
-    //     $courses        = Course::where('is_active', true)->get();
-
-    //     $stats = [
-    //         'total'     => Enrollment::count(),
-    //         'active'    => Enrollment::where('status', 'active')->count(),
-    //         'completed' => Enrollment::where('status', 'completed')->count(),
-    //         'cancelled' => Enrollment::where('status', 'cancelled')->count(),
-    //     ];
-
-    //     return view('admin.enrollments.index', compact('enrollments', 'courses', 'stats'));
-    // }
-
     public function index(Request $request): View {
         $query = Enrollment::with(['user', 'course.category'])
             ->whereHas('user') // Solo inscripciones con usuario existente

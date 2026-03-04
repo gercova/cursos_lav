@@ -92,7 +92,7 @@ class PackagesAdminController extends Controller {
         return view('admin.packages.edit', compact('package', 'categories', 'allCourses'));
     }
 
-    public function store(PackageValidate $request): JsonResponse {
+    public function store(PackageValidate $request): JsonResponse  {
         try {
             DB::beginTransaction();
 
@@ -108,6 +108,16 @@ class PackagesAdminController extends Controller {
                 $slug = $originalSlug . '-' . $count++;
             }
 
+            // which_includes ya debería ser array gracias a prepareForValidation
+            $whichIncludes = array_values(array_filter($validated['which_includes'] ?? []));
+
+            // Validar que haya al menos un elemento en which_includes después del filter
+            if (empty($whichIncludes)) {
+                throw ValidationException::withMessages([
+                    'which_includes' => ['Debes proporcionar al menos un elemento en "¿Qué incluye este paquete?"']
+                ]);
+            }
+
             // Preparar datos del paquete
             $packageData = [
                 'title'             => $validated['name'],
@@ -116,10 +126,12 @@ class PackagesAdminController extends Controller {
                 'short_description' => Str::limit($validated['description'] ?? '', 150),
                 'meta_description'  => $validated['meta_description'] ?? null,
                 'meta_keywords'     => $validated['meta_keywords'] ?? null,
+                'which_includes'    => $whichIncludes, // Array limpio
                 'price'             => $validated['price'],
-                'promotion_price'   => !empty($validated['promotion_price']) ? $validated['promotion_price'] : null,
-                'seats'             => $validated['seats'],
-                'category_id'       => 4,
+                'promotion_price'   => $validated['promotion_price'] ?? null,
+                'seats_min'         => $validated['seats_min'],
+                'seats_max'         => $validated['seats_max'],
+                'category_id'       => 4, // Categoría fija para paquetes
                 'type'              => 'package',
                 'instructor_id'     => auth()->id() ?? 1,
                 'is_active'         => $validated['is_active'] ?? true,
@@ -134,9 +146,8 @@ class PackagesAdminController extends Controller {
             // Crear paquete
             $package = Course::create($packageData);
 
-            // Guardar cursos específicos - CORREGIDO
+            // Guardar cursos específicos
             if (!empty($validated['courses'])) {
-                // $validated['courses'] ya es un array de objetos con id y quantity
                 $this->saveCourses($package->id, $validated['courses']);
             }
 
@@ -177,6 +188,125 @@ class PackagesAdminController extends Controller {
             ], 500);
         }
     }
+
+    // public function store(PackageValidate $request): JsonResponse  {
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $validated = $request->validated();
+
+    //         // Crear slug
+    //         $slug = Str::slug($validated['name']);
+            
+    //         // Verificar slug único
+    //         $count = 1;
+    //         $originalSlug = $slug;
+    //         while (Course::where('slug', $slug)->exists()) {
+    //             $slug = $originalSlug . '-' . $count++;
+    //         }
+
+    //         // Parsear which_includes si viene como JSON string
+    //         $whichIncludes = [];
+    //         if (isset($validated['which_includes'])) {
+    //             $whichIncludes = is_string($validated['which_includes']) 
+    //                 ? json_decode($validated['which_includes'], true) 
+    //                 : $validated['which_includes'];
+    //         }
+
+    //         // Preparar datos del paquete
+    //         $packageData = [
+    //             'title'             => $validated['name'],
+    //             'slug'              => $slug,
+    //             'description'       => $validated['description'] ?? null,
+    //             'short_description' => Str::limit($validated['description'] ?? '', 150),
+    //             'meta_description'  => $validated['meta_description'] ?? null,
+    //             'meta_keywords'     => $validated['meta_keywords'] ?? null,
+    //             'which_includes'    => array_values(array_filter($whichIncludes)),
+    //             'price'             => $validated['price'],
+    //             'promotion_price'   => !empty($validated['promotion_price']) ? $validated['promotion_price'] : null,
+    //             'seats_min'         => $validated['seats_min'],
+    //             'seats_max'         => $validated['seats_max'],
+    //             'category_id'       => 4, // ¿Por qué está fijo?
+    //             'type'              => 'package',
+    //             'instructor_id'     => auth()->id() ?? 1,
+    //             'is_active'         => $validated['is_active'] ?? true,
+    //         ];
+
+    //         // Manejar la subida de imagen
+    //         if ($request->hasFile('image')) {
+    //             $path = $request->file('image')->store('packages', 'public');
+    //             $packageData['image_url'] = $path;
+    //         }
+
+    //         // Crear paquete
+    //         $package = Course::create($packageData);
+
+    //         // Guardar cursos específicos
+    //         if (!empty($validated['courses'])) {
+    //             $courses = is_string($validated['courses']) 
+    //                 ? json_decode($validated['courses'], true) 
+    //                 : $validated['courses'];
+    //             $this->saveCourses($package->id, $courses);
+    //         }
+
+    //         // Sincronizar categorías con sus límites
+    //         if (!empty($validated['categories'])) {
+    //             $categories = is_string($validated['categories']) 
+    //                 ? json_decode($validated['categories'], true) 
+    //                 : $validated['categories'];
+                    
+    //             $categoriesSync = [];
+    //             foreach ($categories as $category) {
+    //                 if (!empty($category['id'])) {
+    //                     $categoriesSync[$category['id']] = [
+    //                         'max_courses_per_category' => $category['max_courses_per_category'] ?? null
+    //                     ];
+    //                 }
+    //             }
+    //             if (!empty($categoriesSync)) {
+    //                 $package->categories()->sync($categoriesSync);
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         return response()->json([
+    //             'success'   => true,
+    //             'message'   => 'Paquete creado exitosamente',
+    //             'redirect'  => route('admin.packages.index')
+    //         ]);
+
+    //     } catch (ValidationException $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $e->errors()
+    //         ], 422);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error al crear el paquete: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    // private function saveCourses($packageId, $courses)
+    // {
+    //     // Eliminar relaciones existentes
+    //     DB::table('course_course')->where('package_id', $packageId)->delete();
+        
+    //     // Insertar nuevas relaciones
+    //     foreach ($courses as $course) {
+    //         DB::table('course_course')->insert([
+    //             'package_id' => $packageId,
+    //             'course_id' => $course['id'],
+    //             'quantity' => $course['quantity'] ?? 1,
+    //             'created_at' => now(),
+    //             'updated_at' => now()
+    //         ]);
+    //     }
+    // }
 
     public function update(PackageValidate $request, Course $package): JsonResponse {
         // Verificar que sea un paquete

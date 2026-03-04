@@ -106,7 +106,9 @@ class UserAdminController extends Controller {
         
         // Determinar si es creación por la presencia de ID en el request
         if (!$request->has('id') || empty($request->id)) {
-            $request->role == 'business' ? $proccessData['company_code'] = $this->createNickname($validated['names']) : $proccessData['company_code'] = '';
+            $request->role == 'business' ? 
+                $proccessData['company_code'] = $this->createNickname($validated['names']) : 
+                $proccessData['company_code'] = '';
             $proccessData = [
                 'password'          => Hash::make('P4$$w0rd#.'),
                 'email_verified_at' => now(),
@@ -114,10 +116,7 @@ class UserAdminController extends Controller {
 
             $data = array_merge($validated, $proccessData);
             // Creación - usar email como identificador único
-            $user = User::updateOrCreate(
-                ['id' => $request->input('id')],
-                $data
-            );
+            $user = User::updateOrCreate(['id' => $request->input('id')], $data);
 
             if ($request->hasFile('signature_photo')) {
 
@@ -266,41 +265,12 @@ class UserAdminController extends Controller {
             $user->update(['code' => $newCode, 'promotion_price_is_active' => $validated['promotion_price_is_active']]);
         }
 
-        $code = $user->code;
-
-        $courses                = Course::where('is_active', true)->select(['id', 'price'])->get();
-        $promotionData          = $courses->map(function ($course) use ($user, $code) {
-            $discountPercentage = isset($validated['discount_percentage']) ? $validated['discount_percentage'] : 20;
-            $discountPrice      = $course->price - ($course->price * ($discountPercentage / 100));
-
-            if ($discountPercentage == 0) {
-                $discountPrice = null;
-            }
-
-            return [
-                'course_id'             => $course->id,
-                'user_id'               => $user->id,
-                'code'                  => $code,
-                'discount_percentage'   => $discountPercentage,
-                'price'                 => $course->price,
-                'promotion_price'       => $discountPrice,
-                'is_active'             => true,
-                'created_at'            => now(),
-                'updated_at'            => now(),
-            ];
-        })->toArray();
-
-        if (!empty($promotionData)) {
-            CoursePromotionCode::insert($promotionData);
-        }
-
         return response()->json([
             'success'   => true,
             'type'      => 'success',
             'message'   => 'Código de promoción creado exitosamente',
             'data'      => [
-                'code'                  => $code,
-                'promotions_created'    => count($promotionData)
+                'code'  => $user->code,
             ]
         ], 200);
     }

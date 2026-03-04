@@ -22,14 +22,15 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Business\BusinessImportController;
-use App\Http\Controllers\Business\BusinessManagementController;
 use App\Http\Controllers\Student\AffiliateController;
+use App\Http\Controllers\Student\BusinessImportController;
+use App\Http\Controllers\Student\BusinessManagementController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
 use App\Http\Controllers\Student\DashboardController;
 use App\Http\Controllers\Student\LessonController;
+use App\Http\Controllers\Student\PackageSelectionController;
 use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
@@ -55,6 +56,7 @@ Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'hand
 Route::get('/',                             [AppController::class, 'home'])->name('home');
 Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
 Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
+Route::get('/promo-paquete/{slug}',         [AppController::class, 'showPackage'])->name('paquete.detail');
 Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
 
 Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
@@ -87,7 +89,7 @@ Route::get('/verify/{code}',            [CertificatesController::class, 'verify'
 // Rutas protegidas para estudiantes
 Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
-    Route::get('/my-courses',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
+    Route::get('/mis-cursos',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
     Route::get('/dashboard-stats',              [DashboardController::class, 'dashboardStats']);
     Route::get('/dashboard-exams',              [DashboardController::class, 'dashboardExams']);
     Route::get('/dashboard-certificates',       [DashboardController::class, 'dashboardCertificates']);
@@ -113,6 +115,30 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Rutas para código de promoción
     Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
     Route::post('/remove-promo-code',               [PaymentController::class, 'removePromoCode'])->name('payment.remove-promo-code');
+
+    // si usuario tiene RUC
+    Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+    Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
+    Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
+    Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+    Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file');
+    Route::get('/mis-colaboradores/importar',   [BusinessImportController::class, 'showImportForm'])->name('company.import.form');
+    Route::patch('/mi-colaborador/{user}/toggle-status', [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
+    Route::post('/users/import',                [BusinessImportController::class, 'import'])->name('company.import.process');
+    Route::get('/users/import/template',        [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
+
+    Route::get('/enroll/users',                 [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
+    Route::post('/enroll/with-code',            [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
+    Route::post('/enroll/bulk',                 [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
+    Route::get('/enroll/recent',                [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
+    Route::get('/users/without-code',           [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
+    Route::post('/enroll/super-bulk',           [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
+
+    Route::get('/package/{packageId}/select-courses',   [PackageSelectionController::class, 'showSelectionForm'])->name('student.package.select');
+    Route::post('/package/{packageId}/save-courses',    [PackageSelectionController::class, 'storeSelection'])->name('student.package.save');
+
+    // Esta puede ir en api.php o web.php (dependiendo de cómo manejes tus rutas AJAX)
+    Route::get('/api/student/package/courses',          [PackageSelectionController::class, 'getCourses']);
 
     // Listar exámenes
     Route::get('/exams/home',                   [StudentExamsController::class, 'index'])->name('student.exams');
@@ -189,27 +215,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('pago.exitoso');
     Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('pago.fallido');
     Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('pago.pendiente');
-
-});
-
-Route::prefix('company')->group(function() {
-    Route::middleware(['auth', 'business'])->group(function() {
-        Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
-        Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
-        Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-        Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file'); // ← CAMBIADO
-
-        Route::get('/users/import',             [BusinessImportController::class, 'showImportForm'])->name('company.import.form'); // ← CAMBIADO
-        Route::post('/users/import',            [BusinessImportController::class, 'import'])->name('company.import.process');
-        Route::get('/users/import/template',    [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
-
-        Route::get('/enroll/users',         [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
-        Route::post('/enroll/with-code',    [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
-        Route::post('/enroll/bulk',         [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
-        Route::get('/enroll/recent',        [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
-        Route::get('/users/without-code',   [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
-        Route::post('/enroll/super-bulk',   [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
-    });
 });
 
 Route::prefix('admin')->group(function () {
@@ -354,3 +359,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/certificates/{certificate}/view',          [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
     });
 });
+
+# Cuenta de correo IPF
+# user: informes@ipf-educa.com
+# pass: f%{21%[x7bF)

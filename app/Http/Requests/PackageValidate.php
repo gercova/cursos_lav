@@ -16,16 +16,23 @@ class PackageValidate extends FormRequest {
         return [
             'name'                                  => 'required|string|max:255',
             'description'                           => 'nullable|string',
+            'which_includes'                        => 'required|array',
+            'which_includes.*'                      => 'required|string',
             'price'                                 => 'required|numeric|min:0',
             'promotion_price'                       => 'nullable|numeric|min:0|lt:price',
-            'seats'                                 => 'required|integer|min:1',
+            'course_limit'                          => 'nullable|integer',
+            'seats_min'                             => 'required|integer|min:1',
+            'seats_max'                             => 'required|integer|min:1',
             'is_active'                             => 'boolean',
             'meta_description'                      => 'nullable|string|max:200',
             'meta_keywords'                         => 'nullable|string|max:1000',
-            'courses'                               => 'nullable|array', // Agregué nullable por seguridad
-            'courses.*.id'                          => 'exists:courses,id',
-            'courses.*.sessions_per_course'         => 'nullable|integer|min:1',
-            'categories'                            => 'nullable|array', // Agregué nullable por seguridad
+            // 'courses'                               => 'nullable|array',
+            // 'courses.*.id'                          => 'exists:courses,id',
+            // 'courses.*.sessions_per_course'         => 'nullable|integer|min:1',
+            'courses'                               => 'sometimes|array',
+            'courses.*.id'                          => 'required_with:courses.*|exists:courses,id',
+            // 'courses.*.sessions_per_course'         => 'sometimes|integer|min:1',
+            'categories'                            => 'nullable|array',
             'categories.*.id'                       => 'exists:categories,id',
             'categories.*.max_courses_per_category' => 'nullable|integer|min:1',
         ];
@@ -37,12 +44,15 @@ class PackageValidate extends FormRequest {
             'name.string'                               => 'El nombre debe ser un texto válido.',
             'name.max'                                  => 'El nombre no puede exceder los 255 caracteres.',
             'description.string'                        => 'La descripción debe ser un texto válido.',
+            'which_includes.required'                   => 'Debes proporcionar al menos un ítem.',
+            'which_includes.*.string'                   => 'Cada ítem a aprender debe ser una cadena de texto.',
             'price.required'                            => 'El campo precio es obligatorio.',
             'price.numeric'                             => 'El precio debe ser un número válido.',
             'price.min'                                 => 'El precio no puede ser menor a cero.',
             'promotion_price.numeric'                   => 'El precio de promoción debe ser un número.',
             'promotion_price.min'                       => 'El precio de promoción no puede ser negativo.',
             'promotion_price.lt'                        => 'El precio de promoción debe ser menor al precio regular.',
+            'course_limit.integer'                      => 'El límite debe ser un número entero',
             'seats.required'                            => 'El campo asientos es obligatorio.',
             'seats.integer'                             => 'La cantidad de asientos debe ser un número entero.',
             'seats.min'                                 => 'Debe haber al menos 1 asiento disponible.',
@@ -51,8 +61,8 @@ class PackageValidate extends FormRequest {
             'meta_keywords.max'                         => 'Las meta palabras clave no pueden exceder los 1000 caracteres.',
             'courses.array'                             => 'El campo cursos debe ser una lista.',
             'courses.*.id.exists'                       => 'Uno de los IDs de curso seleccionados no existe en la base de datos.',
-            'courses.*.sessions_per_course.integer'     => 'El número de sesiones por curso debe ser entero.',
-            'courses.*.sessions_per_course.min'         => 'El número de sesiones por curso debe ser al menos 1.',
+            // 'courses.*.sessions_per_course.integer'     => 'El número de sesiones por curso debe ser entero.',
+            // 'courses.*.sessions_per_course.min'         => 'El número de sesiones por curso debe ser al menos 1.',
             'categories.array'                              => 'El campo categorías debe ser una lista.',
             'categories.*.id.exists'                        => 'Uno de los IDs de categoría seleccionados no existe en la base de datos.',
             'categories.*.max_courses_per_category.integer' => 'El máximo de cursos por categoría debe ser entero.',
@@ -60,8 +70,13 @@ class PackageValidate extends FormRequest {
         ];
     }
 
-    protected function prepareForValidation()
-    {
+    protected function prepareForValidation() {
+        // Decodificar which_includes si viene como string JSON
+        if ($this->has('which_includes') && is_string($this->input('which_includes'))) {
+            $whichIncludes = json_decode($this->input('which_includes'), true);
+            $this->merge(['which_includes' => $whichIncludes ?? []]);
+        }
+
         // Decodificar courses si viene como string JSON
         if ($this->has('courses') && is_string($this->input('courses'))) {
             $courses = json_decode($this->input('courses'), true);
@@ -73,6 +88,15 @@ class PackageValidate extends FormRequest {
             $categories = json_decode($this->input('categories'), true);
             $this->merge(['categories' => $categories ?? []]);
         }
+
+        // Asegurar que which_includes siempre sea array
+        if ($this->has('which_includes') && !is_array($this->input('which_includes'))) {
+            $this->merge(['which_includes' => []]);
+        }
+
+        $this->merge([
+            'course_limit' => $this->has('course_limit') ? filter_var($this->course_limit, FILTER_VALIDATE_INT) : 0,
+        ]);
     }
 
     /**

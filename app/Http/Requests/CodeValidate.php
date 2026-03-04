@@ -12,7 +12,7 @@ class CodeValidate extends FormRequest {
 
     public function rules(): array {
         return [
-            'discount_percentage' => 'nullable',
+            'discount_percentage'       => 'nullable',
             'promotion_price_is_active' => 'nullable|boolean',
         ];
     }

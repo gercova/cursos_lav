@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CodeValidate;
 use App\Http\Requests\UserStudentValidate;
+use App\Models\CompanyPolicy;
 use App\Models\Enterprise;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -45,6 +48,8 @@ class RegisterController extends Controller {
     public function register(UserStudentValidate $request) {
         $validated = $request->validated();
 
+        $userCC = new UserAdminController();
+
         $user = User::create([
             'dni'           => $validated['dni'],
             'names'         => $validated['names'],
@@ -56,6 +61,7 @@ class RegisterController extends Controller {
             'address'       => $validated['address'],
             'profession'    => $validated['profession'],
             'role'          => 'student',
+            'company_code'  => strlen($validated['dni']) > 8 ? $userCC->createNickname($validated['names']) : 'IPF',
         ]);
 
         Auth::login($user);

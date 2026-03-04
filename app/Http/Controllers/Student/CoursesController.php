@@ -28,6 +28,9 @@ class CoursesController extends Controller {
         $user           = Auth::user();
         $enrollments    = Enrollment::with(['course.category', 'course.sections.lessons'])
             ->where('user_id', $user->id)
+            ->whereHas('course', function($query) {
+                $query->where('type', 'course');
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

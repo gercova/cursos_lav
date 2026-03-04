@@ -26,8 +26,8 @@ class PaymentController extends Controller {
     }
 
     public function checkout(Request $request) {
-        $userId = Auth::id();
-        $cartItems = Cart::getItems($userId);
+        $userId     = Auth::id();
+        $cartItems  = Cart::getItems($userId);
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart')->with('error', 'Tu carrito está vacío');
@@ -222,10 +222,11 @@ class PaymentController extends Controller {
                     DB::transaction(function () use ($order, $payment, $id) {
                         // Actualizamos la orden
                         $order->update([
-                            'status' => 'completed',
-                            'payment_method' => $payment->payment_method_id, // Guarda 'yape', 'visa', etc.
-                            'notes' => "Pago aprobado MP ID: {$id}"
+                            'status'            => 'completed',
+                            'payment_method'    => $payment->payment_method_id, // Guarda 'yape', 'visa', etc.
+                            'notes'             => "Pago aprobado MP ID: {$id}"
                         ]);
+
                         Payment::create([
                             'order_id'       => $order->id,
                             'user_id'        => $order->user_id,
@@ -236,7 +237,8 @@ class PaymentController extends Controller {
                             'status'         => $order->status,
                             'paid_at'        => now(),
                         ]);
-                        $metadata = $payment->metadata;
+                        
+                        $metadata   = $payment->metadata;
                         $sellerCode = $metadata->seller_code ?? null;
 
                         // 2. Si falla (es null), extraemos directamente del cuerpo de la respuesta de la API

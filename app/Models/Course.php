@@ -26,11 +26,14 @@ class Course extends Model
         'learning_outcomes',
         'requirements',
         'what_you_learn',
+        'which_includes',
         'parent_id',
         'image_url',
         'price',
         'promotion_price',
-        'seats',
+        'course_limit',
+        'seats_min',
+        'seats_max',
         'category_id', 
         'type',
         'instructor_id',
@@ -44,6 +47,7 @@ class Course extends Model
         'is_active'         => 'boolean',
         'requirements'      => 'array',
         'what_you_learn'    => 'array',
+        'which_includes'    => 'array',
     ];
 
     public function category(): BelongsTo {
@@ -93,7 +97,7 @@ class Course extends Model
     protected function imageUrl(): Attribute {
         return Attribute::make(
             get: fn (?string $value) => match (true) {
-                empty($value) => 'https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+                empty($value) => 'storage/courses/ipf-course-default.png',
                 Str::startsWith($value, ['http://', 'https://']) => $value,
                 default => Storage::url($value),
             }

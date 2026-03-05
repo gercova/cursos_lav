@@ -16,7 +16,6 @@ class Enrollment extends Model {
     protected $fillable     = [
         'user_id',
         'course_id',
-        // 'payment_id',
         'enrolled_at',
         'completed_at',
         'progress',
@@ -35,12 +34,12 @@ class Enrollment extends Model {
     }
 
     public function course(): BelongsTo {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, 'course_id', 'id');
     }
 
-    public function payments(): HasMany {
-        return $this->hasMany(Payment::class);
-    }
+    // public function payments(): HasMany {
+    //     return $this->hasMany(Payment::class);
+    // }
 
     public function completedLessons(): BelongsToMany {
         return $this->belongsToMany(Lesson::class, 'completed_lessons')

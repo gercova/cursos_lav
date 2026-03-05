@@ -24,6 +24,7 @@ class User extends Authenticatable {
     protected $table        = 'users';
     protected $primaryKey   = 'id';
     protected $fillable     = [
+        'parent_id',
         'dni',
         'names',
         'email',
@@ -37,6 +38,7 @@ class User extends Authenticatable {
         'role',
         'email_verified_at',
         'profile_photo',
+        'company_code',
         'code',
         'promotion_price_is_active',
         'is_active',
@@ -74,6 +76,14 @@ class User extends Authenticatable {
 
     public function isBusiness() {
         return $this->role === 'business';
+    }
+
+    public function parent() {
+        return $this->belongsTo(User::class, 'parent_id', 'id');
+    }
+
+    public function children() {
+        return $this->hasMany(User::class, 'parent_id', 'id');
     }
 
     public function enrollments(): HasMany {

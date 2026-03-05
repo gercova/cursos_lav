@@ -153,7 +153,6 @@ class BusinessManagementController extends Controller {
             ->orderBy('names')
             ->get();
 
-        // $findPackage = Enrollment::where('type', 'package')->where('is_active', true)->first();
         $findPackageEnrollments = Enrollment::with(['course.category', 'course.sections.lessons'])
             ->where('user_id', auth()->id())
             ->whereHas('course', function($query) {
@@ -161,12 +160,9 @@ class BusinessManagementController extends Controller {
             })
             ->orderBy('created_at', 'desc')
             ->get();
-
-        // dd($findPackageEnrollments);
             
         $enrolledPackage = User::find(auth()->id())
             ->studentCourses()
-            // ->where('courses.id', $findPackageEnrollments->id)
             ->where('courses.type', 'package')
             ->exists();
         

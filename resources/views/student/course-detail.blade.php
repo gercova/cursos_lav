@@ -246,16 +246,6 @@
                     </ul>
                 </div>
 
-                {{-- <div class="flex items-center mb-6">
-                    <div class="flex items-center">
-                        <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
-                        <div>
-                            <p class="text-sm font-medium text-gray-900">Instructor: {{ $course->instructor->names }}</p>
-                            <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
-                        </div>
-                    </div>
-                </div> --}}
-
                 <!-- Instructor -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Instructor</h3>

@@ -67,8 +67,7 @@ class UserImport implements ToCollection, WithHeadingRow {
             $existingByEmail = User::where('email', $email)->first();
 
             if ($existingByEmail) {
-                $this->warnings[]      = "Fila {$rowNumber}: El correo «{$email}» ya está registrado "
-                    . "(DNI asociado: {$existingByEmail->dni}). Omitida.";
+                $this->warnings[] = "Fila {$rowNumber}: El correo «{$email}» ya está registrado "."(DNI asociado: {$existingByEmail->dni}). Omitida.";
                 $this->skippedInvalid++;
                 continue; // no consume slot
             }

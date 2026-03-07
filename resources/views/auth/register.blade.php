@@ -12,7 +12,7 @@
                 Crear Cuenta en {{ $enterprise->trade_name }}
             </h1>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Completa tus datos para acceder a todos nuestros cursos especializados en SSOMA y Medio Ambiente
+                Completa tus datos para acceder a todos nuestros cursos especializados en Seguridad y Salud en el Trabajo, Medio Ambiente y Calidad
             </p>
         </div>
 

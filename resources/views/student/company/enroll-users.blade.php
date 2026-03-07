@@ -6,7 +6,7 @@
     <div class="mb-6 sm:mb-8">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             <a href="{{ route('company.list') }}" 
-               class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base w-fit">
+            class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base w-fit">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -34,21 +34,20 @@
             <div class="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-green-800">Cursos con promoción</p>
-                        <p class="text-xl sm:text-2xl font-bold text-green-900 mt-1">{{ $courses->count() }}</p>
+                        <p class="text-xs font-medium text-green-800">Cursos</p>
+                        <p class="text-xl sm:text-2xl font-bold text-green-900 mt-1">{{ $totalCourses->where('type', 'course')->count() }}</p>
                     </div>
                     <div class="bg-green-600 p-2 sm:p-3 rounded-xl">
                         <i class="w-5 h-5 sm:w-6 sm:h-6 text-white fa-solid fa-book"></i>
                     </div>
                 </div>
             </div>
-
             <!-- Usuarios con código -->
             <div class="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-purple-800">Usuarios con código</p>
-                        <p class="text-xl sm:text-2xl font-bold text-purple-900 mt-1">{{ $collaborators->whereNotNull('code')->count() }}</p>
+                        <p class="text-xs font-medium text-purple-800">Paquetes en promoción</p>
+                        <p class="text-xl sm:text-2xl font-bold text-purple-900 mt-1">{{ $totalCourses->where('id', '<>', $package->course_id)->where('type', 'package')->count() }}</p>
                     </div>
                     <div class="bg-purple-600 p-2 sm:p-3 rounded-xl">
                         <i class="w-5 h-5 sm:w-6 sm:h-6 text-white fa-solid fa-tag"></i>
@@ -57,7 +56,7 @@
             </div>
 
             <!-- Total a matricular -->
-            <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-4">
+            {{-- <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-4">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs font-medium text-amber-800">Total a matricular</p>
@@ -67,30 +66,8 @@
                         <i class="w-5 h-5 sm:w-6 sm:h-6 text-white fa-solid fa-rocket"></i>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
-
-        <!-- Alertas responsivas -->
-        @php $usersWithoutCode = $collaborators->whereNull('code'); @endphp
-        @if($usersWithoutCode->count() > 0)
-            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-3 sm:p-4 mb-6 rounded-lg">
-                <div class="flex items-start gap-2 sm:gap-3">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-xs sm:text-sm font-medium text-yellow-800">
-                            <span class="font-bold">{{ $usersWithoutCode->count() }}</span> usuarios no tienen código de promoción asignado.
-                            <a href="{{ route('company.list') }}" class="underline font-semibold hover:text-yellow-900 block sm:inline mt-1 sm:mt-0">
-                                Asignar códigos
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        @endif
 
         @if($courses->count() == 0)
             <div class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 mb-6 rounded-lg">
@@ -100,11 +77,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
+
                     <div class="flex-1">
                         <p class="text-xs sm:text-sm font-medium text-red-800">
-                            No hay cursos con precio de promoción activo.
-                            <a href="{{ route('admin.courses.index') }}" class="underline font-semibold hover:text-red-900 block sm:inline mt-1 sm:mt-0">
-                                Configurar promociones
+                            • En este paquete puedes seleccionar tus cursos.<br>
+                            • Solo una matrícula por usuario por curso.<br>
+                            • No hay cursos seleccionados.
+                            <a href="{{ route('student.package.select', $package->course_id) }}" class="underline font-semibold hover:text-red-900 block sm:inline mt-1 sm:mt-0">
+                                {{-- Configurar promociones --}}
+                                Seleccione sus cursos
                             </a>
                         </p>
                     </div>
@@ -118,32 +99,42 @@
         <!-- Tabs - Scroll horizontal en móvil -->
         <div class="border-b border-gray-200 bg-gray-50 overflow-x-auto">
             <nav class="flex whitespace-nowrap min-w-full">
-                <button @click="activeTab = 'single'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'single', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'single' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                    <i class="fas fa-user mr-1 sm:mr-2"></i>
-                    <span class="hidden xs:inline">Matrícula</span> Individual
-                </button>
+                @if($package->package->plan_type_id !== 1)
+                    <button @click="activeTab = 'single'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'single', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'single' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
+                        <i class="fas fa-user mr-1 sm:mr-2"></i>
+                        <span class="hidden xs:inline">Matrícula</span> Individual
+                    </button>
+                @endif
 
-                <button @click="activeTab = 'bulk'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'bulk', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'bulk' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                    <i class="fas fa-users mr-1 sm:mr-2"></i>
-                    <span class="hidden xs:inline">Matrícula</span> Masiva
-                </button>
+                @if($package->package->plan_type_id !== 1)
+                    <button @click="activeTab = 'bulk'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'bulk', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'bulk' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
+                        <i class="fas fa-users mr-1 sm:mr-2"></i>
+                        <span class="hidden xs:inline">Matrícula</span> Masiva
+                    </button>
+                @endif
                 
-                <button @click="activeTab = 'superBulk'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'superBulk', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'superBulk' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                    <i class="fas fa-rocket mr-1 sm:mr-2"></i>
-                    <span class="hidden xs:inline">Matrícula</span> Express
-                </button>
+                @if($package->package->plan_type_id == 1)
+                    <button @click="activeTab = 'superBulk'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'superBulk', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'superBulk' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
+                        <i class="fas fa-rocket mr-1 sm:mr-2"></i>
+                        <span class="hidden xs:inline">Matrícula</span> Express
+                    </button>
+                @endif
                 
-                <button @click="activeTab = 'history'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                    <i class="fas fa-history mr-1 sm:mr-2"></i>
-                    <span class="hidden xs:inline">Historial</span> Reciente
-                </button>
+                {{-- @if($package->package->plan_type_id != 1)
+                    <button @click="activeTab = 'history'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
+                        <i class="fas fa-history mr-1 sm:mr-2"></i>
+                        <span class="hidden xs:inline">Historial</span> Reciente
+                    </button>
+                @endif --}}
             </nav>
         </div>
 
         <!-- Contenido de los tabs -->
         <div class="card-body p-4 sm:p-6">
+            
             <!-- Tab: Matrícula Individual -->
-            <div x-show="activeTab === 'single'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
+            @if($package->package->plan_type_id !== 1)
+                <div @if($package->package->plan_type_id == 1) ? x-show="activeTab === 'single'" : '' @endif x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
                 <div class="max-w-3xl mx-auto">
                     <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">Matricular usuario individualmente</h3>
                     
@@ -171,7 +162,7 @@
                                 <option value="">-- Selecciona un curso --</option>
                                 @foreach($courses as $course)
                                     <option value="{{ $course->id }}">
-                                        {{ Str::limit($course->title, 40) }} - 
+                                        {{ Str::limit($course->course->title, 40) }} - 
                                         S/ {{ number_format($course->promotion_price ?? $course->price, 2) }}
                                     </option>
                                 @endforeach
@@ -184,7 +175,6 @@
                                 <div>
                                     <p class="text-xs sm:text-sm font-medium text-blue-800">Información de la matrícula</p>
                                     <p class="text-xs text-blue-700 mt-1">
-                                        • Se utilizará el código de promoción del usuario.<br>
                                         • El usuario recibirá acceso inmediato.<br>
                                         • Solo una matrícula por usuario por curso.
                                     </p>
@@ -204,7 +194,8 @@
                         </div>
                     </form>
                 </div>
-            </div>
+                </div>
+            @endif
 
             <!-- Tab: Matrícula Masiva -->
             <div x-show="activeTab === 'bulk'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
@@ -221,7 +212,7 @@
                                 <option value="">-- Selecciona un curso --</option>
                                 @foreach($courses as $course)
                                     <option value="{{ $course->id }}">
-                                        {{ Str::limit($course->title, 50) }} - S/ {{ number_format($course->promotion_price ?? $course->price, 2) }}
+                                        {{ Str::limit($course->course->title, 50) }} - S/ {{ number_format($course->promotion_price ?? $course->price, 2) }}
                                     </option>
                                 @endforeach
                             </select>
@@ -234,12 +225,7 @@
                             <div class="border border-gray-300 rounded-lg p-3 sm:p-4 max-h-48 sm:max-h-64 overflow-y-auto">
                                 @forelse($collaborators as $collaborator)
                                     <div class="flex items-center py-1.5 sm:py-2 hover:bg-gray-50 px-2 rounded">
-                                        <input type="checkbox" 
-                                            x-model="bulkForm.user_ids" 
-                                            value="{{ $collaborator->id }}" 
-                                            id="user_{{ $collaborator->id }}"
-                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
-                                        >
+                                        <input type="checkbox" x-model="bulkForm.user_ids" value="{{ $collaborator->id }}" id="user_{{ $collaborator->id }}" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0">
                                         <label for="user_{{ $collaborator->id }}" class="ml-2 sm:ml-3 flex-1 text-xs sm:text-sm text-gray-700 truncate">
                                             <span class="font-medium">{{ $collaborator->names }}</span>
                                             <span class="text-gray-500 text-xs ml-1 hidden sm:inline">{{ $collaborator->email }}</span>
@@ -269,7 +255,6 @@
                                     <p class="text-xs sm:text-sm font-medium text-green-800">Matriculación masiva</p>
                                     <p class="text-xs text-green-700 mt-1">
                                         • Se matricularán todos los usuarios seleccionados.<br>
-                                        • Solo usuarios con código de promoción activo.<br>
                                         • Los ya matriculados serán omitidos.
                                     </p>
                                 </div>
@@ -291,7 +276,7 @@
             </div>
 
             <!-- Tab: Matrícula Express -->
-            <div x-show="activeTab === 'superBulk'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
+            <div @if($package->package->plan_type_id == 1) ? x-show="activeTab === 'single'" : '' @endif x-show="activeTab === 'superBulk'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
                 <div class="max-w-4xl mx-auto">
                     <div class="text-center mb-6 sm:mb-8">
                         <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white mb-3 sm:mb-4">
@@ -376,8 +361,8 @@
                                             <i class="fas fa-book text-xs"></i>
                                         </div>
                                         <div class="flex-1 truncate">
-                                            <p class="text-xs font-medium text-gray-700 truncate">{{ $course->title }}</p>
-                                            <p class="text-xs text-gray-500">S/ {{ number_format($course->promotion_price ?? $course->price, 2) }}</p>
+                                            <p class="text-xs font-medium text-gray-700 truncate">{{ $course->course->title }}</p>
+                                            <p class="text-xs text-gray-500">S/ {{ number_format($course->course->promotion_price ?? $course->course->price, 2) }}</p>
                                         </div>
                                     </div>
                                 @empty
@@ -412,7 +397,7 @@
             </div>
 
             <!-- Tab: Historial Reciente -->
-            <div x-show="activeTab === 'history'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
+            {{-- <div x-show="activeTab === 'history'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
                 <div x-data="recentEnrollments()" x-init="loadEnrollments()">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
                         <h3 class="text-base sm:text-lg font-semibold text-gray-900">Matriculaciones recientes</h3>
@@ -455,10 +440,10 @@
                         </template>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
-
+    
     <!-- Modal de confirmación para Mega Matrícula -->
     <div x-show="showSuperBulkConfirmModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 backdrop-blur-sm" @click.self="showSuperBulkConfirmModal = false">
         <div class="flex items-center justify-center min-h-screen p-3 sm:p-4">

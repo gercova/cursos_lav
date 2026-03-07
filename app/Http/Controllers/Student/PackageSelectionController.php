@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\PackageCourse;
+use App\Models\UserCoursePackage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PackageSelectionController extends Controller {
 
@@ -44,28 +45,22 @@ class PackageSelectionController extends Controller {
         $package = Course::where('id', $packageId)->where('type', 'package')->firstOrFail();
         
         $request->validate([
-            'selected_courses'      => 'required|array|min:1|max:' . $package->course_limit,
+            'selected_courses'      => 'required|array|min:1|max:'.$package->course_limit,
             'selected_courses.*'    => 'exists:courses,id'
         ]);
 
-        // Guardamos en la tabla package_courses usando el modelo PackageCourse
-        foreach ($request->selected_courses as $index => $courseId) {
-            PackageCourse::updateOrCreate(
-                [
-                    'package_id' => $package->id,
-                    'course_id' => $courseId,
-                ],
-                [
-                    'quantity' => 1,
-                    'sort_order' => $index + 1
-                ]
-            );
+        foreach ($request->selected_courses as $courseId) {
+            UserCoursePackage::create([
+                'package_id'    => $package->id,
+                'course_id'     => $courseId,
+                'user_id'       => Auth::id(),
+            ]);
         }
 
         return response()->json([
             'success'   => true,
             'message'   => '¡Excelente! Tus cursos han sido agregados al paquete con éxito.',
-            'redirect'  => route('student.my-courses') // Ajusta a tu ruta real
+            'redirect'  => route('company.enroll.users') // Ajusta a tu ruta real
         ]);
     }
 }

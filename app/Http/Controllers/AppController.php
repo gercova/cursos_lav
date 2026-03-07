@@ -88,7 +88,7 @@ class AppController extends Controller {
                 $query->orderBy('created_at', 'desc');
         }
 
-        $courses    = $query->paginate(10);
+        $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
         $enterprise = Enterprise::first();
 

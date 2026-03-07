@@ -307,8 +307,8 @@
 
                                         <!-- Información -->
                                         <div class="flex-1 min-w-0">
-                                            <h4 class="text-sm font-medium text-gray-900 line-clamp-2" x-text="item.title"></h4>
-                                            <p class="text-xs text-gray-500" x-text="item.instructor"></p>
+                                            <h4 class="text-sm font-medium text-gray-900 line-clamp-2" x-text="item.course.title"></h4>
+                                            <p class="text-xs text-gray-500" x-text="item.course.instructor.names"></p>
 
                                             <!-- Precio -->
                                             <div class="mt-1 flex items-center justify-between">

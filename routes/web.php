@@ -103,18 +103,18 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Pagos
     Route::get('/checkout',                             [PaymentController::class, 'checkout'])->name('payment.checkout');
-    Route::post('/payment/process-culqi',               [PaymentController::class, 'processCulqiPayment']);
-    Route::post('/payment/process-pago-efectivo',       [PaymentController::class, 'processPagoEfectivo']);
+    // Route::post('/payment/process-culqi',               [PaymentController::class, 'processCulqiPayment']);
+    // Route::post('/payment/process-pago-efectivo',       [PaymentController::class, 'processPagoEfectivo']);
     // PagoEfectivo CIP
-    Route::get('/payment/cip-instructions/{payment}',   [PaymentController::class, 'cipInstructions'])->name('payment.cip-instructions');
-    Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
+    // Route::get('/payment/cip-instructions/{payment}',   [PaymentController::class, 'cipInstructions'])->name('payment.cip-instructions');
+    // Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
 
     // Webhook (sin autenticación)
     // Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
 
     // Rutas para código de promoción
-    Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
-    Route::post('/remove-promo-code',               [PaymentController::class, 'removePromoCode'])->name('payment.remove-promo-code');
+    // Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
+    // Route::post('/remove-promo-code',               [PaymentController::class, 'removePromoCode'])->name('payment.remove-promo-code');
 
     // si usuario tiene RUC
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
@@ -329,6 +329,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/packages/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
         Route::get('/packages/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
         Route::post('/packages/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
+        Route::put('/packages/{package}/update',            [PackagesAdminController::class, 'update'])->name('admin.packages.update');
         Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
         Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
 

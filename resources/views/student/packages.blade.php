@@ -325,6 +325,7 @@
                                                 {{ $course->title }}
                                             </li>
                                         @endforeach
+                                        
                                         @if($package->courses->count() > 3)
                                             <li class="text-xs text-indigo-600">
                                                 + {{ $package->courses->count() - 3 }} cursos más

@@ -112,6 +112,10 @@ class User extends Authenticatable {
         return $this->hasMany(Cart::class, 'user_id', 'id');
     }
 
+    public function userCoursePackage(): HasMany {
+        return $this->hasMany(UserCoursePackage::class, 'user_id', 'id');
+    }
+
     public function notifications(): HasMany {
         return $this->hasMany(Notification::class)->latest();
     }

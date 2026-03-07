@@ -30,16 +30,16 @@ class Enrollment extends Model {
     ];
 
     public function user(): BelongsTo {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function course(): BelongsTo {
-        return $this->belongsTo(Course::class, 'course_id', 'id');
+        return $this->belongsTo(Course::class, 'course_id', 'id')->where('type', 'course');
     }
 
-    // public function payments(): HasMany {
-    //     return $this->hasMany(Payment::class);
-    // }
+    public function package(): BelongsTo {
+        return $this->belongsTo(Course::class, 'course_id', 'id')->where('type', 'package');
+    }
 
     public function completedLessons(): BelongsToMany {
         return $this->belongsToMany(Lesson::class, 'completed_lessons')

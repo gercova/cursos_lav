@@ -166,7 +166,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-lg font-semibold mb-4">{{ $enterprise->trade_name }}</h3>
-                    <p class="text-gray-300">Ofrecemos los mejores cursos especializados en Seguradad y Salud en el Trabajo, Medio Ambiente y Calidad para tu desarrollo y crecimiento profesional.</p>
+                    <p class="text-gray-300">Ofrecemos los mejores cursos especializados en Seguridad y Salud en el Trabajo, Medio Ambiente y Calidad para tu desarrollo y crecimiento profesional.</p>
                 </div>
                 <div>
                     <h4 class="text-md font-semibold mb-4">Enlaces Rápidos</h4>

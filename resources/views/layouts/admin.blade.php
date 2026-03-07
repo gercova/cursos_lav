@@ -89,19 +89,6 @@
                     </a>
                 @endrole
 
-                @role('business')
-                    <a href="{{ route('company.list') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
-                        <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
-                    </a>
-                    <!-- Enlace corregido para inscribir usuarios -->
-                    <a href="{{ route('company.enroll.users') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('company.enroll.*') ? 'bg-blue-700' : '' }}">
-                        <i class="bi bi-book-fill mr-2"></i> Inscribir usuarios
-                    </a>
-                    <a href="{{ route('company.profile', [auth()->user()->id]) }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
-                        <i class="fa-solid fa-building mr-2"></i> Actualizar mi datos
-                    </a>
-                @endrole
-
                 @role('admin')
                     <a href="{{ route('admin.enterprise.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.enterprise.*') ? 'bg-blue-700' : '' }}">
                         <i class="fas fa-building mr-2"></i>Datos de Empresa

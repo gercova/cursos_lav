@@ -66,7 +66,7 @@ class PaymentController extends Controller {
         }
         
         $subtotalWithDiscount   = max(0, $subtotal - $discount);
-        $tax                    = $subtotalWithDiscount * 0.18; // 18% IGV (Perú)
+        $tax                    = $subtotalWithDiscount * 0.0; // 18% IGV (Perú)
         $total                  = $subtotalWithDiscount + $tax;
 
         // Formatear items para la vista

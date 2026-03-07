@@ -72,7 +72,7 @@
                             <div class="text-xs text-gray-500">S/ {{ number_format($package->price_per_person, 2) }} x persona</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $package->seats }} personas
+                            {{ $package->seats_min.'-'.$package->seats_max }} personas
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex flex-wrap gap-1">

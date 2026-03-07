@@ -427,7 +427,7 @@
                     <span>Dashboard</span>
                 </a>
 
-                @if (strlen((auth()->user()->dni)) == 11)
+                @if ($hasAnyPackage)
                     <hr>
                     <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
                         <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa

@@ -29,6 +29,7 @@ class Course extends Model
         'which_includes',
         'parent_id',
         'image_url',
+        'plan_type_id',
         'price',
         'promotion_price',
         'course_limit',
@@ -80,6 +81,10 @@ class Course extends Model
 
     public function exams(): HasMany {
         return $this->hasMany(Exam::class, 'course_id', 'id');
+    }
+
+    public function planType(): BelongsTo {
+        return $this->belongsTo(PlanType::class, 'plan_type', 'id');
     }
 
     public function getIsOnPromotionAttribute(): bool {
@@ -135,16 +140,15 @@ class Course extends Model
 
     /**
      * CORREGIDO: Obtener el precio por persona con validación
-     * Cambié max_participants por seats que es el campo real
-     * y agregué validación para evitar división por cero
+     * Usando seats_max en lugar de seats
      */
     public function getPricePerPersonAttribute(): float {
-        // Validar que seats exista y sea mayor que cero
-        if (!$this->seats || $this->seats <= 0) {
+        // Validar que seats_max exista y sea mayor que cero
+        if (!$this->seats_max || $this->seats_max <= 0) {
             return 0;
         }
         
-        return $this->price / $this->seats;
+        return $this->price / $this->seats_max;
     }
 
     /**
@@ -155,11 +159,11 @@ class Course extends Model
             return null;
         }
         
-        if (!$this->seats || $this->seats <= 0) {
+        if (!$this->seats_max || $this->seats_max <= 0) {
             return 0;
         }
         
-        return $this->promotion_price / $this->seats;
+        return $this->promotion_price / $this->seats_max;
     }
 
     /**
@@ -168,11 +172,11 @@ class Course extends Model
     public function calculatePricePerPerson($price = null): float {
         $priceToUse = $price ?? $this->price;
         
-        if (!$this->seats || $this->seats <= 0) {
+        if (!$this->seats_max || $this->seats_max <= 0) {
             return 0;
         }
         
-        return $priceToUse / $this->seats;
+        return $priceToUse / $this->seats_max;
     }
 
     /**

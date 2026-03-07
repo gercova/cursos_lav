@@ -7,12 +7,16 @@
             'id'                => $package->id,
             'name'              => $package->title,
             'slug'              => $package->slug,
+            'plan_type_id'      => $package->plan_type_id,
             'description'       => $package->description,
             'meta_description'  => $package->meta_description,
             'meta_keywords'     => $package->meta_keywords,
+            'which_includes'    => $package->which_includes ?? [],
             'price'             => $package->price,
             'promotion_price'   => $package->promotion_price,
-            'seats'             => $package->seats,
+            'seats_min'         => $package->seats_min ?? 1,
+            'seats_max'         => $package->seats_max ?? 1,
+            'course_limit'      => $package->course_limit ?? 0,
             'is_active'         => $package->is_active,
             'image_url'         => $package->image_url,
             'courses'           => $package->courses->map(function($course) {
@@ -58,13 +62,25 @@
                     </p>
                 </div>
 
+                <!-- Tipo Plan -->
+                <div>
+                    <label for="plan_type_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tipo de Plan
+                    </label>
+                    <select name="plan_type_id" id="plan_type_id" x-model="form.plan_type_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">--Seleccione--</option>
+                        @foreach ($planType as $plan)
+                            <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- Descripción -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                         Descripción
                     </label>
-                    <textarea id="description" x-model="form.description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Describe el contenido del paquete..."
-                    ></textarea>
+                    <textarea id="description" x-model="form.description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Describe el contenido del paquete..."></textarea>
                 </div>
 
                 <!-- Meta Descripción (SEO) -->
@@ -72,8 +88,7 @@
                     <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-2">
                         Meta Descripción (SEO)
                     </label>
-                    <textarea id="meta_description" x-model="form.meta_description" rows="2" maxlength="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Breve descripción para motores de búsqueda..."
-                    ></textarea>
+                    <textarea id="meta_description" x-model="form.meta_description" rows="2" maxlength="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Breve descripción para motores de búsqueda..."></textarea>
                     <p class="text-xs text-gray-500 mt-1" x-text="(form.meta_description?.length || 0) + '/200 caracteres'"></p>
                 </div>
 
@@ -85,12 +100,63 @@
                     <input type="text" id="meta_keywords" x-model="form.meta_keywords" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="ej: cursos, desarrollo, programación">
                     <p class="text-xs text-gray-500 mt-1">Separar con comas</p>
                 </div>
+
+                <!-- ¿Qué incluye este paquete? (NUEVO: Copiado de create.blade.php) -->
+                <div class="mb-6" x-data="arrayField()">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        ¿Qué incluye este paquete? *
+                    </label>
+                    <div class="space-y-3" id="which_includes_container">
+                        <template x-for="(item, index) in form.which_includes" :key="index">
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1">
+                                    <input type="text" 
+                                           name="which_includes[]" 
+                                           x-model="form.which_includes[index]"
+                                           placeholder="Ej: Crear aplicaciones web modernas" 
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                </div>
+                                <button type="button" 
+                                        x-show="index > 0" 
+                                        @click="removeWhichInclude(index)" 
+                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </template>
+                        
+                        <!-- Template para cuando no hay items -->
+                        <div x-show="form.which_includes.length === 0" class="text-center py-4 text-gray-500">
+                            No hay elementos agregados
+                        </div>
+                    </div>
+                    <button type="button" @click="addWhichInclude" class="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Agregar otro elemento
+                    </button>
+                </div>
             </div>
 
             <!-- Columna Derecha -->
             <div class="space-y-6">
                 <!-- Precio y Cupos -->
                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="seats_min" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cupos mínimos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="seats_min" x-model="form.seats_min" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="1" required>
+                    </div>
+                    <div>
+                        <label for="seats_max" class="block text-sm font-medium text-gray-700 mb-2">
+                            Cupos máximos <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="seats_max" x-model="form.seats_max" @input="calculatePrices" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="10" required>
+                    </div>
                     <div>
                         <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
                             Precio (S/) <span class="text-red-500">*</span>
@@ -101,10 +167,10 @@
                         </div>
                     </div>
                     <div>
-                        <label for="seats" class="block text-sm font-medium text-gray-700 mb-2">
-                            Cupos <span class="text-red-500">*</span>
+                        <label for="course_limit" class="block text-sm font-medium text-gray-700 mb-2">
+                            Límite de cursos para este paquete <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" id="seats" x-model="form.seats" @input="calculatePrices" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="10" required>
+                        <input type="number" id="course_limit" x-model="form.course_limit" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0">
                     </div>
                 </div>
 
@@ -171,7 +237,7 @@
             </div>
         </div>
 
-        <!-- Sección de Cursos Específicos -->
+        <!-- Sección de Cursos EspecíficOS -->
         <div class="mt-8 border-t pt-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -185,17 +251,16 @@
                 </button>
             </div>
             
-            <!-- Lista de cursos seleccionados -->
+            <!-- Lista de cursos seleccionados CON SCROLL -->
             <div class="space-y-3" x-show="form.courses.length > 0">
-                <!-- Cabecera de la lista -->
+                <!-- Cabecera de la lista (visible en desktop) -->
                 <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div class="flex-1">Curso</div>
-                    {{-- <div class="sm:w-48">N° de Sesiones</div> --}}
                     <div class="w-10"></div>
                 </div>
                 
                 <!-- Contenedor con scroll -->
-                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin"
+                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                     x-ref="coursesContainer">
                     <div class="space-y-3 p-1">
                         <template x-for="(course, index) in form.courses" :key="index">
@@ -207,9 +272,6 @@
                                         <p class="text-xs text-gray-500">ID: <span x-text="course.id"></span></p>
                                     </div>
                                 </div>
-                                {{-- <div class="sm:w-48">
-                                    <input type="number" x-model="course.quantity" placeholder="N° de sesiones" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                                </div> --}}
                                 <button type="button" @click="removeCourse(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -218,7 +280,7 @@
                     </div>
                 </div>
                 
-                <!-- Resumen -->
+                <!-- Resumen de cursos seleccionados -->
                 <div class="flex justify-between items-center mt-3 px-4 py-2 bg-gray-100 rounded-lg text-sm">
                     <span class="text-gray-600">Total de cursos:</span>
                     <span class="font-semibold text-blue-600" x-text="form.courses.length"></span>
@@ -260,7 +322,7 @@
                 </div>
                 
                 <!-- Scroll container -->
-                <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin">
+                <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     <div class="space-y-3 p-1">
                         <template x-for="(category, index) in form.categories" :key="index">
                             <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
@@ -312,8 +374,8 @@
         </div>
     </form>
 
-    <!-- MODAL PARA SELECCIONAR CURSOS (igual que en create) -->
-    <div x-show="showCourseModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" x-transition>
+    <!-- MODAL PARA SELECCIONAR CURSOS -->
+    <div x-show="showCourseModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
         <!-- Overlay -->
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showCourseModal = false"></div>
         
@@ -438,12 +500,16 @@ function packageForm(initialData) {
             id: initialData?.package?.id || null,
             name: initialData?.package?.name || '',
             slug: initialData?.package?.slug || '',
+            plan_type_id: initialData?.package?.plan_type_id || '',
             description: initialData?.package?.description || '',
             meta_description: initialData?.package?.meta_description || '',
             meta_keywords: initialData?.package?.meta_keywords || '',
+            which_includes: initialData?.package?.which_includes || [''],
             price: initialData?.package?.price || '',
             promotion_price: initialData?.package?.promotion_price || '',
-            seats: initialData?.package?.seats || '',
+            seats_min: initialData?.package?.seats_min || '',
+            seats_max: initialData?.package?.seats_max || '',
+            course_limit: initialData?.package?.course_limit || '',
             is_active: initialData?.package?.is_active ?? true,
             image_url: initialData?.package?.image_url || null,
             courses: initialData?.package?.courses || [],
@@ -480,19 +546,26 @@ function packageForm(initialData) {
         },
 
         init() {
+            // Asegurar que which_includes tenga al menos un elemento vacío si está vacío
+            if (!this.form.which_includes || this.form.which_includes.length === 0) {
+                this.form.which_includes = [''];
+            }
             this.calculatePrices();
         },
 
         generateSlug() {
             this.form.slug = this.form.name
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
                 .toLowerCase()
-                .replace(/[^\w\s]/gi, '')
-                .replace(/\s+/g, '-');
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/[\s-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
         },
 
         calculatePrices() {
-            if (this.form.price && this.form.seats) {
-                this.pricePerPerson = this.form.price / this.form.seats;
+            if (this.form.price && this.form.seats_max) {
+                this.pricePerPerson = this.form.price / this.form.seats_max;
             }
         },
 
@@ -502,6 +575,16 @@ function packageForm(initialData) {
                     this.form.promotion_price = (parseFloat(this.form.price) - 0.01).toFixed(2);
                 }
             }
+        },
+
+        // NUEVO: Agregar elemento a which_includes
+        addWhichInclude() {
+            this.form.which_includes.push('');
+        },
+
+        // NUEVO: Eliminar elemento de which_includes
+        removeWhichInclude(index) {
+            this.form.which_includes.splice(index, 1);
         },
 
         // Previsualizar imagen
@@ -546,7 +629,7 @@ function packageForm(initialData) {
                 if (!exists) {
                     this.form.courses.push({
                         id: courseId,
-                        quantity: 1  // CAMBIADO: sessions_per_course -> quantity
+                        quantity: 1
                     });
                 }
             });
@@ -589,17 +672,30 @@ function packageForm(initialData) {
         submitForm() {
             this.loading = true;
 
+            // Filtrar which_includes vacíos
+            const filteredWhichIncludes = this.form.which_includes.filter(item => item && item.trim() !== '');
+            
+            if (filteredWhichIncludes.length === 0) {
+                this.showAlert('error', 'Debes agregar al menos un elemento en "¿Qué incluye este paquete?"');
+                this.loading = false;
+                return;
+            }
+
             const formData = new FormData();
             
-            // Agregar campos básicos
+            // Agregar campos básicos con _method para PUT
             formData.append('_method', 'PUT');
             formData.append('name', this.form.name);
             formData.append('slug', this.form.slug);
+            formData.append('plan_type_id', this.form.plan_type_id);
             formData.append('description', this.form.description || '');
             formData.append('meta_description', this.form.meta_description || '');
             formData.append('meta_keywords', this.form.meta_keywords || '');
+            formData.append('which_includes', JSON.stringify(filteredWhichIncludes));
             formData.append('price', this.form.price);
-            formData.append('seats', this.form.seats);
+            formData.append('course_limit', this.form.course_limit || 0);
+            formData.append('seats_min', this.form.seats_min);
+            formData.append('seats_max', this.form.seats_max);
             formData.append('is_active', this.form.is_active ? '1' : '0');
             
             if (this.form.promotion_price) {
@@ -611,15 +707,26 @@ function packageForm(initialData) {
                 formData.append('image', this.imageFile);
             }
             
-            // Agregar cursos
-            const validCourses = this.form.courses.filter(c => c.id);
+            // Preparar cursos
+            const validCourses = this.form.courses
+                .filter(c => c.id)
+                .map(c => ({
+                    id: c.id,
+                    quantity: c.quantity || 1
+                }));
             formData.append('courses', JSON.stringify(validCourses));
             
-            // Agregar categorías
-            const validCategories = this.form.categories.filter(c => c.id);
+            // Preparar categorías
+            const validCategories = this.form.categories
+                .filter(c => c.id)
+                .map(c => ({
+                    id: c.id,
+                    max_courses_per_category: c.max_courses_per_category || null
+                }));
             formData.append('categories', JSON.stringify(validCategories));
 
-            axios.post(`/admin/packages/${this.form.id}`, formData, {
+            // CORREGIDO: URL sin /update al final
+            axios.post(`/admin/packages/${this.form.id}/update`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -638,12 +745,101 @@ function packageForm(initialData) {
                 if (error.response?.data?.errors) {
                     const errors = Object.values(error.response.data.errors).flat();
                     this.showAlert('error', errors[0]);
+                    console.error('Errores de validación:', error.response.data.errors);
                 } else {
                     this.showAlert('error', error.response?.data?.message || 'Error al actualizar el paquete');
                 }
             });
         }
+
+        // submitForm() {
+        //     this.loading = true;
+
+        //     // Filtrar which_includes vacíos
+        //     const filteredWhichIncludes = this.form.which_includes.filter(item => item && item.trim() !== '');
+            
+        //     if (filteredWhichIncludes.length === 0) {
+        //         this.showAlert('error', 'Debes agregar al menos un elemento en "¿Qué incluye este paquete?"');
+        //         this.loading = false;
+        //         return;
+        //     }
+
+        //     const formData = new FormData();
+            
+        //     // Agregar campos básicos con _method para PUT
+        //     formData.append('_method', 'PUT');
+        //     formData.append('name', this.form.name);
+        //     formData.append('slug', this.form.slug);
+        //     formData.append('description', this.form.description || '');
+        //     formData.append('meta_description', this.form.meta_description || '');
+        //     formData.append('meta_keywords', this.form.meta_keywords || '');
+        //     formData.append('which_includes', JSON.stringify(filteredWhichIncludes));
+        //     formData.append('price', this.form.price);
+        //     formData.append('course_limit', this.form.course_limit || 0);
+        //     formData.append('seats_min', this.form.seats_min);
+        //     formData.append('seats_max', this.form.seats_max);
+        //     formData.append('is_active', this.form.is_active ? '1' : '0');
+            
+        //     if (this.form.promotion_price) {
+        //         formData.append('promotion_price', this.form.promotion_price);
+        //     }
+            
+        //     // Agregar imagen si se seleccionó una nueva
+        //     if (this.imageFile) {
+        //         formData.append('image', this.imageFile);
+        //     }
+            
+        //     // Preparar cursos
+        //     const validCourses = this.form.courses
+        //         .filter(c => c.id)
+        //         .map(c => ({
+        //             id: c.id,
+        //             quantity: c.quantity || 1
+        //         }));
+        //     formData.append('courses', JSON.stringify(validCourses));
+            
+        //     // Preparar categorías
+        //     const validCategories = this.form.categories
+        //         .filter(c => c.id)
+        //         .map(c => ({
+        //             id: c.id,
+        //             max_courses_per_category: c.max_courses_per_category || null
+        //         }));
+        //     formData.append('categories', JSON.stringify(validCategories));
+
+        //     axios.post(`/admin/packages/${this.form.id}/update`, formData, {
+        //         headers: {
+        //             'Content-Type': 'multipart/form-data'
+        //         }
+        //     })
+        //     .then(response => {
+        //         if (response.data.success) {
+        //             this.showAlert('success', response.data.message);
+        //             setTimeout(() => {
+        //                 window.location.href = response.data.redirect;
+        //             }, 1000);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         this.loading = false;
+                
+        //         if (error.response?.data?.errors) {
+        //             const errors = Object.values(error.response.data.errors).flat();
+        //             this.showAlert('error', errors[0]);
+        //             console.error('Errores de validación:', error.response.data.errors);
+        //         } else {
+        //             this.showAlert('error', error.response?.data?.message || 'Error al actualizar el paquete');
+        //         }
+        //     });
+        // }
     }
+}
+
+// Helper para manejar arrays dinámicos
+function arrayField() {
+    return {
+        // Mantenemos la función para compatibilidad, pero usamos los métodos del componente principal
+    };
 }
 </script>
 

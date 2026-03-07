@@ -20,13 +20,13 @@ class BusinessImportController extends Controller {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
 
-    private function resolveAvailableSlots(User $owner, int $seatsMax): int {
-        $subUsersCount = User::where('company_code', $owner->company_code)
-            ->where('id', '!=', $owner->id)
-            ->count();
+    // private function resolveAvailableSlots(User $owner, int $seatsMax): int {
+    //     $subUsersCount = User::where('company_code', $owner->company_code)
+    //         ->where('id', '!=', $owner->id)
+    //         ->count();
 
-        return max(0, $seatsMax - $subUsersCount);
-    }
+    //     return max(0, $seatsMax - $subUsersCount);
+    // }
 
     /**
      * Mostrar vista de importación
@@ -171,15 +171,14 @@ class BusinessImportController extends Controller {
         $authUser = Auth::user();
         $companyCode = $authUser->company_code ?? '';
 
+        // ── 2. Verificar paquete activo ──────────────────────────────────────
         $package = User::find($authUser->id)
             ->studentCourses()
             ->where('courses.type', 'package')
             ->first();
 
         if (!$package) {
-            return back()
-                ->with('error', 'No cuenta con un paquete activo para importar usuarios.')
-                ->withInput();
+            return back()->with('error', 'No cuenta con un paquete activo para importar usuarios.')->withInput();
         }
 
         $seatsMax = $package->seats_max ?? 0;
@@ -229,14 +228,10 @@ class BusinessImportController extends Controller {
                 $summaryParts[] = "{$skipped} fila(s) omitida(s) por datos incompletos";
             }
 
-            $successMessage = empty($summaryParts)
-                ? 'No se realizaron cambios.'
-                : implode(', ', $summaryParts) . '.';
+            $successMessage = empty($summaryParts) ? 'No se realizaron cambios.' : implode(', ', $summaryParts) . '.';
 
             if (!empty($warnings)) {
-                return redirect()->route('company.list')
-                    ->with('success', $successMessage)
-                    ->with('warnings', $warnings);
+                return redirect()->route('company.list')->with('success', $successMessage)->with('warnings', $warnings);
             }
 
             return redirect()->route('company.list')->with('success', $successMessage);
@@ -244,9 +239,7 @@ class BusinessImportController extends Controller {
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return back()
-                ->with('error', 'Ocurrió un error al procesar el archivo: ' . $e->getMessage())
-                ->withInput();
+            return back()->with('error', 'Ocurrió un error al procesar el archivo: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -269,75 +262,6 @@ class BusinessImportController extends Controller {
     /**
      * Generar archivo de plantilla
      */
-    // private function generateTemplateFile() {
-    //     $headers = [
-    //         'DNI',
-    //         'NOMBRES',
-    //         'CORREO',
-    //         'CODIGO PAIS',
-    //         'TELEFONO',
-    //         'DIRECCIÓN',
-    //         'CARGO / PROFESIÓN'
-    //     ];
-
-    //     $exampleData = [
-    //         '12345678',
-    //         'JUAN PEREZ LOPEZ',
-    //         'juan.perez@ejemplo.com',
-    //         '+51',
-    //         '987654321',
-    //         'Av. Principal 123',
-    //         'DESARROLLADOR'
-    //     ];
-
-    //     // $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    //     $spreadsheet    = new Spreadsheet();
-    //     $sheet          = $spreadsheet->getActiveSheet();
-
-    //     // Establecer encabezados
-    //     foreach ($headers as $index => $header) {
-    //         $column = chr(65 + $index); // A, B, C, etc.
-    //         $sheet->setCellValue($column . '1', $header);
-            
-    //         // Estilo para encabezados
-    //         $sheet->getStyle($column . '1')->getFont()->setBold(true);
-    //         $sheet->getStyle($column . '1')->getFill()
-    //             // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-    //             ->setFillType(Fill::FILL_SOLID)
-    //             ->getStartColor()->setARGB('FF4CAF50');
-    //         $sheet->getStyle($column . '1')->getFont()->getColor()->setARGB('FFFFFFFF');
-    //     }
-
-    //     // Agregar datos de ejemplo
-    //     foreach ($exampleData as $index => $value) {
-    //         $column = chr(65 + $index);
-    //         $sheet->setCellValue($column . '2', $value);
-    //     }
-
-    //     // Agregar instrucciones
-    //     $sheet->setCellValue('A4', 'INSTRUCCIONES:');
-    //     $sheet->getStyle('A4')->getFont()->setBold(true);
-    //     $sheet->setCellValue('A5', '• El DNI y CORREO deben ser únicos en el sistema');
-    //     $sheet->setCellValue('A6', '• CÓDIGO PAIS: Usar +51 (Perú), +54 (Argentina), +56 (Chile), +591 (Bolivia), +593 (Ecuador), +598 (Uruguay)');
-    //     $sheet->setCellValue('A7', '• Si no especifica código de país, se asignará +51 por defecto');
-    //     $sheet->setCellValue('A8', '• La contraseña inicial será: P4$$w0rd#.');
-    //     $sheet->setCellValue('A9', '• Los campos marcados con * son obligatorios');
-
-    //     // Autoajustar columnas
-    //     foreach (range('A', 'G') as $column) {
-    //         $sheet->getColumnDimension($column)->setAutoSize(true);
-    //     }
-
-    //     #$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    //     $writer = new Xlsx($spreadsheet);
-        
-    //     if (!is_dir(public_path('templates'))) {
-    //         mkdir(public_path('templates'), 0755, true);
-    //     }
-        
-    //     $writer->save(public_path('templates/plantilla_importacion_usuarios.xlsx'));
-    // }
-
     private function generateTemplateFile(): void {
         $headers = [
             'DNI', 'NOMBRES', 'CORREO', 'CODIGO PAIS', 'TELEFONO', 'DIRECCIÓN', 'CARGO / PROFESIÓN',

@@ -2,7 +2,6 @@
 @section('title', 'Arma tu Paquete')
 @section('content')
 <div x-data="courseSelector({{ $package->id }}, {{ $package->course_limit }})" class="space-y-6">
-    
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Arma tu paquete: {{ $package->title }}</h1>
@@ -19,8 +18,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col sm:flex-row gap-4">
         <div class="relative flex-1">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-            <input type="text" x-model.debounce.500ms="search" placeholder="Buscar cursos por nombre..." 
-                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            <input type="text" x-model.debounce.500ms="search" placeholder="Buscar cursos por nombre..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
         </div>
         <div class="sm:w-64">
             <select x-model="categoryId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
@@ -180,7 +178,7 @@
                 
                 this.saving = true;
                 try {
-                    const response = await axios.post(`/student/package/${this.packageId}/save-courses`, {
+                    const response = await axios.post(`/package/${this.packageId}/save-courses`, {
                         selected_courses: this.selected
                     });
                     

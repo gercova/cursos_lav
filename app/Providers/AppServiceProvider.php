@@ -4,11 +4,11 @@ namespace App\Providers;
 
 use App\Models\Category;
 use App\Models\Enterprise;
+use App\Models\User;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
-{
+class AppServiceProvider extends ServiceProvider {
     /**
      * Register any application services.
      */
@@ -33,8 +33,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.student', function ($view) {
-            $enterprise = Enterprise::first();
-            $view->with(['enterprise' => $enterprise]);
+            $enterprise     = Enterprise::first();
+            $hasAnyPackage  = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
+            $view->with(['enterprise' => $enterprise, 'hasAnyPackage' => $hasAnyPackage]);
         });
     }
 }

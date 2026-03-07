@@ -13,16 +13,6 @@
                     <span class="hidden xs:inline">Importar usuarios desde excel</span>
                     <span class="xs:hidden">Importar usuarios desde excel</span>
                 </a>
-                
-                <!-- Botón para descargar plantilla -->
-                <a href="{{ route('company.import.form') }}" 
-                   class="flex items-center justify-center gap-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-sm sm:text-base">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    <span class="hidden xs:inline">Descargar plantilla</span>
-                    <span class="xs:hidden">Descargar plantilla</span>
-                </a>
             </div>
             
             <!-- Botón para crear usuario -->

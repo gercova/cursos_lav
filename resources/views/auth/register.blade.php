@@ -30,7 +30,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold text-lg mb-1">Cursos Ilimitados</h4>
-                                <p class="text-blue-100 text-sm">Acceso a más de 50 cursos especializados</p>
+                                <p class="text-blue-100 text-sm">Acceso a más de {{ $totalCourses->count() }} cursos especializados</p>
                             </div>
                         </div>
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CodeValidate;
 use App\Http\Requests\UserStudentValidate;
 use App\Models\CompanyPolicy;
+use App\Models\Course;
 use App\Models\Enterprise;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -41,16 +42,16 @@ class RegisterController extends Controller {
     }
 
     public function showRegister(): View {
-        $enterprise = Enterprise::first();
-        return view('auth.register', compact('enterprise'));
+        $enterprise     = Enterprise::first();
+        $totalCourses   = Course::where('is_active', true)->where('type', 'course')->get();
+        return view('auth.register', compact('enterprise', 'totalCourses'));
     }
 
     public function register(UserStudentValidate $request) {
-        $validated = $request->validated();
+        $validated  = $request->validated();
+        $userCC     = new UserAdminController();
 
-        $userCC = new UserAdminController();
-
-        $user = User::create([
+        $user       = User::create([
             'dni'           => $validated['dni'],
             'names'         => $validated['names'],
             'email'         => $validated['email'],

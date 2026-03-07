@@ -28,6 +28,19 @@
                     </p>
                 </div>
 
+                <!-- Tipo Plan -->
+                <div>
+                    <label for="plan_type_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tipo de Plan
+                    </label>
+                    <select name="plan_type_id" id="plan_type_id" x-model="form.plan_type_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">--Seleccione--</option>
+                        @foreach ($planType as $plan)
+                            <option value="{{ $plan->id }}">{{ $plan->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- Descripción -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
@@ -93,6 +106,7 @@
 
             <!-- Columna Derecha -->
             <div class="space-y-6">
+                
                 <!-- Precio y Cupos -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -443,6 +457,7 @@
             form: {
                 name: '',
                 slug: '',
+                plan_type_id: '',
                 description: '',
                 meta_description: '',
                 meta_keywords: '',
@@ -617,75 +632,6 @@
                 }, 3000);
             },
 
-            // Enviar formulario
-            // submitForm() {
-            //     this.loading = true;
-
-            //     // Crear FormData para enviar archivos
-            //     const formData = new FormData();
-
-            //     const whichIncludes = [];
-            //     document.querySelectorAll('input[name="which_includes[]"]').forEach(input => {
-            //         if (input.value.trim() !== '') {
-            //             whichIncludes.push(input.value.trim());
-            //         }
-            //     });
-                
-            //     // Agregar campos simples
-            //     formData.append('name', this.form.name);
-            //     formData.append('slug', this.form.slug);
-            //     formData.append('description', this.form.description || '');
-            //     formData.append('meta_description', this.form.meta_description || '');
-            //     formData.append('meta_keywords', this.form.meta_keywords || '');
-            //     formData.append('which_includes', JSON.stringify(whichIncludes));
-            //     formData.append('price', this.form.price);
-            //     formData.append('course_limit', this.form.course_limit);
-            //     formData.append('seats_min', this.form.seats_min);
-            //     formData.append('seats_max', this.form.seats_max);
-            //     formData.append('is_active', this.form.is_active ? '1' : '0');
-                
-            //     if (this.form.promotion_price) {
-            //         formData.append('promotion_price', this.form.promotion_price);
-            //     }
-                
-            //     // Agregar imagen si existe
-            //     if (this.imageFile) {
-            //         formData.append('image', this.imageFile);
-            //     }
-                
-            //     // Agregar cursos
-            //     const validCourses = this.form.courses.filter(c => c.id);
-            //     formData.append('courses', JSON.stringify(validCourses));
-                
-            //     // Agregar categorías
-            //     const validCategories = this.form.categories.filter(c => c.id);
-            //     formData.append('categories', JSON.stringify(validCategories));
-
-            //     axios.post('{{ route("admin.packages.store") }}', formData, {
-            //         headers: {
-            //             'Content-Type': 'multipart/form-data'
-            //         }
-            //     })
-            //     .then(response => {
-            //         if (response.data.success) {
-            //             this.showAlert('success', response.data.message);
-            //             setTimeout(() => {
-            //                 window.location.href = response.data.redirect;
-            //             }, 1000);
-            //         }
-            //     })
-            //     .catch(error => {
-            //         this.loading = false;
-                    
-            //         if (error.response?.data?.errors) {
-            //             const errors = Object.values(error.response.data.errors).flat();
-            //             this.showAlert('error', errors[0]);
-            //         } else {
-            //             this.showAlert('error', error.response?.data?.message || 'Error al guardar el paquete');
-            //         }
-            //     });
-            // }
-
             submitForm() {
                 this.loading = true;
 
@@ -715,6 +661,7 @@
                 // Agregar campos simples
                 formData.append('name', this.form.name);
                 formData.append('slug', this.form.slug);
+                formData.append('plan_type_id', this.form.plan_type_id || '');
                 formData.append('description', this.form.description || '');
                 formData.append('meta_description', this.form.meta_description || '');
                 formData.append('meta_keywords', this.form.meta_keywords || '');

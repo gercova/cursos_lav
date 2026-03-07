@@ -15,6 +15,7 @@ class PackageCourse extends Model
     protected $fillable     = [
         'package_id',
         'course_id',
+        'user_id',
         'quantity',      // Este es el campo correcto en tu tabla
         'sort_order',
     ];
@@ -27,11 +28,15 @@ class PackageCourse extends Model
     ];
 
     public function package(): BelongsTo {
-        return $this->belongsTo(Course::class, 'package_id', 'id');
+        return $this->belongsTo(Course::class, 'package_id', 'id')->where('type', 'package');
     }
 
     public function course(): BelongsTo {
-        return $this->belongsTo(Course::class, 'course_id', 'id');
+        return $this->belongsTo(Course::class, 'course_id', 'id')->where('type', 'course');
+    }
+
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function scopeByPackage($query, $packageId) {

@@ -7,8 +7,11 @@ use App\Http\Requests\StaffValidate;
 use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Enterprise;
 use App\Models\PackageCourse;
+use App\Models\PlanType;
 use App\Models\User;
+use App\Models\UserCoursePackage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,47 +25,51 @@ class BusinessManagementController extends Controller {
     }
 
     public function index(Request $request): View {
+        $enterprise     = Enterprise::first();
         // Saber si un usuario registrado como empresa tiene comprado un paquete
-        $hasAnyPackage = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
-        
-        // Obtener límite de usuarios
-        $countUser = User::where('company_code', auth()->user()->company_code)->count();
-        // $limitUser = CompanyPolicy::where('user_id', Auth::id())->first();
-        $limitUser = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos que tiene un paquete comprado
-        $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
-        
-        $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
-            ->where('users.parent_id', auth()->id())
-            ->where('users.id', '!=', auth()->id())
-            ->orderBy('created_at', 'desc');
+        $hasAnyPackage  = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
 
-        // Filtros
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('names', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('dni', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
+        if($hasAnyPackage){
+            // Obtener límite de usuarios
+            $countUser      = User::where('company_code', auth()->user()->company_code)->count();
+            $limitUser      = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos que tiene un paquete comprado
+            $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
+            
+            $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
+                ->where('users.parent_id', auth()->id())
+                ->where('users.id', '!=', auth()->id())
+                ->orderBy('created_at', 'desc');
+
+            // Filtros
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('names', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('dni', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('status')) {
+                $query->where('is_active', $request->status);
+            }
+
+            $users = $query->paginate(10);
+
+            $enrolledPackage = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos
+
+            $stats = [
+                'total'         => User::where('users.company_code', auth()->user()->company_code)->where('users.id', '!=', Auth::id())->count(),
+                'seats_max'     => $enrolledPackage->seats_max,
+                'available'     => $availableSlots,
+                'limit'         => ($limitUser->quantity ?? 0) + 1,
+            ];
+
+            return view('student.company.index', compact('users', 'stats', 'hasAnyPackage'));
+        } else {
+            return view('student.company.void', compact('enterprise'));
         }
-
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status);
-        }
-
-        $users = $query->paginate(10);
-
-        $enrolledPackage = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos
-
-        $stats = [
-            'total'         => User::where('users.company_code', auth()->user()->company_code)->where('users.id', '!=', Auth::id())->count(),
-            'seats_max'     => $enrolledPackage->seats_max,
-            'available'     => $availableSlots,
-            'limit'         => ($limitUser->quantity ?? 0) + 1,
-        ];
-
-        return view('student.company.index', compact('users', 'stats', 'hasAnyPackage'));
     }
 
     public function createStaff(User $user): View {
@@ -146,37 +153,48 @@ class BusinessManagementController extends Controller {
      * Vista para matricular usuarios con código
      */
     public function enrollUsers(): View {
-        // Obtener todos los colaboradores de la empresa
-        $collaborators = User::where('company_code', auth()->user()->company_code)
-            ->where('is_active', true)
-            ->where('id', '!=', Auth::id())
-            ->orderBy('names')
-            ->get();
+        $enterprise     = Enterprise::first();
+        $hasAnyPackage  = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
 
-        $findPackageEnrollments = Enrollment::with(['course.category', 'course.sections.lessons'])
-            ->where('user_id', auth()->id())
-            ->whereHas('course', function($query) {
-                $query->where('type', 'course');
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
-            
-        $enrolledPackage = User::find(auth()->id())
-            ->studentCourses()
-            ->where('courses.type', 'package')
-            ->exists();
-        
-        if($enrolledPackage){
-            $courses = PackageCourse::where('user_id', auth()->id())->get();
-        }else{
-            // Si no hay paquete o el packete este
-            $courses = Course::where('is_active', true)
-                ->with('instructor')
-                ->orderBy('title')
+        if($hasAnyPackage){
+            // Obtener todos los colaboradores de la empresa
+            $collaborators = User::where('company_code', auth()->user()->company_code)
+                ->where('is_active', true)
+                // ->where('id', '!=', Auth::id()) // Evita listar para matricular al usuario padres de la cuenta también
+                ->orderBy('names')
                 ->get();
-        }
             
-        return view('student.company.enroll-users', compact('collaborators', 'courses'));
+            // $enrolledUsers = Enrollment::with('users')->get();
+
+            $totalCourses   = Course::where('is_active', true)->get();
+
+            // Verifica que el usuario padre está matriculado estrictamente en un paquete
+            $package = Enrollment::where('user_id', Auth::id())
+                ->whereHas('package') 
+                ->with('package')
+                ->first();
+
+            $enrolledPackage = User::find(auth()->id())
+                ->studentCourses()
+                ->where('courses.type', 'package')
+                ->exists();
+
+            $planType = PlanType::get();
+            
+            if($enrolledPackage){
+                if ($package->package->plan_type_id == 1 && $package->package->course_limit > 0) {
+                    $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
+                } elseif($package->package->plan_type_id !== 1 && $package->package->course_limit == 0) {
+                    $courses = PackageCourse::with('course')->where('package_id', $package->id)->get();
+                } else {
+                    $course = Course::where('is_active', true)->get();
+                }
+            }
+                
+            return view('student.company.enroll-users', compact('collaborators', 'totalCourses', 'package', 'planType', 'courses'));
+        } else {
+            return view('student.company.void', compact('enterprise'));
+        }
     }
 
     /**
@@ -188,12 +206,11 @@ class BusinessManagementController extends Controller {
             'course_id' => 'required|exists:courses,id',
         ]);
 
-        $codeE      = User::where('id', Auth::id())->first();
         $student    = User::find($request->user_id);
         $course     = Course::find($request->course_id);
 
         // Verificar que el estudiante pertenezca a la empresa
-        if ($student->company_code !== $codeE->company_code) {
+        if ($student->parent_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'El usuario no pertenece a tu empresa'
@@ -222,12 +239,6 @@ class BusinessManagementController extends Controller {
                 'progress'      => 0,
                 'status'        => 'active',
             ]);
-
-            // Registrar el uso del código de promoción
-            // $coursePromotionCode->increment('used_count');
-
-            // Si el estudiante tiene código, incrementar sus ventas (opcional)
-            // $student->increment('courses_sold_count');
 
             DB::commit();
 
@@ -261,7 +272,7 @@ class BusinessManagementController extends Controller {
             'course_id'     => 'required|exists:courses,id',
         ]);
 
-        $codeE  = User::where('id', Auth::id())->first();
+        // $codeE  = User::where('id', Auth::id())->first();
         $course = Course::find($request->course_id);
 
         $results = [
@@ -274,8 +285,8 @@ class BusinessManagementController extends Controller {
             foreach ($request->user_ids as $userId) {
                 $student = User::find($userId);
 
-                // Verificar que el estudiante pertenezca a la empresa
-                if ($student->company_code !== $codeE->company_code) {
+                // Verificiar que el estudiante tenga el parent_id del usuario que lo registro
+                if ($student->parent_id !== Auth::id()) {
                     $results['failed'][] = [
                         'user'      => $student->names,
                         'reason'    => 'No pertenece a tu empresa'
@@ -337,8 +348,7 @@ class BusinessManagementController extends Controller {
      * Obtener usuarios sin código de promoción
      */
     public function getUsersWithoutCode(): JsonResponse {
-        $codeE = User::where('id', Auth::id())->first();
-        $users = User::where('company_code', $codeE->company_code)
+        $users = User::where('parent_id', Auth::id())
             ->where('id', '!=', Auth::id())
             ->whereNull('code')
             ->select('id', 'names', 'email', 'dni')
@@ -376,17 +386,30 @@ class BusinessManagementController extends Controller {
      */
 
     public function superBulkEnroll(Request $request): JsonResponse {
-        $codeE = User::where('id', Auth::id())->first();
-        
-        // Obtener todos los colaboradores (sin filtrar por código)
-        $students = User::where('company_code', $codeE->company_code)
-            ->where('id', '!=', Auth::id())
-            ->get(); // sin whereNotNull('code')
-        
-        // Obtener todos los cursos activos con precio de promoción
-        $courses = Course::where('is_active', true)
-            // ->whereNotNull('promotion_price')
+        // Obtener todos los colaboradores (filtrados por el id del usuario padre)
+        $students = User::where('parent_id', Auth::id())
+            ->orWhere('id', Auth::id()) // Incluimos al usuario padre para matricular en los cursos
             ->get();
+        
+        // Obtener todos los cursos activos por paquete o tipo de paquete
+        // Verifica que el usuario padre está matriculado estrictamente en un paquete
+            $package = Enrollment::where('user_id', Auth::id())
+                ->whereHas('package') 
+                ->with('package')
+                ->first();
+
+        // Verificamos que el paquete tenga cursos 
+        $packageWithCourses = PackageCourse::with('course')->where('package_id', $package->course_id)->exists();
+
+        if($packageWithCourses){
+            // Paquete con cursos
+            $courses = PackageCourse::with('course')->where('package_id', $package)->get();
+            // Verificamos si el paquete el plan del paquete es 'Plan Básico' con un límite de cursos > 0
+        }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
+            $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
+        }else{
+            $course = Course::where('is_active', true)->get();
+        }
 
         if ($students->isEmpty()) {
             return response()->json([

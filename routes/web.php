@@ -102,19 +102,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
 
     // Pagos
-    Route::get('/checkout',                             [PaymentController::class, 'checkout'])->name('payment.checkout');
-    // Route::post('/payment/process-culqi',               [PaymentController::class, 'processCulqiPayment']);
-    // Route::post('/payment/process-pago-efectivo',       [PaymentController::class, 'processPagoEfectivo']);
-    // PagoEfectivo CIP
-    // Route::get('/payment/cip-instructions/{payment}',   [PaymentController::class, 'cipInstructions'])->name('payment.cip-instructions');
-    // Route::get('/payment/cip-status/{payment}',         [PaymentController::class, 'cipStatus']);
-
-    // Webhook (sin autenticación)
-    // Route::post('/payment/webhook',                     [PaymentController::class, 'webhook']);
-
-    // Rutas para código de promoción
-    // Route::post('/apply-promo-code',                [PaymentController::class, 'applyPromoCode'])->name('payment.apply-promo-code');
-    // Route::post('/remove-promo-code',               [PaymentController::class, 'removePromoCode'])->name('payment.remove-promo-code');
+    Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
     // si usuario tiene RUC
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');

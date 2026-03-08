@@ -189,7 +189,7 @@
                 <h3 class="text-lg font-bold text-gray-800 mb-4">Instructor</h3>
                 <div class="flex items-center">
                     <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                        <img src="{{ $course->instructor->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($course->instructor->name) . '&color=7F9CF5&background=EBF4FF' }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
+                        <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800">{{ $course->instructor->name }}</h4>

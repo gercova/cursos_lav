@@ -321,7 +321,7 @@ class DashboardController extends Controller {
                 'date'      => $exam->start_date->format('d/m'),
                 'time'      => $exam->start_date->format('H:i'),
                 'duration'  => $exam->duration ? $exam->duration . ' min' : 'Sin duración',
-                'link'      => route('student.exam.show', $exam->id),
+                'link'      => route('student.exams.show', $exam->id),
                 'urgency'   => $daysUntil <= 2 ? 'high' : ($daysUntil <= 7 ? 'medium' : 'low')
             ];
         });
@@ -346,8 +346,8 @@ class DashboardController extends Controller {
                 'course'        => $certificate->course->title ?? ($certificate->exam->title ?? 'Curso'),
                 'date'          => $certificate->issued_at ? $certificate->issued_at->format('d/m/Y') : 'No emitido',
                 'score'         => $certificate->score ? round($certificate->score, 1) . '%' : null,
-                'link'          => route('student.certificate.show', $certificate->id),
-                'download_link' => route('student.certificate.download', $certificate->id)
+                'link'          => route('student.certificates.show', $certificate->id),
+                'download_link' => route('student.certificates.download-exact', $certificate->id)
             ];
         });
 

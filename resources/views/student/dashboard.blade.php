@@ -220,7 +220,7 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-4">
+                    <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
                         @forelse($upcomingExams as $exam)
                             <a href="{{ route('student.exams') }}" class="block bg-gradient-to-r from-red-50 to-white hover:from-red-100 hover:to-red-50 border border-red-200 rounded-xl p-4 transition-all duration-200 card-hover">
                                 <div class="flex items-start">
@@ -277,7 +277,7 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-4">
+                    <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
                         @forelse($certificates as $cert)
                             <div class="bg-gradient-to-r from-yellow-50 to-white border border-yellow-200 rounded-xl p-4">
                                 <div class="flex items-start">
@@ -308,16 +308,16 @@
                                 <p class="text-sm text-gray-600">Completa cursos y exámenes para obtener tus primeros certificados.</p>
                             </div>
                         @endforelse
-                        
-                        @if($certificates->count() >= 5)
-                        <div class="text-center pt-4 border-t border-yellow-100">
-                            <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
-                                <span>Ver todos mis certificados</span>
-                                <i class="fas fa-arrow-right ml-2"></i>
-                            </a>
-                        </div>
-                        @endif
                     </div>
+                        
+                    @if($certificates->count() >= 5)
+                    <div class="text-center pt-4 mt-2 border-t border-yellow-100">
+                        <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
+                            <span>Ver todos mis certificados</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -778,6 +778,24 @@
 
 <!-- Estilos adicionales -->
 <style>
+    /* Estilos para el scrollbar personalizado */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f8fafc; /* Color de fondo sutil (slate-50) */
+        border-radius: 8px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1; /* Color de la barra (slate-300) */
+        border-radius: 8px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; /* Color más oscuro al pasar el ratón (slate-400) */
+    }
     .card-hover {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }

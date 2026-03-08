@@ -20,18 +20,27 @@ class DashboardController extends Controller {
     }
 
     public function index(): View {
-        $user           = Auth::user(); 
-        $enrollments    = Enrollment::with(['course.category', 'course.sections.lessons'])
+        $user = Auth::user(); 
+        
+        // 1. Añadimos whereHas('course') para traer SOLO inscripciones que sean de tipo 'course'
+        $enrollments = Enrollment::with(['course.category', 'course.sections.lessons'])
             ->where('user_id', $user->id)
+            ->whereHas('course') // <-- Esta es la clave principal
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $coursesData        = $enrollments->map(function($enrollment) {
-            $course         = $enrollment->course;
+        $coursesData = $enrollments->map(function($enrollment) {
+            $course = $enrollment->course;
+
+            // 2. Salvaguarda: Si el curso es null (ej. es un paquete), retornamos null
+            if (!$course) {
+                return null;
+            }
+
             $progress       = $enrollment->progress ?: 0;
             $totalLessons   = 0;
 
-            // Calcular total de lecciones
+            // Ahora es seguro calcular el total de lecciones
             if ($course->sections) {
                 $totalLessons = $course->sections->sum(function($section) {
                     return $section->lessons ? $section->lessons->count() : 0;
@@ -51,13 +60,40 @@ class DashboardController extends Controller {
                 'lessons'           => $totalLessons,
                 'duration'          => $course->duration ?: '0 horas',
                 'enrolled_date'     => $enrollment->created_at->format('d/m/Y'),
-                'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i'),
+                'last_accessed'     => $enrollment->last_accessed_at ? 
+                    $enrollment->last_accessed_at->format('d/m/Y H:i') : 
+                    now()->format('d/m/Y H:i'),
                 'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
                 'total_lessons'     => $totalLessons,
                 'continue_url'      => route('student.course.learn', $course)
             ];
-        });
-        return view('student.dashboard', compact('coursesData'));
+        })->filter()->values(); // 3. filter() elimina los 'null' del array y values() reordena los índices
+
+        // 2. Actividad Reciente (Últimas 10)
+        $recentActivities = UserActivity::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // 3. Exámenes Pendientes (Exámenes de los cursos inscritos que aún no han sido aprobados)
+        $upcomingExams = Exam::whereHas('course.enrollments', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->whereDoesntHave('examAttempts', function($q) use ($user) {
+                $q->where('user_id', $user->id)->where('passed', true);
+            })
+            ->where('is_active', true)
+            ->limit(5)
+            ->get();
+
+        // 4. Certificados Obtenidos (Últimos obtenidos)
+        $certificates = Certificate::with(['course', 'examAttempt'])
+            ->where('user_id', $user->id)
+            ->orderBy('issue_date', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('student.dashboard', compact('coursesData', 'recentActivities', 'upcomingExams', 'certificates'));
     }
 
     public function stats(Request $request) {

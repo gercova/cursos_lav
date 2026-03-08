@@ -170,12 +170,35 @@
                     <h2 class="text-lg font-semibold text-gray-900">Actividad Reciente</h2>
                 </div>
                 <div class="p-6">
-                    <div id="recent-activity" class="space-y-4">
-                        <!-- Las actividades se cargarán via JavaScript -->
-                        <div class="text-center py-8">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                            <p class="mt-4 text-gray-500">Cargando actividad...</p>
-                        </div>
+                    <div class="space-y-4">
+                        @forelse($recentActivities as $activity)
+                            <div class="flex items-start p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 border border-gray-100">
+                                <div class="flex-shrink-0 mt-1">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-{{ $activity->color ?? 'blue' }}-100 to-{{ $activity->color ?? 'blue' }}-50 rounded-xl flex items-center justify-center border border-{{ $activity->color ?? 'blue' }}-200">
+                                        <i class="fas fa-{{ $activity->icon ?? 'circle' }} text-{{ $activity->color ?? 'blue' }}-600"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <p class="text-sm font-medium text-gray-900">{{ $activity->description }}</p>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <p class="text-xs text-gray-500">
+                                            <i class="far fa-clock mr-1"></i>{{ $activity->formatted_date }}
+                                        </p>
+                                        <span class="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-{{ $activity->color ?? 'blue' }}-100 text-{{ $activity->color ?? 'blue' }}-800">
+                                            {{ __('actividades.' . $activity->type ?? $activity->type) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
+                                    <i class="fas fa-history text-2xl text-gray-400"></i>
+                                </div>
+                                <p class="text-gray-900 font-medium mb-2">No hay actividad reciente</p>
+                                <p class="text-sm text-gray-600">Comienza a interactuar con los cursos para ver actividad.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -197,11 +220,45 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <div id="upcoming-exams" class="space-y-4">
-                        <!-- Los exámenes se cargarán via JavaScript -->
-                        <div class="text-center py-4">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600 mx-auto"></div>
-                        </div>
+                    <div class="space-y-4">
+                        @forelse($upcomingExams as $exam)
+                            <a href="{{ route('student.exams') }}" class="block bg-gradient-to-r from-red-50 to-white hover:from-red-100 hover:to-red-50 border border-red-200 rounded-xl p-4 transition-all duration-200 card-hover">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-lg flex flex-col items-center justify-center border border-red-200">
+                                        <i class="fas fa-clipboard-list text-red-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="text-sm font-semibold text-gray-900">{{ $exam->title }}</h4>
+                                            <span class="ml-2 px-2 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">
+                                                Pendiente
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">{{ $exam->course->title ?? 'Curso general' }}</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-full">
+                                                <i class="fas fa-clock mr-1 text-xs"></i>
+                                                {{ $exam->duration }} min
+                                            </span>
+                                            @if($exam->passing_score)
+                                            <span class="ml-2 inline-flex items-center px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">
+                                                <i class="fas fa-bullseye mr-1 text-xs"></i>
+                                                Aprobación: {{ $exam->passing_score }}%
+                                            </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-100 to-red-50 rounded-2xl flex items-center justify-center border border-red-200">
+                                    <i class="fas fa-file-alt text-2xl text-red-400"></i>
+                                </div>
+                                <p class="text-gray-900 font-medium mb-2">No hay exámenes pendientes</p>
+                                <p class="text-sm text-gray-600">¡Buen trabajo! Estás al día con tus evaluaciones.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -220,11 +277,46 @@
                     </div>
                 </div>
                 <div class="p-6">
-                    <div id="certificates-list" class="space-y-4">
-                        <!-- Los certificados se cargarán via JavaScript -->
-                        <div class="text-center py-4">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600 mx-auto"></div>
+                    <div class="space-y-4">
+                        @forelse($certificates as $cert)
+                            <div class="bg-gradient-to-r from-yellow-50 to-white border border-yellow-200 rounded-xl p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg flex items-center justify-center border border-yellow-200">
+                                        <i class="fas fa-certificate text-yellow-600"></i>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <h4 class="text-sm font-semibold text-gray-900 truncate">Certificado de Finalización</h4>
+                                        <p class="text-xs text-gray-600 mt-1">{{ $cert->course->title ?? 'Curso completado' }}</p>
+                                        <div class="flex justify-between items-center mt-3">
+                                            <span class="text-xs text-yellow-700 font-medium">
+                                                <i class="fas fa-award mr-1"></i>
+                                                Obtenido: {{ $cert->issue_date->format('d/m/Y') }}
+                                            </span>
+                                            <a href="{{ $cert->verification_url }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                                Ver <i class="fas fa-external-link-alt ml-1"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-2xl flex items-center justify-center border border-yellow-200">
+                                    <i class="fas fa-certificate text-2xl text-yellow-400"></i>
+                                </div>
+                                <p class="text-gray-900 font-medium mb-2">No hay certificados</p>
+                                <p class="text-sm text-gray-600">Completa cursos y exámenes para obtener tus primeros certificados.</p>
+                            </div>
+                        @endforelse
+                        
+                        @if($certificates->count() >= 5)
+                        <div class="text-center pt-4 border-t border-yellow-100">
+                            <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
+                                <span>Ver todos mis certificados</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>

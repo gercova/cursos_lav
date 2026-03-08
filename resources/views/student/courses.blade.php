@@ -189,7 +189,7 @@
                                     <a href="{{ route('course.show', $course->slug) }}">
                                         <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
                                             <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
-                                            <div x-show="{{ $course->image_url }}" class="absolute inset-0 flex items-center justify-center" style="display: none;">
+                                            <div class="absolute inset-0 flex items-center justify-center" style="display: none;">
                                                 <i class="fas fa-book text-white text-5xl opacity-20"></i>
                                             </div>
                                         </div>
@@ -208,14 +208,14 @@
                                                     <div class="flex items-center mt-2 space-x-4">
                                                         <span class="text-sm text-gray-600">
                                                             <i class="fas fa-layer-group mr-1"></i>
-                                                            <span x-text="course.modules">{{ $course->sections->count() }}</span> Módulos
+                                                            <span>{{ $course->sections->count() }}</span> {{ $course->sections->count() > 1 ? 'Módulos' : 'Módulo' }} 
                                                         </span>
                                                         <span class="text-sm text-gray-600">
                                                             <i class="fas fa-video mr-1"></i>
-                                                            <span x-text="course.lessons">{{ $course->lessons->count() }}</span> Lecciones
+                                                            <span>{{ $course->lessons->count() }}</span> {{ $course->lessons->count() > 1 ? 'Lecciones' : 'Lección' }}
                                                         </span>
                                                     </div>
-                                                    <p class="text-gray-600 mt-3" x-text="course.description">{{ $course->description }}</p>
+                                                    <p class="text-gray-600 mt-3">{{ $course->description }}</p>
                                                 </div>
                                                 <div class="flex items-center gap-2 mb-2">
                                                     <div class="lg:text-right">
@@ -499,13 +499,13 @@
         }
 
         updateResultsCount() {
-            const courseCards = document.querySelectorAll('.course-card');
-            const resultsCount = document.getElementById('results-count');
+            const courseCards       = document.querySelectorAll('.course-card');
+            const resultsCount      = document.getElementById('results-count');
             const filterDescription = document.getElementById('filter-description');
-            const emptyState = document.getElementById('empty-state');
-            const gridContainer = document.getElementById('grid-view-container');
-            const listContainer = document.getElementById('list-view-container');
-            const paginationInfo = document.getElementById('pagination-info');
+            const emptyState        = document.getElementById('empty-state');
+            const gridContainer     = document.getElementById('grid-view-container');
+            const listContainer     = document.getElementById('list-view-container');
+            const paginationInfo    = document.getElementById('pagination-info');
 
             const count = courseCards.length;
             const total = paginationInfo?.dataset.total || count;
@@ -582,10 +582,7 @@
             filterElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 animate-fade-in';
             filterElement.innerHTML = `
                 <span>${text}</span>
-                <button type="button"
-                        onclick="coursesPage.removeFilter('${type}')"
-                        class="text-blue-600 hover:text-blue-800 focus:outline-none"
-                        aria-label="Eliminar filtro">
+                <button type="button" onclick="coursesPage.removeFilter('${type}')" class="text-blue-600 hover:text-blue-800 focus:outline-none" aria-label="Eliminar filtro">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>

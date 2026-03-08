@@ -77,7 +77,7 @@
                             <a href="{{ route('course.show', $course->slug) }}">
                                 <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
                                     <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
-                                    <div x-show="{{ $course->image_url }}" class="absolute inset-0 flex items-center justify-center" style="display: none;">
+                                    <div class="absolute inset-0 flex items-center justify-center" style="display: none;">
                                         <i class="fas fa-book text-white text-5xl opacity-20"></i>
                                     </div>
                                 </div>
@@ -96,14 +96,14 @@
                                             <div class="flex items-center mt-2 space-x-4">
                                                 <span class="text-sm text-gray-600">
                                                     <i class="fas fa-layer-group mr-1"></i>
-                                                    <span x-text="course.modules">{{ $course->sections->count() }}</span> Módulos
+                                                    <span>{{ $course->sections->count() }}</span> {{ $course->sections->count() > 1 ? 'Módulos' : 'Módulo' }} 
                                                 </span>
                                                 <span class="text-sm text-gray-600">
                                                     <i class="fas fa-video mr-1"></i>
-                                                    <span x-text="course.lessons">{{ $course->lessons->count() }}</span> Lecciones
+                                                    <span>{{ $course->lessons->count() }}</span> {{ $course->lessons->count() > 1 ? 'Lecciones' : 'Lección' }}
                                                 </span>
                                             </div>
-                                            <p class="text-gray-600 mt-3" x-text="course.description">{{ $course->description }}</p>
+                                            <p class="text-gray-600 mt-3">{{ $course->description }}</p>
                                         </div>
                                         <div class="flex items-center gap-2 mb-2">
                                             <div class="lg:text-right">

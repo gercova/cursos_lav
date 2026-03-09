@@ -80,19 +80,20 @@
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 mt-2">
                     <a href="{{ url('/') }}" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Inicio</a>
                     <a href="{{ route('cursos') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Cursos</a>
+                    <a href="{{ route('paquetes') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios para empresas</a>
                     <a href="{{ route('nosotros') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
                     <a href="{{ route('contacto') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
 
                     <!-- Enlaces de autenticación para móviles (solo para usuarios no autenticados) -->
-                    @guest
+                    {{-- @guest
                         <div class="pt-4 pb-3 border-t border-gray-200">
                             <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">Iniciar Sesión</a>
                             <a href="{{ route('register') }}" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-sm">Registrarse</a>
                         </div>
-                    @endguest
+                    @endguest --}}
 
                     <!-- Menú de usuario para móviles (solo para usuarios autenticados) -->
-                    @auth
+                    {{-- @auth
                         <div class="px-3 py-2">
                             <div class="text-base font-medium text-gray-800">{{ auth()->user()->names }}</div>
                             <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
@@ -120,7 +121,7 @@
                                 </button>
                             </form>
                         </div>
-                    @endauth
+                    @endauth --}}
                 </div>
             </div>
         </div>
@@ -173,6 +174,7 @@
                     <ul class="space-y-2">
                         <li><a href="{{ url('/') }}" class="text-gray-300 hover:text-white">Inicio</a></li>
                         <li><a href="{{ route('cursos') }}" class="text-gray-300 hover:text-white">Cursos</a></li>
+                        <li><a href="{{ route('paquetes') }}" class="text-gray-300 hover:text-white">Servicios para empresas</a></li>
                         <li><a href="{{ route('nosotros') }}" class="text-gray-300 hover:text-white">Nosotros</a></li>
                         <li><a href="{{ route('contacto') }}" class="text-gray-300 hover:text-white">Contacto</a></li>
                     </ul>

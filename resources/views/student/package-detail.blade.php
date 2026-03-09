@@ -311,9 +311,7 @@
                         </div>
                         
                         <!-- Botón de añadir al carrito (sidebar) -->
-                        <button @click="addToCart" 
-                                :disabled="isInCart || loading"
-                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mb-4">
+                        <button onclick="addToCart({{ $package->id }})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mb-4">
                             <template x-if="!loading && !isInCart">
                                 <span class="flex items-center gap-2">
                                     <i class="fas fa-cart-plus"></i>
@@ -402,92 +400,192 @@
 
 @section('scripts')
 <script>
-function packageDetail() {
-    return {
-        // Estado del carrito
-        isInCart: false,
-        loading: false,
-        packageId: null,
-        packagePrice: 0,
-        
-        // Notificaciones
-        notification: {
-            show: false,
-            title: '',
-            message: ''
-        },
-        
-        // Inicialización
-        init(packageId, packagePrice) {
-            this.packageId = packageId;
-            this.packagePrice = packagePrice;
-            this.checkCartStatus();
-        },
-        
-        // Verificar si el paquete ya está en el carrito
-        checkCartStatus() {
-            // Aquí implementas la lógica para verificar el carrito
-            // Puede ser desde localStorage, sesión, o una petición AJAX
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            this.isInCart = cart.some(item => item.id === this.packageId && item.type === 'package');
-        },
-        
-        // Añadir al carrito
-        async addToCart() {
-            if (this.isInCart || this.loading) return;
+    function packageDetail() {
+        return {
+            // Estado del carrito
+            isInCart: false,
+            loading: false,
+            packageId: null,
+            packagePrice: 0,
             
-            this.loading = true;
+            // Notificaciones
+            notification: {
+                show: false,
+                title: '',
+                message: ''
+            },
             
-            try {
-                // Aquí implementas la lógica real de añadir al carrito
-                // Ejemplo con localStorage:
+            // Inicialización
+            init(packageId, packagePrice) {
+                this.packageId = packageId;
+                this.packagePrice = packagePrice;
+                this.checkCartStatus();
+            },
+            
+            // Verificar si el paquete ya está en el carrito
+            checkCartStatus() {
+                // Aquí implementas la lógica para verificar el carrito
+                // Puede ser desde localStorage, sesión, o una petición AJAX
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                cart.push({
-                    id: this.packageId,
-                    type: 'package',
-                    price: this.packagePrice,
-                    quantity: 1,
-                    addedAt: new Date().toISOString()
-                });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                
-                // Actualizar contador del carrito si existe
-                if (window.updateCartCount) {
-                    window.updateCartCount();
-                }
-                
-                this.isInCart = true;
-                
-                // Mostrar notificación
-                this.showNotification('¡Éxito!', 'Paquete añadido al carrito');
-                
-                // Disparar evento personalizado
-                window.dispatchEvent(new CustomEvent('cart-updated', { 
-                    detail: { itemId: this.packageId, type: 'package' }
-                }));
-                
-            } catch (error) {
-                console.error('Error al añadir al carrito:', error);
-                this.showNotification('Error', 'No se pudo añadir al carrito', 'error');
-            } finally {
-                this.loading = false;
-            }
-        },
-        
-        // Mostrar notificación
-        showNotification(title, message, type = 'success') {
-            this.notification = {
-                show: true,
-                title: title,
-                message: message
-            };
+                this.isInCart = cart.some(item => item.id === this.packageId && item.type === 'package');
+            },
             
-            setTimeout(() => {
-                this.notification.show = false;
-            }, 3000);
+            // Añadir al carrito
+            // async addToCart() {
+            //     if (this.isInCart || this.loading) return;
+                
+            //     this.loading = true;
+                
+            //     try {
+            //         // Aquí implementas la lógica real de añadir al carrito
+            //         // Ejemplo con localStorage:
+            //         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            //         cart.push({
+            //             id: this.packageId,
+            //             type: 'package',
+            //             price: this.packagePrice,
+            //             quantity: 1,
+            //             addedAt: new Date().toISOString()
+            //         });
+            //         localStorage.setItem('cart', JSON.stringify(cart));
+                    
+            //         // Actualizar contador del carrito si existe
+            //         if (window.updateCartCount) {
+            //             window.updateCartCount();
+            //         }
+                    
+            //         this.isInCart = true;
+                    
+            //         // Mostrar notificación
+            //         this.showNotification('¡Éxito!', 'Paquete añadido al carrito');
+                    
+            //         // Disparar evento personalizado
+            //         window.dispatchEvent(new CustomEvent('cart-updated', { 
+            //             detail: { itemId: this.packageId, type: 'package' }
+            //         }));
+                    
+            //     } catch (error) {
+            //         console.error('Error al añadir al carrito:', error);
+            //         this.showNotification('Error', 'No se pudo añadir al carrito', 'error');
+            //     } finally {
+            //         this.loading = false;
+            //     }
+            // },
+            
+            // Mostrar notificación
+            // showNotification(title, message, type = 'success') {
+            //     this.notification = {
+            //         show: true,
+            //         title: title,
+            //         message: message
+            //     };
+                
+            //     setTimeout(() => {
+            //         this.notification.show = false;
+            //     }, 3000);
+            // }
         }
     }
-}
+
+    // Función global para agregar al carrito
+    async function addToCart(courseId) {
+        const btn = event?.target;
+        if (btn) {
+            btn.disabled    = true;
+            btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+        }
+
+        try {
+            const response = await fetch(`/cart/add/${courseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✓ Curso agregado al carrito', 'success');
+                updateCartCount();
+            } else if(data.success == false) {
+                showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+            } else {
+                throw new Error(data.message || 'Error al agregar el curso');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+
+            if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+                showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showNotification('Error al agregar el curso al carrito', 'error');
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Agregar';
+            }
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        // Remover notificaciones existentes
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
+
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-lg">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    async function updateCartCount() {
+        try {
+            const response = await fetch('/api/cart/count', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount && data.count !== undefined) {
+                cartCount.textContent = data.count;
+
+                // Animación del contador
+                cartCount.classList.add('animate-bounce');
+                setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
+    }
 </script>
 
 <style>

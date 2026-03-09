@@ -330,11 +330,105 @@
             form.submit();
         });
     });
-    
-    // Función para agregar al carrito
-    function addToCart(itemId, itemType) {
-        // Alerta de placeholder, reemplaza esto con la lógica real de tu carrito
-        alert('Producto agregado al carrito (funcionalidad en desarrollo)');
+
+    // Función global para agregar al carrito
+    async function addToCart(courseId) {
+        const btn = event?.target;
+        if (btn) {
+            btn.disabled    = true;
+            btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+        }
+
+        try {
+            const response = await fetch(`/cart/add/${courseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✓ Curso agregado al carrito', 'success');
+                updateCartCount();
+            } else if(data.success == false) {
+                showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+            } else {
+                throw new Error(data.message || 'Error al agregar el curso');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+
+            if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+                showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showNotification('Error al agregar el curso al carrito', 'error');
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Agregar';
+            }
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        // Remover notificaciones existentes
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
+
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-lg">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    async function updateCartCount() {
+        try {
+            const response = await fetch('/api/cart/count', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount && data.count !== undefined) {
+                cartCount.textContent = data.count;
+
+                // Animación del contador
+                cartCount.classList.add('animate-bounce');
+                setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
     }
 </script>
 

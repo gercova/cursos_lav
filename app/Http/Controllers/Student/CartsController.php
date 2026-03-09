@@ -24,7 +24,7 @@ class CartsController extends Controller {
 
         // Calcular totales
         $subtotal   = Cart::getTotal($userId);
-        $tax        = $subtotal * 0.18; // 18% de impuesto (ajusta según tu país)
+        $tax        = $subtotal * 0.0; // 18% de impuesto (ajusta según tu país)
         $total      = $subtotal + $tax;
 
         // Verificar si hay un cupón activo en la sesión

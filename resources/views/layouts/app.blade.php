@@ -83,45 +83,6 @@
                     <a href="{{ route('paquetes') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios para empresas</a>
                     <a href="{{ route('nosotros') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
                     <a href="{{ route('contacto') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
-
-                    <!-- Enlaces de autenticación para móviles (solo para usuarios no autenticados) -->
-                    {{-- @guest
-                        <div class="pt-4 pb-3 border-t border-gray-200">
-                            <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">Iniciar Sesión</a>
-                            <a href="{{ route('register') }}" class="mt-1 block px-3 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-sm">Registrarse</a>
-                        </div>
-                    @endguest --}}
-
-                    <!-- Menú de usuario para móviles (solo para usuarios autenticados) -->
-                    {{-- @auth
-                        <div class="px-3 py-2">
-                            <div class="text-base font-medium text-gray-800">{{ auth()->user()->names }}</div>
-                            <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
-                        </div>
-                        <div class="mt-3 space-y-1">
-                            <a href="{{ route('student.dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
-                                <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                            </a>
-                            <a href="{{ route('student.my-courses') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
-                                <i class="fas fa-book mr-2"></i>Mis Cursos
-                            </a>
-                            <a href="{{ route('student.profile') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
-                                <i class="fas fa-user mr-2"></i>Mi Perfil
-                            </a>
-                            <a href="{{ route('student.certificates') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
-                                <i class="fas fa-certificate mr-2"></i>Certificados
-                            </a>
-                            <a href="{{ route('student.progress') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-blue-600 hover:bg-gray-50 transition-colors duration-200">
-                                <i class="fas fa-chart-line mr-2"></i>Mi Progreso
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-gray-50 transition-colors duration-200">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
-                                </button>
-                            </form>
-                        </div>
-                    @endauth --}}
                 </div>
             </div>
         </div>

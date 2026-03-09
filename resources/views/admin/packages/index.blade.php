@@ -56,7 +56,7 @@
                     @forelse($packages as $package)
                     <tr class="hover:bg-gray-50 transition duration-150">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $package->name }}</div>
+                            <div class="text-sm font-medium text-gray-900">{{ $package->title }}</div>
                             <div class="text-sm text-gray-500">Creado: {{ $package->created_at->format('d/m/Y') }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

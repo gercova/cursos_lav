@@ -16,7 +16,7 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="p-6 border-b border-gray-200">
                             <h2 class="text-xl font-semibold text-gray-800">
-                                Cursos seleccionados ({{ $cartItems->count() }})
+                                Ítems seleccionados ({{ $cartItems->count() }})
                             </h2>
                         </div>
 

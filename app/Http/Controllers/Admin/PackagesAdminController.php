@@ -61,7 +61,7 @@ class PackagesAdminController extends Controller {
             abort(404, 'El recurso solicitado no es un paquete válido');
         }
 
-        $categories = Category::where('is_active', true)->get();
+        $categories = Category::where('is_active', true)->where('id', '<>', '4')->get();
         $planType   = PlanType::get();
 
         // CORREGIDO: Obtener todos los cursos activos (no paquetes) para el selector

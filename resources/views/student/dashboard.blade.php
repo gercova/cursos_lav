@@ -170,7 +170,7 @@
                     <h2 class="text-lg font-semibold text-gray-900">Actividad Reciente</h2>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-4">
+                    <div class="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
                         @forelse($recentActivities as $activity)
                             <div class="flex items-start p-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 border border-gray-100">
                                 <div class="flex-shrink-0 mt-1">

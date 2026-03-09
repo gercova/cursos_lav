@@ -83,9 +83,7 @@
                             </div>
                             
                             <!-- Botón Añadir al Carrito (MODIFICADO) -->
-                            <button @click="addToCart" 
-                                    :disabled="isInCart || loading"
-                                    class="group relative px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 min-w-[200px]">
+                            <button onclick="addToCart({{ $package->id }})" class="group relative px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 min-w-[200px]">
                                 <template x-if="!loading && !isInCart">
                                     <span class="flex items-center gap-2">
                                         <i class="fas fa-cart-plus text-xl"></i>

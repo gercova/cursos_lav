@@ -1,10 +1,7 @@
 @extends('layouts.app')
 @section('title', $package->title . ' - ' . $enterprise->trade_name)
 @section('content')
-<div class="bg-gradient-to-b from-blue-50 to-white min-h-screen" 
-     x-data="packageDetail()" 
-     x-init="init({{ $package->id }}, {{ $package->final_price }})">
-    
+<div class="bg-gradient-to-b from-blue-50 to-white min-h-screen" x-data="packageDetail()" x-init="init({{ $package->id }}, {{ $package->final_price }})">
     <!-- Hero Section del Paquete -->
     <div class="relative overflow-hidden bg-gradient-to-r from-indigo-900 to-purple-900 py-12">
         <!-- Elementos decorativos -->
@@ -238,14 +235,37 @@
                     <!-- Resumen de valor total (basado en create.blade.php) -->
                     <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            @php
+                                // 1. Inicializamos la variable para evitar el "Undefined variable"
+                                $final_price = 0;
+                                
+                                // Corregido: Course en lugar de Courses y validación de plan_type_id
+                                if ($package->plan_type_id == 1 && $package->course_limit > 0) {
+                                    $averagePrice = \App\Models\Course::inRandomOrder()
+                                        ->limit($package->courses_limit)
+                                        ->get()
+                                        ->avg('price');
+                                    
+                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
+                                } 
+                                elseif ($package->plan_type_id !== 1) {
+                                    $averagePrice = \App\Models\Course::where('is_active', true)
+                                        ->get()
+                                        ->avg('price');
+                                    
+                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
+                                }
+                            @endphp
+
                             <div>
                                 <p class="text-sm text-indigo-600 font-medium">Valor total de cursos por separado</p>
-                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($package->courses->sum('price'), 2) }}</p>
+                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($final_price, 2) }}</p>
                             </div>
+
                             <div class="text-right">
                                 <p class="text-sm text-green-600 font-medium">Ahorro con este paquete</p>
                                 <p class="text-2xl font-bold text-green-600">
-                                    - S/ {{ number_format($package->courses->sum('price') - $package->final_price, 2) }}
+                                    S/ {{ number_format(max(0, $final_price - $package->price), 2) }}
                                 </p>
                             </div>
                         </div>
@@ -427,61 +447,6 @@
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 this.isInCart = cart.some(item => item.id === this.packageId && item.type === 'package');
             },
-            
-            // Añadir al carrito
-            // async addToCart() {
-            //     if (this.isInCart || this.loading) return;
-                
-            //     this.loading = true;
-                
-            //     try {
-            //         // Aquí implementas la lógica real de añadir al carrito
-            //         // Ejemplo con localStorage:
-            //         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            //         cart.push({
-            //             id: this.packageId,
-            //             type: 'package',
-            //             price: this.packagePrice,
-            //             quantity: 1,
-            //             addedAt: new Date().toISOString()
-            //         });
-            //         localStorage.setItem('cart', JSON.stringify(cart));
-                    
-            //         // Actualizar contador del carrito si existe
-            //         if (window.updateCartCount) {
-            //             window.updateCartCount();
-            //         }
-                    
-            //         this.isInCart = true;
-                    
-            //         // Mostrar notificación
-            //         this.showNotification('¡Éxito!', 'Paquete añadido al carrito');
-                    
-            //         // Disparar evento personalizado
-            //         window.dispatchEvent(new CustomEvent('cart-updated', { 
-            //             detail: { itemId: this.packageId, type: 'package' }
-            //         }));
-                    
-            //     } catch (error) {
-            //         console.error('Error al añadir al carrito:', error);
-            //         this.showNotification('Error', 'No se pudo añadir al carrito', 'error');
-            //     } finally {
-            //         this.loading = false;
-            //     }
-            // },
-            
-            // Mostrar notificación
-            // showNotification(title, message, type = 'success') {
-            //     this.notification = {
-            //         show: true,
-            //         title: title,
-            //         message: message
-            //     };
-                
-            //     setTimeout(() => {
-            //         this.notification.show = false;
-            //     }, 3000);
-            // }
         }
     }
 

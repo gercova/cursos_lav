@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
+use App\Models\PlanType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -217,7 +218,6 @@ class AppController extends Controller {
             return view('student.partials.packages-grid', compact('packages'))->render();
         }
 
-        // return view('student.packages', compact('packages', 'categories', 'enterprise'));
         return view('student.packages', compact('packages', 'enterprise'));
     }
 
@@ -249,10 +249,11 @@ class AppController extends Controller {
         
         // Total de cursos
         $package->total_courses = $package->courses->count();
-        
+
+        $planType   = PlanType::get();
         $enterprise = Enterprise::first();
 
-        return view('student.package-detail', compact('package', 'enterprise'));
+        return view('student.package-detail', compact('package', 'planType', 'enterprise'));
     }
 
     public function coursesPartner(Request $request, $code = null) {

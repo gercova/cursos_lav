@@ -11,6 +11,7 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,7 +21,7 @@ class LessonController extends Controller {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
 
-    public function show($courseSlug, $lessonId): View {
+    public function show($courseSlug, $lessonId): View|RedirectResponse {
         $user   = Auth::user();
         $course = Course::where('slug', $courseSlug)
             ->where('is_active', true)
@@ -37,6 +38,25 @@ class LessonController extends Controller {
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $course->id)
             ->firstOrFail();
+
+        $allLessons = $course->sections->pluck('lessons')->flatten();
+        
+        $currentIndex = $allLessons->search(function($item) use ($lessonId) {
+            return $item->id == $lessonId;
+        });
+
+        // Validar orden secuencial: Si no es la primera lección, exigir la anterior
+        if ($currentIndex !== false && $currentIndex > 0) {
+            $previousLesson = $allLessons[$currentIndex - 1];
+            $isPreviousCompleted = CompletedLessons::where('enrollment_id', $enrollment->id)
+                ->where('lesson_id', $previousLesson->id)
+                ->exists();
+
+            if (!$isPreviousCompleted) {
+                return redirect()->route('student.course.learn', $course->slug)
+                    ->with('error', 'Debes completar la lección anterior para acceder a esta.');
+            }
+        }
 
         // Obtener el progreso de esta lección específica
         $lessonProgress = LessonProgress::where('enrollment_id', $enrollment->id)
@@ -60,11 +80,6 @@ class LessonController extends Controller {
 
         return view('student.courses.lesson', compact('course', 'lesson', 'enrollment', 'lessonProgress', 'isCompleted', 'watchedPercent', 'exam'));
     }
-
-    // public function learn($slug){
-    //     $course = Course::where('slug', $slug)->firstOrFail();
-    //     return view('student.courses.learn', compact('course'));
-    // }
 
     public function saveProgress(Request $request): JsonResponse {
         set_time_limit(0);

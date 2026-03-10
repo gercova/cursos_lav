@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class Course extends Model
+class Course extends Model 
 {
     use HasFactory;
     protected $table        = 'courses';
@@ -208,11 +208,4 @@ class Course extends Model
             ->whereColumn('promotion_price', '<', 'price')
             ->where('promotion_price', '>', 0);
     }
-
-    /**
-     * Obtener la ruta clave para el modelo.
-     */
-    // public function getRouteKeyName() {
-    //     return 'slug';
-    // }
 }

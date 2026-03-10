@@ -80,86 +80,82 @@
                 </div>
                 <div class="p-6">
                     @if(count($coursesData) > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @foreach($coursesData->take(4) as $course)
-                        <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-200 card-hover">
-                            <div class="p-5">
-                                <!-- Encabezado del curso -->
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex-1">
-                                        <div class="flex items-center mb-2">
-                                            <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
-                                                {{ $course['status'] === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                                {{ $course['status'] === 'completed' ? 'Completado' : 'En progreso' }}
-                                            </span>
-                                            <span class="ml-2 text-xs text-gray-500">
-                                                <i class="far fa-clock mr-1"></i>{{ $course['duration'] }}
-                                            </span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach($coursesData->take(4) as $course)
+                                <div class="bg-gradient-to-br from-white to-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 transition-all duration-200 card-hover">
+                                    <div class="p-5">
+                                        <!-- Encabezado del curso -->
+                                        <div class="flex items-start justify-between mb-4">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-2">
+                                                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full {{ $course['status'] === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+                                                        {{ $course['status'] === 'completed' ? 'Completado' : 'En progreso' }}
+                                                    </span>
+                                                    <span class="ml-2 text-xs text-gray-500">
+                                                        <i class="far fa-clock mr-1"></i>{{ $course['duration'] }}
+                                                    </span>
+                                                </div>
+                                                <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ $course['title'] }}</h3>
+                                                <p class="text-sm text-gray-600 mt-1">{{ $course['category'] }}</p>
+                                            </div>
+                                            <div class="flex-shrink-0 ml-3">
+                                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center border border-blue-200">
+                                                    <i class="fas fa-book text-blue-600"></i>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ $course['title'] }}</h3>
-                                        <p class="text-sm text-gray-600 mt-1">{{ $course['category'] }}</p>
-                                    </div>
-                                    <div class="flex-shrink-0 ml-3">
-                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center border border-blue-200">
-                                            <i class="fas fa-book text-blue-600"></i>
+
+                                        <!-- Progreso -->
+                                        <div class="mb-5">
+                                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                                <span class="font-medium">Tu progreso</span>
+                                                <span class="font-bold text-gray-900">{{ $course['progress'] }}%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                                <div class="h-2.5 rounded-full progress-bar {{ $course['status'] === 'completed' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600' }}" style="width: {{ $course['progress'] }}%"></div>
+                                            </div>
+                                            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                                                <span>{{ $course['completed_lessons'] }}/{{ $course['total_lessons'] }} lecciones</span>
+                                                <span>{{ $course['modules'] }} módulos</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Acciones -->
+                                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                            <div class="text-sm text-gray-600">
+                                                <i class="far fa-calendar mr-1"></i>
+                                                Inscrito: {{ $course['enrolled_date'] }}
+                                            </div>
+                                            <a href="{{ $course['continue_url'] }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow">
+                                                <i class="fas fa-play mr-2"></i>
+                                                Continuar
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Progreso -->
-                                <div class="mb-5">
-                                    <div class="flex justify-between text-sm text-gray-600 mb-2">
-                                        <span class="font-medium">Tu progreso</span>
-                                        <span class="font-bold text-gray-900">{{ $course['progress'] }}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                        <div class="h-2.5 rounded-full progress-bar 
-                                            {{ $course['status'] === 'completed' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600' }}" 
-                                            style="width: {{ $course['progress'] }}%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                        <span>{{ $course['completed_lessons'] }}/{{ $course['total_lessons'] }} lecciones</span>
-                                        <span>{{ $course['modules'] }} módulos</span>
-                                    </div>
-                                </div>
-
-                                <!-- Acciones -->
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                    <div class="text-sm text-gray-600">
-                                        <i class="far fa-calendar mr-1"></i>
-                                        Inscrito: {{ $course['enrolled_date'] }}
-                                    </div>
-                                    <a href="{{ $course['continue_url'] }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow">
-                                        <i class="fas fa-play mr-2"></i>
-                                        Continuar
-                                    </a>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
-                    </div>
-                    
                     @if(count($coursesData) > 4)
-                    <div class="mt-6 text-center">
-                        <a href="{{ route('student.my-courses') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-                            <span>Ver {{ count($coursesData) - 4 }} cursos más</span>
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
+                        <div class="mt-6 text-center">
+                            <a href="{{ route('student.my-courses') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                                <span>Ver {{ count($coursesData) - 4 }} cursos más</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
                     @endif
                     
                     @else
-                    <div class="text-center py-12">
-                        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
-                            <i class="fas fa-book-open text-3xl text-gray-400"></i>
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-book-open text-3xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Aún no estás inscrito en ningún curso</h3>
+                            <p class="text-gray-600 mb-6 max-w-md mx-auto">Descubre nuestra variedad de cursos y comienza tu viaje de aprendizaje hoy mismo.</p>
+                            <a href="{{ route('cursos') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
+                                <i class="fas fa-search mr-3"></i>
+                                Explorar cursos disponibles
+                            </a>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Aún no estás inscrito en ningún curso</h3>
-                        <p class="text-gray-600 mb-6 max-w-md mx-auto">Descubre nuestra variedad de cursos y comienza tu viaje de aprendizaje hoy mismo.</p>
-                        <a href="{{ route('cursos') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl">
-                            <i class="fas fa-search mr-3"></i>
-                            Explorar cursos disponibles
-                        </a>
-                    </div>
                     @endif
                 </div>
             </div>
@@ -311,12 +307,12 @@
                     </div>
                         
                     @if($certificates->count() >= 5)
-                    <div class="text-center pt-4 mt-2 border-t border-yellow-100">
-                        <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
-                            <span>Ver todos mis certificados</span>
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
+                        <div class="text-center pt-4 mt-2 border-t border-yellow-100">
+                            <a href="{{ route('student.certificates') }}" class="inline-flex items-center text-yellow-700 hover:text-yellow-800 font-medium text-sm">
+                                <span>Ver todos mis certificados</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>

@@ -41,11 +41,15 @@ class Enrollment extends Model {
         return $this->belongsTo(Course::class, 'course_id', 'id')->where('type', 'package');
     }
 
-    public function completedLessons(): BelongsToMany {
-        return $this->belongsToMany(Lesson::class, 'completed_lessons')
-            ->withPivot('completed_at', 'time_spent_minutes')
-            ->withTimestamps();
+    public function completedLessons() {
+        return $this->hasMany(CompletedLessons::class, 'enrollment_id', 'id');
     }
+
+    // public function completedLessons(): BelongsToMany {
+    //     return $this->belongsToMany(Lesson::class, 'completed_lessons')
+    //         ->withPivot('completed_at', 'time_spent_minutes')
+    //         ->withTimestamps();
+    // }
 
     public function completedDocuments(): BelongsToMany {
         return $this->belongsToMany(Document::class, 'completed_documents')

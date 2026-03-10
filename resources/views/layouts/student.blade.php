@@ -576,6 +576,7 @@
                     <div class="flex flex-wrap justify-center gap-4 text-xs">
                         <a href="{{ url('/') }}" class="text-gray-400 hover:text-white transition">Inicio</a>
                         <a href="{{ route('cursos') }}" class="text-gray-400 hover:text-white transition">Cursos</a>
+                        <a href="{{ route('paquetes') }}" class="text-gray-400 hover:text-white transition">Servicios para empresas</a>
                         <a href="{{ url('contacto') }}" class="text-gray-400 hover:text-white transition">Contacto</a>
                         <a href="{{ url('privacidad') }}" class="text-gray-400 hover:text-white transition">Privacidad</a>
                     </div>

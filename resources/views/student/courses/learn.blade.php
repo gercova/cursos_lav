@@ -1,7 +1,6 @@
 @extends('layouts.student')
 @section('title', 'Aprendiendo: ' . $course->title)
 @section('content')
-
 <div class="mb-6">
     <div class="flex items-center justify-between">
         <div>
@@ -57,71 +56,105 @@
                 <!-- Acordeón de secciones -->
                 <div x-data="{ openSection: null }" class="space-y-4">
                     @foreach($course->sections as $index => $section)
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" class="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex justify-between items-center text-left">
-                            <div class="flex items-center">
-                                <span class="text-blue-600 mr-3">
-                                    <i class="fas" :class="openSection === {{ $index }} ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" class="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex justify-between items-center text-left">
+                                <div class="flex items-center">
+                                    <span class="text-blue-600 mr-3">
+                                        <i class="fas" :class="openSection === {{ $index }} ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                                    </span>
+                                    <div>
+                                        <h3 class="font-semibold text-gray-800">{{ $section->title }}</h3>
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            {{ $section->lessons->count() }} lecciones
+                                        </p>
+                                    </div>
+                                </div>
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                    {{ $index + 1 }}
                                 </span>
-                                <div>
-                                    <h3 class="font-semibold text-gray-800">{{ $section->title }}</h3>
-                                    <p class="text-sm text-gray-600 mt-1">
-                                        {{ $section->lessons->count() }} lecciones
-                                    </p>
+                            </button>
+
+                            <div x-show="openSection === {{ $index }}" x-collapse class="border-t border-gray-200">
+                                <div class="p-4 space-y-3">
+                                    @php
+                                        // Obtenemos el ID de la primera lección del curso (Garantía de que siempre esté libre)
+                                        $firstLessonId = $course->sections->first()?->lessons->first()?->id;
+
+                                        // Obtenemos un array puro con los IDs de las lecciones completadas 
+                                        $completedLessonIds = $enrollment 
+                                            ? \App\Models\CompletedLessons::where('enrollment_id', $enrollment->id)->pluck('lesson_id')->toArray() 
+                                            : [];
+
+                                        $accessibleLessons  = [];
+                                        $canAccessNext      = true;
+
+                                        foreach($course->sections as $sec) {
+                                            foreach($sec->lessons as $les) {
+                                                if ($canAccessNext) {
+                                                    $accessibleLessons[] = $les->id;
+                                                    
+                                                    // Si la lección no está en nuestro array de completadas, trancamos el acceso a las siguientes
+                                                    if (!in_array($les->id, $completedLessonIds)) {
+                                                        $canAccessNext = false;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        // Seguro de vida: Forzar que la primera lección SIEMPRE sea accesible
+                                        if ($firstLessonId && !in_array($firstLessonId, $accessibleLessons)) {
+                                            $accessibleLessons[] = $firstLessonId;
+                                        }
+                                    @endphp
+                                    @foreach($section->lessons as $lessonIndex => $lesson)
+                                        
+                                        @php
+                                            // Usamos in_array para evitar cualquier problema con las colecciones
+                                            $isCompleted = in_array($lesson->id, $completedLessonIds);
+                                            $isAccessible = in_array($lesson->id, $accessibleLessons);
+                                        @endphp
+                                        
+                                        @if($isAccessible)
+                                            <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $lesson->id]) }}" class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {{ request()->is('student/courses/*/lesson/' . $lesson->id) ? 'bg-blue-50 border border-blue-100' : '' }}">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                                        <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="font-medium text-gray-700">{{ $lesson->title }}</h4>
+                                                        @if($lesson->duration)
+                                                        <p class="text-xs text-gray-400 mt-1">
+                                                            <i class="far fa-clock mr-1"></i> {{ $lesson->duration }} min
+                                                        </p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @else
+                                            <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 opacity-60 cursor-not-allowed">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 flex items-center justify-center mr-3">
+                                                        <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-lock text-gray-500 text-xs"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="font-medium text-gray-500">{{ $lesson->title }}</h4>
+                                                        @if($lesson->duration)
+                                                        <p class="text-xs text-gray-400 mt-1">
+                                                            <i class="far fa-clock mr-1"></i> {{ $lesson->duration }} min
+                                                        </p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endforeach
                                 </div>
                             </div>
-                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                                {{ $index + 1 }}
-                            </span>
-                        </button>
-
-                        <div x-show="openSection === {{ $index }}" x-collapse class="border-t border-gray-200">
-                            <div class="p-4 space-y-3">
-                                @foreach($section->lessons as $lessonIndex => $lesson)
-                                @php
-                                    $isCompleted = false;
-                                    if ($enrollment) {
-                                        $isCompleted = $enrollment->completedLessons->contains($lesson->id);
-                                    }
-                                @endphp
-                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $lesson->id]) }}"
-                                   class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200 {{ request()->is('student/courses/*/lesson/' . $lesson->id) ? 'bg-blue-50 border border-blue-100' : '' }}">
-                                    <div class="flex items-center">
-                                        <div class="w-8 h-8 flex items-center justify-center mr-3">
-                                            @if($isCompleted)
-                                            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-check text-green-600 text-xs"></i>
-                                            </div>
-                                            @elseif($lesson->is_free)
-                                            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-play text-blue-600 text-xs"></i>
-                                            </div>
-                                            @else
-                                            <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-lock text-gray-400 text-xs"></i>
-                                            </div>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <h4 class="font-medium text-gray-800">{{ $lesson->title }}</h4>
-                                            @if($lesson->duration)
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                <i class="far fa-clock mr-1"></i>
-                                                {{ $lesson->duration }}
-                                            </p>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div>
-                                        @if($lesson->is_free)
-                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Gratis</span>
-                                        @endif
-                                    </div>
-                                </a>
-                                @endforeach
-                            </div>
                         </div>
-                    </div>
                     @endforeach
                 </div>
             </div>
@@ -129,54 +162,54 @@
 
         <!-- Documentos del curso -->
         @if($course->documents->count() > 0)
-        <div class="bg-white rounded-xl shadow">
-            <div class="p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Material de apoyo</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($course->documents as $document)
-                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors duration-200">
-                        <div class="flex items-start">
-                            <div class="mr-4">
-                                @php
-                                    $fileType = strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION));
-                                    $icon = match($fileType) {
-                                        'pdf' => 'fa-file-pdf',
-                                        'doc', 'docx' => 'fa-file-word',
-                                        'xls', 'xlsx' => 'fa-file-excel',
-                                        'ppt', 'pptx' => 'fa-file-powerpoint',
-                                        'zip', 'rar' => 'fa-file-archive',
-                                        default => 'fa-file'
-                                    };
-                                @endphp
-                                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                                    <i class="fas {{ $icon }} text-blue-600 text-xl"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-800">{{ $document->title }}</h4>
-                                @if($document->description)
-                                <p class="text-sm text-gray-600 mt-1">{{ Str::limit($document->description, 100) }}</p>
-                                @endif
-                                <div class="flex items-center justify-between mt-3">
-                                    <span class="text-xs text-gray-500">
-                                        <i class="fas fa-file mr-1"></i>
-                                        {{ strtoupper($fileType) }}
-                                        @if($document->file_size)
-                                        • {{ number_format($document->file_size / 1024, 1) }} KB
+            <div class="bg-white rounded-xl shadow">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Material de apoyo</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($course->documents as $document)
+                            <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors duration-200">
+                                <div class="flex items-start">
+                                    <div class="mr-4">
+                                        @php
+                                            $fileType = strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION));
+                                            $icon = match($fileType) {
+                                                'pdf' => 'fa-file-pdf',
+                                                'doc', 'docx' => 'fa-file-word',
+                                                'xls', 'xlsx' => 'fa-file-excel',
+                                                'ppt', 'pptx' => 'fa-file-powerpoint',
+                                                'zip', 'rar' => 'fa-file-archive',
+                                                default => 'fa-file'
+                                            };
+                                        @endphp
+                                        <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                                            <i class="fas {{ $icon }} text-blue-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">{{ $document->title }}</h4>
+                                        @if($document->description)
+                                            <p class="text-sm text-gray-600 mt-1">{{ Str::limit($document->description, 100) }}</p>
                                         @endif
-                                    </span>
-                                    <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                        <i class="fas fa-download mr-1"></i>
-                                        Descargar
-                                    </a>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                <i class="fas fa-file mr-1"></i>
+                                                {{ strtoupper($fileType) }}
+                                                @if($document->file_size)
+                                                    • {{ number_format($document->file_size / 1024, 1) }} KB
+                                                @endif
+                                            </span>
+                                            <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                <i class="fas fa-download mr-1"></i>
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
             </div>
-        </div>
         @endif
     </div>
 
@@ -185,58 +218,58 @@
         <div class="sticky top-6 space-y-6">
             <!-- Información del instructor -->
             @if($course->instructor)
-            <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Instructor</h3>
-                <div class="flex items-center">
-                    <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                        <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">{{ $course->instructor->name }}</h4>
-                        <p class="text-sm text-gray-600 mt-1">{{ $course->instructor->title ?? 'Instructor' }}</p>
-                        <div class="flex items-center mt-2">
-                            <span class="text-yellow-400 mr-1">
-                                <i class="fas fa-star"></i>
-                            </span>
-                            <span class="text-sm text-gray-700">4.8</span>
-                            <span class="text-sm text-gray-500 ml-2">(128 estudiantes)</span>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Instructor</h3>
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                            <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">{{ $course->instructor->name }}</h4>
+                            <p class="text-sm text-gray-600 mt-1">{{ $course->instructor->title ?? 'Instructor' }}</p>
+                            <div class="flex items-center mt-2">
+                                <span class="text-yellow-400 mr-1">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <span class="text-sm text-gray-700">4.8</span>
+                                <span class="text-sm text-gray-500 ml-2">(128 estudiantes)</span>
+                            </div>
                         </div>
                     </div>
+                    @if($course->instructor->bio)
+                        <p class="text-gray-600 text-sm mt-4">{{ Str::limit($course->instructor->bio, 150) }}</p>
+                    @endif
                 </div>
-                @if($course->instructor->bio)
-                    <p class="text-gray-600 text-sm mt-4">{{ Str::limit($course->instructor->bio, 150) }}</p>
-                @endif
-            </div>
             @endif
 
             <!-- Lo que aprenderás -->
             @if($course->what_you_learn)
-            <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Lo que aprenderás</h3>
-                <ul class="space-y-3">
-                    @foreach($course->what_you_learn as $item)
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <span class="text-gray-700">{{ $item }}</span>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Lo que aprenderás</h3>
+                    <ul class="space-y-3">
+                        @foreach($course->what_you_learn as $item)
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">{{ $item }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <!-- Requisitos -->
             @if($course->requirements)
-            <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">Requisitos</h3>
-                <ul class="space-y-2">
-                    @foreach($course->requirements as $requirement)
-                    <li class="flex items-start">
-                        <i class="fas fa-circle text-blue-500 text-xs mt-2 mr-3"></i>
-                        <span class="text-gray-700">{{ $requirement }}</span>
-                    </li>
-                    @endforeach
-                </ul>
-            </div>
+                <div class="bg-white rounded-xl shadow p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Requisitos</h3>
+                    <ul class="space-y-2">
+                        @foreach($course->requirements as $requirement)
+                        <li class="flex items-start">
+                            <i class="fas fa-circle text-blue-500 text-xs mt-2 mr-3"></i>
+                            <span class="text-gray-700">{{ $requirement }}</span>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <!-- Progreso del estudiante -->
@@ -289,13 +322,13 @@
 
 @section('scripts')
 <script>
-document.addEventListener('alpine:init', () => {
-    // Abrir la sección activa automáticamente
-    const urlParams = new URLSearchParams(window.location.search);
-    const sectionId = urlParams.get('section');
-    if (sectionId) {
-        // Lógica para abrir la sección específica
-    }
-});
+    document.addEventListener('alpine:init', () => {
+        // Abrir la sección activa automáticamente
+        const urlParams = new URLSearchParams(window.location.search);
+        const sectionId = urlParams.get('section');
+        if (sectionId) {
+            // Lógica para abrir la sección específica
+        }
+    });
 </script>
 @endsection

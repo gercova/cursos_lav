@@ -69,7 +69,6 @@
                                     </div>
                                     <p class="text-indigo-200 text-sm">
                                         <i class="fas fa-tag mr-1"></i>
-                                        
                                         Ahorras S/ {{ number_format($package->price - $package->final_price, 2) }}
                                     </p>
                                 @else

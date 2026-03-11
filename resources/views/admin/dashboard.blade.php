@@ -609,9 +609,19 @@
         function animateCounters() {
             const counters = document.querySelectorAll('.text-3xl.font-bold, .text-2xl.font-bold');
             counters.forEach(counter => {
-                const target = parseInt(counter.textContent.replace(/,/g, ''));
-                const increment = target / 50;
-                let current = 0;
+                // Limpiamos el texto para obtener solo el número
+                // Quitamos "S/", comas y espacios
+                const originalText = counter.textContent;
+                const isMoney = originalText.includes('S/');
+                const target = parseFloat(originalText.replace(/[^0-9.]/g, ''));
+
+                if (isNaN(target)) return;
+
+                const duration      = 1000; // 1 segundo
+                const frameRate     = 20;
+                const totalFrames   = duration / frameRate;
+                const increment     = target / totalFrames;
+                let current         = 0;
                 
                 const timer = setInterval(() => {
                     current += increment;
@@ -619,8 +629,14 @@
                         current = target;
                         clearInterval(timer);
                     }
-                    counter.textContent = Math.floor(current).toLocaleString();
-                }, 20);
+                    
+                    // Formateamos de vuelta según sea dinero o entero
+                    if (isMoney) {
+                        counter.textContent = 'S/ ' + current.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    } else {
+                        counter.textContent = Math.floor(current).toLocaleString('es-PE');
+                    }
+                }, frameRate);
             });
         }
 
@@ -629,7 +645,9 @@
     });
 </script>
 
+<style> [x-cloak] { display: none !important; } </style>
 <style>
+    
     /* Animaciones personalizadas */
     @keyframes fadeInUp {
         from {

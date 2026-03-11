@@ -85,17 +85,6 @@
                     <div class="aspect-w-16 aspect-h-9" x-ignore>
                         @if($lesson->video?->vimeo_id)
                         
-                        <iframe id="vimeo-player"
-                            x-ref="videoIframe" 
-                            src="{{$lesson->video?->embed_url}}&api=1"
-                            class="w-full h-[500px]"
-                            frameborder="0"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowfullscreen
-                            referrerpolicy="strict-origin"
-                        >
-                        </iframe>
-                        
                             <iframe id="vimeo-player"
                                 x-ref="videoIframe" 
                                 src="{{$lesson->video?->embed_url}}&api=1"
@@ -106,14 +95,13 @@
                                 referrerpolicy="strict-origin"
                             >
                             </iframe>
-
                         @else
-                        <div class="w-full h-[500px] flex items-center justify-center bg-gray-900">
-                            <div class="text-center">
-                                <i class="fas fa-video text-gray-600 text-5xl mb-4"></i>
-                                <p class="text-gray-400">Video no disponible</p>
+                            <div class="w-full h-[500px] flex items-center justify-center bg-gray-900">
+                                <div class="text-center">
+                                    <i class="fas fa-video text-gray-600 text-5xl mb-4"></i>
+                                    <p class="text-gray-400">Video no disponible</p>
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
 
@@ -162,71 +150,6 @@
                     @endif
 
                     <!-- Navegación entre lecciones -->
-                    {{-- <div class="mt-8 pt-6 border-t border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                @if($previousLesson)
-                                <p class="text-sm text-gray-600 mb-1">Anterior</p>
-                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                    <i class="fas fa-arrow-left mr-2"></i>
-                                    {{ Str::limit($previousLesson->title, 50) }}
-                                </a>
-                                @endif
-                            </div>
-
-                            <div class="flex space-x-3">
-                                @if($previousLesson)
-                                <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                                    <i class="fas fa-arrow-left mr-2"></i>
-                                    Anterior
-                                </a>
-                                @endif
-
-                                @if($nextLesson)
-                                    <button id="nextLessonBtn"
-                                        @click="goToNextLesson()"
-                                        :disabled="!isCompleted && watchedPercent < 80"
-                                        :class="(!isCompleted && watchedPercent < 80) ?
-                                            'opacity-50 cursor-not-allowed bg-blue-400' :
-                                            'bg-blue-600 hover:bg-blue-700'"
-                                        class="px-4 py-2 text-white rounded-lg transition-colors duration-200"
-                                    >
-                                        <span>Siguiente</span>
-                                        <i class="fas fa-arrow-right ml-2"></i>
-                                    </button>
-                                @else
-                                <a href="{{ route('student.course.learn', $course->slug) }}"
-                                   class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200">
-                                    <span>Completar Curso</span>
-                                    <i class="fas fa-trophy ml-2"></i>
-                                </a>
-                                @endif
-                            </div>
-
-                            <div class="text-right">
-                                @if($nextLesson)
-                                <p class="text-sm text-gray-600 mb-1">Siguiente</p>
-                                <span class="text-blue-600 font-medium flex items-center justify-end">
-                                    {{ Str::limit($nextLesson->title, 50) }}
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Mensaje de advertencia si no ha visto suficiente -->
-                        <div x-show="!isCompleted && watchedPercent < 80 && watchedPercent > 0"
-                             class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
-                                <p class="text-sm text-yellow-700">
-                                    Debes ver al menos el 80% de esta lección para avanzar a la siguiente.
-                                    <span class="font-medium">Has visto el <span x-text="watchedPercent.toFixed(1)"></span>%</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div> --}}
-                    <!-- Navegación entre lecciones -->
                     <div class="mt-8 pt-6 border-t border-gray-200">
                         <div class="flex justify-between items-center">
                             <div>
@@ -239,56 +162,6 @@
                                     </a>
                                 @endif
                             </div>
-
-                            {{-- <div class="flex space-x-3">
-                                @if($previousLesson)
-                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
-                                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                                        <i class="fas fa-arrow-left mr-2"></i>
-                                        Anterior
-                                    </a>
-                                @endif
-
-                                <!-- Botón para marcar como completada (visible cuando no está completada) -->
-                                <button id="completeLessonBtn"
-                                    @if(!$isCompleted)
-                                    @click="markAsCompleted()"
-                                    :disabled="watchedPercent < minWatchPercent"
-                                    :class="watchedPercent < minWatchPercent ? 
-                                        'opacity-50 cursor-not-allowed bg-green-400' : 
-                                        'bg-green-600 hover:bg-green-700'"
-                                    @endif
-                                    class="px-6 py-2 text-white rounded-lg transition-colors duration-200 font-medium"
-                                    @if($isCompleted) disabled style="opacity: 50; cursor: not-allowed;" @endif
-                                >
-                                    <span x-show="!$el.__x.$data.isCompleted && $el.__x.$data.watchedPercent < $el.__x.$data.minWatchPercent">
-                                        <i class="fas fa-lock mr-2"></i>
-                                        Ver al menos 80% para completar
-                                    </span>
-                                    <span x-show="!$el.__x.$data.isCompleted && $el.__x.$data.watchedPercent >= $el.__x.$data.minWatchPercent">
-                                        <i class="fas fa-check-circle mr-2"></i>
-                                        Marcar como completada
-                                    </span>
-                                    <span x-show="$el.__x.$data.isCompleted">
-                                        <i class="fas fa-check-circle mr-2"></i>
-                                        Completada
-                                    </span>
-                                </button>
-
-                                <!-- Botón siguiente (ahora siempre disponible si existe) -->
-                                @if($nextLesson)
-                                    <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
-                                        <span>Siguiente</span>
-                                        <i class="fas fa-arrow-right ml-2"></i>
-                                    </a>
-                                @else
-                                    <!-- Si no hay siguiente lección, redirigir al examen -->
-                                    <a href="{{ route('student.exams.show', $exam->id) }}" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 font-medium">
-                                        <i class="fas fa-pencil-alt mr-2"></i>Ir al examen final
-                                    </a>
-                                @endif
-                            </div> --}}
 
                             <div class="flex space-x-3">
                                 @if($nextLesson)
@@ -382,31 +255,6 @@
                                 </div>
 
                                 <div class="space-y-2">
-                                    {{-- @foreach($section->lessons as $lessonItem)
-                                        @php
-                                            $isItemCompleted = $enrollment ? $enrollment->completedLessons->contains($lessonItem->id) : false;
-                                        @endphp
-                                        <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $lessonItem->id]) }}"
-                                        class="flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors duration-200 {{ $lessonItem->id == $lesson->id ? 'bg-blue-50 border border-blue-100' : '' }}">
-                                            <div class="flex items-center">
-                                                <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                                    @if($isItemCompleted)
-                                                        <i class="fas fa-check-circle text-green-500 text-sm"></i>
-                                                    @elseif($lessonItem->id == $lesson->id)
-                                                        <i class="fas fa-play-circle text-blue-500 text-sm"></i>
-                                                    @else
-                                                        <i class="far fa-circle text-gray-300 text-sm"></i>
-                                                    @endif
-                                                </div>
-                                                <span class="text-sm {{ $lessonItem->id == $lesson->id ? 'font-medium text-blue-700' : 'text-gray-700' }}">
-                                                    {{ Str::limit($lessonItem->title, 40) }}
-                                                </span>
-                                            </div>
-                                            @if($lessonItem->duration)
-                                            <span class="text-xs text-gray-500">{{ $lessonItem->duration }}</span>
-                                            @endif
-                                        </a>
-                                    @endforeach --}}
                                     @php
                                         // Calcular de nuevo qué lecciones puede cliquear en la barra lateral
                                         $accessibleSidebar = [];
@@ -517,254 +365,216 @@
 <script>
     document.addEventListener('alpine:init', () => {
         let vimeoInstance = null;
+        
         Alpine.data('lessonPlayer', () => ({
-            //videoId: null,
-            // player: null,
             isVideoLoaded: false,
             isPlaying: false,
             currentTime: 0,
             duration: 0,
-            watchedPercent: 0,
-            minWatchPercent: 80, // Porcentaje mínimo que debe ver para marcar como completado
+            watchedPercent: {{ $watchedPercent ?? 0 }},
+            minWatchPercent: 95,
             lessonId: {{ $lesson->id }},
             enrollmentId: {{ $enrollment->id ?? 0 }},
-            isCompleted: @json($isCompleted),
-            progressInterval: null,
+            isCompleted: @json((bool)$isCompleted),
+            isProcessing: false, // EL SEMÁFORO QUE EVITARÁ LOS ERRORES 500
+            hasError: false,
 
             init() {
                 this.$nextTick(() => {
                     this.initializeVideoPlayer();
                     this.setupProgressTracking();
-                })
-                
+                });
             },
 
             initializeVideoPlayer() {
                 @if($lesson->video?->vimeo_id)
-                    //this.videoId="{{$lesson->video?->vimeo_id}}";
                     this.setupVimeoPlayer();
                 @endif
             },
 
             setupVimeoPlayer() {
-                const iframe = this.$refs.videoIframe || document.querySelector('#vimeo-player');
+                const iframe = document.getElementById('vimeo-player');
+                
                 if (!iframe) {
-                    console.error('Vimeo iframe no encontrado');
+                    console.error('Vimeo iframe no encontrado.');
+                    this.isVideoLoaded = true;
                     return;
                 }
 
                 try {
                     vimeoInstance = new Vimeo.Player(iframe);
                 } catch (e) {
-                    console.error('Error creando instancia de Vimeo.Player:', e);
+                    console.error('Error creando instancia:', e);
+                    this.isVideoLoaded = true;
                     return;
                 }
-                vimeoInstance.ready().then(()=>{
-                }).catch(err => {
-                    console.error('Vimeo player ready failed after retries:', err);
-                });
 
-                vimeoInstance.on('loaded', () => {
+                vimeoInstance.ready().then(() => {
                     this.isVideoLoaded = true;
                     vimeoInstance.getDuration().then(duration => {
                         this.duration = duration;
                     });
                 });
 
-                /*
                 vimeoInstance.on('timeupdate', (data) => {
-                    this.currentTime = data.seconds;
-                    this.watchedPercent = (data.percent * 100);
-                });*/
+                    if (this.duration > 0) {
+                        this.currentTime = data.seconds;
+                        
+                        // Calculamos el porcentaje y aseguramos que NUNCA pase de 100
+                        let percent = (data.seconds / this.duration) * 100;
+                        this.watchedPercent = Math.min(100, parseFloat(percent.toFixed(2)));
 
-                vimeoInstance.on('play', () => {
-                    this.isPlaying = true;
-                    this.startProgressTracking();
-                    // Iniciar intervalo de seguimiento si no existe
-                    if (!this.progressInterval) {
-                        this.progressInterval = setInterval(() => {
-                            if (this.isPlaying && vimeoInstance) {
-                                vimeoInstance.getCurrentTime().then(time => {
-                                    this.currentTime = time;
-                                    if (this.duration > 0) {
-                                        this.watchedPercent = (time / this.duration) * 100;
-                                    }
-                                });
-                            }
-                        }, 1000);
+                        // Condición: Si pasa el 80% + NO está completado + NO está procesando
+                        if (this.watchedPercent >= this.minWatchPercent && !this.isCompleted && !this.isProcessing) {
+                            this.markAsCompleted();
+                        }
                     }
                 });
 
+                vimeoInstance.on('play', () => this.isPlaying = true);
+                
                 vimeoInstance.on('pause', () => {
                     this.isPlaying = false;
-                    this.stopProgressTracking();
                     this.saveProgress();
-                    // Limpiar intervalo
-                    if (this.progressInterval) {
-                        clearInterval(this.progressInterval);
-                        this.progressInterval = null;
-                    }
                 });
 
                 vimeoInstance.on('ended', () => {
                     this.isPlaying = false;
                     this.watchedPercent = 100;
-                    this.saveProgress();
-                    this.markAsCompleted();
-                    // Limpiar intervalo
-                    if (this.progressInterval) {
-                        clearInterval(this.progressInterval);
-                        this.progressInterval = null;
+                    
+                    // Si NO está completada, markAsCompleted ya se encarga de guardar el 100% en BD
+                    if (!this.isCompleted && !this.isProcessing) {
+                        this.markAsCompleted();
+                    } 
+                    // Si YA estaba completada (por ejemplo, se completó al 80%), solo actualizamos el progreso al 100%
+                    else if (this.isCompleted && !this.isProcessing) {
+                        this.saveProgress();
                     }
                 });
             },
 
             setupProgressTracking() {
-                // Recuperar progreso guardado
                 this.loadSavedProgress();
+                window.addEventListener('beforeunload', () => this.saveProgress());
 
-                // Guardar progreso cuando el usuario salga de la página
-                window.addEventListener('beforeunload', () => {
-                    this.saveProgress();
-                });
-
-                // Guardar progreso cada 30 segundos
                 setInterval(() => {
-                    if (this.isVideoLoaded && this.watchedPercent > 0) {
+                    if (this.isVideoLoaded && this.watchedPercent > 0 && this.isPlaying) {
                         this.saveProgress();
                     }
                 }, 30000);
             },
 
             loadSavedProgress() {
-                // Usar el valor inicial del servidor si está disponible
                 const serverProgress = {{ $watchedPercent ?? 0 }};
                 this.watchedPercent = serverProgress;
 
-                // Intentar cargar del localStorage como respaldo
                 const savedProgress = localStorage.getItem(`lesson_${this.lessonId}_progress`);
                 if (savedProgress && parseFloat(savedProgress) > serverProgress) {
                     this.watchedPercent = parseFloat(savedProgress);
                 }
 
-                // Si hay progreso y el reproductor está listo, buscar ese punto
                 if (vimeoInstance && this.duration > 0 && this.watchedPercent > 0) {
                     const timeToSeek = (this.watchedPercent / 100) * this.duration;
                     vimeoInstance.setCurrentTime(timeToSeek);
                 }
             },
 
-            saveProgress() {
-                if (!this.isVideoLoaded || this.watchedPercent <= 0) return;
+            async saveProgress() {
+                // Si hay un error bloqueamos futuros guardados
+                if (!this.isVideoLoaded || this.watchedPercent <= 0 || this.isProcessing || this.hasError) return;
 
-                // Guardar en localStorage
-                localStorage.setItem(`lesson_${this.lessonId}_progress`, this.watchedPercent.toFixed(2));
+                localStorage.setItem(`lesson_${this.lessonId}_progress`, this.watchedPercent.toString());
 
-                // Guardar en el servidor si tenemos enrollment
                 if (this.enrollmentId > 0) {
-                    fetch('{{ route("lesson.progress.save") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            enrollment_id: this.enrollmentId,
-                            lesson_id: this.lessonId,
-                            progress: this.watchedPercent,
-                            time_watched: Math.floor(this.currentTime)
-                        })
-                    });
-                }
-            },
-
-            startProgressTracking() {
-                // Iniciar tracking de progreso
-                console.log('Iniciando seguimiento de progreso...');
-            },
-
-            stopProgressTracking() {
-                // Detener tracking de progreso
-                console.log('Deteniendo seguimiento de progreso...');
-            },
-
-            async markAsCompleted() {
-                if (this.watchedPercent >= this.minWatchPercent && !this.isCompleted) {
                     try {
-                        const response = await fetch('{{ route("lesson.complete") }}', {
+                        const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
+                        let cleanProgress = Math.min(100, Math.round(this.watchedPercent));
+
+                        const response = await fetch('{{ route("lesson.progress.save") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                'X-CSRF-TOKEN': token,
+                                'Accept': 'application/json'
                             },
                             body: JSON.stringify({
                                 enrollment_id: this.enrollmentId,
                                 lesson_id: this.lessonId,
-                                time_spent_minutes: Math.floor(this.currentTime / 60) || 1
+                                progress: cleanProgress, 
+                                time_watched: Math.floor(this.currentTime)
                             })
                         });
-
+                        
                         const result = await response.json();
-                        if (result.success) {
-                            // Actualizar estado local
-                            this.isCompleted = true;
-                            
-                            // Mostrar mensaje de éxito
-                            this.showCompletionMessage();
-                            
-                            // Recargar la página después de 1.5 segundos para actualizar todos los estados
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
+                        if (!result.success) {
+                            console.error('ERROR BACKEND (Progreso):', result.message, 'Línea:', result.line);
+                            this.hasError = true;
                         }
                     } catch (error) {
-                        console.error('Error al marcar como completado:', error);
-                        
-                        // Mostrar mensaje de error
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-                        errorDiv.innerHTML = `
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-circle mr-2"></i>
-                                <span>Error al marcar la lección como completada</span>
-                            </div>
-                        `;
-                        document.body.appendChild(errorDiv);
-                        
-                        setTimeout(() => {
-                            errorDiv.remove();
-                        }, 3000);
+                        console.error("Error de red guardando progreso:", error);
+                        this.hasError = true;
+                    }
+                }
+            },
+
+            async markAsCompleted() {
+                if (this.isProcessing || this.isCompleted || this.hasError) return;
+                
+                this.isProcessing = true; 
+
+                try {
+                    const token = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+                    const response = await fetch('{{ route("lesson.complete") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            enrollment_id: this.enrollmentId,
+                            lesson_id: this.lessonId,
+                            time_spent_minutes: Math.floor(this.currentTime / 60) || 1
+                        })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.isCompleted = true;
+                        this.showCompletionMessage();
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        // AQUÍ VEREMOS EXACTAMENTE QUÉ FALLA EN LARAVEL
+                        console.error('ERROR BACKEND (Completar):', result.message, 'Línea:', result.line);
+                        this.hasError = true; // Dejamos el semáforo en rojo
+                    }
+                } catch (error) {
+                    console.error('Error de red al completar:', error);
+                    this.hasError = true;
+                } finally {
+                    // Solo liberamos el semáforo si NO hubo errores
+                    if (!this.hasError) {
+                        this.isProcessing = false;
                     }
                 }
             },
 
             showCompletionMessage() {
-                // Mostrar mensaje de éxito
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-                messageDiv.innerHTML = `
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <span>¡Lección completada! Actualizando...</span>
-                    </div>
-                `;
+                messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-500';
+                messageDiv.innerHTML = `<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i><span>¡Lección completada! Guardado con éxito.</span></div>`;
                 document.body.appendChild(messageDiv);
-            }
-
-            goToPreviousLesson() {
-                @if($previousLesson)
-                    window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}";
-                @endif
-            },
-
-            goToNextLesson() {
-                @if($nextLesson)
-                    window.location.href = "{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}";
-                @endif
+                
+                setTimeout(() => {
+                    messageDiv.style.opacity = '0';
+                    setTimeout(() => messageDiv.remove(), 500);
+                }, 3000);
             },
 
             formatTime(seconds) {
-                if (!seconds) return '00:00';
+                if (!seconds || isNaN(seconds)) return '00:00';
                 const mins = Math.floor(seconds / 60);
                 const secs = Math.floor(seconds % 60);
                 return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;

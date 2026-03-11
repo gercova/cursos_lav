@@ -275,9 +275,9 @@ class UserAdminController extends Controller {
         ], 200);
     }
 
-    public function getLimitUser(User $user): JsonResponse {
-        return response()->json(CompanyPolicy::where('user_id', $user->id)->first(), 200);
-    }
+    // public function getLimitUser(User $user): JsonResponse {
+    //     return response()->json(CompanyPolicy::where('user_id', $user->id)->first(), 200);
+    // }
 
     public function createLimitUser(Request $request, User $user): JsonResponse {
         $rules = [

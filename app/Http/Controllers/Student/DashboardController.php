@@ -354,70 +354,95 @@ class DashboardController extends Controller {
         return response()->json($formattedCertificates);
     }
 
-    public function dashboardStats(Request $request): JsonResponse {
+    // public function dashboardStats(Request $request): JsonResponse {
+    //     $user = Auth::user();
+        
+    //     // Cursos activos
+    //     $activeCourses = Enrollment::where('user_id', $user->id)
+    //         ->whereHas('course', function($q) {
+    //             $q->where('is_active', true);
+    //         })
+    //         ->count();
+
+    //     // Exámenes pendientes
+    //     $pendingExams = Exam::whereHas('course.enrollments', function($q) use ($user) {
+    //             $q->where('user_id', $user->id);
+    //         })
+    //         ->where('start_date', '>=', now())
+    //         ->whereDoesntHave('examAttempts', function($q) use ($user) {
+    //             $q->where('user_id', $user->id)
+    //             ->where('passed', true);
+    //         })
+    //         ->count();
+
+    //     // Certificados obtenidos
+    //     $certificatesCount = Certificate::where('user_id', $user->id)->count();
+
+    //     // Horas de estudio (ejemplo - deberías tener un campo o calcularlo)
+    //     $studyHours = Enrollment::where('user_id', $user->id)
+    //         ->with(['course' => function($q) {
+    //             $q->select('id', 'duration');
+    //         }])
+    //         ->get()
+    //         ->sum(function($enrollment) {
+    //             // Convertir duración del curso a horas estimadas
+    //             if ($enrollment->course && $enrollment->course->duration) {
+    //                 preg_match('/(\d+)/', $enrollment->course->duration, $matches);
+    //                 return $matches[1] ?? 0;
+    //             }
+    //             return 0;
+    //         });
+
+    //     // Progreso mensual promedio
+    //     $monthlyProgress = Enrollment::where('user_id', $user->id)
+    //         ->whereMonth('updated_at', now()->month)
+    //         ->avg('progress') ?? 0;
+
+    //     // Metas diarias (ejemplo)
+    //     $today = now()->toDateString();
+    //     $dailyGoals = [
+    //         'lessonsCompleted'  => LessonProgress::where('user_id', $user->id)
+    //             ->whereDate('completed_at', $today)
+    //             ->count(),
+    //         'totalLessons'      => 3, // Meta diaria
+    //         'minutesStudied'    => LessonProgress::where('user_id', $user->id)
+    //             ->whereDate('completed_at', $today)
+    //             ->sum('time_watched') ?? 0,
+    //         'targetMinutes'     => 60 // 1 hora de estudio diaria
+    //     ];
+
+    //     return response()->json([
+    //         'activeCourses'     => $activeCourses,
+    //         'pendingExams'      => $pendingExams,
+    //         'certificatesCount' => $certificatesCount,
+    //         'studyHours'        => $studyHours,
+    //         'monthlyProgress'   => round($monthlyProgress, 1),
+    //         'dailyGoals'        => $dailyGoals
+    //     ]);
+    // }
+
+    // Ejemplo de controlador para tus llamadas de Axios en el dashboard
+    public function dashboardStats() {
         $user = Auth::user();
         
-        // Cursos activos
-        $activeCourses = Enrollment::where('user_id', $user->id)
-            ->whereHas('course', function($q) {
-                $q->where('is_active', true);
-            })
-            ->count();
-
-        // Exámenes pendientes
-        $pendingExams = Exam::whereHas('course.enrollments', function($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-            ->where('start_date', '>=', now())
-            ->whereDoesntHave('examAttempts', function($q) use ($user) {
-                $q->where('user_id', $user->id)
-                ->where('passed', true);
-            })
-            ->count();
-
-        // Certificados obtenidos
-        $certificatesCount = Certificate::where('user_id', $user->id)->count();
-
-        // Horas de estudio (ejemplo - deberías tener un campo o calcularlo)
-        $studyHours = Enrollment::where('user_id', $user->id)
-            ->with(['course' => function($q) {
-                $q->select('id', 'duration');
-            }])
-            ->get()
-            ->sum(function($enrollment) {
-                // Convertir duración del curso a horas estimadas
-                if ($enrollment->course && $enrollment->course->duration) {
-                    preg_match('/(\d+)/', $enrollment->course->duration, $matches);
-                    return $matches[1] ?? 0;
-                }
-                return 0;
-            });
-
-        // Progreso mensual promedio
-        $monthlyProgress = Enrollment::where('user_id', $user->id)
-            ->whereMonth('updated_at', now()->month)
-            ->avg('progress') ?? 0;
-
-        // Metas diarias (ejemplo)
-        $today = now()->toDateString();
-        $dailyGoals = [
-            'lessonsCompleted'  => LessonProgress::where('user_id', $user->id)
-                ->whereDate('completed_at', $today)
-                ->count(),
-            'totalLessons'      => 3, // Meta diaria
-            'minutesStudied'    => LessonProgress::where('user_id', $user->id)
-                ->whereDate('completed_at', $today)
-                ->sum('time_watched') ?? 0,
-            'targetMinutes'     => 60 // 1 hora de estudio diaria
-        ];
-
+        // Obtenemos los cursos del usuario
+        $enrollments = Enrollment::where('user_id', $user->id)->get();
+        
+        // Contamos los que están en progreso
+        $activeCourses = $enrollments->where('progress', '<', 100)->count();
+        
+        // Promedio global de progreso de todos sus cursos
+        $globalProgress = 0;
+        if ($enrollments->count() > 0) {
+            $globalProgress = round($enrollments->avg('progress'));
+        }
+        
         return response()->json([
             'activeCourses'     => $activeCourses,
-            'pendingExams'      => $pendingExams,
-            'certificatesCount' => $certificatesCount,
-            'studyHours'        => $studyHours,
-            'monthlyProgress'   => round($monthlyProgress, 1),
-            'dailyGoals'        => $dailyGoals
+            'monthlyProgress'   => $globalProgress,
+            'pendingExams'      => 0, // Implementa tu conteo de exámenes aquí
+            'certificatesCount' => 0, // Implementa tu conteo de certificados aquí
+            'studyHours'        => 0 
         ]);
     }
 }

@@ -84,18 +84,19 @@ class UserImport implements ToCollection, WithHeadingRow {
             $countryCode = trim($row['codigo_pais'] ?? '') ?: '+51';
 
             User::create([
-                'parent_id'    => $parentId,
-                'dni'          => $dni,
-                'names'        => trim($row['nombres'] ?? ''),
-                'email'        => $email,
-                'country_code' => $countryCode,
-                'phone'        => trim($row['telefono'] ?? ''),
-                'nationality'  => $this->resolveNationality($countryCode),
-                'address'      => trim($row['direccion'] ?? ''),
-                'profession'   => trim($row['cargo_profesion'] ?? ''),
-                'password'     => Hash::make('P4$$w0rd#.'),
-                'company_code' => $companyCode,
-                'role'         => 'student',
+                'parent_id'     => $parentId,
+                'dni'           => $dni,
+                'names'         => trim($row['nombres'] ?? ''),
+                'email'         => $email,
+                'country_code'  => $countryCode,
+                'phone'         => trim($row['telefono'] ?? ''),
+                'nationality'   => $this->resolveNationality($countryCode),
+                'address'       => trim($row['direccion'] ?? ''),
+                'profession'    => trim($row['cargo_profesion'] ?? ''),
+                'password'      => Hash::make('P4$$w0rd#.'),
+                'company_code'  => $companyCode,
+                'role'          => 'student',
+                'expires_at'    => now()->addYear(), 
             ]);
 
             $remainingSlots--;

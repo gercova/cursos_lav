@@ -209,7 +209,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
                                 <p class="text-sm text-yellow-700">
-                                    Debes ver al menos el 80% de esta lección para poder marcarla como completada.
+                                    Debes ver al menos el 95% de esta lección para poder marcarla como completada.
                                     <span class="font-medium">Has visto el <span x-text="watchedPercent.toFixed(1)"></span>%</span>
                                 </p>
                             </div>

@@ -60,7 +60,6 @@ class EnrollmentsAdminController extends Controller {
             'user',
             'course.category',
             'course.instructor',
-            'payments'
         ]);
 
         return view('admin.enrollments.show', compact('enrollment'));

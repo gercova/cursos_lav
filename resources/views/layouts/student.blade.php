@@ -429,8 +429,13 @@
 
                 @if ($hasAnyPackage)
                     <hr>
+
                     <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
                         <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
+                    </a>
+
+                    <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
+                        <i class="fa-regular fa-building mr-2"></i> Gestionar mis usuarios
                     </a>
                     
                     <a href="{{ route('company.enroll.users') }}" class="sidebar-link {{ request()->routeIs('company.enroll.*') ? 'active bg-purple-300' : '' }}">

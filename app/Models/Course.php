@@ -102,7 +102,7 @@ class Course extends Model
     protected function imageUrl(): Attribute {
         return Attribute::make(
             get: fn (?string $value) => match (true) {
-                empty($value) => 'storage/courses/ipf-course-default.png',
+                empty($value) => Storage::url('courses/ipf-course-default.png'),
                 Str::startsWith($value, ['http://', 'https://']) => $value,
                 default => Storage::url($value),
             }

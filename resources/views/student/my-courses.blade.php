@@ -221,52 +221,6 @@
 
         <!-- Contenido principal -->
         <div class="p-4">
-            <!-- Cursos recientes -->
-            <div x-show="recentCourses.length > 0" class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Continuar aprendiendo</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <template x-for="course in recentCourses" :key="course.id">
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow card-hover border border-blue-100">
-                            <div class="p-5">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div>
-                                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full" :class="course.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'">
-                                            <span x-text="course.status === 'completed' ? 'Completado' : course.progress + '%'"></span>
-                                        </span>
-                                        <h3 class="text-lg font-bold text-gray-800 mt-2" x-text="course.title"></h3>
-                                        <p class="text-sm text-gray-600 mt-1" x-text="course.category"></p>
-                                    </div>
-                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" :class="course.status === 'completed' ? 'bg-green-100' : 'bg-blue-100'">
-                                        <i class="fas" :class="course.status === 'completed' ? 'fa-check text-green-600' : 'fa-book text-blue-600'"></i>
-                                    </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                        <span>Progreso</span>
-                                        <span x-text="course.progress + '%'"></span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="h-2 rounded-full progress-bar" :class="course.status === 'completed' ? 'bg-green-600' : 'bg-blue-600'" :style="'width: ' + course.progress + '%'"></div>
-                                    </div>
-                                </div>
-
-                                <div class="flex justify-between items-center">
-                                    <div class="text-sm text-gray-600">
-                                        <i class="far fa-clock mr-1"></i>
-                                        <span x-text="course.last_accessed"></span>
-                                    </div>
-                                    <a :href="course.continue_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
-                                        <i class="fas fa-play mr-2"></i>
-                                        <span>Ingresar al Curso</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
             <!-- Todos los cursos -->
             <div>
                 <h2 class="text-lg font-semibold text-gray-800 mb-4">Todos mis cursos</h2>

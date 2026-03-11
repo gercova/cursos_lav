@@ -93,10 +93,9 @@ class BusinessManagementController extends Controller {
     }
 
     public function storeStaff(StaffValidate $request): JsonResponse {
-
         $countUser  = User::where('company_code', auth()->user()->company_code)->count();
         $limitUser  = CompanyPolicy::where('user_id', Auth::id())->get();
-        $enrolled = Enrollment::with('course') // Cargamos la relación
+        $enrolled   = Enrollment::with('course') // Cargamos la relación
             ->where('user_id', auth()->id())   // Filtramos por el usuario actual (auth()->id() es más corto y limpio)
             ->whereHas('course', function ($query) {
                 // Esta función anónima filtra la tabla courses
@@ -117,6 +116,7 @@ class BusinessManagementController extends Controller {
             $data       = array_merge($validated, [
                 'parent_id'     => auth()->id(),
                 'company_code'  => auth()->user()->company_code,
+                'expires_at'    => now()->addYear(), 
             ]);
             
             DB::beginTransaction();

@@ -82,108 +82,130 @@ class LessonController extends Controller {
     }
 
     public function saveProgress(Request $request): JsonResponse {
-        set_time_limit(0);
-        
-        $request->validate([
-            'enrollment_id' => 'required|exists:enrollments,id',
-            'lesson_id'     => 'required|exists:lessons,id',
-            'progress'      => 'required|numeric|min:0|max:100',
-            'time_watched'  => 'required|integer|min:0'
-        ]);
+        try {
+            set_time_limit(0);
+            
+            $request->validate([
+                'enrollment_id' => 'required|exists:enrollments,id',
+                'lesson_id'     => 'required|exists:lessons,id',
+                'progress'      => 'required|numeric|min:0|max:100',
+                'time_watched'  => 'required|integer|min:0'
+            ]);
 
-        $enrollment = Enrollment::findOrFail($request->enrollment_id);
+            $enrollment = Enrollment::findOrFail($request->enrollment_id);
 
-        // Verificar que el enrollment pertenezca al usuario autenticado
-        if ($enrollment->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            if ($enrollment->user_id !== Auth::id()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            $lessonProgress = LessonProgress::updateOrCreate(
+                [
+                    'enrollment_id' => $request->enrollment_id,
+                    'lesson_id'     => $request->lesson_id,
+                    'user_id'       => Auth::id()
+                ],
+                [
+                    'progress'      => $request->progress,
+                    'time_watched'  => $request->time_watched,
+                    'completed'     => $request->progress >= 80
+                ]
+            );
+
+            $this->updateEnrollmentProgress($enrollment);
+
+            return response()->json([
+                'success'   => true,
+                'progress'  => $lessonProgress->progress
+            ]);
+        } catch (\Exception $e) {
+            // Si algo falla, devolvemos el error exacto para verlo en consola
+            return response()->json([
+                'success' => false, 
+                'message' => $e->getMessage(), 
+                'line' => $e->getLine()
+            ], 500);
         }
-
-        // Guardar o actualizar progreso
-        $lessonProgress = LessonProgress::updateOrCreate(
-            [
-                'enrollment_id' => $request->enrollment_id,
-                'lesson_id'     => $request->lesson_id,
-                'user_id'       => Auth::id()
-            ],
-            [
-                'progress'      => $request->progress,
-                'time_watched'  => $request->time_watched,
-                'completed'     => $request->progress >= 80
-            ]
-        );
-
-        // Actualizar progreso general del enrollment
-        $this->updateEnrollmentProgress($enrollment);
-
-        return response()->json([
-            'success'   => true,
-            'progress'  => $lessonProgress->progress
-        ]);
     }
 
     public function complete(Request $request): JsonResponse {
-        $request->validate([
-            'enrollment_id'         => 'required|exists:enrollments,id',
-            'lesson_id'             => 'required|exists:lessons,id',
-            'time_spent_minutes'    => 'required|integer|min:1'
-        ]);
+        try {
+            $request->validate([
+                'enrollment_id'         => 'required|exists:enrollments,id',
+                'lesson_id'             => 'required|exists:lessons,id',
+                'time_spent_minutes'    => 'required|integer|min:1'
+            ]);
 
-        $enrollment = Enrollment::findOrFail($request->enrollment_id);
+            $enrollment = Enrollment::findOrFail($request->enrollment_id);
 
-        // Verificar que el enrollment pertenezca al usuario autenticado
-        if ($enrollment->user_id !== Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            if ($enrollment->user_id !== Auth::id()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            CompletedLessons::updateOrCreate(
+                [
+                    'enrollment_id' => $request->enrollment_id,
+                    'lesson_id'     => $request->lesson_id
+                ],
+                [
+                    'completed_at'          => now(),
+                    'time_spent_minutes'    => $request->time_spent_minutes
+                ]
+            );
+
+            LessonProgress::updateOrCreate(
+                [
+                    'enrollment_id' => $request->enrollment_id,
+                    'lesson_id'     => $request->lesson_id,
+                    'user_id'       => Auth::id()
+                ],
+                [
+                    'progress'      => 100,
+                    'completed'     => true,
+                    'completed_at'  => now(),
+                    'time_watched'  => $request->time_spent_minutes * 60
+                ]
+            );
+
+            $this->updateEnrollmentProgress($enrollment);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lección marcada como completada'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => $e->getMessage(), 
+                'line' => $e->getLine()
+            ], 500);
         }
-
-        // Marcar lección como completada
-        CompletedLessons::updateOrCreate(
-            [
-                'enrollment_id' => $request->enrollment_id,
-                'lesson_id'     => $request->lesson_id
-            ],
-            [
-                'completed_at'          => now(),
-                'time_spent_minutes'    => $request->time_spent_minutes
-            ]
-        );
-
-        // Actualizar progreso de la lección
-        LessonProgress::updateOrCreate(
-            [
-                'enrollment_id' => $request->enrollment_id,
-                'lesson_id'     => $request->lesson_id,
-                'user_id'       => Auth::id()
-            ],
-            [
-                'progress'      => 100,
-                'completed'     => true,
-                'completed_at'  => now(),
-                'time_watched'  => $request->time_spent_minutes * 60
-            ]
-        );
-
-        // Actualizar progreso general del enrollment
-        $this->updateEnrollmentProgress($enrollment);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Lección marcada como completada'
-        ]);
     }
 
     private function updateEnrollmentProgress(Enrollment $enrollment) {
-        $course         = $enrollment->course;
-        $totalLessons   = $course->sections->sum(function($section) {
-            return $section->lessons->count();
-        });
+        $course = $enrollment->course;
+        
+        // SALVAVIDAS 1: Evitar error si el curso viene nulo
+        if (!$course) return;
 
-        $completedLessons = $enrollment->completedLessons->count();
+        // SALVAVIDAS 2: Conteo seguro de lecciones
+        $totalLessons = 0;
+        if ($course->sections) {
+            $totalLessons = $course->sections->sum(function($section) {
+                return $section->lessons ? $section->lessons->count() : 0;
+            });
+        }
+
+        // SALVAVIDAS 3: Conteo seguro de completadas
+        $completedLessons = $enrollment->completedLessons ? $enrollment->completedLessons->count() : 0;
 
         if ($totalLessons > 0) {
-            $progress = ($completedLessons / $totalLessons) * 100;
+            $progress = round(($completedLessons / $totalLessons) * 100);
+            if ($progress > 100) $progress = 100;
+
             $enrollment->update([
                 'progress'      => $progress,
-                'status'        => $progress >= 100 ? 'completed' : 'in_progress',
+                // CAMBIAMOS 'in_progress' POR 'active' (O el valor que use tu BD)
+                'status'        => $progress >= 100 ? 'completed' : 'active', 
                 'completed_at'  => $progress >= 100 ? now() : null
             ]);
         }

@@ -100,11 +100,7 @@
                         <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text"
-                            x-model="searchQuery"
-                            @input.debounce.500ms="performSearch()"
-                            placeholder="Buscar cursos..."
-                            class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar cursos..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
@@ -142,8 +138,7 @@
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">No hay cursos aún</h3>
                     <p class="text-gray-500 mb-6 max-w-md mx-auto">Comienza creando tu primer curso para la plataforma.</p>
-                    <a href="{{ route('admin.courses.create') }}"
-                       class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                    <a href="{{ route('admin.courses.create') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -399,7 +394,51 @@
     </div>
 
     <!-- Modal para gestionar secciones -->
-    <div x-data="{ showSections: false, courseId: null, sections: [], loadingSections: false }" x-cloak>
+    <div x-data="{
+        showSections: false,
+        courseId: null,
+        sections: [],
+        loadingSections: false,
+        newSectionTitle: '',
+        newSectionOrder: 1,
+        newSectionDescription: '',
+
+        async addSection() {
+            if (!this.newSectionTitle.trim()) return;
+            try {
+                const response = await axios.post(`/api/courses/${this.courseId}/sections`, {
+                    title: this.newSectionTitle,
+                    order: this.newSectionOrder,
+                    description: this.newSectionDescription,
+                    _token: '{{ csrf_token() }}'
+                });
+                this.sections.push(response.data);
+                this.newSectionTitle = '';
+                this.newSectionOrder = this.sections.length + 1;
+                this.newSectionDescription = '';
+            } catch (error) {
+                console.error('Error al agregar sección:', error);
+            }
+        },
+
+        editSection(section) {
+            this.newSectionTitle       = section.title;
+            this.newSectionOrder       = section.order;
+            this.newSectionDescription = section.description ?? '';
+        },
+
+        async deleteSection(sectionId) {
+            if (!confirm('¿Eliminar esta sección?')) return;
+            try {
+                await axios.delete(`/api/sections/${sectionId}`, {
+                    data: { _token: '{{ csrf_token() }}' }
+                });
+                this.sections = this.sections.filter(s => s.id !== sectionId);
+            } catch (error) {
+                console.error('Error al eliminar sección:', error);
+            }
+        }
+    }" x-cloak>
         <!-- Modal overlay -->
         <div x-show="showSections" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm" @click.self="showSections = false">
 

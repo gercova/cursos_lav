@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Student\DashboardController;
 use App\Http\Controllers\Student\LessonController;
 use App\Http\Controllers\Student\PaymentController;
 use App\Http\Controllers\Student\StudentExamsController;
@@ -23,28 +24,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'student'])->group(function () {
 
-    // Datos de exámenes para el dashboard
-    Route::get('/student/exams', [StudentExamsController::class, 'getExamDataApi']);
-
-    // Notificaciones (ya existe, mantener)
-    Route::get('/student/notifications', function () {
-        return response()->json([
-            'notifications' => [],
-            'unreadCount' => 0
-        ]);
-    });
-
-    // // Carrito (ya existe, mantener)
-    // Route::get('/cart/count', function () {
-    //     return response()->json(['count' => 0]);
-    // });
-
     // Estadísticas del dashboard
-    Route::get('/student/dashboard-stats', function () {
-        return response()->json([
-            'monthlyProgress' => rand(30, 80)
-        ]);
-    });
+    Route::get('/student/dashboard-stats', [DashboardController::class, 'dashboardStats']);
 
     // Cursos en progreso
     Route::get('/student/progress-courses', function () {
@@ -56,8 +37,6 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
 
     // Obtener lección anterior/siguiente
     Route::get('/lesson/{lesson}/previous', [LessonController::class, 'previous']);
-    Route::get('/lesson/{lesson}/next', [LessonController::class, 'next']);
-
-
+    Route::get('/lesson/{lesson}/next',     [LessonController::class, 'next']);
 });
 Route::post('/mp/webhook', [PaymentController::class, 'webhook'])->name('mp.webhook');

@@ -39,9 +39,48 @@ class LoginController extends Controller
         return view('auth.login', compact('enterprise'));
     }
 
+    // public function login(LoginValidate $request) {
+    //     $validated  = $request->validated();
+    //     $user       = User::where('email', $request['email'])->first();
+    //     if (!$user) {
+    //         RateLimiter::hit($this->throttleKey($request));
+    //         return back()->withErrors([
+    //             'email' => 'Revise el usuario y/o contraseña.',
+    //         ])->onlyInput('email');
+    //     }
+
+    //     if($user->expires_at != NULL || !$user->isAdmin()){
+    //         if($user->expires_at->format('Y-m-d') == now()->format('Y-m-d')){
+    //             return back()->withErrors(['Tu cuenta a caducado, contacte con nuestro canal de atención al cliente.']);
+    //         }
+    //     }
+
+    //     if (Auth::attempt($validated)) {
+    //         $request->session()->regenerate();
+
+    //         RateLimiter::clear($this->throttleKey($request));
+
+    //         if ($user->isAdmin() || $user->isInstructor()) {
+    //             return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido al panel administrativo!');
+    //         } else if ($user->isStudent()) {
+    //             return redirect()->intended('dashboard');
+    //         } else if ($user->isBusiness()) {
+    //             return redirect()->intended(route('company.list'))->with('success', '!Bienvenido de nuevo¡');
+    //         }
+    //     }
+
+    //     return back()->withErrors([
+    //         'email' => 'Las credenciales proporcionadas no son correctas.',
+    //     ])->onlyInput('email');
+
+    // }
+
     public function login(LoginValidate $request) {
-        $validated  = $request->validated();
-        $user       = User::where('email', $request['email'])->first();
+        $this->ensureIsNotRateLimited($request);
+
+        $validated = $request->validated();
+        $user      = User::where('email', $validated['email'])->first();
+
         if (!$user) {
             RateLimiter::hit($this->throttleKey($request));
             return back()->withErrors([
@@ -49,37 +88,61 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
-        if (Auth::attempt($validated)) {
-            $request->session()->regenerate();
+        if (!$user->is_active) {
+            RateLimiter::hit($this->throttleKey($request));
+            return back()->withErrors([
+                'email' => 'Tu cuenta está desactivada. Contacta con soporte.',
+            ])->onlyInput('email');
+        }
 
-            RateLimiter::clear($this->throttleKey($request));
-
-            if ($user->isAdmin() || $user->isInstructor()) {
-                return redirect()->intended(route('admin.dashboard'))->with('success', '¡Bienvenido al panel administrativo!');
-            } else if ($user->isStudent()) {
-                return redirect()->intended('dashboard');
-            } else if ($user->isBusiness()) {
-                return redirect()->intended(route('company.list'))->with('success', '!Bienvenido de nuevo¡');
+        if ($user->expires_at != NULL && !$user->isAdmin()) {
+            if ($user->expires_at->format('Y-m-d') <= now()->format('Y-m-d')) {
+                return back()->withErrors([
+                    'email' => 'Tu cuenta ha caducado, contacte con nuestro canal de atención al cliente.',
+                ])->onlyInput('email');
             }
         }
 
+        if (Auth::attempt($validated)) {
+            $request->session()->regenerate();
+            RateLimiter::clear($this->throttleKey($request));
+
+            if ($user->isAdmin() || $user->isInstructor()) {
+                return redirect()->intended(route('admin.dashboard'))
+                    ->with('success', '¡Bienvenido al panel administrativo!');
+            } elseif ($user->isStudent()) {
+                return redirect()->intended('dashboard');
+            } elseif ($user->isBusiness()) {
+                return redirect()->intended(route('company.list'))
+                    ->with('success', '¡Bienvenido de nuevo!');
+            } else {
+                return redirect()->intended('dashboard');
+            }
+        }
+
+        RateLimiter::hit($this->throttleKey($request));
         return back()->withErrors([
             'email' => 'Las credenciales proporcionadas no son correctas.',
         ])->onlyInput('email');
-
     }
 
     protected function ensureIsNotRateLimited(Request $request): void {
-        if (!RateLimiter::tooManyAttempts($this->throttleKey($request), 5)) {
+        $key = $this->throttleKey($request); // cachear la clave, no llamarla 3 veces
+
+        if (!RateLimiter::tooManyAttempts($key, 5)) {
             return;
         }
 
-        $seconds = RateLimiter::availableIn($this->throttleKey($request));
+        $seconds = RateLimiter::availableIn($key);
+        $minutes = ceil($seconds / 60);
+
+        // Evento estándar de Laravel para lockouts (útil para logs y listeners)
+        event(new \Illuminate\Auth\Events\Lockout($request));
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'email' => __('auth.throttle', [
                 'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+                'minutes' => $minutes,
             ]),
         ]);
     }

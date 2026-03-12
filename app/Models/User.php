@@ -45,6 +45,7 @@ class User extends Authenticatable {
         'last_login_at',
         'courses_sold_count', // Campo nuevo agregado
         'total_commission',   // Campo nuevo agregado
+        'expires_at'
     ];
 
     protected $hidden = [
@@ -55,6 +56,7 @@ class User extends Authenticatable {
     protected $casts = [
         'email_verified_at'     => 'datetime',
         'last_login_at'         => 'datetime',
+        'expires_at'            => 'datetime',
         'password'              => 'hashed',
         'courses_sold_count'    => 'integer',
         'total_commission'      => 'decimal:2',
@@ -92,8 +94,7 @@ class User extends Authenticatable {
 
     // Cursos que el usuario estudia
     public function studentCourses(): BelongsToMany {
-        return $this->belongsToMany(Course::class, 'enrollments')
-        ->withPivot('status', 'progress', 'enrolled_at');
+        return $this->belongsToMany(Course::class, 'enrollments')->withPivot('status', 'progress', 'enrolled_at');
     }
 
     public function courses(): HasMany {

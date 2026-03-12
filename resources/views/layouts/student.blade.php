@@ -430,9 +430,11 @@
 
                 @if ($hasAnyPackage)
                     <hr>
-                    <a href="{{ route('company.dashboard-admin') }}" class="sidebar-link {{ request()->routeIs('company.dashboard-admin') ? 'active bg-purple-700' : '' }}">
-                        <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
-                    </a>
+                    @if($purchasedPackage && in_array($purchasedPackage->plan_type_id, [5, 6, 7]))
+                        <a href="{{ route('company.dashboard-admin') }}" class="sidebar-link {{ request()->routeIs('company.dashboard-admin') ? 'active bg-purple-700' : '' }}">
+                            <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
+                        </a>
+                    @endif
                     <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
                         <i class="fa-regular fa-building mr-2"></i> Gestionar mis usuarios
                     </a>
@@ -446,22 +448,18 @@
                     <i class="fas fa-book"></i>
                     <span>Mis Cursos</span>
                 </a>
-
                 <a href="{{ route('student.certificates') }}" class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
                     <i class="fas fa-certificate"></i>
                     <span>Certificados</span>
                 </a>
-
                 <a href="{{ route('student.exams') }}" class="sidebar-link {{ request()->routeIs('student.exams') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i>
                     <span>Exámenes</span>
                 </a>
-
                 <a href="{{ route('student.profile') }}" class="sidebar-link {{ request()->routeIs('student.profile') ? 'active' : '' }}">
                     <i class="fas fa-user"></i>
                     <span>Mi Perfil</span>
                 </a>
-
                 @if(auth()->user()->hasPromotionCode())
                     <a href="{{ route('student.affiliate.dashboard') }}" class="sidebar-link {{ request()->routeIs('student.affiliate.*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>

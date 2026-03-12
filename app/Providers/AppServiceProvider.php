@@ -32,10 +32,32 @@ class AppServiceProvider extends ServiceProvider {
             $view->with(['enterprise' => $enterprise]);
         });
 
+        // View::composer('layouts.student', function ($view) {
+        //     $enterprise         = Enterprise::first();
+        //     $hasAnyPackage      = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
+        //     $purchasedPackage   = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first();
+        //     $view->with([
+        //         'enterprise'        => $enterprise, 
+        //         'hasAnyPackage'     => $hasAnyPackage,
+        //         'purchasedPackage'  => $purchasedPackage,
+        //     ]);
+        // });
+
         View::composer('layouts.student', function ($view) {
-            $enterprise     = Enterprise::first();
-            $hasAnyPackage  = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
-            $view->with(['enterprise' => $enterprise, 'hasAnyPackage' => $hasAnyPackage]);
+            $user = auth()->user();
+            
+            // Optimización: evitar consultas duplicadas
+            $studentCourses = $user->studentCourses()
+                ->where('courses.type', 'package')
+                ->get();
+            
+            $purchasedPackage = $studentCourses->first();
+            
+            $view->with([
+                'enterprise'        => Enterprise::first(),
+                'hasAnyPackage'     => $studentCourses->isNotEmpty(),
+                'purchasedPackage'  => $purchasedPackage,
+            ]);
         });
     }
 }

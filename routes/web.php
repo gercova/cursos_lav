@@ -29,6 +29,7 @@ use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
 use App\Http\Controllers\Student\CoursesController;
 use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Student\DashboardPackageController;
 use App\Http\Controllers\Student\LessonController;
 use App\Http\Controllers\Student\PackageSelectionController;
 use App\Http\Controllers\Student\PaymentController;
@@ -104,7 +105,8 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Pagos
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
-    // si usuario tiene RUC
+    // si usuario tiene compro un paquete
+    Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
     Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
     Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
@@ -114,7 +116,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::patch('/mi-colaborador/{user}/toggle-status', [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
     Route::post('/users/import',                [BusinessImportController::class, 'import'])->name('company.import.process');
     Route::get('/users/import/template',        [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
-
     Route::get('/enroll/users',                 [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
     Route::post('/enroll/with-code',            [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
     Route::post('/enroll/bulk',                 [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');

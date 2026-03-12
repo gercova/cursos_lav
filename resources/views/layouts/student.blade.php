@@ -412,7 +412,7 @@
         <aside class="sidebar" :class="{ 'mobile-open': mobileMenuOpen }">
             <div class="sidebar-header">
                 <div class="flex items-center justify-between">
-                    <a href="{{ url('/') }}" class="flex items-center gap-2">
+                    <a href="{{ route('student.dashboard') }}" class="flex items-center gap-2">
                         <img class="h-8 w-auto" src="{{ $enterprise->logo_path }}" alt="Logo">
                         <span class="font-semibold text-gray-800 text-sm hidden lg:inline">{{ $enterprise->trade_name }}</span>
                     </a>

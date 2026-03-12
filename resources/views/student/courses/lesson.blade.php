@@ -478,9 +478,8 @@
                     vimeoInstance.setCurrentTime(timeToSeek);
                 }
             },
-
+            
             async saveProgress() {
-                // Si hay un error bloqueamos futuros guardados
                 if (!this.isVideoLoaded || this.watchedPercent <= 0 || this.isProcessing || this.hasError) return;
 
                 localStorage.setItem(`lesson_${this.lessonId}_progress`, this.watchedPercent.toString());
@@ -492,10 +491,12 @@
 
                         const response = await fetch('{{ route("lesson.progress.save") }}', {
                             method: 'POST',
+                            credentials: 'same-origin', // <--- LA MAGIA PARA PRODUCCIÓN (Envía la cookie)
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': token,
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest' // <--- PARA QUE LARAVEL SEPA QUE ES AJAX
                             },
                             body: JSON.stringify({
                                 enrollment_id: this.enrollmentId,
@@ -507,12 +508,13 @@
                         
                         const result = await response.json();
                         if (!result.success) {
-                            console.error('ERROR BACKEND (Progreso):', result.message, 'Línea:', result.line);
+                            console.error('ERROR BACKEND (Progreso):', result.message);
                             this.hasError = true;
                         }
                     } catch (error) {
                         console.error("Error de red guardando progreso:", error);
-                        this.hasError = true;
+                        // Ojo: Aquí NO ponemos this.hasError = true; 
+                        // Para evitar que un micro-corte de internet le bloquee el progreso al usuario.
                     }
                 }
             },
@@ -527,10 +529,12 @@
 
                     const response = await fetch('{{ route("lesson.complete") }}', {
                         method: 'POST',
+                        credentials: 'same-origin', // <--- LA MAGIA PARA PRODUCCIÓN
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json'
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest' // <--- PARA QUE LARAVEL SEPA QUE ES AJAX
                         },
                         body: JSON.stringify({
                             enrollment_id: this.enrollmentId,
@@ -546,15 +550,13 @@
                         this.showCompletionMessage();
                         setTimeout(() => window.location.reload(), 1500);
                     } else {
-                        // AQUÍ VEREMOS EXACTAMENTE QUÉ FALLA EN LARAVEL
-                        console.error('ERROR BACKEND (Completar):', result.message, 'Línea:', result.line);
-                        this.hasError = true; // Dejamos el semáforo en rojo
+                        console.error('ERROR BACKEND (Completar):', result.message);
+                        this.hasError = true;
                     }
                 } catch (error) {
                     console.error('Error de red al completar:', error);
                     this.hasError = true;
                 } finally {
-                    // Solo liberamos el semáforo si NO hubo errores
                     if (!this.hasError) {
                         this.isProcessing = false;
                     }

@@ -84,7 +84,6 @@
                 <div class="relative bg-black">
                     <div class="aspect-w-16 aspect-h-9" x-ignore>
                         @if($lesson->video?->vimeo_id)
-                        
                             <iframe id="vimeo-player"
                                 x-ref="videoIframe" 
                                 src="{{$lesson->video?->embed_url}}&api=1"
@@ -209,7 +208,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
                                 <p class="text-sm text-yellow-700">
-                                    Debes ver al menos el 95% de esta lección para poder marcarla como completada.
+                                    Debes ver al menos el 99% de esta lección para poder marcarla como completada.
                                     <span class="font-medium">Has visto el <span x-text="watchedPercent.toFixed(1)"></span>%</span>
                                 </p>
                             </div>
@@ -335,9 +334,7 @@
                                 <h4 class="font-medium text-gray-700 mb-2">Documentos</h4>
                                 <div class="space-y-2">
                                     @foreach($lessonDocuments as $document)
-                                        <a href="{{ Storage::url($document->file_path) }}"
-                                        target="_blank"
-                                        class="flex items-center p-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200">
+                                        <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="flex items-center p-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200">
                                             @php
                                                 $icon = match(strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION))) {
                                                     'pdf' => 'fa-file-pdf text-red-500',
@@ -372,7 +369,7 @@
             currentTime: 0,
             duration: 0,
             watchedPercent: {{ $watchedPercent ?? 0 }},
-            minWatchPercent: 95,
+            minWatchPercent: 99,
             lessonId: {{ $lesson->id }},
             enrollmentId: {{ $enrollment->id ?? 0 }},
             isCompleted: @json((bool)$isCompleted),

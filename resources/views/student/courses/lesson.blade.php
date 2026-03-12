@@ -508,7 +508,8 @@
                         
                         const result = await response.json();
                         if (!result.success) {
-                            console.error('ERROR BACKEND (Progreso):', result.message || result.error || JSON.stringify(result));
+                            // console.error('ERROR BACKEND (Progreso):', result.message || result.error || JSON.stringify(result));
+                            console.error('ERROR BACKEND (Progreso):', result.message || result.error);
                             this.hasError = true;
                         }
                     } catch (error) {
@@ -550,7 +551,8 @@
                         this.showCompletionMessage();
                         setTimeout(() => window.location.reload(), 1500);
                     } else {
-                        console.error('ERROR BACKEND (Completar):', result.message);
+                        // console.error('ERROR BACKEND (Completar):', result.message);
+                        console.error('ERROR BACKEND (Completar):', result.message || result.error);
                         this.hasError = true;
                     }
                 } catch (error) {

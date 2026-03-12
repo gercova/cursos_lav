@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 class LessonController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
+        $this->middleware(['student', 'prevent.back']);
     }
 
     public function show($courseSlug, $lessonId): View|RedirectResponse {
@@ -94,8 +94,12 @@ class LessonController extends Controller {
 
             $enrollment = Enrollment::findOrFail($request->enrollment_id);
 
-            if ($enrollment->user_id !== Auth::id()) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+            // if ($enrollment->user_id !== Auth::id()) {
+            //     return response()->json(['error' => 'Unauthorized'], 403);
+            // }
+
+            if ((int) $enrollment->user_id !== (int) Auth::id()) {
+                return response()->json(['error' => 'Unauthorized de progreso'], 403);
             }
 
             $lessonProgress = LessonProgress::updateOrCreate(
@@ -137,8 +141,12 @@ class LessonController extends Controller {
 
             $enrollment = Enrollment::findOrFail($request->enrollment_id);
 
-            if ($enrollment->user_id !== Auth::id()) {
-                return response()->json(['error' => 'Unauthorized'], 403);
+            // if ($enrollment->user_id !== Auth::id()) {
+            //     return response()->json(['error' => 'Unauthorized'], 403);
+            // }
+
+            if ((int) $enrollment->user_id !== (int) Auth::id()) {
+                return response()->json(['error' => 'Unauthorized de completar'], 403);
             }
 
             CompletedLessons::updateOrCreate(

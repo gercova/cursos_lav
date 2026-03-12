@@ -94,10 +94,6 @@ class LessonController extends Controller {
 
             $enrollment = Enrollment::findOrFail($request->enrollment_id);
 
-            // if ($enrollment->user_id !== Auth::id()) {
-            //     return response()->json(['error' => 'Unauthorized'], 403);
-            // }
-
             if ((int) $enrollment->user_id !== (int) Auth::id()) {
                 return response()->json(['error' => 'Unauthorized de progreso'], 403);
             }
@@ -140,10 +136,6 @@ class LessonController extends Controller {
             ]);
 
             $enrollment = Enrollment::findOrFail($request->enrollment_id);
-
-            // if ($enrollment->user_id !== Auth::id()) {
-            //     return response()->json(['error' => 'Unauthorized'], 403);
-            // }
 
             if ((int) $enrollment->user_id !== (int) Auth::id()) {
                 return response()->json(['error' => 'Unauthorized de completar'], 403);

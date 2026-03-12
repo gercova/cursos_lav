@@ -508,7 +508,7 @@
                         
                         const result = await response.json();
                         if (!result.success) {
-                            console.error('ERROR BACKEND (Progreso):', result.message);
+                            console.error('ERROR BACKEND (Progreso):', result.message || result.error || JSON.stringify(result));
                             this.hasError = true;
                         }
                     } catch (error) {

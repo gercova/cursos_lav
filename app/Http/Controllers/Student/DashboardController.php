@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Exam;
-use App\Models\LessonProgress;
 use App\Models\UserActivity;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -60,9 +59,7 @@ class DashboardController extends Controller {
                 'lessons'           => $totalLessons,
                 'duration'          => $course->duration ?: '0 horas',
                 'enrolled_date'     => $enrollment->created_at->format('d/m/Y'),
-                'last_accessed'     => $enrollment->last_accessed_at ? 
-                    $enrollment->last_accessed_at->format('d/m/Y H:i') : 
-                    now()->format('d/m/Y H:i'),
+                'last_accessed'     => $enrollment->last_accessed_at ? $enrollment->last_accessed_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i'),
                 'completed_lessons' => $enrollment->completed_lessons_count ?: 0,
                 'total_lessons'     => $totalLessons,
                 'continue_url'      => route('student.course.learn', $course)

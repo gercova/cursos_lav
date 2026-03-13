@@ -20,24 +20,17 @@ class BusinessImportController extends Controller {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
 
-    // private function resolveAvailableSlots(User $owner, int $seatsMax): int {
-    //     $subUsersCount = User::where('company_code', $owner->company_code)
-    //         ->where('id', '!=', $owner->id)
-    //         ->count();
-
-    //     return max(0, $seatsMax - $subUsersCount);
-    // }
-
     /**
      * Mostrar vista de importación
      */
     public function showImportForm() {
         $user           = Auth::user();
         $companyCode    = $user->company_code;
-
+        
         $enrolledPackage = User::find(auth()->id())
             ->studentCourses()
             ->where('courses.type', 'package')
+            ->orderByDesc('courses.plan_type_id')
             ->first();
 
         $hasAnyPackage = User::find(auth()->id())
@@ -48,8 +41,17 @@ class BusinessImportController extends Controller {
         // Obtener límite de usuarios
         $countUser = User::where('company_code', $companyCode)->count();
         
-        $limitUser = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos que tiene un paquete comprado
-        $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
+        $availableSlots = ($enrolledPackage->seats_max ?? 0) + 1 - $countUser;
+        // Obtener total de asientos que tiene un paquete comprado
+        // $limitUser      = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first();
+        // $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
+
+        $stats = [
+            'total'         => User::where('users.company_code', auth()->user()->company_code)->where('users.id', '!=', Auth::id())->count(),
+            'seats_max'     => $enrolledPackage->seats_max ?? 0,
+            'available'     => $availableSlots,
+            'limit'         => ($enrolledPackage->quantity ?? 0) + 1,
+        ];
 
         // return view('business.import', compact('availableSlots'));
         return view('student.company.import', compact('availableSlots', 'hasAnyPackage', 'enrolledPackage'));
@@ -175,6 +177,7 @@ class BusinessImportController extends Controller {
         $package = User::find($authUser->id)
             ->studentCourses()
             ->where('courses.type', 'package')
+            ->orderByDesc('courses.plan_type_id')
             ->first();
 
         if (!$package) {

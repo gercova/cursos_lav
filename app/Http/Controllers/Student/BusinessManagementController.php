@@ -32,7 +32,12 @@ class BusinessManagementController extends Controller {
         if($hasAnyPackage){
             // Obtener límite de usuarios
             $countUser      = User::where('company_code', auth()->user()->company_code)->count();
-            $limitUser      = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos que tiene un paquete comprado
+            $limitUser      = User::find(auth()->id())
+                ->studentCourses()
+                ->where('courses.type', 'package')
+                ->latest()
+                ->first(); // Obtener total de asientos que tiene el ultimo paquete comprado en caso de haber comprado más de uno
+            
             $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
             
             $query = User::withCount(['enrollments', 'courses', 'certificates', 'examAttempts'])
@@ -169,10 +174,23 @@ class BusinessManagementController extends Controller {
             $totalCourses   = Course::where('is_active', true)->get();
 
             // Verifica que el usuario padre está matriculado estrictamente en un paquete
-            $package = Enrollment::where('user_id', Auth::id())
-                ->whereHas('package') 
-                ->with('package')
+            // $package = Enrollment::where('user_id', Auth::id())
+            //     ->whereHas('package') 
+            //     ->with('package')
+            //     ->first();
+
+            // 1. Buscamos el mejor curso tipo paquete del usuario
+            $bestPackageCourse = User::find(auth()->id())
+                ->studentCourses()
+                ->where('courses.type', 'package')
+                ->orderByDesc('courses.plan_type_id')
                 ->first();
+
+            // 2. Traemos la matrícula (Enrollment) exacta de ese mejor paquete
+            $package = $bestPackageCourse ? Enrollment::where('user_id', Auth::id())
+                ->where('course_id', $bestPackageCourse->id)
+                ->with('package')
+                ->first() : null;
 
             $enrolledPackage = User::find(auth()->id())
                 ->studentCourses()

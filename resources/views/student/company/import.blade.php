@@ -16,40 +16,6 @@
         </div>
 
         <!-- Tarjeta de límite disponible -->
-        @php $slotsReached = $availableSlots <= 0; @endphp
-
-        <div class="bg-gradient-to-r {{ $slotsReached ? 'from-red-50 to-red-100 border-red-300' : 'from-blue-50 to-indigo-50 border-blue-200' }} border rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <p class="text-xs sm:text-sm font-medium {{ $slotsReached ? 'text-red-800' : 'text-blue-800' }} mb-1">
-                        Espacios disponibles
-                    </p>
-                    <p class="text-2xl sm:text-3xl font-bold {{ $slotsReached ? 'text-red-900' : 'text-blue-900' }}">
-                        {{ $availableSlots }} / {{ $enrolledPackage->seats_max ?? 0 }} usuarios
-                    </p>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-2">
-                        @if($slotsReached)
-                            Ha alcanzado el límite de su plan. Actualícelo para agregar más usuarios.
-                        @else
-                            Puedes importar hasta {{ $availableSlots }} usuario(s) más según tu plan actual.
-                        @endif
-                    </p>
-                </div>
-                <div class="{{ $slotsReached ? 'bg-red-500' : 'bg-blue-600' }} p-3 sm:p-4 rounded-xl w-fit">
-                    @if($slotsReached)
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
-                        </svg>
-                    @else
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Mostrar errores de sesión -->
         @if(session('error'))
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 sm:p-4 mb-6 rounded-lg text-sm sm:text-base" role="alert">
                 <p class="font-bold">Error</p>
@@ -57,7 +23,6 @@
             </div>
         @endif
 
-        <!-- Mostrar fallos de validación -->
         @if(session('import_failures'))
             <div class="bg-yellow-50 border-l-4 border-yellow-500 p-3 sm:p-4 mb-6 rounded-lg">
                 <p class="font-bold text-yellow-800 text-sm sm:text-base mb-2">Errores de validación en el archivo:</p>
@@ -75,7 +40,6 @@
         @endif
     </div>
 
-    <!-- Panel principal -->
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-200">
         <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <h2 class="text-base sm:text-lg font-semibold text-gray-800">Subir archivo Excel</h2>
@@ -83,31 +47,62 @@
         </div>
 
         <div class="p-4 sm:p-6">
-            <!-- Instrucciones -->
-            <div class="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 border border-blue-200">
-                <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-                    <div class="flex-shrink-0">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-blue-800 text-sm sm:text-base mb-2">Instrucciones para la importación:</h3>
-                        <ul class="text-xs sm:text-sm text-blue-700 space-y-1 list-disc list-inside">
-                            <li>Descarga la plantilla de ejemplo usando el botón "Descargar plantilla"</li>
-                            <li>Completa los datos respetando el formato de cada columna</li>
-                            <li>El DNI y CORREO deben ser únicos en el sistema</li>
-                            <li>CÓDIGO PAIS: Usar +51 (Perú), +54 (Argentina), +56 (Chile), +591 (Bolivia), +593 (Ecuador), +598 (Uruguay)</li>
-                            <li>Si no especificas código de país, se asignará +51 por defecto</li>
-                            <li>La contraseña inicial será: <span class="font-mono bg-blue-100 px-2 py-1 rounded text-xs">P4$$w0rd#.</span></li>
-                            <li>El archivo no debe exceder los 5MB</li>
-                        </ul>
+            @if($hasAnyPackage)
+                @php $slotsReached = $availableSlots <= 0; @endphp
+
+                <div class="bg-gradient-to-r {{ $slotsReached ? 'from-red-50 to-red-100 border-red-300' : 'from-blue-50 to-indigo-50 border-blue-200' }} border rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs sm:text-sm font-medium {{ $slotsReached ? 'text-red-800' : 'text-blue-800' }} mb-1">
+                                Espacios disponibles
+                            </p>
+                            <p class="text-2xl sm:text-3xl font-bold {{ $slotsReached ? 'text-red-900' : 'text-blue-900' }}">
+                                {{ max(0, $availableSlots) }} / {{ $enrolledPackage?->seats_max ?? 0 }} usuarios
+                            </p>
+                            <p class="text-xs sm:text-sm text-gray-600 mt-2">
+                                @if($slotsReached)
+                                    Ha alcanzado el límite de su plan. Actualícelo para agregar más usuarios.
+                                @else
+                                    Puedes importar hasta {{ $availableSlots }} usuario(s) más según tu plan actual.
+                                @endif
+                            </p>
+                        </div>
+                        <div class="{{ $slotsReached ? 'bg-red-500' : 'bg-blue-600' }} p-3 sm:p-4 rounded-xl w-fit">
+                            @if($slotsReached)
+                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                                </svg>
+                            @else
+                                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            @if($hasAnyPackage)
-                <!-- Formulario de importación -->
+                <div class="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-6 mb-6 border border-blue-200">
+                    <div class="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-blue-800 text-sm sm:text-base mb-2">Instrucciones para la importación:</h3>
+                            <ul class="text-xs sm:text-sm text-blue-700 space-y-1 list-disc list-inside">
+                                <li>Descarga la plantilla de ejemplo usando el botón "Descargar plantilla"</li>
+                                <li>Completa los datos respetando el formato de cada columna</li>
+                                <li>El DNI y CORREO deben ser únicos en el sistema</li>
+                                <li>CÓDIGO PAIS: Usar +51 (Perú), +54 (Argentina), +56 (Chile), +591 (Bolivia), +593 (Ecuador), +598 (Uruguay)</li>
+                                <li>Si no especificas código de país, se asignará +51 por defecto</li>
+                                <li>La contraseña inicial será: <span class="font-mono bg-blue-100 px-2 py-1 rounded text-xs">P4$$w0rd#.</span></li>
+                                <li>El archivo no debe exceder los 5MB</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <form action="{{ route('company.import.process') }}" method="POST" enctype="multipart/form-data"
                       x-data="importForm({{ $availableSlots }})"
                       @submit.prevent="handleSubmit($event)"
@@ -161,15 +156,18 @@
                     </div>
                 </form>
             @else
-                <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-lg font-large text-red-800">
-                                <i class="fa-solid fa-check mr-2"></i>Para poder registrar a tus colaboradores, al menos debes comprar un paquete.<br>
-                                <i class="fa-solid fa-check mr-2"></i>Cada paquete incluye la cantidad de colaboradores que puedes registar como empresa.
-                            </p>
-                        </div>
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-6 text-center shadow-sm">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-200 mb-4">
+                        <i class="fa-solid fa-lock text-amber-600 text-2xl"></i>
                     </div>
+                    <h3 class="text-lg font-bold text-amber-900 mb-2">Se requiere un paquete corporativo</h3>
+                    <p class="text-amber-800 text-sm mb-4">
+                        Para poder importar o registrar colaboradores, debes adquirir un plan corporativo.<br>
+                        Cada paquete determina la cantidad de asientos (usuarios) que puedes administrar en tu empresa.
+                    </p>
+                    <a href="/planes" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                        Ver Planes
+                    </a>
                 </div>
             @endif
         </div>

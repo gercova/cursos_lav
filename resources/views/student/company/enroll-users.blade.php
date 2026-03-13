@@ -54,22 +54,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Total a matricular -->
-            {{-- <div class="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-xl p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs font-medium text-amber-800">Total a matricular</p>
-                        <p class="text-xl sm:text-2xl font-bold text-amber-900 mt-1">{{ $collaborators->whereNotNull('code')->count() * $courses->count() }}</p>
-                    </div>
-                    <div class="bg-amber-600 p-2 sm:p-3 rounded-xl">
-                        <i class="w-5 h-5 sm:w-6 sm:h-6 text-white fa-solid fa-rocket"></i>
-                    </div>
-                </div>
-            </div> --}}
         </div>
 
-        @if($courses->count() == 0)
+        @if($package->package->plan_type_id == 1 && $courses->count() == 0)
             <div class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 mb-6 rounded-lg">
                 <div class="flex items-start gap-2 sm:gap-3">
                     <div class="flex-shrink-0">
@@ -96,7 +83,7 @@
 
     <!-- Panel principal -->
     <div class="card overflow-hidden border border-gray-200">
-        <!-- Tabs - Scroll horizontal en móvil -->
+        {{-- <!-- Tabs - Scroll horizontal en móvil -->
         <div class="border-b border-gray-200 bg-gray-50 overflow-x-auto">
             <nav class="flex whitespace-nowrap min-w-full">
                 @if($package->package->plan_type_id !== 1)
@@ -119,13 +106,6 @@
                         <span class="hidden xs:inline">Matrícula</span> Express
                     </button>
                 @endif
-                
-                {{-- @if($package->package->plan_type_id != 1)
-                    <button @click="activeTab = 'history'" :class="{ 'border-blue-500 text-blue-600': activeTab === 'history', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'history' }" class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                        <i class="fas fa-history mr-1 sm:mr-2"></i>
-                        <span class="hidden xs:inline">Historial</span> Reciente
-                    </button>
-                @endif --}}
             </nav>
         </div>
 
@@ -395,53 +375,12 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Tab: Historial Reciente -->
-            {{-- <div x-show="activeTab === 'history'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100" style="display: none;">
-                <div x-data="recentEnrollments()" x-init="loadEnrollments()">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
-                        <h3 class="text-base sm:text-lg font-semibold text-gray-900">Matriculaciones recientes</h3>
-                        <button @click="loadEnrollments()" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                            <i class="fas fa-sync-alt"></i> Actualizar
-                        </button>
-                    </div>
-                    
-                    <div x-show="loading" class="py-8 text-center">
-                        <div class="loading-spinner mx-auto mb-2"></div>
-                        <p class="text-sm text-gray-600 mt-2">Cargando matriculaciones...</p>
-                    </div>
-                    
-                    <div x-show="!loading && enrollments.length === 0" class="text-center py-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                            <i class="fas fa-book-open text-gray-400 text-xl"></i>
-                        </div>
-                        <p class="text-sm text-gray-600">No hay matriculaciones recientes</p>
-                    </div>
-                    
-                    <div x-show="!loading && enrollments.length > 0" class="space-y-2 sm:space-y-3">
-                        <template x-for="enrollment in enrollments" :key="enrollment.id">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors gap-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                        <i class="fas fa-user-graduate text-blue-600 text-xs sm:text-sm"></i>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="font-medium text-gray-900 text-sm sm:text-base truncate" x-text="enrollment.user?.names || 'N/A'"></p>
-                                        <p class="text-xs sm:text-sm text-gray-600 truncate" x-text="enrollment.course?.title || 'N/A'"></p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 ml-11 sm:ml-0">
-                                    <p class="text-xs text-gray-500" x-text="formatDate(enrollment.created_at)"></p>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">
-                                        Activo
-                                    </span>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div> --}}
-        </div>
+        </div> --}}
+        @if($package->package->plan_type_id == 1 && $courses->count() == 0)
+            @include('student.company.partials.enrollment-options-1')
+        @elseif ($package->package->plan_type_id !== 1)
+            @include('student.company.partials.enrollment-options-2')
+        @endif
     </div>
     
     <!-- Modal de confirmación para Mega Matrícula -->

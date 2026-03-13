@@ -58,7 +58,7 @@
                     </div>
 
                     <!-- Dirección -->
-                    <div class="flex items-start">
+                    {{-- <div class="flex items-start">
                         <div class="bg-purple-100 p-3 rounded-lg mr-4">
                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -70,7 +70,7 @@
                             <p class="text-gray-600">Av. Javier Prado 1234</p>
                             <p class="text-gray-600">San Isidro, Lima - Perú</p>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- WhatsApp -->
                     <div class="flex items-start">

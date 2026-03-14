@@ -36,11 +36,19 @@
                     <div class="flex flex-wrap gap-4 mb-6">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-book text-indigo-300"></i>
-                            <span class="text-indigo-200">{{ $package->total_courses }} cursos incluidos</span>
+                            <span class="text-indigo-200">
+                                @if($package->plan_type_id == 1 && $package->course_limit !== 0)
+                                    {{ $package->course_limit }} cursos incluidos
+                                @elseif($package->plan_type_id !== 1 && $package->packageCourses->count() > 0)
+                                    {{ $package->packageCourses->count() }} cursos incluidos
+                                @elseif($package->plan_type_id !== 1 && $package->packageCourses->count() == 0)
+                                    Todos los cursos
+                                @endif  
+                            </span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-users text-indigo-300"></i>
-                            <span class="text-indigo-200">{{ $package->students_count ?? 0 }} estudiantes</span>
+                            <span class="text-indigo-200">Hasta {{ $package->seats_max ?? 0 }} estudiantes</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-clock text-indigo-300"></i>

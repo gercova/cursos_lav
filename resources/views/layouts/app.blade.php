@@ -350,35 +350,12 @@
         SCRIPT GLOBAL DE CONSENTIMIENTO DE COOKIES
         ===================================================================== --}}
     <script>
-        /**
-         * CookieConsent — Gestiona el consentimiento de cookies usando localStorage.
-         *
-         * Clave de almacenamiento : "cookie_consent"
-         * Estructura del objeto   : {
-         *   version      : string   — versión de política (actualizar fuerza re-consentimiento)
-         *   status       : 'accepted' | 'rejected' | 'custom'
-         *   preferences  : {
-         *     necessary  : true  (siempre true, no editable)
-         *     functional : bool
-         *     analytics  : bool
-         *     marketing  : bool
-         *   },
-         *   timestamp    : number   — Date.now() al momento de guardar
-         * }
-         *
-         * API pública:
-         *   CookieConsent.hasConsent()        → bool
-         *   CookieConsent.getConsent()        → objeto | null
-         *   CookieConsent.allows(category)   → bool  (ej. 'analytics')
-         *   CookieConsent.openModal()         → void
-         *   CookieConsent.revokeConsent()     → void  (uso desde política de cookies)
-         */
         window.CookieConsent = (function () {
     
             // ── Configuración ────────────────────────────────────────────────────
             const STORAGE_KEY    = 'cookie_consent';
-            const POLICY_VERSION = '1.0';           // Incrementar cuando cambie la política
-            const EXPIRY_DAYS    = 365;             // Caducidad del consentimiento en días
+            const POLICY_VERSION = '1.0';           
+            const EXPIRY_DAYS    = 365;
     
             // ── Elementos del DOM ────────────────────────────────────────────────
             const banner    = document.getElementById('cookie-consent-banner');

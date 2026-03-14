@@ -155,7 +155,7 @@ class User extends Authenticatable {
      * Obtener URL de afiliado
      */
     public function getAffiliateUrlAttribute(): string {
-        return route('cursos-promo', ['code' => $this->code]);
+        return route('cursos', ['code' => $this->code]);
     }
 
     /**
@@ -173,31 +173,6 @@ class User extends Authenticatable {
         $this->total_commission = ($this->total_commission ?? 0) + $amount;
         $this->save();
     }
-
-    // protected function getProfilePhotoUrlAttribute(): Attribute {
-    //     return Attribute::make(
-    //         get: function (?string $value, array $attributes) {
-    //             // 1. Si el usuario TIENE una foto subida en la base de datos
-    //             if (!empty($value)) {
-    //                 if (Str::startsWith($value, ['http://', 'https://'])) {
-    //                     return $value;
-    //                 }
-    //                 return Storage::url($value);
-    //             }
-
-    //             // 2. Si NO tiene foto, revisamos el rol
-    //             // OJO: Cambia '$attributes['role']' por la forma en que guardes el rol.
-    //             // Si usas Spatie Permission, podrías cambiar esto a $this->roles->first()->name u otra lógica.
-    //             $role = $attributes['role'] ?? null; 
-
-    //             return match ($role) {
-    //                 'instructor' => Storage::url('instructors/instructor-ipf.png'),
-    //                 'admin'      => Storage::url('admin/admin-ipf.png'),
-    //                 default      => null, // Los "student" (u otros) sin foto retornarán null
-    //             };
-    //         }
-    //     );
-    // }
 
     public function getProfilePhotoUrlAttribute(): ?string {
         $value = $this->attributes['profile_photo'] ?? null;

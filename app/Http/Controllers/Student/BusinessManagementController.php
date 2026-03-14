@@ -62,10 +62,15 @@ class BusinessManagementController extends Controller {
 
             $users = $query->paginate(10);
 
-            $enrolledPackage = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first(); // Obtener total de asientos
+            // Obtener total de asientos
+            $enrolledPackage = User::find(auth()->id())
+                ->studentCourses()
+                ->where('courses.type', 'package')
+                ->orderByDesc('courses.plan_type_id')
+                ->first();
 
             $stats = [
-                'total'         => User::where('users.company_code', auth()->user()->company_code)->where('users.id', '!=', Auth::id())->count(),
+                'total'         => User::where('users.parent_id', auth()->id())->where('users.id', '!=', Auth::id())->count(),
                 'seats_max'     => $enrolledPackage->seats_max,
                 'available'     => $availableSlots,
                 'limit'         => ($limitUser->quantity ?? 0) + 1,
@@ -78,7 +83,6 @@ class BusinessManagementController extends Controller {
     }
 
     public function createStaff(User $user): View {
-        
         $hasAnyPackage = User::find(auth()->id())
             ->studentCourses()
             ->where('courses.type', 'package')
@@ -98,18 +102,11 @@ class BusinessManagementController extends Controller {
     }
 
     public function storeStaff(StaffValidate $request): JsonResponse {
-        $countUser  = User::where('company_code', auth()->user()->company_code)->count();
-        $limitUser  = CompanyPolicy::where('user_id', Auth::id())->get();
-        $enrolled   = Enrollment::with('course') // Cargamos la relación
-            ->where('user_id', auth()->id())   // Filtramos por el usuario actual (auth()->id() es más corto y limpio)
-            ->whereHas('course', function ($query) {
-                // Esta función anónima filtra la tabla courses
-                $query->where('type', 'package');
-            })
-            ->get();
+        $countUser  = User::where('parent_id', auth()->id())->count();
+        $user       = auth()->user();
+        $limitUser  = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
 
-
-        if($countUser == (int) $limitUser->quantity + 1){
+        if($countUser == (int) $limitUser->seats_max + 1){
             return response()->json([
                 'status' 	=> false,
                 'messages' 	=> 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador',
@@ -117,7 +114,6 @@ class BusinessManagementController extends Controller {
         } else {
             $validated  = $request->validated();
             $id         = $request->input('user_id');
-
             $data       = array_merge($validated, [
                 'parent_id'     => auth()->id(),
                 'company_code'  => auth()->user()->company_code,

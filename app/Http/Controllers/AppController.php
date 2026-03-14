@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
-use App\Models\CoursePromotionCode;
 use App\Models\Enrollment;
 use App\Models\Enterprise;
 use App\Models\PlanType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -34,7 +32,8 @@ class AppController extends Controller {
         return view('student.home', compact('courses', 'categories', 'enterprise'));
     }
 
-    public function courses(Request $request) {
+    // public function courses(Request $request) {
+    public function courses(Request $request, $code = null) {
         $query = Course::with(['category', 'instructor'])
             ->where('category_id', '<>', 4)
             ->where('type', 'course')
@@ -92,16 +91,19 @@ class AppController extends Controller {
         $courses    = $query->paginate(12);
         $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
         $enterprise = Enterprise::first();
+        // Validar al partner code
+        $partner    = $code ? User::where('code', $code)->where('is_active', true)->first() : null;
 
         // Si es una petición AJAX, retornar solo la vista parcial
         if ($request->ajax()) {
-            return view('student.partials.courses-grid', compact('courses'))->render();
+            return view('student.partials.courses-grid', compact('courses', 'code'))->render();
         }
 
-        return view('student.courses', compact('courses', 'categories', 'enterprise'));
+        return view('student.courses', compact('courses', 'categories', 'code', 'partner', 'enterprise'));
     }
 
-    public function packages(Request $request) {
+    // public function packages(Request $request) {
+    public function packages(Request $request, $code = null) {
         $query = Course::with(['categories'])->where('type', 'package')->where('is_active', true);
 
         // 1. Búsqueda por nombre o descripción
@@ -204,24 +206,21 @@ class AppController extends Controller {
             return $package;
         });
 
-        // 9. Obtener categorías para el filtro (solo las que tienen paquetes activos)
-        // $categories = Category::whereHas('packages', function($q) {
-        //         $q->where('is_active', true);
-        //     })
-        //     ->where('is_active', true)
-        //     ->get();
-
         $enterprise = Enterprise::first();
+        $courses    = Course::where('is_active', true)->where('type', 'course')->get(); 
+        // Validar al partner code
+        $partner    = $code ? User::where('code', $code)->where('is_active', true)->first() : null;
 
         // 10. Si es petición AJAX, devolver solo la cuadrícula
         if ($request->ajax()) {
-            return view('student.partials.packages-grid', compact('packages'))->render();
+            return view('student.partials.packages-grid', compact('packages', 'courses', 'code'))->render();
         }
 
-        return view('student.packages', compact('packages', 'enterprise'));
+        return view('student.packages', compact('packages', 'enterprise', 'courses', 'code'));
     }
 
-    public function showPackage(string $slug): View {
+    // public function showPackage(string $slug): View {
+    public function showPackage(string $slug, $code = null): View {
         $package = Course::with([
                 'courses' => function($query) {
                     $query->withPivot('quantity', 'sort_order')->where('is_active', true);
@@ -252,142 +251,14 @@ class AppController extends Controller {
 
         $planType   = PlanType::get();
         $enterprise = Enterprise::first();
+        // Validar al partner code
+        $partner    = $code ? User::where('code', $code)->where('is_active', true)->first() : null;
 
-        return view('student.package-detail', compact('package', 'planType', 'enterprise'));
+        return view('student.package-detail', compact('package', 'planType', 'enterprise', 'code'));
     }
 
-    public function coursesPartner(Request $request, $code = null) {
-        if($code == null) {
-            return redirect()->route('cursos');
-        }
-
-        $query      = Course::query()->select('courses.*')->with(['category', 'instructor'])->where('courses.is_active', true);
-        $partner    = User::where('code', $code)->where('is_active', true)->first();
-
-        if ($partner) {
-            // Obtener todos los códigos promocionales asociados a este partner
-            $promoCodes = CoursePromotionCode::where('user_id', $partner->id)->where('is_active', true)->pluck('code')->toArray();
-
-            if (!empty($promoCodes)) {
-                // Filtrar cursos que tienen este código promocional del partner
-                $query->whereHas('coursePromotionCode', function ($q) use ($promoCodes) {
-                    $q->whereIn('code', $promoCodes);
-                });
-                // Cargamos la relación con el código promocional activo
-                $query->with(['coursePromotionCode' => function($q) use ($promoCodes) {
-                    $q->whereIn('code', $promoCodes)->where('is_active', true);
-                }]);
-            } else {
-                // Si el partner existe pero no tiene códigos promocionales
-                // Mostramos cursos normales (sin descuento)
-                $partner = null;
-            }
-        } else {
-            // Código inválido - mostrar cursos normales sin descuento
-            // O si prefieres no mostrar nada, descomenta la siguiente línea:
-            // $query->whereRaw('0 = 1');
-            $partner = null;
-        }
-
-        // 3. Filtro por búsqueda
-        $query->when($request->search, function ($q, $search) {
-            $q->where(function ($subQuery) use ($search) {
-                $subQuery->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('short_description', 'like', '%' . $search . '%')
-                    ->orWhereHas('category', function ($cat) use ($search) {
-                        $cat->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('instructor', function ($inst) use ($search) {
-                        $inst->where('names', 'like', '%' . $search . '%');
-                    });
-            });
-        });
-
-        // 4. Filtrar por categoría
-        $query->when($request->category, function ($q, $category_id) {
-            $q->where('category_id', $category_id);
-        });
-
-        // 5. Ordenamiento
-        $sort = $request->get('sort', 'newest');
-
-        match ($sort) {
-            'oldest'     => $query->orderBy('courses.created_at', 'asc'),
-            'popular'    => $query->withCount('enrollments')->orderBy('enrollments_count', 'desc'),
-            'price_low'  => $query->orderBy('courses.price', 'asc'),
-            'price_high' => $query->orderBy('courses.price', 'desc'),
-            'name_asc'   => $query->orderBy('courses.title', 'asc'),
-            'name_desc'  => $query->orderBy('courses.title', 'desc'),
-            default      => $query->orderBy('courses.created_at', 'desc'),
-        };
-
-        // 6. Ejecución
-        $courses = $query->paginate(12)->withQueryString();
-
-        // 7. Para cada curso, determinar el precio final según si hay código promocional
-        $courses->transform(function ($course) use ($partner) {
-            // Si hay un partner válido, buscar si este curso tiene descuento específico
-            if ($partner && $course->coursePromotionCode->isNotEmpty()) {
-                $promoCode = $course->coursePromotionCode->first();
-
-                // Usar precio promocional si está disponible y es menor
-                if ($promoCode->promotion_price < $course->price) {
-                    $course->final_price            = $promoCode->promotion_price;
-                    $course->original_price         = $course->price;
-                    $course->has_promotion          = true;
-                    $course->discount_percentage    = $promoCode->discount_percentage;
-                    $course->promo_code             = $promoCode->code;
-                } else {
-                    // Mantener precio normal
-                    $course->final_price    = $course->getFinalPriceAttribute();
-                    $course->has_promotion  = $course->getIsOnPromotionAttribute();
-                }
-            } else {
-                // Sin código o sin partner válido, usar precio normal
-                $course->final_price        = $course->getFinalPriceAttribute();
-                $course->has_promotion      = $course->getIsOnPromotionAttribute();
-            }
-
-            return $course;
-        });
-
-        // 8. Respuesta AJAX o normal
-        if ($request->ajax()) {
-            return view('student.partials.courses-grid', compact('courses', 'partner'))->render();
-        }
-
-        $categories = Category::where('is_active', true)->get();
-        $enterprise = Enterprise::first();
-
-        return view('student.courses-partner', compact('courses', 'categories', 'enterprise', 'partner'));
-    }
-
-    public function show(string $slug): View {
-        $course = Course::with([
-                'sections' => function($query) {
-                    $query->where('is_active', true)->orderBy('order');
-                },
-                'sections.lessons' => function($query) {
-                    $query->where('is_active', true)->orderBy('order');
-                },
-                'category',
-                'instructor',
-                'documents' => function($query) {
-                    $query->where('is_active', true);
-                }
-            ])
-            ->where('is_active', true)
-            ->where('slug', $slug)
-            ->firstOrFail(); // Usar firstOrFail para 404 automático
-
-        $isEnrolled = Auth::check() ? Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->exists(): false;
-
-        return view('student.course-detail', compact('course', 'isEnrolled'));
-    }
-
-    public function showPartner(string $slug, string $code): View {
-        $partner    = User::where('code', $code)->where('is_active', true)->first();
+    // public function show(string $slug): View {
+    public function showCourse(string $slug, $code = null): View {
         $course     = Course::with([
                 'sections' => function($query) {
                     $query->where('is_active', true)->orderBy('order');
@@ -405,13 +276,10 @@ class AppController extends Controller {
             ->where('slug', $slug)
             ->firstOrFail(); // Usar firstOrFail para 404 automático
 
-        $isEnrolled = Auth::check()
-            ? Enrollment::where('user_id', Auth::id())
-                ->where('course_id', $course->id)
-                ->exists()
-            : false;
+        $isEnrolled = Auth::check() ? Enrollment::where('user_id', Auth::id())->where('course_id', $course->id)->exists(): false;
+        $partner    = $code ? User::where('code', $code)->where('is_active', true)->first() : null;
 
-        return view('student.course-detail-partner', compact('course', 'partner', 'isEnrolled'));
+        return view('student.course-detail', compact('course', 'isEnrolled', 'code'));
     }
 
     public function aboutus(): View {
@@ -462,13 +330,13 @@ class AppController extends Controller {
             // 3. Integrar con CRM
 
             $contactData = [
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'phone'     => $request->phone,
-                'subject'   => $request->subject,
-                'message'   => $request->message,
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
+                'name'          => $request->name,
+                'email'         => $request->email,
+                'phone'         => $request->phone,
+                'subject'       => $request->subject,
+                'message'       => $request->message,
+                'ip_address'    => $request->ip(),
+                'user_agent'    => $request->userAgent(),
             ];
 
             // Ejemplo de envío de email (descomentar cuando configures mail)

@@ -55,12 +55,16 @@ Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'hand
 
 // Rutas públicas
 Route::get('/',                             [AppController::class, 'home'])->name('home');
-Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
-Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
-Route::get('/promo-paquete/{slug}',         [AppController::class, 'showPackage'])->name('paquete.detail');
-Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
-Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
-Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
+// Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
+// Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
+// Route::get('/promo-paquete/{slug}',         [AppController::class, 'showPackage'])->name('paquete.detail');
+// Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
+// Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
+// Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
+Route::get('/cursos/{code?}',               [AppController::class, 'courses'])->name('cursos');
+Route::get('/promo-paquetes/{code?}',       [AppController::class, 'packages'])->name('paquetes');
+Route::get('/promo-paquete/{slug}/{code?}', [AppController::class, 'showPackage'])->name('paquete.detail');
+Route::get('/curso/{slug}/{code?}',         [AppController::class, 'showCourse'])->name('course.show');
 Route::get('/nosotros',                     [AppController::class, 'aboutus'])->name('nosotros');
 Route::get('/contacto',                     [AppController::class, 'contact'])->name('contacto');
 Route::post('/contact/send',                [AppController::class, 'sendMessage'])->name('contact.send');

@@ -165,8 +165,8 @@
                                     <div class="flex items-center gap-4">
                                         <!-- Avatar -->
                                         <div class="flex-shrink-0">
-                                            @if($user->profile_photo)
-                                                <img src="{{ $user->profile_photo }}" class="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-300 group-hover:scale-110 transition-transform duration-200">
+                                            @if($user->profile_photo_url)
+                                                <img src="{{ $user->profile_photo_url }}" class="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-300 group-hover:scale-110 transition-transform duration-200">
                                             @else
                                                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform duration-200">
                                                     {{ strtoupper(substr($user->names, 0, 1)) }}

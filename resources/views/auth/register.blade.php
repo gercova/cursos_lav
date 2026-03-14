@@ -100,7 +100,6 @@
                     <form action="{{ route('register') }}" method="POST" autocomplete="off">
                         @method('post')
                         @csrf
-
                         <div class="px-8 py-8">
                             <!-- Alertas de error -->
                             @if($errors->any())
@@ -406,12 +405,12 @@
     });
 
     // Verificación de contraseña y coincidencia
-    const password = document.getElementById('password');
-    const confirmPassword = document.getElementById('password_confirmation');
-    const strengthBar = document.getElementById('strength-bar');
-    const strengthText = document.getElementById('strength-text');
+    const password          = document.getElementById('password');
+    const confirmPassword   = document.getElementById('password_confirmation');
+    const strengthBar       = document.getElementById('strength-bar');
+    const strengthText      = document.getElementById('strength-text');
     const strengthContainer = document.getElementById('password-strength');
-    const matchContainer = document.getElementById('password-match');
+    const matchContainer    = document.getElementById('password-match');
 
     function checkPasswordStrength(pw) {
         let strength = 0;

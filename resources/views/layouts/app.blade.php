@@ -168,6 +168,451 @@
             </div>
         </div>
     </footer>
+
+    {{-- =====================================================================
+        COOKIE CONSENT SYSTEM
+        - Banner principal (aparece en todas las páginas)
+        - Modal de preferencias granulares
+        - Botón flotante para reabrir preferencias (post-consentimiento)
+        Almacena en localStorage bajo la clave "cookie_consent" con estructura:
+        { version, status, preferences: {necessary, analytics, marketing, functional}, timestamp }
+        ===================================================================== --}}
+ 
+    {{-- Banner principal --}}
+    <div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[9998] transform translate-y-full transition-transform duration-500 ease-in-out" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
+        <div class="bg-gray-900 border-t-2 border-amber-500 shadow-2xl">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+                <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <!-- Icono + Texto -->
+                    <div class="flex items-start gap-3 flex-1">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <span class="text-amber-400 text-2xl">
+                                <i class="bi bi-cookie"></i>
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-semibold text-sm sm:text-base mb-1">
+                                Usamos cookies para mejorar tu experiencia
+                            </h4>
+                            <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+                                Utilizamos cookies propias y de terceros para el funcionamiento del sitio, analizar el tráfico y personalizar contenido.
+                                Puedes aceptarlas, rechazarlas o gestionar tus preferencias.
+                                <a href="{{ route('politicas-de-cookies') }}" class="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+                                    Más información
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Botones de acción -->
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto flex-shrink-0">
+                        <button id="cookie-reject-banner" class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-200 whitespace-nowrap">
+                            Rechazar
+                        </button>
+                        <button id="cookie-settings-banner" class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-amber-400 border border-amber-600 rounded-lg hover:bg-amber-900/40 transition-colors duration-200 whitespace-nowrap">
+                            <i class="fas fa-sliders-h mr-1"></i> Personalizar
+                        </button>
+                        <button id="cookie-accept-banner" class="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors duration-200 whitespace-nowrap shadow-md">
+                            <i class="fas fa-check mr-1"></i> Aceptar todas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    {{-- Modal de preferencias granulares --}}
+    <div id="cookie-preferences-modal" class="fixed inset-0 z-[9999] hidden" role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title">
+        {{-- Overlay --}}
+        <div id="cookie-modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+        {{-- Panel --}}
+        <div class="relative flex items-end sm:items-center justify-center min-h-screen p-0 sm:p-4">
+            <div id="cookie-modal-panel" class="relative bg-white w-full sm:max-w-lg sm:rounded-2xl shadow-2xl transform transition-all duration-300 translate-y-full sm:translate-y-4 sm:scale-95 opacity-0 max-h-screen sm:max-h-[90vh] overflow-y-auto">
+ 
+                {{-- Header --}}
+                <div class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-amber-100 p-2 rounded-lg">
+                            <i class="fas fa-cookie-bite text-amber-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 id="cookie-modal-title" class="text-base font-bold text-gray-900">
+                                Gestionar preferencias de cookies
+                            </h3>
+                            <p class="text-xs text-gray-500">Activa o desactiva cada categoría</p>
+                        </div>
+                    </div>
+                    <button id="cookie-modal-close" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors" aria-label="Cerrar">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+ 
+                {{-- Body --}}
+                <div class="px-5 py-5 space-y-4">
+ 
+                    {{-- Cookies necesarias (siempre activas) --}}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-900">Cookies necesarias</span>
+                                <span class="text-xs font-medium text-white bg-gray-500 px-2 py-0.5 rounded-full">Siempre activas</span>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Imprescindibles para el funcionamiento básico del sitio: sesión, seguridad (CSRF), carrito de compras.
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 mt-0.5">
+                            <div class="cookie-switch disabled" aria-disabled="true">
+                                <span class="cookie-switch__thumb"></span>
+                            </div>
+                        </div>
+                    </div>
+ 
+                    {{-- Cookies funcionales --}}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-900">Cookies funcionales</span>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Recuerdan tus preferencias de idioma, región y configuración de visualización para personalizar tu experiencia.
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 mt-0.5">
+                            <button id="toggle-functional" role="switch" aria-checked="true" data-pref="functional" class="cookie-toggle cookie-switch active">
+                                <span class="cookie-switch__thumb"></span>
+                            </button>
+                        </div>
+                    </div>
+ 
+                    {{-- Cookies analíticas --}}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-900">Cookies analíticas</span>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Nos ayudan a entender cómo los usuarios interactúan con el sitio (páginas visitadas, tiempo de sesión, errores). No se comparten con terceros.
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 mt-0.5">
+                            <button id="toggle-analytics" role="switch" aria-checked="true" data-pref="analytics" class="cookie-toggle cookie-switch active">
+                                <span class="cookie-switch__thumb"></span>
+                            </button>
+                        </div>
+                    </div>
+ 
+                    {{-- Cookies de marketing --}}
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-semibold text-gray-900">Cookies de marketing</span>
+                            </div>
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Permiten mostrarte publicidad relevante y medir la efectividad de nuestras campañas dentro y fuera del sitio.
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 mt-0.5">
+                            <button id="toggle-marketing" role="switch" aria-checked="false" data-pref="marketing" class="cookie-toggle cookie-switch">
+                                <span class="cookie-switch__thumb"></span>
+                            </button>
+                        </div>
+                    </div>
+ 
+                    {{-- Nota legal --}}
+                    <p class="text-xs text-gray-400 text-center leading-relaxed px-2">
+                        Tu elección se guarda en este navegador durante 1 año. Puedes cambiarla en cualquier momento desde
+                        <a href="{{ route('politicas-de-cookies') }}" class="text-amber-500 hover:text-amber-600 underline underline-offset-1">nuestra política de cookies</a>.
+                    </p>
+                </div>
+ 
+                {{-- Footer del modal --}}
+                <div class="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-4 flex flex-col sm:flex-row gap-2">
+                    <button id="cookie-reject-modal" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        Rechazar opcionales
+                    </button>
+                    <button id="cookie-save-preferences" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-xl transition-colors duration-200 shadow">
+                        <i class="fas fa-save mr-1.5"></i> Guardar preferencias
+                    </button>
+                    <button id="cookie-accept-all-modal" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors duration-200 shadow">
+                        <i class="fas fa-check-double mr-1.5"></i> Aceptar todas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    {{-- Botón flotante para reabrir preferencias (visible solo después de haber dado consentimiento) --}}
+    <button id="cookie-reopen-btn" onclick="CookieConsent.openModal()" title="Gestionar preferencias de cookies" aria-label="Gestionar preferencias de cookies" class="hidden fixed bottom-4 left-4 z-[9990] bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+        <i class="fas fa-cookie-bite text-amber-400 text-base"></i>
+    </button>
+ 
+    {{-- =====================================================================
+        SCRIPT GLOBAL DE CONSENTIMIENTO DE COOKIES
+        ===================================================================== --}}
+    <script>
+        /**
+         * CookieConsent — Gestiona el consentimiento de cookies usando localStorage.
+         *
+         * Clave de almacenamiento : "cookie_consent"
+         * Estructura del objeto   : {
+         *   version      : string   — versión de política (actualizar fuerza re-consentimiento)
+         *   status       : 'accepted' | 'rejected' | 'custom'
+         *   preferences  : {
+         *     necessary  : true  (siempre true, no editable)
+         *     functional : bool
+         *     analytics  : bool
+         *     marketing  : bool
+         *   },
+         *   timestamp    : number   — Date.now() al momento de guardar
+         * }
+         *
+         * API pública:
+         *   CookieConsent.hasConsent()        → bool
+         *   CookieConsent.getConsent()        → objeto | null
+         *   CookieConsent.allows(category)   → bool  (ej. 'analytics')
+         *   CookieConsent.openModal()         → void
+         *   CookieConsent.revokeConsent()     → void  (uso desde política de cookies)
+         */
+        window.CookieConsent = (function () {
+    
+            // ── Configuración ────────────────────────────────────────────────────
+            const STORAGE_KEY    = 'cookie_consent';
+            const POLICY_VERSION = '1.0';           // Incrementar cuando cambie la política
+            const EXPIRY_DAYS    = 365;             // Caducidad del consentimiento en días
+    
+            // ── Elementos del DOM ────────────────────────────────────────────────
+            const banner    = document.getElementById('cookie-consent-banner');
+            const modal     = document.getElementById('cookie-preferences-modal');
+            const overlay   = document.getElementById('cookie-modal-overlay');
+            const panel     = document.getElementById('cookie-modal-panel');
+            const reopenBtn = document.getElementById('cookie-reopen-btn');
+            const toggles   = document.querySelectorAll('.cookie-toggle');
+    
+            // ── Helpers de almacenamiento ────────────────────────────────────────
+            function _save(data) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    console.warn('[CookieConsent] No se pudo guardar en localStorage:', e);
+                }
+            }
+    
+            function _load() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (!raw) return null;
+                    const data = JSON.parse(raw);
+    
+                    // Invalida si es una versión de política distinta
+                    if (data.version !== POLICY_VERSION) return null;
+    
+                    // Invalida si han pasado más de EXPIRY_DAYS días
+                    const ageMs = Date.now() - (data.timestamp || 0);
+                    if (ageMs > EXPIRY_DAYS * 24 * 60 * 60 * 1000) return null;
+    
+                    return data;
+                } catch (e) {
+                    return null;
+                }
+            }
+    
+            // ── Lógica del banner ────────────────────────────────────────────────
+            function _showBanner() {
+                // Espera un tick para que la transición CSS sea visible
+                setTimeout(() => {
+                    banner.classList.remove('translate-y-full');
+                }, 50);
+                reopenBtn.classList.add('hidden');
+            }
+    
+            function _hideBanner() {
+                banner.classList.add('translate-y-full');
+            }
+    
+            function _showReopenButton() {
+                reopenBtn.classList.remove('hidden');
+            }
+    
+            // ── Lógica del modal ─────────────────────────────────────────────────
+            function _openModal() {
+                _hideBanner();
+                _syncTogglesToStorage();
+    
+                modal.classList.remove('hidden');
+                // Trigger reflow para que las transiciones funcionen
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        overlay.classList.remove('opacity-0');
+                        overlay.classList.add('opacity-100');
+                        panel.classList.remove('translate-y-full', 'sm:translate-y-4', 'sm:scale-95', 'opacity-0');
+                        panel.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
+                    });
+                });
+    
+                // Foco accesible
+                setTimeout(() => panel.querySelector('button')?.focus(), 300);
+            }
+    
+            function _closeModal(showBannerAgainIfNoConsent) {
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                panel.classList.add('translate-y-full', 'sm:translate-y-4', 'sm:scale-95', 'opacity-0');
+                panel.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
+    
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    if (showBannerAgainIfNoConsent && !_load()) {
+                        _showBanner();
+                    }
+                }, 300);
+            }
+    
+            // ── Sincronización de toggles con estado guardado ────────────────────
+            function _syncTogglesToStorage() {
+                const consent = _load();
+                const prefs   = consent?.preferences ?? { functional: true, analytics: true, marketing: false };
+    
+                toggles.forEach(btn => {
+                    const pref    = btn.dataset.pref;
+                    const isActive = prefs[pref] !== false; // default true excepto marketing
+                    _setToggle(btn, isActive);
+                });
+            }
+    
+            function _setToggle(btn, active) {
+                btn.setAttribute('aria-checked', active ? 'true' : 'false');
+                if (active) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            }
+    
+            function _readToggles() {
+                const prefs = { necessary: true };
+                toggles.forEach(btn => {
+                    prefs[btn.dataset.pref] = btn.getAttribute('aria-checked') === 'true';
+                });
+                return prefs;
+            }
+    
+            // ── Acciones principales ─────────────────────────────────────────────
+            function _acceptAll() {
+                _save({
+                    version     : POLICY_VERSION,
+                    status      : 'accepted',
+                    preferences : { necessary: true, functional: true, analytics: true, marketing: true },
+                    timestamp   : Date.now()
+                });
+                _hideBanner();
+                _closeModal(false);
+                _showReopenButton();
+                _dispatchEvent('accepted');
+            }
+    
+            function _rejectAll() {
+                _save({
+                    version     : POLICY_VERSION,
+                    status      : 'rejected',
+                    preferences : { necessary: true, functional: false, analytics: false, marketing: false },
+                    timestamp   : Date.now()
+                });
+                _hideBanner();
+                _closeModal(false);
+                _showReopenButton();
+                _dispatchEvent('rejected');
+            }
+    
+            function _saveCustom() {
+                const prefs = _readToggles();
+                _save({
+                    version     : POLICY_VERSION,
+                    status      : 'custom',
+                    preferences : prefs,
+                    timestamp   : Date.now()
+                });
+                _closeModal(false);
+                _showReopenButton();
+                _dispatchEvent('custom', prefs);
+            }
+    
+            function _revokeConsent() {
+                try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+                reopenBtn.classList.add('hidden');
+                _showBanner();
+                _dispatchEvent('revoked');
+            }
+    
+            // ── Evento personalizado para integraciones externas ─────────────────
+            function _dispatchEvent(action, prefs) {
+                window.dispatchEvent(new CustomEvent('cookieConsentUpdated', {
+                    detail: { action, preferences: prefs ?? _load()?.preferences }
+                }));
+            }
+    
+            // ── Inicialización ───────────────────────────────────────────────────
+            function _init() {
+                const consent = _load();
+    
+                if (consent) {
+                    // Ya tiene consentimiento válido → mostrar solo el botón flotante
+                    _showReopenButton();
+                } else {
+                    // Sin consentimiento → mostrar banner después de 1.5 s
+                    setTimeout(_showBanner, 1500);
+                }
+    
+                // ── Event listeners ──────────────────────────────────────────────
+    
+                // Banner
+                document.getElementById('cookie-accept-banner') ?.addEventListener('click', _acceptAll);
+                document.getElementById('cookie-reject-banner') ?.addEventListener('click', _rejectAll);
+                document.getElementById('cookie-settings-banner') ?.addEventListener('click', _openModal);
+    
+                // Modal — botones
+                document.getElementById('cookie-accept-all-modal') ?.addEventListener('click', _acceptAll);
+                document.getElementById('cookie-reject-modal') ?.addEventListener('click', _rejectAll);
+                document.getElementById('cookie-save-preferences') ?.addEventListener('click', _saveCustom);
+                document.getElementById('cookie-modal-close') ?.addEventListener('click', () => _closeModal(true));
+    
+                // Modal — overlay (clic fuera cierra)
+                overlay?.addEventListener('click', () => _closeModal(true));
+    
+                // Modal — tecla Escape
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                        _closeModal(true);
+                    }
+                });
+    
+                // Toggles individuales
+                toggles.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const isActive = btn.getAttribute('aria-checked') === 'true';
+                        _setToggle(btn, !isActive);
+                    });
+                });
+            }
+    
+            // ── API pública ──────────────────────────────────────────────────────
+            return {
+                init          : _init,
+                hasConsent    : () => !!_load(),
+                getConsent    : _load,
+                allows        : (category) => _load()?.preferences?.[category] ?? false,
+                openModal     : _openModal,
+                acceptAll     : _acceptAll,
+                revokeConsent : _revokeConsent,
+            };
+    
+        })();
+    
+        // Iniciar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            CookieConsent.init();
+        });
+    </script>
+
     <script>
         // 1. Estado global para control de flujo
         window.cartState = {
@@ -298,27 +743,80 @@
                 return Promise.reject(error);
             }
         );
-
-        // Actualizar contador del carrito
-        // async function updateCartCount() {
-        //     try {
-        //         const response = await axios.get('/api/cart/count');
-        //         const cartCount = document.getElementById('cart-count');
-        //         if (cartCount) {
-        //             cartCount.textContent = response.data.count;
-        //             if (response.data.count > 0) {
-        //                 cartCount.classList.add('animate-pulse');
-        //                 setTimeout(() => {
-        //                     cartCount.classList.remove('animate-pulse');
-        //                 }, 1000);
-        //             }
-        //         }
-        //     } catch (error) {
-        //         console.error('Error updating cart count:', error);
-        //     }
-        // }
-
     </script>
+
+    {{-- =====================================================================
+        CSS switches de cookies
+        ===================================================================== --}}
+    <style>
+        /* ── Track ─────────────────────────────────────────────────────────── */
+        .cookie-switch {
+            position:        relative;
+            display:         inline-flex;
+            align-items:     center;
+            width:           48px;
+            height:          26px;
+            border-radius:   9999px;
+            background:      #d1d5db;         /* gray-300  — estado OFF */
+            border:          none;
+            cursor:          pointer;
+            padding:         0;
+            transition:      background 0.25s ease, box-shadow 0.2s ease;
+            outline:         none;
+            flex-shrink:     0;
+        }
+ 
+        /* Estado ON */
+        .cookie-switch.active {
+            background: #f59e0b;              /* amber-500 */
+        }
+ 
+        /* Focus ring accesible */
+        .cookie-switch:focus-visible {
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.45);
+        }
+ 
+        /* Hover ligero */
+        .cookie-switch:not(.disabled):hover {
+            filter: brightness(1.08);
+        }
+ 
+        /* Disabled (cookies necesarias) */
+        .cookie-switch.disabled {
+            background: #9ca3af;             /* gray-400 */
+            cursor:     not-allowed;
+            opacity:    0.55;
+        }
+ 
+        /* ── Thumb ──────────────────────────────────────────────────────────── */
+        .cookie-switch__thumb {
+            position:         absolute;
+            top:              3px;
+            left:             3px;
+            width:            20px;
+            height:           20px;
+            border-radius:    9999px;
+            background:       #ffffff;
+            box-shadow:       0 1px 4px rgba(0, 0, 0, 0.22),
+                              0 0 0 0.5px rgba(0, 0, 0, 0.06);
+            transition:       transform 0.25s cubic-bezier(0.34, 1.3, 0.64, 1),
+                              box-shadow 0.2s ease;
+            pointer-events:   none;
+            display:          block;
+        }
+ 
+        /* Thumb posición ON: 48 - 3 - 3 - 20 = 22px */
+        .cookie-switch.active     .cookie-switch__thumb,
+        .cookie-switch.disabled   .cookie-switch__thumb {
+            transform: translateX(22px);
+        }
+ 
+        /* Pequeño scale al hacer clic */
+        .cookie-switch:active:not(.disabled) .cookie-switch__thumb {
+            width:     24px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+        }
+    </style>
     @yield('scripts')
 </body>
 </html>

@@ -138,10 +138,10 @@
                             </label>
                             <div class="flex items-center gap-6">
                                 <div class="flex-shrink-0">
-                                    @if($user->profile_photo)
-                                        <img src="{{ $user->profile_photo }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                    @if($user->profile_photo_url)
+                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
                                     @endif
-                                    <div id="preview-container" class="{{ $user->profile_photo ? 'mt-2' : '' }} hidden">
+                                    <div id="preview-container" class="{{ $user->profile_photo_url ? 'mt-2' : '' }} hidden">
                                         <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
                                         <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
                                     </div>

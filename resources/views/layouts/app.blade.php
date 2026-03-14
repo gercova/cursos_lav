@@ -168,7 +168,157 @@
             </div>
         </div>
     </footer>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        // 1. Estado global para control de flujo
+        window.cartState = {
+            isUpdating: false,
+            lastCount: null
+        };
+
+        async function updateCartCount() {
+            // Buscamos el elemento y lo guardamos en una constante
+            const cartCountEl = document.getElementById('cart-count');
+
+            // SI NO EXISTE EL ELEMENTO (ej. en el login), CORTAMOS AQUÍ
+            if (!cartCountEl) return;
+            
+            // SI YA SE ESTÁ ACTUALIZANDO, CORTAMOS AQUÍ
+            if (window.cartState.isUpdating) return;
+
+            try {
+                window.cartState.isUpdating = true;
+                const response = await axios.get('/api/cart/count');
+                const count = response.data.count;
+
+                // Solo actualizamos si el número cambió para no estresar al navegador
+                if (window.cartState.lastCount !== count) {
+                    cartCountEl.textContent = count;
+                    window.cartState.lastCount = count;
+
+                    if (count > 0) {
+                        cartCountEl.classList.add('animate-pulse');
+                        setTimeout(() => {
+                            // Verificamos de nuevo que el elemento siga ahí antes de quitar la clase
+                            const el = document.getElementById('cart-count');
+                            if (el) el.classList.remove('animate-pulse');
+                        }, 1000);
+                    }
+                }
+            } catch (error) {
+                // Silenciamos errores 401 (No autorizado) para que no ensucien la consola en el login
+                if (error.response && error.response.status !== 401) {
+                    console.error('Error al actualizar contador:', error);
+                }
+            } finally {
+                window.cartState.isUpdating = false;
+            }
+        }
+
+        // Escuchador para actualizaciones manuales
+        window.addEventListener('cart-updated', updateCartCount);
+        // Cargar categorías
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+
+            // Sidebar móvil
+            const sidebarToggle     = document.getElementById('sidebar-toggle');
+            const mobileSidebar     = document.getElementById('mobile-sidebar');
+            const closeSidebar      = document.getElementById('close-sidebar');
+            const sidebarBackdrop   = document.getElementById('sidebar-backdrop');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    mobileSidebar.classList.remove('hidden');
+                    setTimeout(() => {
+                        mobileSidebar.querySelector('div').classList.remove('-translate-x-full');
+                    }, 50);
+                });
+            }
+
+            if (closeSidebar) {
+                closeSidebar.addEventListener('click', closeMobileSidebar);
+            }
+
+            if (sidebarBackdrop) {
+                sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+            }
+
+            function closeMobileSidebar() {
+                mobileSidebar.querySelector('div').classList.add('-translate-x-full');
+                setTimeout(() => {
+                    mobileSidebar.classList.add('hidden');
+                }, 300);
+            }
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    Alpine.store('mobileMenuOpen', false);
+                });
+            });
+
+            // Efecto de scroll en header
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('.header-fixed');
+                if (window.scrollY > 10) {
+                    header.classList.add('shadow-lg');
+                } else {
+                    header.classList.remove('shadow-lg');
+                }
+            });
+        });
+
+        axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 401:
+                            // No autorizado - redirigir al login
+                            window.location.href = "{{ route('login') }}";
+                            break;
+                        case 403:
+                            // Acceso denegado
+                            alert('No tienes permisos para realizar esta acción');
+                            break;
+                        case 419:
+                            // Sesión expirada
+                            window.location.href = "{{ route('login') }}";
+                            break;
+                        case 429:
+                            // Demasiadas solicitudes
+                            alert('Demasiadas solicitudes. Por favor, espera unos segundos.');
+                            break;
+                        case 500:
+                            // Error del servidor
+                            alert('Error interno del servidor. Por favor, intenta más tarde.');
+                            break;
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // Actualizar contador del carrito
+        // async function updateCartCount() {
+        //     try {
+        //         const response = await axios.get('/api/cart/count');
+        //         const cartCount = document.getElementById('cart-count');
+        //         if (cartCount) {
+        //             cartCount.textContent = response.data.count;
+        //             if (response.data.count > 0) {
+        //                 cartCount.classList.add('animate-pulse');
+        //                 setTimeout(() => {
+        //                     cartCount.classList.remove('animate-pulse');
+        //                 }, 1000);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error('Error updating cart count:', error);
+        //     }
+        // }
+
+    </script>
     @yield('scripts')
 </body>
 </html>

@@ -116,7 +116,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
                     @foreach($courses as $course)
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
-                            <a href="{{ route('course.show', $course->slug) }}">
+                            {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
+                            <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
                                 <div class="relative">
                                     <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
                                     @if($course->promotion_price)
@@ -136,7 +137,8 @@
 
                                 <div class="p-6">
                                     <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors duration-200">
-                                        <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
+                                        {{-- <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a> --}}
+                                        <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">{{ $course->title }}</a>
                                     </h3>
                                     <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: Str::limit($course->description, 120) }}</p>
                                     <div class="flex items-center mb-6">
@@ -186,7 +188,8 @@
                                 <!-- Imagen del curso -->
                                 
                                 <div class="md:w-1/4">
-                                    <a href="{{ route('course.show', $course->slug) }}">
+                                    {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
+                                    <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
                                         <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
                                             <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                                             <div class="absolute inset-0 flex items-center justify-center" style="display: none;">
@@ -202,7 +205,8 @@
                                         <div class="flex-1">
                                             <div class="flex justify-between items-start">
                                                 <div>
-                                                    <a href="{{ route('course.show', $course->slug) }}">
+                                                    {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
+                                                    <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
                                                         <h3 class="text-xl font-bold text-gray-800">{{ $course->title }}</h3>
                                                     </a>
                                                     <div class="flex items-center mt-2 space-x-4">
@@ -468,7 +472,9 @@
                 this.showLoading();
 
                 // Realizar petición AJAX
-                const response = await fetch(`/cursos?${params.toString()}`, {
+                // const response = await fetch(`/cursos?${params.toString()}`, {
+                const baseUrl = '{{ isset($code) ? route("cursos", ["code" => $code]) : route("cursos") }}';
+                const response = await fetch(`${baseUrl}?${params.toString()}`, {
                     method: 'GET',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -626,16 +632,28 @@
             this.applyFilters();
         }
 
+        // updateURL() {
+        //     const params = new URLSearchParams();
+
+        //     if (this.filters.search) params.append('search', this.filters.search);
+        //     if (this.filters.category) params.append('category', this.filters.category);
+        //     if (this.filters.sort && this.filters.sort !== 'newest') {
+        //         params.append('sort', this.filters.sort);
+        //     }
+
+        //     const newURL = params.toString() ? `/cursos?${params.toString()}` : '/cursos';
+        //     window.history.replaceState({}, '', newURL);
+        // }
+
         updateURL() {
             const params = new URLSearchParams();
-
             if (this.filters.search) params.append('search', this.filters.search);
             if (this.filters.category) params.append('category', this.filters.category);
-            if (this.filters.sort && this.filters.sort !== 'newest') {
-                params.append('sort', this.filters.sort);
-            }
+            if (this.filters.sort && this.filters.sort !== 'newest') params.append('sort', this.filters.sort);
 
-            const newURL = params.toString() ? `/cursos?${params.toString()}` : '/cursos';
+            // Generar la URL base considerando el código desde Blade
+            const baseUrl = '{{ isset($code) ? route("cursos", ["code" => $code]) : route("cursos") }}';
+            const newURL = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
             window.history.replaceState({}, '', newURL);
         }
 

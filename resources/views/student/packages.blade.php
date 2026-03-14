@@ -45,7 +45,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex-1 w-full lg:max-w-md">
-                    <form id="search-form" method="GET" action="{{ route('paquetes') }}" class="flex gap-2">
+                    {{-- <form id="search-form" method="GET" action="{{ route('paquetes') }}" class="flex gap-2"> --}}
+                    <form id="search-form" method="GET" action="{{ route('paquetes', ['code' => $code ?? null]) }}" class="flex gap-2">
                         <div class="relative flex-1">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
@@ -191,7 +192,8 @@
                                 </div>
                             @endif
                             <img src="{{ $package->image_url }}" alt="{{ $package->title }}" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110">
-                            <a href="{{ route('paquete.detail', $package->slug) }}">
+                            {{-- <a href="{{ route('paquete.detail', $package->slug) }}"> --}}
+                            <a href="{{ route('paquete.detail', ['slug' => $package->slug, 'code' => $code ?? null]) }}">
                                 <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent z-10"></div>
                             </a>
                             
@@ -221,7 +223,8 @@
                         </div>
                         
                         <div class="p-5 flex flex-col flex-grow">
-                            <a href="{{ route('paquete.detail', $package->slug) }}" class="block mb-2 group-hover:text-blue-600 transition-colors">
+                            {{-- <a href="{{ route('paquete.detail', $package->slug) }}" class="block mb-2 group-hover:text-blue-600 transition-colors"> --}}
+                            <a href="{{ route('paquete.detail', ['slug' => $package->slug, 'code' => $code ?? null]) }}" class="block mb-2 group-hover:text-blue-600 transition-colors">
                                 <h3 class="text-lg font-bold text-gray-900 line-clamp-2 leading-tight">
                                     {{ $package->title }}
                                 </h3>
@@ -306,7 +309,8 @@
     
     // Función para limpiar todos los filtros
     function clearAllFilters() {
-        window.location.href = "{{ route('paquetes') }}";
+        // window.location.href = "{{ route('paquetes') }}";
+        window.location.href = "{{ route('paquetes', ['code' => $code ?? null]) }}";
     }
     
     // Auto-submit al cambiar filtros
@@ -314,7 +318,8 @@
         element.addEventListener('change', function() {
             const form = document.createElement('form');
             form.method = 'GET';
-            form.action = "{{ route('paquetes') }}";
+            // form.action = "{{ route('paquetes') }}";
+            form.action = "{{ route('paquetes', ['code' => $code ?? null]) }}";
             
             // Preservar search si existe
             const searchInput = document.querySelector('input[name="search"]');

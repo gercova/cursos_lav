@@ -71,7 +71,7 @@ Route::post('/contact/send',                [AppController::class, 'sendMessage'
 Route::get('/api/cart/count',               [CartsController::class, 'count'])->name('cart.count');
 Route::get('/terminos-y-condiciones',       [AppController::class, 'terms'])->name('terminos-y-condiciones');
 Route::get('/politicas-de-uso',             [AppController::class, 'policies'])->name('politicas-de-uso');
-Route::get('/politicas-de-cookies',         [AppController::class, 'policies'])->name('politicas-de-cookies');
+Route::get('/politicas-de-cookies',         [AppController::class, 'cookies'])->name('politicas-de-cookies');
 
 // Autenticación general (Admin / Instructor / Student)
 Route::get('/register',                     [RegisterController::class, 'showRegister'])->name('register');

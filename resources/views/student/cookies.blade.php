@@ -134,10 +134,10 @@
                                                     <i class="fas fa-phone mr-3 text-blue-500"></i>
                                                     <span>+51 123 456 789</span>
                                                 </li>
-                                                <li class="flex items-center">
+                                                {{-- <li class="flex items-center">
                                                     <i class="fas fa-map-marker-alt mr-3 text-blue-500"></i>
                                                     <span>Lima, Perú</span>
-                                                </li>
+                                                </li> --}}
                                             </ul>
                                         </div>
                                         <div>
@@ -146,7 +146,7 @@
                                             <a href="mailto:dataprotection@{{ strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com"
                                                class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm sm:text-base break-all">
                                                 <i class="fas fa-user-shield mr-2 flex-shrink-0"></i>
-                                                <span class="break-all">dataprotection@{{ strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com</span>
+                                                <span class="break-all">dataprotection{{ '@'.strtolower(str_replace(' ', '-', $enterprise->trade_name)) }}.com</span>
                                             </a>
                                         </div>
                                     </div>

@@ -182,7 +182,6 @@
             <div id="packages-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 @foreach($packages as $package)
                     <div class="group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transform transition-all duration-300 hover:-translate-y-1">
-                        
                         <div class="relative h-52 overflow-hidden bg-gray-200">
                             @if($package->has_promotion)
                                 <div class="absolute top-4 right-4 z-20">
@@ -191,15 +190,23 @@
                                     </span>
                                 </div>
                             @endif
-
                             <img src="{{ $package->image_url }}" alt="{{ $package->title }}" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110">
-                            
-                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent z-10"></div>
+                            <a href="{{ route('paquete.detail', $package->slug) }}">
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent z-10"></div>
+                            </a>
                             
                             <div class="absolute bottom-4 left-4 z-20">
                                 <span class="inline-flex items-center space-x-1 text-white text-xs font-medium bg-blue-600/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow-sm border border-blue-500/30">
                                     <i class="fas fa-layer-group"></i>
-                                    <span>{{ $package->total_courses }} cursos incluidos</span>
+                                    <span>
+                                        @if($package->plan_type_id == 1 && $package->course_limit !== 0)
+                                            {{ $package->course_limit }} cursos incluidos
+                                        @elseif($package->plan_type_id !== 1 && $package->packageCourses->count() > 0)
+                                            {{ $package->packageCourses->count() }} cursos incluidos
+                                        @elseif($package->plan_type_id !== 1 && $package->packageCourses->count() == 0)
+                                            Todos los cursos
+                                        @endif  
+                                    </span>
                                 </span>
                             </div>
                             

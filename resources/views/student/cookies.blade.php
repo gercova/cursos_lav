@@ -143,7 +143,7 @@
                                         <div>
                                             <h4 class="font-medium text-gray-700 mb-2">Encargado de Protección</h4>
                                             <p class="text-sm sm:text-base text-gray-600 mb-2">Departamento de Cumplimiento Legal</p>
-                                            <a href="mailto:dataprotection@{{ strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com"
+                                            <a href="mailto:dataprotection{{ '@'.strtolower(str_replace(' ', '-', $enterprise->trade_name)) }}.com"
                                                class="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm sm:text-base break-all">
                                                 <i class="fas fa-user-shield mr-2 flex-shrink-0"></i>
                                                 <span class="break-all">dataprotection{{ '@'.strtolower(str_replace(' ', '-', $enterprise->trade_name)) }}.com</span>

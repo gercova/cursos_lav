@@ -38,8 +38,8 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 mb-1">Teléfono</h3>
-                            <p class="text-gray-600">+51 987 654 321</p>
-                            <p class="text-sm text-gray-500">Lunes a Viernes: 9:00 AM - 6:00 PM</p>
+                            <p class="text-gray-600">+51 {{ $enterprise->phone_number_1 }}</p>
+                            <p class="text-sm text-gray-500">Lunes a Viernes: 7:00 AM - 6:00 PM</p>
                         </div>
                     </div>
 
@@ -52,7 +52,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 mb-1">Email</h3>
-                            <p class="text-gray-600">info@eduplatform.com</p>
+                            <p class="text-gray-600">{{ $enterprise->email }}</p>
                             <p class="text-sm text-gray-500">Respondemos en menos de 24 horas</p>
                         </div>
                     </div>
@@ -124,18 +124,13 @@
 
                     <!-- Alertas -->
                     <div id="form-alert" class="hidden p-4 rounded-lg"></div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <!-- Nombre -->
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
                                 Nombre Completo *
                             </label>
-                            <input type="text"
-                                   id="name"
-                                   name="name"
-                                   required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                             <div id="name-error" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
 
@@ -144,11 +139,7 @@
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                 Email *
                             </label>
-                            <input type="email"
-                                   id="email"
-                                   name="email"
-                                   required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                            <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                             <div id="email-error" class="text-red-500 text-sm mt-1 hidden"></div>
                         </div>
                     </div>
@@ -158,10 +149,7 @@
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
                             Teléfono
                         </label>
-                        <input type="tel"
-                               id="phone"
-                               name="phone"
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                         <div id="phone-error" class="text-red-500 text-sm mt-1 hidden"></div>
                     </div>
 
@@ -170,10 +158,7 @@
                         <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
                             Asunto *
                         </label>
-                        <select id="subject"
-                                name="subject"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <select id="subject" name="subject" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
                             <option value="">Selecciona un asunto</option>
                             <option value="info">Información de cursos</option>
                             <option value="support">Soporte técnico</option>
@@ -189,20 +174,13 @@
                         <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
                             Mensaje *
                         </label>
-                        <textarea id="message"
-                                  name="message"
-                                  rows="5"
-                                  required
-                                  placeholder="Cuéntanos en qué podemos ayudarte..."
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"></textarea>
+                        <textarea id="message" name="message" rows="5" required placeholder="Cuéntanos en qué podemos ayudarte..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-none"></textarea>
                         <div id="message-error" class="text-red-500 text-sm mt-1 hidden"></div>
                     </div>
 
                     <!-- Botón de envío -->
                     <div>
-                        <button type="submit"
-                                id="submit-btn"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <button type="submit" id="submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             <span id="submit-text">Enviar Mensaje</span>
                             <div id="submit-loading" class="hidden">
                                 <div class="flex items-center justify-center">

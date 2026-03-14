@@ -41,19 +41,16 @@ class BusinessImportController extends Controller {
         // Obtener límite de usuarios
         $countUser = User::where('company_code', $companyCode)->count();
         
-        $availableSlots = ($enrolledPackage->seats_max ?? 0) + 1 - $countUser;
         // Obtener total de asientos que tiene un paquete comprado
-        // $limitUser      = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->first();
-        // $availableSlots = ($limitUser->seats_max ?? 0) + 1 - $countUser;
+        $availableSlots = ($enrolledPackage->seats_max ?? 0) + 1 - $countUser;
 
         $stats = [
-            'total'         => User::where('users.company_code', auth()->user()->company_code)->where('users.id', '!=', Auth::id())->count(),
+            'total'         => User::where('users.parent_id', auth()->id())->where('users.id', '!=', Auth::id())->count(),
             'seats_max'     => $enrolledPackage->seats_max ?? 0,
             'available'     => $availableSlots,
             'limit'         => ($enrolledPackage->quantity ?? 0) + 1,
         ];
 
-        // return view('business.import', compact('availableSlots'));
         return view('student.company.import', compact('availableSlots', 'hasAnyPackage', 'enrolledPackage'));
     }
 

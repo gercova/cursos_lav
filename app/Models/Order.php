@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -58,7 +60,10 @@ class Order extends Model
     //     parent::boot();
 
     //     static::creating(function ($order) {
-    //         $order->order_number = 'ORD-' . strtoupper(uniqid());
+    //         $date           = Carbon::now()->format('Ymd'); // Ejemplo: 20251025
+    //         $random         = strtoupper(Str::random(5)); // Ejemplo: XJ829
+    //         $orderNumber    = "IPF-{$date}-{$random}";
+    //         $order->order_number = $orderNumber;
     //     });
     // }
 }

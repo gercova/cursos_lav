@@ -486,9 +486,9 @@
                     <h4 class="font-semibold text-gray-900 mb-1">¿Necesitas más información?</h4>
                     <p class="text-xs sm:text-sm text-gray-600 break-all">
                         Contacta a legal:
-                        <a href="mailto:legal@{{ strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com"
+                        <a href="mailto:legal{{ '@'.strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com"
                            class="text-purple-600 hover:text-purple-800 transition-colors duration-200">
-                            legal@{{ strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com
+                            legal{{ '@'.strtolower(str_replace(' ', '', $enterprise->trade_name)) }}.com
                         </a>
                     </p>
                 </div>

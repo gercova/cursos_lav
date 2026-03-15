@@ -108,16 +108,16 @@ class PaymentController extends Controller {
         if (!$request->total) {
             return response()->json(['error' => 'El total es requerido'], 400);
         }
-        $user = Auth::user();
-        $cartItems = Cart::getItems($user->id);
+        $user       = Auth::user();
+        $cartItems  = Cart::getItems($user->id);
         if ($cartItems->isEmpty()) {
             return response()->json(['error' => 'Carrito vacío'], 400);
         }
 
-        $subtotal = Cart::getTotal($user->id);
-        $tax = $subtotal * 0.18;
-        $total = $subtotal + $tax;
-        $discount = 0;
+        $subtotal   = Cart::getTotal($user->id);
+        $tax        = $subtotal * 0.18;
+        $total      = $subtotal + $tax;
+        $discount   = 0;
 
         $date = Carbon::now()->format('Ymd'); // Ejemplo: 20251025
         $random = strtoupper(Str::random(5)); // Ejemplo: XJ829

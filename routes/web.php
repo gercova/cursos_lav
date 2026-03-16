@@ -103,7 +103,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::post('/cart/add/{course}',           [CartsController::class, 'add'])->name('cart.add');
     Route::delete('/cart/remove/{courseId}',    [CartsController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
-
+    
     // Pagos
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
@@ -113,7 +113,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
     Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
     Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-    Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file');
     Route::get('/mis-colaboradores/importar',   [BusinessImportController::class, 'showImportForm'])->name('company.import.form');
     Route::patch('/mi-colaborador/{user}/toggle-status', [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
     Route::post('/users/import',                [BusinessImportController::class, 'import'])->name('company.import.process');
@@ -145,7 +144,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/certificate/{certificateId}',                  [CertificatesController::class, 'show'])->name('student.certificates.show');
     Route::get('/certificate/exact/{certificateId}/download',   [CertificatesController::class, 'download'])->name('student.certificates.download-exact');
     Route::get('/certificate/exact/{certificateId}/view',       [CertificatesController::class, 'viewExact'])->name('student.certificates.view-exact');
-    Route::get('/{certificateId}/descargar',                    [CertificatesController::class, 'download'])->name('student.certificates.download');
     Route::post('/generar/{enrollmentId}',                      [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Dashboard principal
@@ -157,12 +155,12 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/api/student/achievements',         [DashboardController::class, 'achievements'])->name('student.achievements');
 
     // Notificaciones
-    Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
-    Route::get('/api/student/notifications',        [StudentNotificationController::class, 'apiIndex'])->name('student.notifications.api');
-    Route::post('/notifications/{id}/read',         [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
-    Route::post('/notifications/read-all',          [StudentNotificationController::class, 'markAllAsRead'])->name('student.notifications.read-all');
-    Route::delete('/notifications/{id}',            [StudentNotificationController::class, 'destroy'])->name('student.notifications.delete');
-    Route::delete('/notifications',                 [StudentNotificationController::class, 'clearAll'])->name('student.notifications.clear-all');
+    // Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
+    // Route::get('/api/student/notifications',        [StudentNotificationController::class, 'apiIndex'])->name('student.notifications.api');
+    // Route::post('/notifications/{id}/read',         [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
+    // Route::post('/notifications/read-all',          [StudentNotificationController::class, 'markAllAsRead'])->name('student.notifications.read-all');
+    // Route::delete('/notifications/{id}',            [StudentNotificationController::class, 'destroy'])->name('student.notifications.delete');
+    // Route::delete('/notifications',                 [StudentNotificationController::class, 'clearAll'])->name('student.notifications.clear-all');
 
     // Perfil del estudiante
     Route::get('/profile',                          [StudentProfileController::class, 'show'])->name('student.profile');
@@ -306,7 +304,6 @@ Route::prefix('admin')->group(function () {
         
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
-        Route::get('/documents/create',                     [DocumentsAdminController::class, 'index'])->name('admin.documents.create');
         Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
         Route::post('/documents/store',                     [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
         Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
@@ -337,7 +334,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/exams/store',                             [ExamsAdminController::class, 'store'])->name('admin.exams.store');
         Route::post('/exams/{exam}/toggle-status',              [ExamsAdminController::class, 'toggleStatus'])->name('admin.exams.toggle-status');
         Route::delete('/exams/{exam}',                          [ExamsAdminController::class, 'destroy'])->name('admin.exams.delete');
-        Route::delete('/exams/{exam}/questions/{question}',     [ExamsAdminController::class, 'deleteQuestion'])->name('admin.exams.questions.delete');
 
         Route::post('/exams/{exam}/questions',                  [ExamQuestionAdminController::class, 'store'])->name('admin.exams.questions.store');
         Route::get('/exams/questions/{question}/edit',          [ExamQuestionAdminController::class, 'edit'])->name('exams.questions.edit');
@@ -346,8 +342,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('exams.questions.move');
         Route::post('/exams/{exam}/questions/import',           [ExamQuestionAdminController::class, 'import'])->name('admin.exams.questions.import');
         Route::post('/exams/{exam}/questions/reorder',          [ExamQuestionAdminController::class, 'reorder'])->name('admin.exams.questions.reorder');
-        Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('admin.exams.questions.move');
-
+        
+        // Ruta para ver los certificados
         Route::get('/certificates/{certificate}/view',          [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
     });
 });

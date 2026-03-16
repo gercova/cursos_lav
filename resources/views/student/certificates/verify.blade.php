@@ -98,7 +98,7 @@
                         <i class="fas fa-print mr-2"></i>
                         Imprimir Verificación
                     </a>
-                    <a href="{{ route('student.certificates.download', $certificate->id) }}"
+                    <a href="{{ route('student.certificates.download-exact', $certificate->id) }}"
                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center">
                         <i class="fas fa-download mr-2"></i>
                         Descargar Certificado PDF

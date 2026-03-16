@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CourseSale;
 use App\Models\Enrollment;
+use App\Models\Enterprise;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -182,12 +183,21 @@ class PaymentController extends Controller {
         }
     }
 
-    public function success(Request $request) {
-        return view('student.payments.success'); // Asegúrate que la ruta del archivo sea correcta
+    public function success(Request $request, $paymentId) {
+        $enterprise = Enterprise::first();
+        $payment    = Payment::with('items')->where('user_id', auth()->id())->findOrFail($paymentId);
+        return view('student.payments.success', compact('enterprise')); // Asegúrate que la ruta del archivo sea correcta
     }
 
-    public function failure(Request $request) {
-        return view('student.payments.failure'); // Asegúrate que la ruta del archivo sea correcta
+    public function failure(Request $request, $paymentId = null) {
+        if ($paymentId) {
+            $payment = Payment::where('user_id', auth()->id())->find($paymentId);
+        } else {
+            $payment = null;
+        }
+
+        $enterprise = Enterprise::first();
+        return view('student.payments.failure', compact('enterprise', 'payment')); // Asegúrate que la ruta del archivo sea correcta
     }
 
     public function pending(Request $request) {

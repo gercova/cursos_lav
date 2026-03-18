@@ -362,7 +362,7 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('student.certificates.print', $certificate->id) }}" class="w-full flex items-center justify-center px-4 py-3 border-2 border-green-200 text-green-700 rounded-xl hover:bg-green-50 transition-all duration-200 group">
+                        <a href="{{ route('student.certificates.download-exact', $certificate->id) }}" class="w-full flex items-center justify-center px-4 py-3 border-2 border-green-200 text-green-700 rounded-xl hover:bg-green-50 transition-all duration-200 group">
                             <i class="fas fa-print mr-2 group-hover:scale-110 transition-transform"></i>
                             Descargar certificado
                         </a>

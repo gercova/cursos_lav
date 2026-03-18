@@ -164,8 +164,7 @@
                             {{ $user->affiliate_url }}
                         </code>
                     </div>
-                    <button onclick="copyAffiliateLink()" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200">
+                    <button onclick="copyAffiliateLink(this)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200">
                         <i class="fas fa-copy mr-2"></i>
                         Copiar
                     </button>
@@ -185,21 +184,28 @@
 </div>
 
 <script>
-    function copyAffiliateLink() {
-        const url = document.getElementById('affiliate-url').textContent;
+    function copyAffiliateLink(buttonElement) {
+        // Limpiamos los espacios en blanco alrededor de la URL
+        const url = document.getElementById('affiliate-url').textContent.trim();
+        
         navigator.clipboard.writeText(url).then(() => {
-            // Mostrar mensaje de éxito
-            const button = event.target.closest('button');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check mr-2"></i>Copiado!';
-            button.classList.remove('bg-blue-600');
-            button.classList.add('bg-green-600');
+            // Guardamos el contenido original del botón
+            const originalText = buttonElement.innerHTML;
             
+            // Cambiamos el estado a "Copiado"
+            buttonElement.innerHTML = '<i class="fas fa-check mr-2"></i>Copiado!';
+            buttonElement.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            buttonElement.classList.add('bg-green-600', 'hover:bg-green-700');
+            
+            // Regresamos al estado original después de 2 segundos
             setTimeout(() => {
-                button.innerHTML = originalText;
-                button.classList.remove('bg-green-600');
-                button.classList.add('bg-blue-600');
+                buttonElement.innerHTML = originalText;
+                buttonElement.classList.remove('bg-green-600', 'hover:bg-green-700');
+                buttonElement.classList.add('bg-blue-600', 'hover:bg-blue-700');
             }, 2000);
+        }).catch(err => {
+            console.error('Error al copiar: ', err);
+            alert('No se pudo copiar el enlace. Por favor, selecciónalo y presiona Ctrl+C.');
         });
     }
 

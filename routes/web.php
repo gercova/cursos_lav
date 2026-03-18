@@ -194,9 +194,9 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('payment.failure');
-    Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('payment.pending');
+    // Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('payment.success');
+    // Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('payment.failure');
+    // Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('payment.pending');
 
     Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago

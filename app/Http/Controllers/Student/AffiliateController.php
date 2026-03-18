@@ -97,7 +97,7 @@ class AffiliateController extends Controller {
             'total'     => CourseSale::where('user_id', $user->id)->count(),
             'completed' => CourseSale::where('user_id', $user->id)->where('status', 'completed')->count(),
             'pending'   => CourseSale::where('user_id', $user->id)->where('status', 'pending')->count(),
-            'failed'    => CourseSale::where('user_id', $user->id)->whereIn('status', ['failed', 'canceled'])->count(),
+            'failed'    => CourseSale::where('user_id', $user->id)->whereIn('status', ['failed', 'cancelled'])->count(),
         ];
 
         return view('student.affiliate.sales', compact(

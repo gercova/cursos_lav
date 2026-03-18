@@ -160,7 +160,7 @@ class AffiliateController extends Controller {
                 $affiliateLinks[] = [
                     'course'                => $course,
                     'promo_code'            => $promoCode->code,
-                    'link'                  => route('curso-promo', ['slug' => $course->slug, 'code' => $user->code]),
+                    'link'                  => route('course.show', ['slug' => $course->slug, 'code' => $user->code]),
                     'discount_percentage'   => $promoCode->discount_percentage ?? 0,
                 ];
             }
@@ -179,8 +179,7 @@ class AffiliateController extends Controller {
             'total_sales'       => $user->courses_sold_count ?? 0,
             'total_commission'  => number_format($user->total_commission ?? 0, 2),
             'pending_sales'     => CourseSale::where('user_id', $user->id)
-                ->where('status', 'pending')
-                ->count(),
+                ->where('status', 'pending')->count(),
             'monthly_sales'     => CourseSale::where('user_id', $user->id)
                 ->where('status', 'completed')
                 ->whereMonth('sold_at', now()->month)

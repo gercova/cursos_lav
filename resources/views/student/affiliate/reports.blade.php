@@ -1,7 +1,5 @@
-@extends('student')
-
+@extends('layouts.student')
 @section('title', 'Reportes - Afiliado')
-
 @section('content')
 <div class="max-w-7xl mx-auto">
     <div class="mb-8">

@@ -1,7 +1,5 @@
 @extends('layouts.student')
-
 @section('title', 'Dashboard Afiliado')
-
 @section('content')
 <div class="max-w-7xl mx-auto">
     <!-- Header -->

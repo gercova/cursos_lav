@@ -55,12 +55,6 @@ Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'hand
 
 // Rutas públicas
 Route::get('/',                             [AppController::class, 'home'])->name('home');
-// Route::get('/cursos',                       [AppController::class, 'courses'])->name('cursos');
-// Route::get('/promo-paquetes',               [AppController::class, 'packages'])->name('paquetes');
-// Route::get('/promo-paquete/{slug}',         [AppController::class, 'showPackage'])->name('paquete.detail');
-// Route::get('/curso/{slug}',                 [AppController::class, 'show'])->name('course.show');
-// Route::get('/cursos/{code}',                [AppController::class, 'coursesPartner'])->name('cursos-promo');
-// Route::get('/curso-promo/{slug}/{code}',    [AppController::class, 'showPartner'])->name('curso-promo');
 Route::get('/cursos/{code?}',               [AppController::class, 'courses'])->name('cursos');
 Route::get('/promo-paquetes/{code?}',       [AppController::class, 'packages'])->name('paquetes');
 Route::get('/promo-paquete/{slug}/{code?}', [AppController::class, 'showPackage'])->name('paquete.detail');
@@ -200,7 +194,7 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
-    Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('pago.exitoso');
+    // Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('pago.exitoso');
     Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('pago.fallido');
     Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('pago.pendiente');
 });

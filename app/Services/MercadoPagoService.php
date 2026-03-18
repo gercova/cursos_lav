@@ -54,7 +54,8 @@ class MercadoPagoService {
                 // Esto ayuda a que el Smart Checkout de MP identifique mejor al usuario peruano
                 "notification_url" => config('app.url') . '/api/mp/webhook',
                 "back_urls" => [
-                    "success" => config('app.url') . "/my-courses",
+                    // "success" => config('app.url') . "/my-courses",
+                    "success" => config('app.url') . "/mis-cursos",
                     "failure" => config('app.url') . "/pago/fallido",
                     "pending" => config('app.url') . "/pago/pendiente",
                 ],

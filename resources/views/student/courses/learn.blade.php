@@ -222,10 +222,11 @@
                     <h3 class="text-lg font-bold text-gray-800 mb-4">Instructor</h3>
                     <div class="flex items-center">
                         <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
-                            <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->name }}" class="w-full h-full object-cover">
+                            <img src="{{ $course->instructor->profile_photo_url }}" alt="{{ $course->instructor->names }}" class="w-full h-full object-cover">
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-800">{{ $course->instructor->name }}</h4>
+                            <h4 class="font-bold text-gray-800">{{ $course->instructor->names }}</h4>
+                            <h3 class="font-bold text-gray-400">{{ $course->instructor->profession }}</h3>
                             <p class="text-sm text-gray-600 mt-1">{{ $course->instructor->title ?? 'Instructor' }}</p>
                             <div class="flex items-center mt-2">
                                 <span class="text-yellow-400 mr-1">

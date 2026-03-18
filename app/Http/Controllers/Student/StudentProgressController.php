@@ -9,6 +9,7 @@ use App\Models\Lesson;
 use App\Models\CourseSection;
 use App\Models\Exam;
 use App\Models\Certificate;
+use App\Models\CompletedLessons;
 use App\Models\Document;
 use App\Models\UserActivity;
 use App\Services\NotificationService;
@@ -18,8 +19,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class StudentProgressController extends Controller
-{
+class StudentProgressController extends Controller {
+
+    public function __construct() {
+        $this->middleware(['auth', 'student', 'prevent.back']);
+    }
     /**
      * Mostrar página principal de progreso
      */
@@ -48,7 +52,7 @@ class StudentProgressController extends Controller
                     'id'                => $course->id,
                     'title'             => $course->title,
                     'slug'              => $course->slug,
-                    'thumbnail'         => $course->thumbnail_path,
+                    'image_url'         => $course->image_url,
                     'instructor'        => $course->instructor->names ?? 'Instructor',
                     'progress'          => $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0,
                     'completed_lessons' => $completedLessons,
@@ -62,7 +66,8 @@ class StudentProgressController extends Controller
 
         // Actividad reciente
         $recentActivity = UserActivity::where('user_id', $user->id)
-            ->where('action_type', 'lesson_completed')
+            // ->where('action_type', 'lesson_completed')
+            ->where('type', 'lesson_completed')
             ->with('course')
             ->latest()
             ->limit(10)
@@ -80,21 +85,32 @@ class StudentProgressController extends Controller
     private function getProgressStats($user) {
         $enrollments = $user->enrollments()
             ->with('course')
+            ->whereHas('course', function($query) {
+                $query->where('is_active', true);
+            })
             ->where('status', 'active')
             ->get();
 
         $totalCourses       = $enrollments->count();
         $completedCourses   = $enrollments->filter(function($enrollment) {
-            $course             = $enrollment->course;
+            $course = $enrollment->course;
+            
+            if (!$course) {
+                return false;
+            }
+
             $totalLessons       = $course->lessons()->count() + $course->documents()->count();
             $completedLessons   = $enrollment->completedLessons()->count();
+            
             return $totalLessons > 0 && ($completedLessons / $totalLessons) >= 1;
         })->count();
 
-        // Calcular horas totales estudiadas
-        $totalStudyHours = UserActivity::where('user_id', $user->id)
-            ->where('action_type', 'lesson_completed')
-            ->sum('duration_minutes') / 60;
+        // SOLUCIÓN: Sumamos los minutos directamente de las lecciones completadas del usuario
+        $totalMinutes = CompletedLessons::whereHas('enrollment', function($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->sum('time_spent_minutes');
+
+        $totalStudyHours = $totalMinutes > 0 ? ($totalMinutes / 60) : 0;
 
         // Días consecutivos estudiando
         $streakDays = $this->calculateStreakDays($user);
@@ -113,8 +129,9 @@ class StudentProgressController extends Controller
      * Calcular días consecutivos de estudio
      */
     private function calculateStreakDays($user) {
+        // SOLUCIÓN: Cambiamos 'action_type' por 'type'
         $activities = UserActivity::where('user_id', $user->id)
-            ->where('action_type', 'lesson_completed')
+            ->where('type', UserActivity::TYPE_LESSON_COMPLETED) // <-- ESTA ES LA LÍNEA CORREGIDA
             ->select(DB::raw('DATE(created_at) as date'))
             ->distinct()
             ->orderBy('date', 'desc')
@@ -263,7 +280,7 @@ class StudentProgressController extends Controller
                 'certificate_id'    => $certificate->id,
                 'issue_date'        => $certificate->issue_date,
                 'expiration_date'   => $certificate->expiration_date,
-                'download_url'      => route('certificate.download', $certificate->id),
+                'download_url'      => route('certificates.download', $certificate->id),
             ];
         }
 
@@ -507,11 +524,13 @@ class StudentProgressController extends Controller
             ->limit($request->input('limit', 20))
             ->get()
             ->map(function($activity) {
-                $details = json_decode($activity->details, true);
+                // $details = json_decode($activity->details, true);
+                $details = $activity->data;
 
                 return [
                     'id'            => $activity->id,
-                    'type'          => $activity->action_type,
+                    // 'type'          => $activity->action_type,
+                    'type'          => $activity->type,
                     'description'   => $this->getActivityDescription($activity),
                     'course'    => $activity->course ? [
                         'id'    => $activity->course->id,
@@ -521,7 +540,7 @@ class StudentProgressController extends Controller
                     'time'      => $activity->created_at->diffForHumans(),
                     'date'      => $activity->created_at->format('d/m/Y H:i'),
                     'details'   => $details,
-                    'duration'  => $activity->duration_minutes,
+                    // 'duration'  => $activity->duration_minutes,
                 ];
             });
 

@@ -31,12 +31,8 @@ class AffiliateController extends Controller {
         $stats = [
             'total_sales'       => $user->courses_sold_count ?? 0,
             'total_commission'  => $user->total_commission ?? 0,
-            'pending_sales'     => CourseSale::where('user_id', $user->id)
-                ->where('status', 'pending')
-                ->count(),
-            'completed_sales'   => CourseSale::where('user_id', $user->id)
-                ->where('status', 'completed')
-                ->count(),
+            'pending_sales'     => CourseSale::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'completed_sales'   => CourseSale::where('user_id', $user->id)->where('status', 'completed')->count(),
         ];
 
         // Ventas recientes
@@ -56,25 +52,46 @@ class AffiliateController extends Controller {
             ->limit(5)
             ->get();
 
-        return view('student.affiliate.dashboard', compact(
-            'user',
-            'stats',
-            'recentSales',
-            'topCourses'
-        ));
+        return view('student.affiliate.dashboard', compact('user', 'stats', 'recentSales', 'topCourses'));
     }
 
     /**
      * Mostrar ventas detalladas
      */
     public function sales(): View {
-        $user   = Auth::user();
-        $sales  = CourseSale::with(['course', 'buyer', 'order'])
+        $user = Auth::user();
+        
+        // Tu variable original paginada
+        $sales = CourseSale::with(['course', 'buyer', 'order'])
             ->where('user_id', $user->id)
             ->orderBy('sold_at', 'desc')
-            ->paginate(20);
+            ->paginate(10);
 
-        return view('student.affiliate.sales', compact('sales', 'user'));
+        // Agregamos las variables que pide tu blade
+        $stats = [
+            'total_sales'       => $user->courses_sold_count ?? 0,
+            'total_commission'  => $user->total_commission ?? 0,
+            'pending_sales'     => CourseSale::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'completed_sales'   => CourseSale::where('user_id', $user->id)->where('status', 'completed')->count(),
+        ];
+
+        $recentSales = CourseSale::with(['course', 'buyer'])
+            ->where('user_id', $user->id)
+            ->orderBy('sold_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        $topCourses = CourseSale::selectRaw('course_id, COUNT(*) as sales_count, SUM(sale_amount) as total_revenue')
+            ->where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->groupBy('course_id')
+            ->with('course')
+            ->orderBy('sales_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Enviamos todo a la vista
+        return view('student.affiliate.sales', compact('sales', 'user', 'stats', 'recentSales', 'topCourses'));
     }
 
     /**
@@ -92,10 +109,10 @@ class AffiliateController extends Controller {
 
         // Estadísticas por período
         $periodStats = [
-            'total_sales' => $query->count(),
-            'total_revenue' => $query->sum('sale_amount'),
-            'total_commission' => $query->sum('commission_amount'),
-            'completed_sales' => $query->where('status', 'completed')->count(),
+            'total_sales'       => $query->count(),
+            'total_revenue'     => $query->sum('sale_amount'),
+            'total_commission'  => $query->sum('commission_amount'),
+            'completed_sales'   => $query->where('status', 'completed')->count(),
         ];
 
         // Ventas por día (para gráfico)
@@ -106,13 +123,7 @@ class AffiliateController extends Controller {
             ->orderBy('date')
             ->get();
 
-        return view('student.affiliate.reports', compact(
-            'user',
-            'periodStats',
-            'salesByDay',
-            'startDate',
-            'endDate'
-        ));
+        return view('student.affiliate.reports', compact('user', 'periodStats', 'salesByDay', 'startDate', 'endDate'));
     }
 
     /**

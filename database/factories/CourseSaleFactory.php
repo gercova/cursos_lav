@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Course;
 use App\Models\CourseSale;
 use App\Models\Enrollment;
 use App\Models\Order;
@@ -12,23 +13,27 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CourseSale>
  */
-class CourseSaleFactory extends Factory
-{
+class CourseSaleFactory extends Factory {
+
+    public function __construct(){
+        
+    }
+
     protected $model = CourseSale::class;
     
     public function definition(): array {
         // Primero, aseguramos que existan usuarios con y sin código
-        $userWithCode = User::whereNotNull('code')->inRandomOrder()->first();
-        $userWithoutCode = User::whereNull('code')->inRandomOrder()->first();
+        $userWithCode       = User::whereNotNull('code')->inRandomOrder()->first();
+        $userWithoutCode    = User::whereNull('code')->inRandomOrder()->first();
         
         // Si no existen, los creamos
-        if (!$userWithCode) {
-            $userWithCode = User::factory()->create(['code' => $this->faker->unique()->regexify('[A-Z0-9]{8}')]);
-        }
+        // if (!$userWithCode) {
+        //     $userWithCode = User::factory()->create(['code' => $this->faker->unique()->regexify('[A-Z0-9]{8}')]);
+        // }
         
-        if (!$userWithoutCode) {
-            $userWithoutCode = User::factory()->create(['code' => null]);
-        }
+        // if (!$userWithoutCode) {
+        //     $userWithoutCode = User::factory()->create(['code' => null]);
+        // }
         
         // Buscar o crear una orden con items
         $order = Order::inRandomOrder()->first();
@@ -57,39 +62,38 @@ class CourseSaleFactory extends Factory
             
         if (!$enrollment) {
             $enrollment = Enrollment::factory()->create([
-                'user_id' => $userWithoutCode->id,
-                'course_id' => $course->id,
-                'enrolled_at' => now(),
+                'user_id'       => $userWithoutCode->id,
+                'course_id'     => $course->id,
+                'enrolled_at'   => now(),
             ]);
         }
         
         // Calcular comisión (20% del precio final)
-        $saleAmount = $course->final_price ?? $course->price;
-        $commissionAmount = round($saleAmount * 0.20, 2);
+        $saleAmount         = $course->final_price ?? $course->price;
+        $commissionAmount   = round($saleAmount * 0.20, 2);
         
         return [
-            'user_id' => $userWithCode->id,
-            'buyer_id' => $userWithoutCode->id,
-            'course_id' => $course->id,
-            'order_id' => $order->id,
-            'enrollment_id' => $enrollment->id,
-            'promotion_code' => $userWithCode->code,
+            'user_id'           => $userWithCode->id,
+            'buyer_id'          => $userWithoutCode->id,
+            'course_id'         => $course->id,
+            'order_id'          => $order->id,
+            'enrollment_id'     => $enrollment->id,
+            'promotion_code'    => $userWithCode->code,
             'commission_amount' => $commissionAmount,
-            'sale_amount' => $saleAmount,
-            'status' => $this->faker->randomElement(['pending', 'completed', 'cancelled']),
-            'sold_at' => $this->faker->dateTimeBetween('-3 months', 'now'),
+            'sale_amount'       => $saleAmount,
+            'status'            => $this->faker->randomElement(['pending', 'completed', 'cancelled']),
+            'sold_at'           => $this->faker->dateTimeBetween('-3 months', 'now'),
         ];
     }
     
     /**
      * Crea una orden con items para un usuario
      */
-    private function createOrderWithItems(User $user): Order
-    {
+    private function createOrderWithItems(User $user): Order {
         $order = Order::factory()->create([
-            'user_id' => $user->id,
-            'subtotal' => 0,
-            'total' => 0,
+            'user_id'   => $user->id,
+            'subtotal'  => 0,
+            'total'     => 0,
         ]);
         
         // Crear al menos un item
@@ -98,8 +102,8 @@ class CourseSaleFactory extends Factory
         // Actualizar totales de la orden
         $subtotal = $order->items()->sum('final_price');
         $order->update([
-            'subtotal' => $subtotal,
-            'total' => $subtotal,
+            'subtotal'  => $subtotal,
+            'total'     => $subtotal,
         ]);
         
         return $order;
@@ -108,9 +112,8 @@ class CourseSaleFactory extends Factory
     /**
      * Crea un item de orden
      */
-    private function createOrderItem(Order $order): OrderItem
-    {
-        $course = \App\Models\Course::factory()->create();
+    private function createOrderItem(Order $order): OrderItem {
+        $course     = Course::factory()->create();
         $finalPrice = $course->promotion_price ?? $course->price;
         
         return OrderItem::factory()->create([
@@ -126,12 +129,11 @@ class CourseSaleFactory extends Factory
     /**
      * Estado: venta completada
      */
-    public function completed(): static
-    {
+    public function completed(): static {
         return $this->state(function (array $attributes) {
             return [
-                'status' => 'completed',
-                'sold_at' => now()->subDays(rand(1, 30)),
+                'status'    => 'completed',
+                'sold_at'   => now()->subDays(rand(1, 30)),
             ];
         });
     }
@@ -139,8 +141,7 @@ class CourseSaleFactory extends Factory
     /**
      * Estado: venta pendiente
      */
-    public function pending(): static
-    {
+    public function pending(): static {
         return $this->state(function (array $attributes) {
             return [
                 'status'    => 'pending',

@@ -131,7 +131,7 @@
                             <div class="flex items-center justify-between mt-2">
                                 <span class="text-sm text-gray-600">
                                     <i class="fas fa-shopping-cart mr-1"></i>
-                                    {{ $course->sales_count }} ventas
+                                    {{ $course->sales_count }} {{ $course->sales_count > 1 ? 'ventas' : 'venta' }}
                                 </span>
                                 <span class="text-sm font-semibold text-emerald-600">
                                     S/ {{ number_format($course->total_revenue, 2) }}

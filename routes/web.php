@@ -176,8 +176,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/affiliate/links',                  [AffiliateController::class, 'links'])->name('student.affiliate.links');
     Route::get('/affiliate/api/stats',              [AffiliateController::class, 'getStats'])->name('student.affiliate.api.stats');
 
-    // Mis cursos
-    Route::get('/courses',                          [CoursesController::class, 'index'])->name('student.courses.index');
+    // Ver secciones y lecciones de un curso
     Route::get('/courses/{course}/learn',           [CoursesController::class, 'learn'])->name('student.course.learn');
     
     // Vista de lección individual
@@ -191,9 +190,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
     // Notificaciones
-    Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
+    // Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
 
-    Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
+    // Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago
     Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('payment.failure');

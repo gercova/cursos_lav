@@ -61,37 +61,48 @@ class AffiliateController extends Controller {
     public function sales(): View {
         $user = Auth::user();
         
-        // Tu variable original paginada
+        // 1. Todas las ventas paginadas (incluye todos los estados)
         $sales = CourseSale::with(['course', 'buyer', 'order'])
             ->where('user_id', $user->id)
             ->orderBy('sold_at', 'desc')
             ->paginate(10);
 
-        // Agregamos las variables que pide tu blade
-        $stats = [
-            'total_sales'       => $user->courses_sold_count ?? 0,
-            'total_commission'  => $user->total_commission ?? 0,
-            'pending_sales'     => CourseSale::where('user_id', $user->id)->where('status', 'pending')->count(),
-            'completed_sales'   => CourseSale::where('user_id', $user->id)->where('status', 'completed')->count(),
-        ];
+        // 2. Comisión total (SOLO de ventas completadas)
+        $totalCommission = CourseSale::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->sum('commission_amount');
 
-        $recentSales = CourseSale::with(['course', 'buyer'])
-            ->where('user_id', $user->id)
-            ->orderBy('sold_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        $topCourses = CourseSale::selectRaw('course_id, COUNT(*) as sales_count, SUM(sale_amount) as total_revenue')
+        // 3. Cursos más vendidos (Solo completados)
+        $topCourses = CourseSale::selectRaw('course_id, COUNT(*) as sales_count, SUM(commission_amount) as generated_commission')
             ->where('user_id', $user->id)
             ->where('status', 'completed')
             ->groupBy('course_id')
             ->with('course')
             ->orderBy('sales_count', 'desc')
-            ->limit(5)
+            ->limit(3)
             ->get();
 
-        // Enviamos todo a la vista
-        return view('student.affiliate.sales', compact('sales', 'user', 'stats', 'recentSales', 'topCourses'));
+        // 4. Usuarios que más usan el código (Solo completados)
+        $topBuyers = CourseSale::selectRaw('buyer_id, COUNT(*) as purchases_count')
+            ->where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->groupBy('buyer_id')
+            ->with('buyer')
+            ->orderBy('purchases_count', 'desc')
+            ->limit(3)
+            ->get();
+
+        // 5. Estadísticas generales de estados
+        $stats = [
+            'total'     => CourseSale::where('user_id', $user->id)->count(),
+            'completed' => CourseSale::where('user_id', $user->id)->where('status', 'completed')->count(),
+            'pending'   => CourseSale::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'failed'    => CourseSale::where('user_id', $user->id)->whereIn('status', ['failed', 'canceled'])->count(),
+        ];
+
+        return view('student.affiliate.sales', compact(
+            'sales', 'user', 'totalCommission', 'topCourses', 'topBuyers', 'stats'
+        ));
     }
 
     /**

@@ -317,9 +317,9 @@
                                                         <i class="fas fa-info-circle mr-2"></i>
                                                         Detalles
                                                     </button>
-                                                    <a :href="course.continue_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
-                                                        <i class="fas" :class="course.status === 'completed' ? 'fa-certificate' : 'fa-play'"></i>
-                                                        <span class="ml-2" x-text="course.status === 'completed' ? 'Ver Certificado' : 'Continuar'"></span>
+                                                    <a :href="course.action_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
+                                                        <i class="fas" :class="course.action_icon"></i>
+                                                        <span class="ml-2" x-text="course.action_text"></span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -427,9 +427,8 @@
                         <button @click="closeModal" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                             Cerrar
                         </button>
-                        <a :href="selectedCourse?.continue_url"
-                           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200">
-                            <span x-text="selectedCourse?.status === 'completed' ? 'Ver Certificado' : 'Continuar Curso'"></span>
+                        <a :href="selectedCourse?.action_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200">
+                            <span x-text="selectedCourse?.action_text"></span>
                             <i class="fas fa-arrow-right ml-2"></i>
                         </a>
                     </div>

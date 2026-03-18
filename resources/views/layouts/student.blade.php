@@ -417,7 +417,7 @@
                         <span class="font-semibold text-gray-800 text-sm hidden lg:inline">{{ $enterprise->trade_name }}</span>
                     </a>
                     <button @click="toggleMobileMenu" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
-                        <i class="fas fa-times text-gray-500"></i>
+                        <i class="fas fa-times text-gray-500 mr-2"></i>
                     </button>
                 </div>
             </div>
@@ -445,16 +445,20 @@
                 @endif
 
                 <a href="{{ route('student.my-courses') }}" class="sidebar-link {{ request()->routeIs('student.my-courses') ? 'active' : '' }}">
-                    <i class="fas fa-book"></i>
+                    <i class="fas fa-book mr-2"></i>
                     <span>Mis Cursos</span>
                 </a>
                 <a href="{{ route('student.certificates') }}" class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
-                    <i class="fas fa-certificate"></i>
+                    <i class="fas fa-certificate mr-2"></i>
                     <span>Certificados</span>
                 </a>
                 <a href="{{ route('student.exams') }}" class="sidebar-link {{ request()->routeIs('student.exams') ? 'active' : '' }}">
-                    <i class="fas fa-file-alt"></i>
+                    <i class="fas fa-file-alt mr-2"></i>
                     <span>Exámenes</span>
+                </a>
+                <a href="{{ route('student.progress') }}" class="sidebar-link {{ request()->routeIs('student.progress') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    <span>Mi Progreso</span>
                 </a>
                 <a href="{{ route('student.profile') }}" class="sidebar-link {{ request()->routeIs('student.profile') ? 'active' : '' }}">
                     <i class="fas fa-user"></i>
@@ -462,7 +466,7 @@
                 </a>
                 @if(auth()->user()->hasPromotionCode())
                     <a href="{{ route('student.affiliate.dashboard') }}" class="sidebar-link {{ request()->routeIs('student.affiliate.*') ? 'active' : '' }}">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-users mr-2"></i>
                         <span>Mis Ventas</span>
                         @php $salesCount = auth()->user()->courses_sold_count ?? 0; @endphp
                         @if($salesCount > 0)

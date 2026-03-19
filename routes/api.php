@@ -26,17 +26,5 @@ Route::middleware(['auth:sanctum', 'student'])->group(function () {
 
     // Estadísticas del dashboard
     Route::get('/student/dashboard-stats', [DashboardController::class, 'dashboardStats']);
-
-    // Cursos en progreso
-    Route::get('/student/progress-courses', function () {
-        return response()->json([]);
-    });
-
-    // Obtener datos de una lección
-    Route::get('/lesson/{lesson}', [LessonController::class, 'show']);
-
-    // Obtener lección anterior/siguiente
-    Route::get('/lesson/{lesson}/previous', [LessonController::class, 'previous']);
-    Route::get('/lesson/{lesson}/next',     [LessonController::class, 'next']);
 });
 Route::post('/mp/webhook', [PaymentController::class, 'webhook'])->name('mp.webhook');

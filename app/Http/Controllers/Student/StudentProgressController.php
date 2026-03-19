@@ -27,26 +27,110 @@ class StudentProgressController extends Controller {
     /**
      * Mostrar página principal de progreso
      */
+    // public function index(Request $request): View {
+    //     $user = Auth::user();
+
+    //     // Obtener estadísticas generales
+    //     $stats = $this->getProgressStats($user);
+
+    //     // Obtener cursos con progreso
+    //     $courses = $user->enrollments()
+    //         ->with(['course' => function($query) {
+    //             $query->withCount(['lessons', 'documents']);
+    //         }])
+    //         ->whereHas('course', function($query) {
+    //             $query->where('is_active', true);
+    //         })
+    //         ->where('status', 'active')
+    //         ->get()
+    //         ->map(function($enrollment) {
+    //             $course             = $enrollment->course;
+    //             $totalLessons       = $course->lessons_count + $course->documents_count;
+    //             $completedLessons   = $enrollment->completedLessons()->count();
+
+    //             return [
+    //                 'id'                => $course->id,
+    //                 'title'             => $course->title,
+    //                 'slug'              => $course->slug,
+    //                 'image_url'         => $course->image_url,
+    //                 'instructor'        => $course->instructor->names ?? 'Instructor',
+    //                 'progress'          => $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0,
+    //                 'completed_lessons' => $completedLessons,
+    //                 'total_lessons'     => $totalLessons,
+    //                 'last_accessed'     => $enrollment->last_accessed_at,
+    //                 'has_exam'          => $course->exam ? true : false,
+    //                 'exam_status'       => $enrollment->exam_status,
+    //                 'certificate_available' => $enrollment->certificate_available,
+    //             ];
+    //         });
+
+    //     // Actividad reciente
+    //     $recentActivity = UserActivity::where('user_id', $user->id)
+    //         // ->where('action_type', 'lesson_completed')
+    //         ->where('type', 'lesson_completed')
+    //         ->with('course')
+    //         ->latest()
+    //         ->limit(10)
+    //         ->get();
+
+    //     // Cursos completados
+    //     $completedCourses = $courses->where('progress', 100)->values();
+
+    //     return view('student.progress.index', compact('stats', 'courses', 'completedCourses', 'recentActivity'));
+    // }
     public function index(Request $request): View {
         $user = Auth::user();
 
         // Obtener estadísticas generales
         $stats = $this->getProgressStats($user);
 
-        // Obtener cursos con progreso
+        // Obtener TODOS los cursos con progreso (activos y completados)
         $courses = $user->enrollments()
             ->with(['course' => function($query) {
-                $query->withCount(['lessons', 'documents']);
+                // CORRECCIÓN 1: Cambiamos 'exam' por 'exams'
+                $query->withCount(['lessons', 'documents'])->with('exams');
             }])
             ->whereHas('course', function($query) {
                 $query->where('is_active', true);
             })
-            ->where('status', 'active')
             ->get()
-            ->map(function($enrollment) {
+            ->map(function($enrollment) use ($user) {
                 $course             = $enrollment->course;
                 $totalLessons       = $course->lessons_count + $course->documents_count;
                 $completedLessons   = $enrollment->completedLessons()->count();
+                $progress           = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+
+                // Determinar la última lección completada o la primera del curso
+                $lastCompleted = CompletedLessons::where('enrollment_id', $enrollment->id)
+                    ->latest('completed_at')->first();
+                
+                $lastLessonId = null;
+                if ($lastCompleted) {
+                    $lastLessonId = $lastCompleted->lesson_id;
+                } else {
+                    $firstLesson = Lesson::where('course_id', $course->id)->orderBy('order')->first();
+                    $lastLessonId = $firstLesson ? $firstLesson->id : null;
+                }
+
+                // CORRECCIÓN 2: Tomar el primer examen de la colección 'exams'
+                $exam = $course->exams->first();
+                $hasExam = $exam ? true : false;
+                $examId = $exam ? $exam->id : null;
+                
+                // Verificar si aprobó el examen
+                $hasPassedExam = false;
+                if ($hasExam) {
+                    $hasPassedExam = \App\Models\ExamAttempt::where('user_id', $user->id)
+                        ->where('exam_id', $examId)
+                        // CORRECCIÓN 3: Cambiamos 'is_passed' a 'passed' según tu modelo
+                        ->where('passed', true)
+                        ->exists();
+                }
+
+                // Verificar si ya tiene certificado
+                $certificate = Certificate::where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->first();
 
                 return [
                     'id'                => $course->id,
@@ -54,27 +138,28 @@ class StudentProgressController extends Controller {
                     'slug'              => $course->slug,
                     'image_url'         => $course->image_url,
                     'instructor'        => $course->instructor->names ?? 'Instructor',
-                    'progress'          => $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0,
+                    'progress'          => $progress,
                     'completed_lessons' => $completedLessons,
                     'total_lessons'     => $totalLessons,
                     'last_accessed'     => $enrollment->last_accessed_at,
-                    'has_exam'          => $course->exam ? true : false,
-                    'exam_status'       => $enrollment->exam_status,
-                    'certificate_available' => $enrollment->certificate_available,
+                    'has_exam'          => $hasExam,
+                    'exam_id'           => $examId,
+                    'has_passed_exam'   => $hasPassedExam,
+                    'certificate_id'    => $certificate ? $certificate->id : null,
+                    'last_lesson_id'    => $lastLessonId,
                 ];
             });
 
         // Actividad reciente
         $recentActivity = UserActivity::where('user_id', $user->id)
-            // ->where('action_type', 'lesson_completed')
             ->where('type', 'lesson_completed')
             ->with('course')
             ->latest()
             ->limit(10)
             ->get();
 
-        // Cursos completados
-        $completedCourses = $courses->where('progress', 100)->values();
+        // Filtrar completados para la sección lateral (y ordenarlos por más reciente)
+        $completedCourses = $courses->where('progress', 100)->sortByDesc('last_accessed')->values();
 
         return view('student.progress.index', compact('stats', 'courses', 'completedCourses', 'recentActivity'));
     }

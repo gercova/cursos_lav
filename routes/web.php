@@ -107,6 +107,8 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
     Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
     Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+    Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file'); // ← CAMBIADO
+
     Route::get('/mis-colaboradores/importar',   [BusinessImportController::class, 'showImportForm'])->name('company.import.form');
     Route::patch('/mi-colaborador/{user}/toggle-status', [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
     Route::post('/users/import',                [BusinessImportController::class, 'import'])->name('company.import.process');

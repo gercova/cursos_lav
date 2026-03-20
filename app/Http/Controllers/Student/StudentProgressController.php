@@ -27,57 +27,6 @@ class StudentProgressController extends Controller {
     /**
      * Mostrar página principal de progreso
      */
-    // public function index(Request $request): View {
-    //     $user = Auth::user();
-
-    //     // Obtener estadísticas generales
-    //     $stats = $this->getProgressStats($user);
-
-    //     // Obtener cursos con progreso
-    //     $courses = $user->enrollments()
-    //         ->with(['course' => function($query) {
-    //             $query->withCount(['lessons', 'documents']);
-    //         }])
-    //         ->whereHas('course', function($query) {
-    //             $query->where('is_active', true);
-    //         })
-    //         ->where('status', 'active')
-    //         ->get()
-    //         ->map(function($enrollment) {
-    //             $course             = $enrollment->course;
-    //             $totalLessons       = $course->lessons_count + $course->documents_count;
-    //             $completedLessons   = $enrollment->completedLessons()->count();
-
-    //             return [
-    //                 'id'                => $course->id,
-    //                 'title'             => $course->title,
-    //                 'slug'              => $course->slug,
-    //                 'image_url'         => $course->image_url,
-    //                 'instructor'        => $course->instructor->names ?? 'Instructor',
-    //                 'progress'          => $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0,
-    //                 'completed_lessons' => $completedLessons,
-    //                 'total_lessons'     => $totalLessons,
-    //                 'last_accessed'     => $enrollment->last_accessed_at,
-    //                 'has_exam'          => $course->exam ? true : false,
-    //                 'exam_status'       => $enrollment->exam_status,
-    //                 'certificate_available' => $enrollment->certificate_available,
-    //             ];
-    //         });
-
-    //     // Actividad reciente
-    //     $recentActivity = UserActivity::where('user_id', $user->id)
-    //         // ->where('action_type', 'lesson_completed')
-    //         ->where('type', 'lesson_completed')
-    //         ->with('course')
-    //         ->latest()
-    //         ->limit(10)
-    //         ->get();
-
-    //     // Cursos completados
-    //     $completedCourses = $courses->where('progress', 100)->values();
-
-    //     return view('student.progress.index', compact('stats', 'courses', 'completedCourses', 'recentActivity'));
-    // }
     public function index(Request $request): View {
         $user = Auth::user();
 

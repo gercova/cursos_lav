@@ -11,6 +11,7 @@ use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\CourseSale;
 use App\Models\User;
+use App\Models\UserActivity;
 use App\Models\UserSignature;
 use App\Services\StudentTrackingService;
 use Illuminate\Contracts\View\View;
@@ -283,7 +284,78 @@ class UserAdminController extends Controller {
             ],
         ]);
     }
+
+    /**
+     * Devuelve el historial de actividad paginado del usuario.
+     * Filtra por tipo y rango de fechas.
+     */
+    public function getActivities(Request $request, User $user): JsonResponse {
+        $query = UserActivity::where('user_id', $user->id)
+            ->with(['course:id,title'])
+            ->orderByDesc('created_at');
     
+        // Filtro por tipo
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+    
+        // Filtro fecha desde
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+    
+        // Filtro fecha hasta
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+    
+        $activities = $query->paginate(10);
+    
+        // Formatear cada actividad para el front
+        $activities->getCollection()->transform(function (UserActivity $activity) {
+            // Extraer device y browser del campo data si existen
+            $data    = $activity->data ?? [];
+            $device  = $data['device']  ?? null;
+            $browser = $data['browser'] ?? null;
+    
+            return [
+                'id'              => $activity->id,
+                'type'            => $activity->type,
+                'action'          => $activity->action,
+                'description'     => $activity->description,
+                'icon'            => $activity->icon,   // accessor del modelo
+                'color'           => $activity->color,  // accessor del modelo
+                'ip_address'      => $activity->ip_address,
+                'device'          => $device,
+                'browser'         => $browser,
+                'course_title'    => $activity->course->title ?? null,
+                'formatted_date'  => $activity->created_at->format('d/m/Y H:i'),
+                'diff_for_humans' => $activity->created_at->diffForHumans(),
+            ];
+        });
+    
+        // Estadísticas totales (sin filtros)
+        $stats = UserActivity::where('user_id', $user->id)
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN type = 'login' THEN 1 ELSE 0 END) as logins,
+                SUM(CASE WHEN type IN ('course_enrolled','lesson_completed','course_accessed') THEN 1 ELSE 0 END) as courses,
+                SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today
+            ")
+            ->first();
+    
+        return response()->json([
+            'success'    => true,
+            'activities' => $activities,
+            'stats'      => [
+                'total'   => $stats->total   ?? 0,
+                'logins'  => $stats->logins  ?? 0,
+                'courses' => $stats->courses ?? 0,
+                'today'   => $stats->today   ?? 0,
+            ],
+        ]);
+    }
+
     public function updatePassword(PasswordValidate $request, User $user): JsonResponse {
         $validated = $request->validated();
         $user->update(['password' => Hash::make($validated['password'])]);

@@ -9,6 +9,7 @@ use App\Http\Requests\UserValidate;
 use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
+use App\Models\CourseSale;
 use App\Models\User;
 use App\Models\UserSignature;
 use App\Services\StudentTrackingService;
@@ -220,6 +221,69 @@ class UserAdminController extends Controller {
         ));
     }
 
+
+    public function getSales(Request $request, User $user): JsonResponse {
+        // Solo tiene sentido si el usuario tiene código de promoción
+        if (!$user->hasPromotionCode()) {
+            return response()->json(['success' => false, 'message' => 'El usuario no tiene código de promoción.'], 403);
+        }
+    
+        $query = CourseSale::with(['buyer:id,names,email', 'course:id,title'])
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['completed', 'pending', 'cancelled']);
+    
+        // Filtro por status
+        if ($request->filled('status') && in_array($request->status, ['completed', 'pending', 'cancelled'])) {
+            $query->where('status', $request->status);
+        }
+    
+        // Filtro fecha desde
+        if ($request->filled('date_from')) {
+            $query->whereDate('sold_at', '>=', $request->date_from);
+        }
+    
+        // Filtro fecha hasta
+        if ($request->filled('date_to')) {
+            $query->whereDate('sold_at', '<=', $request->date_to);
+        }
+    
+        $sales = $query->orderByDesc('sold_at')->paginate(15);
+    
+        // Formatear cada venta para el front
+        $sales->getCollection()->transform(function (CourseSale $sale) {
+            return [
+                'id'                => $sale->id,
+                'course_title'      => $sale->course->title ?? '—',
+                'buyer_name'        => $sale->buyer->names ?? '—',
+                'buyer_email'       => $sale->buyer->email ?? '',
+                'sale_amount'       => $sale->sale_amount,
+                'commission_amount' => $sale->commission_amount,
+                'promotion_code'    => $sale->promotion_code,
+                'status'            => $sale->status,
+                'sold_at_formatted' => $sale->sold_at?->format('d/m/Y H:i') ?? '—',
+            ];
+        });
+    
+        // Estadísticas totales del usuario (sin importar el filtro activo)
+        $stats = CourseSale::where('user_id', $user->id)
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'completed' THEN commission_amount ELSE 0 END) as total_commission,
+                SUM(CASE WHEN status = 'pending'   THEN 1 ELSE 0 END) as pending
+            ")
+            ->first();
+    
+        return response()->json([
+            'success' => true,
+            'sales'   => $sales,
+            'stats'   => [
+                'total'            => $stats->total ?? 0,
+                'total_commission' => number_format($stats->total_commission ?? 0, 2),
+                'pending'          => $stats->pending ?? 0,
+            ],
+        ]);
+    }
+    
     public function updatePassword(PasswordValidate $request, User $user): JsonResponse {
         $validated = $request->validated();
         $user->update(['password' => Hash::make($validated['password'])]);

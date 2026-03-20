@@ -243,6 +243,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/users/policy/{user}',          [UserAdminController::class, 'createLimitUser'])->name('admin.user.policy');
         Route::get('/users/get-policy/{user}',      [UserAdminController::class, 'getLimitUser'])->name('admin.user.get-policy');
         Route::get('users/{user}/sales',            [UserAdminController::class, 'getSales'])->name('admin.users.sales');
+        Route::get('users/{user}/activity',         [UserAdminController::class, 'getActivities'])->name('admin.users.activity');
 
         // Rutas para asignar permisos a usuarios
         Route::get('/roles/home',               [RoleController::class, 'index'])->name('admin.roles.index');

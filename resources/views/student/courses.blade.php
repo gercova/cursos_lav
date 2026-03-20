@@ -186,7 +186,6 @@
                         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-200">
                             <div class="md:flex">
                                 <!-- Imagen del curso -->
-                                
                                 <div class="md:w-1/4">
                                     {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
                                     <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">

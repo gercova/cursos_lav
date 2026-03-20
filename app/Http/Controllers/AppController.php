@@ -26,7 +26,7 @@ class AppController extends Controller {
             $query->where('category_id', $request->category);
         }
 
-        $courses    = $query->paginate(12); 
+        $courses    = $query->orderByDesc('id')->paginate(12); 
         $totalCourses = Course::where('is_active', true)->get();
         $users      = User::where('is_active', true)->get();
         $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();

@@ -171,6 +171,17 @@
                     </button>
                     @endif
 
+                    @if($user->hasPromotionCode())
+                    <button @click="activeTab = 'sales'; $nextTick(() => loadSales())"
+                        :class="activeTab === 'sales' ? 'border-emerald-600 text-emerald-700 bg-emerald-50/60' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+                        class="flex-shrink-0 flex items-center gap-2 px-5 py-3.5 border-b-2 font-medium text-sm transition-all duration-200">
+                        <i class="fas fa-hand-holding-usd"></i> Mis Ventas
+                        <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                            {{ $user->promotedSales->count() ?? 0 }}
+                        </span>
+                    </button>
+                    @endif
+
                     <button @click="activeTab = 'activity'"
                         :class="activeTab === 'activity' ? 'border-blue-600 text-blue-700 bg-blue-50/60' : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
                         class="flex-shrink-0 flex items-center gap-2 px-5 py-3.5 border-b-2 font-medium text-sm transition-all duration-200">
@@ -683,6 +694,224 @@
         </div>
         @endif
 
+        {{-- TAB: Mis Ventas (solo si tiene código de promoción) --}}
+        @if($user->hasPromotionCode())
+        <div x-show="activeTab === 'sales'"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0">
+
+            {{-- Tarjetas resumen --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                {{-- Código de afiliado --}}
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-tag text-emerald-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">Código</div>
+                        <div class="font-extrabold text-gray-900 text-lg font-mono tracking-wider">{{ $user->code }}</div>
+                    </div>
+                </div>
+                {{-- Total ventas --}}
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-shopping-cart text-blue-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">Total ventas</div>
+                        <div class="font-extrabold text-gray-900 text-2xl" x-text="salesStats.total ?? {{ $user->courses_sold_count ?? 0 }}"></div>
+                    </div>
+                </div>
+                {{-- Comisión ganada --}}
+                <div class="bg-white rounded-2xl border border-emerald-200 shadow-sm p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-coins text-emerald-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">Comisión ganada</div>
+                        <div class="font-extrabold text-emerald-700 text-xl">
+                            S/ <span x-text="salesStats.total_commission ?? '{{ number_format($user->total_commission ?? 0, 2) }}'"></span>
+                        </div>
+                    </div>
+                </div>
+                {{-- Pendiente de pago --}}
+                <div class="bg-white rounded-2xl border border-orange-200 shadow-sm p-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-clock text-orange-500"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium">Pendientes</div>
+                        <div class="font-extrabold text-orange-600 text-2xl" x-text="salesStats.pending ?? '—'"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Panel principal --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6">
+                    {{-- Header + Filtros --}}
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
+                            <span class="w-1 h-5 bg-emerald-500 rounded-full inline-block"></span>
+                            Historial de Ventas
+                        </h3>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            {{-- Filtro status --}}
+                            <select x-model="salesFilters.status" @change="loadSales()"
+                                class="text-sm border border-gray-200 rounded-xl px-3 py-2 bg-white text-gray-700 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all">
+                                <option value="">Todos los estados</option>
+                                <option value="completed">Completadas</option>
+                                <option value="pending">Pendientes</option>
+                                <option value="cancelled">Canceladas</option>
+                            </select>
+                            {{-- Filtro fecha desde --}}
+                            <input type="date" x-model="salesFilters.date_from" @change="loadSales()"
+                                class="text-sm border border-gray-200 rounded-xl px-3 py-2 bg-white text-gray-700 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all">
+                            {{-- Filtro fecha hasta --}}
+                            <input type="date" x-model="salesFilters.date_to" @change="loadSales()"
+                                class="text-sm border border-gray-200 rounded-xl px-3 py-2 bg-white text-gray-700 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 outline-none transition-all">
+                            {{-- Botón limpiar --}}
+                            <button @click="clearSalesFilters()"
+                                x-show="salesFilters.status || salesFilters.date_from || salesFilters.date_to"
+                                class="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-red-500 px-3 py-2 border border-gray-200 rounded-xl hover:border-red-300 transition-all bg-white">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Estado: cargando --}}
+                    <div x-show="salesLoading" class="flex items-center justify-center py-16">
+                        <div class="flex flex-col items-center gap-3 text-gray-400">
+                            <i class="fas fa-spinner fa-spin text-3xl text-emerald-500"></i>
+                            <span class="text-sm">Cargando ventas...</span>
+                        </div>
+                    </div>
+
+                    {{-- Estado: error --}}
+                    <div x-show="salesError && !salesLoading" class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm mb-4">
+                        <i class="fas fa-exclamation-circle text-red-500 flex-shrink-0"></i>
+                        <span x-text="salesError"></span>
+                        <button @click="loadSales()" class="ml-auto text-xs underline">Reintentar</button>
+                    </div>
+
+                    {{-- Tabla de ventas --}}
+                    <div x-show="!salesLoading && !salesError">
+                        <div x-show="sales.length === 0" class="text-center py-14">
+                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
+                                <i class="fas fa-hand-holding-usd text-gray-400 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-500 font-medium">No se encontraron ventas</p>
+                            <p class="text-gray-400 text-xs mt-1">Prueba cambiando los filtros aplicados</p>
+                        </div>
+
+                        <div x-show="sales.length > 0" class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-100">
+                                        <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3 pr-4">Curso</th>
+                                        <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3 pr-4">Comprador</th>
+                                        <th class="text-right text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3 pr-4">Venta</th>
+                                        <th class="text-right text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3 pr-4">Comisión</th>
+                                        <th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3 pr-4">Fecha</th>
+                                        <th class="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider pb-3">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50">
+                                    <template x-for="sale in sales" :key="sale.id">
+                                        <tr class="hover:bg-gray-50/60 transition-colors">
+                                            {{-- Curso --}}
+                                            <td class="py-3.5 pr-4">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                                                        <i class="fas fa-book text-emerald-600 text-xs"></i>
+                                                    </div>
+                                                    <span class="font-medium text-gray-900 max-w-[180px] truncate" x-text="sale.course_title ?? '—'"></span>
+                                                </div>
+                                            </td>
+                                            {{-- Comprador --}}
+                                            <td class="py-3.5 pr-4">
+                                                <div>
+                                                    <div class="font-medium text-gray-800" x-text="sale.buyer_name ?? '—'"></div>
+                                                    <div class="text-xs text-gray-400" x-text="sale.buyer_email ?? ''"></div>
+                                                </div>
+                                            </td>
+                                            {{-- Monto venta --}}
+                                            <td class="py-3.5 pr-4 text-right">
+                                                <span class="font-semibold text-gray-900">
+                                                    S/ <span x-text="parseFloat(sale.sale_amount).toFixed(2)"></span>
+                                                </span>
+                                            </td>
+                                            {{-- Comisión --}}
+                                            <td class="py-3.5 pr-4 text-right">
+                                                <span class="font-bold text-emerald-700">
+                                                    S/ <span x-text="parseFloat(sale.commission_amount).toFixed(2)"></span>
+                                                </span>
+                                            </td>
+                                            {{-- Fecha --}}
+                                            <td class="py-3.5 pr-4 text-gray-500 whitespace-nowrap text-xs" x-text="sale.sold_at_formatted ?? '—'"></td>
+                                            {{-- Estado --}}
+                                            <td class="py-3.5 text-center">
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                                                    :class="{
+                                                        'bg-green-100 text-green-800': sale.status === 'completed',
+                                                        'bg-orange-100 text-orange-800': sale.status === 'pending',
+                                                        'bg-red-100 text-red-800': sale.status === 'cancelled'
+                                                    }">
+                                                    <span class="w-1.5 h-1.5 rounded-full"
+                                                        :class="{
+                                                            'bg-green-500': sale.status === 'completed',
+                                                            'bg-orange-500': sale.status === 'pending',
+                                                            'bg-red-500': sale.status === 'cancelled'
+                                                        }"></span>
+                                                    <span x-text="sale.status === 'completed' ? 'Completada' : sale.status === 'pending' ? 'Pendiente' : 'Cancelada'"></span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Paginación --}}
+                        <div x-show="salesPagination.last_page > 1"
+                             class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-5 pt-5 border-t border-gray-100">
+                            {{-- Info --}}
+                            <p class="text-xs text-gray-400">
+                                Mostrando <span class="font-semibold text-gray-700" x-text="salesPagination.from"></span>–<span class="font-semibold text-gray-700" x-text="salesPagination.to"></span>
+                                de <span class="font-semibold text-gray-700" x-text="salesPagination.total"></span> ventas
+                            </p>
+                            {{-- Botones --}}
+                            <div class="flex items-center gap-1.5">
+                                <button @click="goSalesPage(salesPagination.current_page - 1)"
+                                    :disabled="salesPagination.current_page === 1"
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <template x-for="page in paginationPages()" :key="page">
+                                    <button @click="page !== '...' && goSalesPage(page)"
+                                        :class="{
+                                            'bg-emerald-600 text-white border-emerald-600': page === salesPagination.current_page,
+                                            'border-gray-200 text-gray-600 hover:bg-gray-50': page !== salesPagination.current_page && page !== '...',
+                                            'border-transparent text-gray-400 cursor-default': page === '...'
+                                        }"
+                                        class="w-8 h-8 flex items-center justify-center rounded-lg border text-xs font-medium transition-all"
+                                        x-text="page">
+                                    </button>
+                                </template>
+                                <button @click="goSalesPage(salesPagination.current_page + 1)"
+                                    :disabled="salesPagination.current_page === salesPagination.last_page"
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-xs">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- TAB: Actividad --}}
         <div x-show="activeTab === 'activity'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -883,6 +1112,73 @@
             passwordError: '',
             togglingStatus: false,
             chartsInitialized: false,
+
+            // ── Ventas ──────────────────────────────────────────
+            sales: [],
+            salesLoading: false,
+            salesError: '',
+            salesStats: {},
+            salesFilters: { status: '', date_from: '', date_to: '' },
+            salesPagination: { current_page: 1, last_page: 1, total: 0, from: 0, to: 0 },
+            salesLoaded: false,
+
+            async loadSales(page = 1) {
+                if (this.salesLoading) return;
+                this.salesLoading = true;
+                this.salesError  = '';
+                try {
+                    const params = new URLSearchParams({
+                        page,
+                        status:    this.salesFilters.status,
+                        date_from: this.salesFilters.date_from,
+                        date_to:   this.salesFilters.date_to,
+                    });
+                    const response = await axios.get(`/admin/users/{{ $user->id }}/sales?${params}`, {
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                    const data = response.data;
+                    this.sales           = data.sales.data ?? [];
+                    this.salesStats      = data.stats ?? {};
+                    this.salesPagination = {
+                        current_page: data.sales.current_page,
+                        last_page:    data.sales.last_page,
+                        total:        data.sales.total,
+                        from:         data.sales.from ?? 0,
+                        to:           data.sales.to ?? 0,
+                    };
+                    this.salesLoaded = true;
+                } catch (e) {
+                    this.salesError = e.response?.data?.message ?? 'Error al cargar las ventas. Intenta de nuevo.';
+                } finally {
+                    this.salesLoading = false;
+                }
+            },
+
+            goSalesPage(page) {
+                if (page < 1 || page > this.salesPagination.last_page) return;
+                this.loadSales(page);
+            },
+
+            clearSalesFilters() {
+                this.salesFilters = { status: '', date_from: '', date_to: '' };
+                this.loadSales();
+            },
+
+            paginationPages() {
+                const total   = this.salesPagination.last_page;
+                const current = this.salesPagination.current_page;
+                if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+                const pages = [];
+                if (current <= 4) {
+                    pages.push(1, 2, 3, 4, 5, '...', total);
+                } else if (current >= total - 3) {
+                    pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
+                } else {
+                    pages.push(1, '...', current - 1, current, current + 1, '...', total);
+                }
+                return pages;
+            },
+            // ────────────────────────────────────────────────────
 
             openPasswordModal() {
                 this.passwordSuccess = false;

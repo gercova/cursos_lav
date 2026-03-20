@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Privacidad y Cookies')
+@section('meta')
+    <meta name="description" content="Política de Privacidad y uso de Cookies de {{ $enterprise->trade_name }}. Conoce cómo protegemos y gestionamos tus datos según la Ley N° 29733 de Perú y directivas internacionales.">
+    <meta name="keywords" content="política de cookies, privacidad, protección de datos, Ley 29733 Perú, derechos ARCO, GDPR">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="noindex, follow">
+@endsection
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-blue-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-6xl mx-auto">

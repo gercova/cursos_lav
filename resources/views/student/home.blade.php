@@ -1,5 +1,19 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Inicio')
+@section('meta')
+    <meta name="description" content="Aprende y certifícate en Seguridad y Salud en el Trabajo (SST), Calidad y Medio Ambiente. Cursos profesionales, diplomados y capacitación empresarial en Perú con {{ $enterprise->trade_name }}.">
+    <meta name="keywords" content="capacitación SST Perú, certificación SST, cursos seguridad y salud en el trabajo, gestión de calidad, medio ambiente, ISO 9001, ISO 14001, ISO 45001, prevención de riesgos laborales, auditoría SST">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="{{ $enterprise->trade_name }} - Expertos en Capacitación SST">
+    <meta property="og:description" content="Impulsa tu carrera con nuestros cursos y certificaciones en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente en Perú.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if(isset($enterprise->logo_path))
+        <meta property="og:image" content="{{ asset($enterprise->logo_path) }}">
+    @endif
+@endsection
 @section('content')
 <!-- Hero Section con Carousel Full Width -->
 <div class="relative w-full">

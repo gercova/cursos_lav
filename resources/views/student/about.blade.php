@@ -1,5 +1,15 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Nosotros')
+@section('meta')
+    <meta name="description" content="Conoce la historia, misión y visión de {{ $enterprise->trade_name }}. Somos el equipo líder en formación, capacitación y certificación en Seguridad y Salud en el Trabajo (SST), Calidad y Medio Ambiente en Perú.">
+    <meta name="keywords" content="sobre nosotros {{ $enterprise->trade_name }}, historia, misión, visión, expertos en SST, empresa de capacitación Perú, certificaciones ISO, educación online">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Sobre Nosotros - {{ $enterprise->trade_name }}">
+    <meta property="og:description" content="Transformamos la educación online y corporativa. Conoce a los expertos detrás de la mejor plataforma de capacitación en SST y Medio Ambiente del Perú.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+@endsection
 @section('content')
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-r from-blue-900 to-purple-900 py-20 sm:py-24 lg:py-32">

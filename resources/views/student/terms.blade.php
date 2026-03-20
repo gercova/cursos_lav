@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Términos y Condiciones')
+@section('meta')
+    <meta name="description" content="Términos y Condiciones de uso de la plataforma {{ $enterprise->trade_name }}. Conoce las reglas, obligaciones y responsabilidades al acceder a nuestros servicios y cursos online.">
+    <meta name="keywords" content="términos y condiciones, términos de servicio, legal, responsabilidades de usuario, condiciones de compra">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="noindex, follow">
+@endsection
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-6xl mx-auto"> <div class="text-center mb-8 sm:mb-12">

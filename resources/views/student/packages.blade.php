@@ -1,5 +1,15 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Paquetes y Promociones')
+@section('meta')
+    <meta name="description" content="Descubre nuestros paquetes y promociones exclusivas. Ahorra hasta un 40% en capacitaciones de SST y Calidad para ti o tu empresa con {{ $enterprise->trade_name }}.">
+    <meta name="keywords" content="paquetes de cursos, capacitación para empresas, promociones SST, cursos corporativos B2B, descuentos en educación, planes empresariales">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Paquetes y Promociones para Empresas - {{ $enterprise->trade_name }}">
+    <meta property="og:description" content="Planes de capacitación corporativa a medida. Ahorra capacitando a tu equipo en Seguridad, Calidad y Medio Ambiente.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+@endsection
 @section('content')
 <div class="bg-gray-50 min-h-screen">
     <div class="relative overflow-hidden bg-blue-900 py-16">

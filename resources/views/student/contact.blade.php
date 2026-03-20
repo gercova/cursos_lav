@@ -1,5 +1,15 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Contáctanos')
+@section('meta')
+    <meta name="description" content="Comunícate con {{ $enterprise->trade_name }}. Estamos listos para asesorarte en nuestros cursos, diplomados y paquetes corporativos de Seguridad, Calidad y Medio Ambiente.">
+    <meta name="keywords" content="contacto {{ $enterprise->trade_name }}, atención al cliente, asesoría SST, capacitación empresarial, teléfono cursos SST, Perú">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Contáctanos - {{ $enterprise->trade_name }}">
+    <meta property="og:description" content="¿Tienes dudas sobre nuestros cursos de SST o necesitas un plan para tu empresa? ¡Hablemos!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+@endsection
 @section('content')
 <!-- Hero Section -->
 <div class="bg-gradient-to-r from-blue-600 to-purple-700 py-16 sm:py-20">

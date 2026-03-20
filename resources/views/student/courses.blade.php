@@ -1,5 +1,15 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Catálogo de Cursos')
+@section('meta')
+    <meta name="description" content="Explora nuestro catálogo completo de cursos online en Seguridad y Salud en el Trabajo (SST), normas ISO y Medio Ambiente. Capacítate a tu ritmo y certifícate con {{ $enterprise->trade_name }}.">
+    <meta name="keywords" content="catálogo de cursos, cursos online SST, cursos ISO 9001, ISO 14001, ISO 45001, prevención de riesgos, diplomados SST, aula virtual, certificaciones Perú">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Catálogo de Cursos Profesionales - {{ $enterprise->trade_name }}">
+    <meta property="og:description" content="Potencia tu perfil profesional con nuestros cursos en Prevención de Riesgos, Calidad y Medio Ambiente. ¡Inscríbete hoy!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+@endsection
 @section('content')
 <!-- Hero Section -->
 <div class="bg-gradient-to-r from-blue-600 to-purple-700 py-16 sm:py-20">

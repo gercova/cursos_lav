@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('title', $enterprise->trade_name.' - Políticas de Uso')
+@section('meta')
+    <meta name="description" content="Políticas de Uso y Propiedad Intelectual de {{ $enterprise->trade_name }}. Información sobre licencias, derechos de autor del contenido educativo y restricciones aplicables.">
+    <meta name="keywords" content="políticas de uso, propiedad intelectual, derechos de autor, licencias de contenido, Decisión 486">
+    <meta name="author" content="{{ $enterprise->trade_name }}">
+    <meta name="robots" content="noindex, follow">
+@endsection
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-5xl mx-auto">

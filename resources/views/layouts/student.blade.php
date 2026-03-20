@@ -402,6 +402,7 @@
             background: #94a3b8;
         }
     </style>
+    @yield('styles')
 </head>
 <body>
     <div class="app-layout" x-data="dashboardLayout()" x-init="init()">
@@ -569,6 +570,7 @@
                     </div>
                 @endif
                 @yield('content')
+                @yield('scripts')
             </div>
 
             <!-- Footer -->
@@ -603,11 +605,11 @@
                     this.checkScreenSize();
                     window.addEventListener('resize', () => this.checkScreenSize());
                     this.loadDashboardData();
-                    this.loadNotifications();
+                    // this.loadNotifications();
                     this.updateCartCount();
                     setInterval(() => {
                         this.loadDashboardData();
-                        this.loadNotifications();
+                        // this.loadNotifications();
                         this.updateCartCount();
                     }, 30000);
                 },
@@ -656,17 +658,17 @@
                     }, 20);
                 },
 
-                async loadNotifications() {
-                    try {
-                        const response = await axios.get('/api/student/notifications');
-                        const badge = document.getElementById('notification-count');
-                        if (badge) {
-                            badge.textContent = response.data.unreadCount || 0;
-                        }
-                    } catch (error) {
-                        console.error('Error loading notifications:', error);
-                    }
-                },
+                // async loadNotifications() {
+                //     try {
+                //         const response = await axios.get('/api/student/notifications');
+                //         const badge = document.getElementById('notification-count');
+                //         if (badge) {
+                //             badge.textContent = response.data.unreadCount || 0;
+                //         }
+                //     } catch (error) {
+                //         console.error('Error loading notifications:', error);
+                //     }
+                // },
 
                 async updateCartCount() {
                     try {

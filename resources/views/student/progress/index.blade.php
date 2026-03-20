@@ -1,10 +1,336 @@
 @extends('layouts.student')
 @section('title', 'Mi Progreso')
+@section('styles')
+<style>
+    /* ── Base ── */
+    .progress-page * { font-family: 'DM Sans', sans-serif; }
+    .progress-page .display-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* ── Entrance animations ── */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.92); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes progressFill {
+        from { stroke-dashoffset: var(--full); }
+        to   { stroke-dashoffset: var(--offset); }
+    }
+    @keyframes barGrow {
+        from { height: 0; }
+        to   { height: var(--h); }
+    }
+    @keyframes countUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseRing {
+        0%,100% { opacity: 0.6; transform: scale(1); }
+        50%      { opacity: 1;   transform: scale(1.05); }
+    }
+    @keyframes shimmer {
+        0%   { background-position: -200% center; }
+        100% { background-position:  200% center; }
+    }
+
+    .anim-fadeUp { animation: fadeUp 0.55s ease both; }
+    .anim-fadeIn { animation: fadeIn 0.5s ease both; }
+    .anim-scale  { animation: scaleIn 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.12s; }
+    .delay-3 { animation-delay: 0.19s; }
+    .delay-4 { animation-delay: 0.26s; }
+    .delay-5 { animation-delay: 0.33s; }
+    .delay-6 { animation-delay: 0.40s; }
+    .delay-7 { animation-delay: 0.47s; }
+    .delay-8 { animation-delay: 0.54s; }
+
+    /* ── Hero banner ── */
+    .hero-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f3460 100%);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse 60% 80% at 80% 50%, rgba(59,130,246,0.18) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 40% at 20% 80%, rgba(245,158,11,0.10) 0%, transparent 60%);
+    }
+    .hero-dots {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 28px 28px;
+    }
+
+    /* ── Stat cards ── */
+    .stat-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #e8edf5;
+        padding: 1.25rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        cursor: default;
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px -8px rgba(15,23,42,0.12);
+    }
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 0 0 16px 16px;
+    }
+    .stat-card.blue::after   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .stat-card.green::after  { background: linear-gradient(90deg, #10b981, #34d399); }
+    .stat-card.amber::after  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .stat-card.purple::after { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+    .stat-icon {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .stat-icon.blue   { background: #eff6ff; color: #3b82f6; }
+    .stat-icon.green  { background: #ecfdf5; color: #10b981; }
+    .stat-icon.amber  { background: #fffbeb; color: #f59e0b; }
+    .stat-icon.purple { background: #f5f3ff; color: #8b5cf6; }
+
+    .stat-number {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: #0f172a;
+        animation: countUp 0.6s ease both;
+    }
+
+    /* ── SVG Progress Ring ── */
+    .progress-ring circle.track { fill: none; stroke: rgba(255,255,255,0.08); }
+    .progress-ring circle.fill  {
+        fill: none;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.4s cubic-bezier(0.34, 1.1, 0.64, 1);
+    }
+
+    /* ── Glassmorphism chart card ── */
+    .glass-card {
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 18px;
+        border: 1px solid #e8edf5;
+        box-shadow: 0 4px 24px -6px rgba(15,23,42,0.07);
+    }
+
+    /* ── Course cards ── */
+    .course-card {
+        background: #fff;
+        border-radius: 14px;
+        border: 1px solid #e8edf5;
+        overflow: hidden;
+        transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+    .course-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px -8px rgba(15,23,42,0.13);
+    }
+    .course-thumb {
+        width: 80px; height: 80px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    /* ── Progress bar ── */
+    .pbar-track {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .pbar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 1.2s cubic-bezier(0.34,1.1,0.64,1);
+    }
+    .pbar-blue   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .pbar-green  { background: linear-gradient(90deg, #10b981, #34d399); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff; font-weight: 600; font-size: 0.75rem;
+        padding: 7px 14px; border-radius: 8px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(59,130,246,0.3);
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        transform: translateY(-1px);
+        color: #fff;
+    }
+    .btn-secondary {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.75rem;
+        padding: 7px 14px; border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    .btn-secondary:hover {
+        background: #f1f5f9; color: #334155;
+        transform: translateY(-1px);
+    }
+    .btn-emerald {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff; font-weight: 600; font-size: 0.75rem;
+        padding: 7px 14px; border-radius: 8px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+    }
+    .btn-emerald:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-1px);
+        color: #fff;
+    }
+    .btn-amber {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: #fff; font-weight: 600; font-size: 0.75rem;
+        padding: 7px 14px; border-radius: 8px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(245,158,11,0.3);
+    }
+    .btn-amber:hover {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+    /* ── Status badges ── */
+    .badge-pill {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 0.65rem; font-weight: 700;
+        padding: 3px 8px; border-radius: 999px;
+        text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .badge-green  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .badge-amber  { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .badge-blue   { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .badge-gray   { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+
+    /* ── Activity timeline ── */
+    .timeline-line {
+        position: absolute;
+        left: 13px; top: 8px; bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, #e2e8f0 80%, transparent);
+    }
+    .timeline-dot {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        position: relative; z-index: 1;
+        font-size: 10px;
+        flex-shrink: 0;
+        ring: 2px solid #fff;
+        box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    /* ── Section headers ── */
+    .section-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    .section-title {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 1rem; font-weight: 700; color: #0f172a;
+        display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── Donut chart wrapper ── */
+    .donut-wrap { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+    .donut-center {
+        position: absolute; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        pointer-events: none;
+    }
+
+    /* ── Weekly bar mini-chart ── */
+    .bar-chart-wrap {
+        display: flex; align-items: flex-end;
+        gap: 6px; height: 80px;
+    }
+    .bar-col {
+        display: flex; flex-direction: column;
+        align-items: center; gap: 4px;
+        flex: 1;
+    }
+    .bar-fill {
+        width: 100%; border-radius: 4px 4px 0 0;
+        background: linear-gradient(to top, #3b82f6, #60a5fa);
+        min-height: 4px;
+        animation: barGrow 0.8s cubic-bezier(0.34,1.1,0.64,1) both;
+    }
+    .bar-label {
+        font-size: 9px; color: #94a3b8; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    /* ── Streak flame animation ── */
+    @keyframes flamePulse {
+        0%,100% { transform: scale(1) rotate(-3deg); }
+        50%      { transform: scale(1.15) rotate(3deg); }
+    }
+    .flame { display: inline-block; animation: flamePulse 1.6s ease-in-out infinite; }
+
+    /* ── Empty state ── */
+    .empty-state {
+        text-align: center; padding: 2.5rem 1rem;
+        color: #94a3b8;
+    }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; opacity: 0.35; }
+
+    /* ── Shimmer loader placeholder ── */
+    .shimmer {
+        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+        background-size: 200% auto;
+        animation: shimmer 1.4s linear infinite;
+        border-radius: 6px;
+    }
+</style>
+@endsection
 @section('content')
-<div class="progress-page" x-data="progressPage()" x-init="init()">
+{{-- Alpine solo maneja la animación del ring SVG del hero --}}
+<div class="progress-page" x-data="progressRing()" x-init="initRing()">
 
     {{-- ═══════════════════════════════════════════
-        HERO BANNER
+         HERO BANNER
     ═══════════════════════════════════════════ --}}
     <div class="hero-banner mb-6 anim-fadeUp delay-1">
         <div class="hero-dots"></div>
@@ -17,7 +343,7 @@
                         <span class="text-xs font-semibold text-blue-300 uppercase tracking-widest">Panel de aprendizaje</span>
                     </div>
                     <h1 class="display-font text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-1">
-                        ¡Hola, {{ auth()->user()->names }}!
+                        ¡Hola, {{ explode(' ', auth()->user()->names)[0] }}! 👋
                     </h1>
                     <p class="text-blue-200 text-sm font-light max-w-lg">
                         Aquí tienes un resumen completo de tu aprendizaje. Sigue así — cada lección te acerca más a tu meta.
@@ -533,481 +859,167 @@
         </div>{{-- end right column --}}
     </div>{{-- end main grid --}}
 </div>{{-- end progress-page --}}
+@endsection
 
-{{-- ═══════════════════════════════════════════
-     SCRIPTS
-═══════════════════════════════════════════ --}}
+@section('scripts')
 <script>
-    function progressPage() {
-        return {
-            targetRate: {{ $stats['completion_rate'] ?? 0 }},
-            displayRate: 0,
-            ringOffset: 364.4,   // full circumference = 2π×58 ≈ 364.4
+/* ─────────────────────────────────────────────────────────────
+   Alpine: SOLO gestiona la animación del ring SVG en el hero.
+   No toca Chart.js — evita el conflicto de timing con defer.
+───────────────────────────────────────────────────────────── */
+function progressRing() {
+    return {
+        targetRate: {{ $stats['completion_rate'] ?? 0 }},
+        displayRate: 0,
+        ringOffset: 364.4, // circunferencia = 2π × 58 ≈ 364.4
 
-            init() {
-                // Animate ring + counter
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        const rate = this.targetRate;
-                        const circumference = 364.4;
-                        this.ringOffset = circumference - (circumference * rate / 100);
+        initRing() {
+            // Pequeño delay para que la transición CSS del ring sea visible
+            setTimeout(() => {
+                const rate   = this.targetRate;
+                this.ringOffset = 364.4 - (364.4 * rate / 100);
 
-                        // Animate counter
-                        let start = 0;
-                        const step = rate / 40;
-                        const interval = setInterval(() => {
-                            start = Math.min(start + step, rate);
-                            this.displayRate = Math.round(start);
-                            if (start >= rate) clearInterval(interval);
-                        }, 20);
-                    }, 400);
-
-                    // Build charts
-                    setTimeout(() => {
-                        this.buildDonutChart();
-                        this.buildWeeklyChart();
-                    }, 300);
-                });
-            },
-
-            buildDonutChart() {
-                const ctx = document.getElementById('donutChart');
-                if (!ctx) return;
-
-                const inProgress = {{ collect($courses)->where('progress', '<', 100)->where('progress', '>', 0)->count() }};
-                const completed  = {{ $finishedCourses->count() }};
-                const notStarted = {{ collect($courses)->where('progress', 0)->count() }};
-
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['En progreso', 'Completados', 'Sin iniciar'],
-                        datasets: [{
-                            data: [inProgress, completed, notStarted],
-                            backgroundColor: ['#3b82f6', '#10b981', '#e2e8f0'],
-                            borderColor: ['#fff','#fff','#fff'],
-                            borderWidth: 3,
-                            hoverOffset: 6,
-                        }]
-                    },
-                    options: {
-                        cutout: '72%',
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: (ctx) => ` ${ctx.label}: ${ctx.raw} curso${ctx.raw !== 1 ? 's' : ''}`
-                                }
-                            }
-                        },
-                        animation: {
-                            animateRotate: true,
-                            duration: 1000,
-                            easing: 'easeInOutQuart',
-                        },
-                        responsive: false,
-                    }
-                });
-            },
-
-            buildWeeklyChart() {
-                const ctx = document.getElementById('weeklyChart');
-                if (!ctx) return;
-
-                // Build last-7-days data from recentActivity
-                @php
-                    $days = [];
-                    $labels = [];
-                    for ($i = 6; $i >= 0; $i--) {
-                        $date = now()->subDays($i);
-                        $labels[] = $date->locale('es')->isoFormat('dd');
-                        $days[]   = $recentActivity
-                            ->whereIn('type', ['lesson_completed','document_completed'])
-                            ->filter(fn($a) => $a->created_at->isSameDay($date))
-                            ->count();
-                    }
-                @endphp
-
-                const labels = @json($labels);
-                const data   = @json($days);
-                const maxVal = Math.max(...data, 1);
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: 'Lecciones',
-                            data,
-                            backgroundColor: data.map((v, i) => {
-                                const isToday = i === 6;
-                                return isToday
-                                    ? 'rgba(59,130,246,0.95)'
-                                    : (v > 0 ? 'rgba(59,130,246,0.45)' : 'rgba(226,232,240,0.8)');
-                            }),
-                            borderRadius: 6,
-                            borderSkipped: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                display: false,
-                                beginAtZero: true,
-                                max: maxVal + 1,
-                            },
-                            x: {
-                                grid: { display: false },
-                                border: { display: false },
-                                ticks: {
-                                    font: { size: 10, weight: '600', family: 'DM Sans' },
-                                    color: '#94a3b8',
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    title: (items) => {
-                                        const idx = items[0].dataIndex;
-                                        return idx === 6 ? 'Hoy' : labels[idx];
-                                    },
-                                    label: (ctx) => ` ${ctx.raw} lección${ctx.raw !== 1 ? 'es' : ''}`
-                                }
-                            }
-                        },
-                        animation: { duration: 900, easing: 'easeOutQuart' },
-                    }
-                });
-            }
+                // Counter animado
+                let cur = 0;
+                const step = Math.max(rate / 50, 0.5);
+                const iv = setInterval(() => {
+                    cur = Math.min(cur + step, rate);
+                    this.displayRate = Math.round(cur);
+                    if (cur >= rate) clearInterval(iv);
+                }, 18);
+            }, 450);
         }
-    }
+    };
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Chart.js: completamente independiente de Alpine.
+   Usamos window 'load' para garantizar que:
+     1. El browser terminó de calcular el layout (canvas tiene px reales)
+     2. Chart.js (cargado sync en <head>) está disponible
+     3. No hay conflicto con Alpine defer
+───────────────────────────────────────────────────────────── */
+window.addEventListener('load', function () {
+    buildDonutChart();
+    buildWeeklyChart();
+});
+
+/* ── Helpers de destrucción segura ── */
+function safeDestroyChart(canvasId) {
+    try {
+        const existing = Chart.getChart(canvasId);
+        if (existing) existing.destroy();
+    } catch (e) { /* silencioso */ }
+}
+
+/* ── Donut chart: distribución de cursos ── */
+function buildDonutChart() {
+    safeDestroyChart('donutChart');
+
+    const canvas = document.getElementById('donutChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const inProgress = {{ collect($courses)->where('progress', '<', 100)->where('progress', '>', 0)->count() }};
+    const completed  = {{ $finishedCourses->count() }};
+    const notStarted = {{ collect($courses)->where('progress', 0)->count() }};
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['En progreso', 'Completados', 'Sin iniciar'],
+            datasets: [{
+                data: [inProgress, completed, notStarted],
+                backgroundColor: ['#3b82f6', '#10b981', '#e2e8f0'],
+                borderColor:     ['#fff', '#fff', '#fff'],
+                borderWidth: 3,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            cutout: '72%',
+            responsive: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (item) => ` ${item.label}: ${item.raw} curso${item.raw !== 1 ? 's' : ''}`
+                    }
+                }
+            },
+            animation: { animateRotate: true, duration: 1000, easing: 'easeInOutQuart' },
+        }
+    });
+}
+
+/* ── Weekly bar chart: actividad de los últimos 7 días ── */
+function buildWeeklyChart() {
+    safeDestroyChart('weeklyChart');
+
+    const canvas = document.getElementById('weeklyChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    @php
+        $wLabels = [];
+        $wDays   = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date      = now()->subDays($i);
+            $wLabels[] = $date->locale('es')->isoFormat('dd');
+            $wDays[]   = $recentActivity
+                ->whereIn('type', ['lesson_completed', 'document_completed'])
+                ->filter(fn($a) => $a->created_at->isSameDay($date))
+                ->count();
+        }
+    @endphp
+
+    const labels = @json($wLabels);
+    const data   = @json($wDays);
+    const maxVal = Math.max(...data, 1);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Lecciones',
+                data,
+                backgroundColor: data.map((v, i) =>
+                    i === 6
+                        ? 'rgba(59,130,246,0.95)'
+                        : (v > 0 ? 'rgba(59,130,246,0.45)' : 'rgba(226,232,240,0.8)')
+                ),
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { display: false, beginAtZero: true, max: maxVal + 1 },
+                x: {
+                    grid:   { display: false },
+                    border: { display: false },
+                    ticks:  { font: { size: 10, weight: '600', family: 'DM Sans' }, color: '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: (items) => items[0].dataIndex === 6 ? 'Hoy' : labels[items[0].dataIndex],
+                        label: (item)  => ` ${item.raw} lección${item.raw !== 1 ? 'es' : ''}`
+                    }
+                }
+            },
+            animation: { duration: 900, easing: 'easeOutQuart' },
+        }
+    });
+}
 </script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-    /* ── Base ── */
-    .progress-page * { font-family: 'DM Sans', sans-serif; }
-    .progress-page .display-font { font-family: 'Plus Jakarta Sans', sans-serif; }
-
-    /* ── Entrance animations ── */
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-    }
-    @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.92); }
-        to   { opacity: 1; transform: scale(1); }
-    }
-    @keyframes progressFill {
-        from { stroke-dashoffset: var(--full); }
-        to   { stroke-dashoffset: var(--offset); }
-    }
-    @keyframes barGrow {
-        from { height: 0; }
-        to   { height: var(--h); }
-    }
-    @keyframes countUp {
-        from { opacity: 0; transform: translateY(8px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulseRing {
-        0%,100% { opacity: 0.6; transform: scale(1); }
-        50%      { opacity: 1;   transform: scale(1.05); }
-    }
-    @keyframes shimmer {
-        0%   { background-position: -200% center; }
-        100% { background-position:  200% center; }
-    }
-
-    .anim-fadeUp { animation: fadeUp 0.55s ease both; }
-    .anim-fadeIn { animation: fadeIn 0.5s ease both; }
-    .anim-scale  { animation: scaleIn 0.5s cubic-bezier(.34,1.56,.64,1) both; }
-
-    .delay-1 { animation-delay: 0.05s; }
-    .delay-2 { animation-delay: 0.12s; }
-    .delay-3 { animation-delay: 0.19s; }
-    .delay-4 { animation-delay: 0.26s; }
-    .delay-5 { animation-delay: 0.33s; }
-    .delay-6 { animation-delay: 0.40s; }
-    .delay-7 { animation-delay: 0.47s; }
-    .delay-8 { animation-delay: 0.54s; }
-
-    /* ── Hero banner ── */
-    .hero-banner {
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #0f3460 100%);
-        border-radius: 20px;
-        overflow: hidden;
-        position: relative;
-    }
-    .hero-banner::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(ellipse 60% 80% at 80% 50%, rgba(59,130,246,0.18) 0%, transparent 70%),
-            radial-gradient(ellipse 40% 40% at 20% 80%, rgba(245,158,11,0.10) 0%, transparent 60%);
-    }
-    .hero-dots {
-        position: absolute;
-        inset: 0;
-        background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
-        background-size: 28px 28px;
-    }
-
-    /* ── Stat cards ── */
-    .stat-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #e8edf5;
-        padding: 1.25rem 1.5rem;
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-        cursor: default;
-    }
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 32px -8px rgba(15,23,42,0.12);
-    }
-    .stat-card::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 3px;
-        border-radius: 0 0 16px 16px;
-    }
-    .stat-card.blue::after   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    .stat-card.green::after  { background: linear-gradient(90deg, #10b981, #34d399); }
-    .stat-card.amber::after  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-    .stat-card.purple::after { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
-
-    .stat-icon {
-        width: 44px; height: 44px;
-        border-radius: 12px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-    }
-    .stat-icon.blue   { background: #eff6ff; color: #3b82f6; }
-    .stat-icon.green  { background: #ecfdf5; color: #10b981; }
-    .stat-icon.amber  { background: #fffbeb; color: #f59e0b; }
-    .stat-icon.purple { background: #f5f3ff; color: #8b5cf6; }
-
-    .stat-number {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 2rem;
-        font-weight: 800;
-        line-height: 1;
-        color: #0f172a;
-        animation: countUp 0.6s ease both;
-    }
-
-    /* ── SVG Progress Ring ── */
-    .progress-ring circle.track { fill: none; stroke: rgba(255,255,255,0.08); }
-    .progress-ring circle.fill  {
-        fill: none;
-        stroke-linecap: round;
-        transition: stroke-dashoffset 1.4s cubic-bezier(0.34, 1.1, 0.64, 1);
-    }
-
-    /* ── Glassmorphism chart card ── */
-    .glass-card {
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(12px);
-        border-radius: 18px;
-        border: 1px solid #e8edf5;
-        box-shadow: 0 4px 24px -6px rgba(15,23,42,0.07);
-    }
-
-    /* ── Course cards ── */
-    .course-card {
-        background: #fff;
-        border-radius: 14px;
-        border: 1px solid #e8edf5;
-        overflow: hidden;
-        transition: box-shadow 0.25s ease, transform 0.25s ease;
-    }
-    .course-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 28px -8px rgba(15,23,42,0.13);
-    }
-    .course-thumb {
-        width: 80px; height: 80px;
-        object-fit: cover;
-        border-radius: 10px;
-        flex-shrink: 0;
-    }
-
-    /* ── Progress bar ── */
-    .pbar-track {
-        height: 6px;
-        background: #f1f5f9;
-        border-radius: 999px;
-        overflow: hidden;
-    }
-    .pbar-fill {
-        height: 100%;
-        border-radius: 999px;
-        transition: width 1.2s cubic-bezier(0.34,1.1,0.64,1);
-    }
-    .pbar-blue   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    .pbar-green  { background: linear-gradient(90deg, #10b981, #34d399); }
-
-    /* ── Buttons ── */
-    .btn-primary {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: #fff; font-weight: 600; font-size: 0.75rem;
-        padding: 7px 14px; border-radius: 8px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(59,130,246,0.3);
-    }
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        box-shadow: 0 4px 12px rgba(59,130,246,0.4);
-        transform: translateY(-1px);
-        color: #fff;
-    }
-    .btn-secondary {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: #f8fafc; color: #475569; font-weight: 600; font-size: 0.75rem;
-        padding: 7px 14px; border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-    .btn-secondary:hover {
-        background: #f1f5f9; color: #334155;
-        transform: translateY(-1px);
-    }
-    .btn-emerald {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: #fff; font-weight: 600; font-size: 0.75rem;
-        padding: 7px 14px; border-radius: 8px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(16,185,129,0.3);
-    }
-    .btn-emerald:hover {
-        background: linear-gradient(135deg, #059669, #047857);
-        transform: translateY(-1px);
-        color: #fff;
-    }
-    .btn-amber {
-        display: inline-flex; align-items: center; gap: 6px;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: #fff; font-weight: 600; font-size: 0.75rem;
-        padding: 7px 14px; border-radius: 8px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(245,158,11,0.3);
-    }
-    .btn-amber:hover {
-        background: linear-gradient(135deg, #d97706, #b45309);
-        transform: translateY(-1px);
-        color: #fff;
-    }
-
-    /* ── Status badges ── */
-    .badge-pill {
-        display: inline-flex; align-items: center; gap: 4px;
-        font-size: 0.65rem; font-weight: 700;
-        padding: 3px 8px; border-radius: 999px;
-        text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    .badge-green  { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
-    .badge-amber  { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-    .badge-blue   { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-    .badge-gray   { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
-
-    /* ── Activity timeline ── */
-    .timeline-line {
-        position: absolute;
-        left: 13px; top: 8px; bottom: 0;
-        width: 1px;
-        background: linear-gradient(to bottom, #e2e8f0 80%, transparent);
-    }
-    .timeline-dot {
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        position: relative; z-index: 1;
-        font-size: 10px;
-        flex-shrink: 0;
-        ring: 2px solid #fff;
-        box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,0.1);
-    }
-
-    /* ── Section headers ── */
-    .section-header {
-        display: flex; align-items: center; justify-content: space-between;
-        margin-bottom: 1rem;
-    }
-    .section-title {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 1rem; font-weight: 700; color: #0f172a;
-        display: flex; align-items: center; gap: 8px;
-    }
-
-    /* ── Donut chart wrapper ── */
-    .donut-wrap { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
-    .donut-center {
-        position: absolute; inset: 0;
-        display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        pointer-events: none;
-    }
-
-    /* ── Weekly bar mini-chart ── */
-    .bar-chart-wrap {
-        display: flex; align-items: flex-end;
-        gap: 6px; height: 80px;
-    }
-    .bar-col {
-        display: flex; flex-direction: column;
-        align-items: center; gap: 4px;
-        flex: 1;
-    }
-    .bar-fill {
-        width: 100%; border-radius: 4px 4px 0 0;
-        background: linear-gradient(to top, #3b82f6, #60a5fa);
-        min-height: 4px;
-        animation: barGrow 0.8s cubic-bezier(0.34,1.1,0.64,1) both;
-    }
-    .bar-label {
-        font-size: 9px; color: #94a3b8; font-weight: 600;
-        text-transform: uppercase; letter-spacing: 0.04em;
-    }
-
-    /* ── Streak flame animation ── */
-    @keyframes flamePulse {
-        0%,100% { transform: scale(1) rotate(-3deg); }
-        50%      { transform: scale(1.15) rotate(3deg); }
-    }
-    .flame { display: inline-block; animation: flamePulse 1.6s ease-in-out infinite; }
-
-    /* ── Empty state ── */
-    .empty-state {
-        text-align: center; padding: 2.5rem 1rem;
-        color: #94a3b8;
-    }
-    .empty-state i { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; opacity: 0.35; }
-
-    /* ── Shimmer loader placeholder ── */
-    .shimmer {
-        background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-        background-size: 200% auto;
-        animation: shimmer 1.4s linear infinite;
-        border-radius: 6px;
-    }
-</style>
 @endsection

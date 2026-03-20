@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
-use App\Models\CourseSection;
-use App\Models\Exam;
 use App\Models\Certificate;
 use App\Models\CompletedLessons;
 use App\Models\Document;
@@ -22,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 class StudentProgressController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth', 'student', 'prevent.back']);
+        $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
     /**
      * Mostrar página principal de progreso

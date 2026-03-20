@@ -3,6 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    @hasSection('meta')
+        @yield('meta')
+    @else
+        <meta name="description" content="Plataforma líder en capacitación y certificación en Seguridad y Salud en el Trabajo (SST), Gestión de Calidad y Medio Ambiente en Perú. Estudia con {{ $enterprise->trade_name ?? 'nosotros' }}.">
+        <meta name="keywords" content="cursos SST Perú, capacitación seguridad y salud en el trabajo, certificación normas ISO, gestión de calidad, medio ambiente, prevención de riesgos, auditoría SST">
+        <meta name="author" content="{{ $enterprise->trade_name ?? 'Plataforma de Capacitación' }}">
+        <meta name="robots" content="index, follow">
+
+        <meta property="og:title" content="{{ $enterprise->trade_name ?? 'Capacitación Especializada en SST y Calidad' }}">
+        <meta property="og:description" content="Impulsa tu carrera profesional con nuestros cursos y diplomados en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente.">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        @if(isset($enterprise->logo_path))
+            <meta property="og:image" content="{{ asset($enterprise->logo_path) }}">
+        @endif
+    @endif
+
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $enterprise->favicon_path }}">
     <title>@yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">

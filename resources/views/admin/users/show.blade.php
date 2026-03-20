@@ -312,7 +312,7 @@
                             @endforeach
                         </div>
                     @else
-                        @include('partials.empty', ['icon' => 'fa-book-open', 'message' => 'El estudiante no tiene inscripciones a cursos'])
+                        @include('admin.users.partials.empty', ['icon' => 'fa-book-open', 'message' => 'El estudiante no tiene inscripciones a cursos'])
                     @endif
                 </div>
             </div>
@@ -870,182 +870,182 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function userProfile() {
-    return {
-        activeTab: 'info',
-        showPasswordModal: false,
-        newPassword: '',
-        confirmPassword: '',
-        showPass: false,
-        showPassConfirm: false,
-        savingPassword: false,
-        passwordSuccess: false,
-        passwordError: '',
-        togglingStatus: false,
-        chartsInitialized: false,
+    function userProfile() {
+        return {
+            activeTab: 'info',
+            showPasswordModal: false,
+            newPassword: '',
+            confirmPassword: '',
+            showPass: false,
+            showPassConfirm: false,
+            savingPassword: false,
+            passwordSuccess: false,
+            passwordError: '',
+            togglingStatus: false,
+            chartsInitialized: false,
 
-        openPasswordModal() {
-            this.passwordSuccess = false;
-            this.passwordError = '';
-            this.newPassword = '';
-            this.confirmPassword = '';
-            this.showPasswordModal = true;
-        },
+            openPasswordModal() {
+                this.passwordSuccess = false;
+                this.passwordError = '';
+                this.newPassword = '';
+                this.confirmPassword = '';
+                this.showPasswordModal = true;
+            },
 
-        closePasswordModal() {
-            this.showPasswordModal = false;
-        },
+            closePasswordModal() {
+                this.showPasswordModal = false;
+            },
 
-        async updatePassword(userId) {
-            if (this.newPassword !== this.confirmPassword || this.newPassword.length < 8) return;
-            this.savingPassword = true;
-            this.passwordSuccess = false;
-            this.passwordError = '';
-            try {
-                const response = await axios.put(`/admin/users/${userId}/password`, {
-                    password: this.newPassword,
-                    password_confirmation: this.confirmPassword
-                }, {
-                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-                });
-                if (response.data.success) {
-                    this.passwordSuccess = true;
-                    this.newPassword = '';
-                    this.confirmPassword = '';
-                    setTimeout(() => { this.closePasswordModal(); }, 1500);
-                }
-            } catch (e) {
-                this.passwordError = e.response?.data?.message || 'Error al actualizar la contraseña.';
-            } finally {
-                this.savingPassword = false;
-            }
-        },
-
-        async toggleStatus(userId, currentStatus) {
-            if (this.togglingStatus) return;
-            this.togglingStatus = true;
-            try {
-                const response = await axios.patch(`/admin/users/${userId}/toggle-status`, {}, {
-                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-                });
-                if (response.data.success) {
-                    // Recargar para reflejar el nuevo estado
-                    window.location.reload();
-                }
-            } catch (e) {
-                alert('Error al actualizar el estado del usuario.');
-            } finally {
-                this.togglingStatus = false;
-            }
-        },
-
-        initCharts() {
-            if (this.chartsInitialized) return;
-            this.chartsInitialized = true;
-
-            const colors = {
-                primary: '#3B82F6',
-                secondary: '#10B981',
-                accent: '#8B5CF6',
-                warning: '#F59E0B',
-                danger: '#EF4444',
-                gray: '#9CA3AF'
-            };
-
-            const defaultOptions = (yStepSize = 1) => ({
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: yStepSize } } }
-            });
-
-            // Sesiones por día
-            const sessionsCtx = document.getElementById('sessionsChart')?.getContext('2d');
-            if (sessionsCtx) {
-                new Chart(sessionsCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: @json($trackingData['sessions']['labels'] ?? []),
-                        datasets: [{
-                            label: 'Sesiones',
-                            data: @json($trackingData['sessions']['data'] ?? []),
-                            backgroundColor: 'rgba(59,130,246,0.7)',
-                            borderColor: colors.primary,
-                            borderWidth: 1,
-                            borderRadius: 6,
-                        }]
-                    },
-                    options: defaultOptions()
-                });
-            }
-
-            // Horas activas
-            const hoursCtx = document.getElementById('activeHoursChart')?.getContext('2d');
-            if (hoursCtx) {
-                new Chart(hoursCtx, {
-                    type: 'line',
-                    data: {
-                        labels: @json($trackingData['active_hours']['labels'] ?? []),
-                        datasets: [{
-                            label: 'Actividad',
-                            data: @json($trackingData['active_hours']['data'] ?? []),
-                            backgroundColor: 'rgba(59,130,246,0.1)',
-                            borderColor: colors.primary,
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true,
-                            pointBackgroundColor: colors.primary,
-                            pointRadius: 4,
-                        }]
-                    },
-                    options: defaultOptions()
-                });
-            }
-
-            // Tipos de actividad
-            const activityCtx = document.getElementById('activityTypeChart')?.getContext('2d');
-            if (activityCtx) {
-                new Chart(activityCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: @json($trackingData['activity_by_type']['labels'] ?? []),
-                        datasets: [{
-                            data: @json($trackingData['activity_by_type']['data'] ?? []),
-                            backgroundColor: [colors.primary, colors.secondary, colors.accent, colors.warning, colors.danger],
-                            borderWidth: 0,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        cutout: '65%',
-                        plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 16 } } }
+            async updatePassword(userId) {
+                if (this.newPassword !== this.confirmPassword || this.newPassword.length < 8) return;
+                this.savingPassword = true;
+                this.passwordSuccess = false;
+                this.passwordError = '';
+                try {
+                    const response = await axios.put(`/admin/users/${userId}/password`, {
+                        password: this.newPassword,
+                        password_confirmation: this.confirmPassword
+                    }, {
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                    if (response.data.success) {
+                        this.passwordSuccess = true;
+                        this.newPassword = '';
+                        this.confirmPassword = '';
+                        setTimeout(() => { this.closePasswordModal(); }, 1500);
                     }
-                });
-            }
+                } catch (e) {
+                    this.passwordError = e.response?.data?.message || 'Error al actualizar la contraseña.';
+                } finally {
+                    this.savingPassword = false;
+                }
+            },
 
-            // Dispositivos
-            const devicesCtx = document.getElementById('devicesChart')?.getContext('2d');
-            if (devicesCtx) {
-                new Chart(devicesCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: @json($trackingData['devices_used']['labels'] ?? []),
-                        datasets: [{
-                            data: @json($trackingData['devices_used']['data'] ?? []),
-                            backgroundColor: [colors.primary, colors.secondary, colors.accent, colors.gray],
-                            borderWidth: 0,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 16 } } }
+            async toggleStatus(userId, currentStatus) {
+                if (this.togglingStatus) return;
+                this.togglingStatus = true;
+                try {
+                    const response = await axios.patch(`/admin/users/${userId}/toggle-status`, {}, {
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                    if (response.data.success) {
+                        // Recargar para reflejar el nuevo estado
+                        window.location.reload();
                     }
+                } catch (e) {
+                    alert('Error al actualizar el estado del usuario.');
+                } finally {
+                    this.togglingStatus = false;
+                }
+            },
+
+            initCharts() {
+                if (this.chartsInitialized) return;
+                this.chartsInitialized = true;
+
+                const colors = {
+                    primary: '#3B82F6',
+                    secondary: '#10B981',
+                    accent: '#8B5CF6',
+                    warning: '#F59E0B',
+                    danger: '#EF4444',
+                    gray: '#9CA3AF'
+                };
+
+                const defaultOptions = (yStepSize = 1) => ({
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: yStepSize } } }
                 });
+
+                // Sesiones por día
+                const sessionsCtx = document.getElementById('sessionsChart')?.getContext('2d');
+                if (sessionsCtx) {
+                    new Chart(sessionsCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: @json($trackingData['sessions']['labels'] ?? []),
+                            datasets: [{
+                                label: 'Sesiones',
+                                data: @json($trackingData['sessions']['data'] ?? []),
+                                backgroundColor: 'rgba(59,130,246,0.7)',
+                                borderColor: colors.primary,
+                                borderWidth: 1,
+                                borderRadius: 6,
+                            }]
+                        },
+                        options: defaultOptions()
+                    });
+                }
+
+                // Horas activas
+                const hoursCtx = document.getElementById('activeHoursChart')?.getContext('2d');
+                if (hoursCtx) {
+                    new Chart(hoursCtx, {
+                        type: 'line',
+                        data: {
+                            labels: @json($trackingData['active_hours']['labels'] ?? []),
+                            datasets: [{
+                                label: 'Actividad',
+                                data: @json($trackingData['active_hours']['data'] ?? []),
+                                backgroundColor: 'rgba(59,130,246,0.1)',
+                                borderColor: colors.primary,
+                                borderWidth: 2,
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: colors.primary,
+                                pointRadius: 4,
+                            }]
+                        },
+                        options: defaultOptions()
+                    });
+                }
+
+                // Tipos de actividad
+                const activityCtx = document.getElementById('activityTypeChart')?.getContext('2d');
+                if (activityCtx) {
+                    new Chart(activityCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: @json($trackingData['activity_by_type']['labels'] ?? []),
+                            datasets: [{
+                                data: @json($trackingData['activity_by_type']['data'] ?? []),
+                                backgroundColor: [colors.primary, colors.secondary, colors.accent, colors.warning, colors.danger],
+                                borderWidth: 0,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '65%',
+                            plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 16 } } }
+                        }
+                    });
+                }
+
+                // Dispositivos
+                const devicesCtx = document.getElementById('devicesChart')?.getContext('2d');
+                if (devicesCtx) {
+                    new Chart(devicesCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: @json($trackingData['devices_used']['labels'] ?? []),
+                            datasets: [{
+                                data: @json($trackingData['devices_used']['data'] ?? []),
+                                backgroundColor: [colors.primary, colors.secondary, colors.accent, colors.gray],
+                                borderWidth: 0,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 16 } } }
+                        }
+                    });
+                }
             }
         }
     }
-}
 </script>
 @endsection

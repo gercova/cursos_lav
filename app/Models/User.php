@@ -130,7 +130,7 @@ class User extends Authenticatable {
     }
 
     public function promotedSales(): HasMany {
-        return $this->hasMany(CourseSale::class, 'user_id');
+        return $this->hasMany(CourseSale::class, 'user_id', 'id');
     }
 
     public function companyPolicies(): HasOne {
@@ -141,7 +141,7 @@ class User extends Authenticatable {
      * Relación con cursos comprados usando códigos de otros usuarios
      */
     public function purchasesWithCode(): HasMany {
-        return $this->hasMany(CourseSale::class, 'buyer_id');
+        return $this->hasMany(CourseSale::class, 'buyer_id', 'id');
     }
 
     /**

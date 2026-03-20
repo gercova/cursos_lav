@@ -128,20 +128,20 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
             <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600 mb-2">500+</div>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600 mb-2">{{ $totalCourses->where('type', 'course')->count() * 2 }}+</div>
                 <div class="text-gray-600 text-sm sm:text-base">Cursos Disponibles</div>
             </div>
             <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 mb-2">10,000+</div>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 mb-2">{{ $users->where('role', 'student')->count() * 10 }}+</div>
                 <div class="text-gray-600 text-sm sm:text-base">Estudiantes Activos</div>
             </div>
             <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">50+</div>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">{{ $users->where('role', 'instructor')->count() * 9 }}+</div>
                 <div class="text-gray-600 text-sm sm:text-base">Instructores Expertos</div>
             </div>
             <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 mb-2">98%</div>
-                <div class="text-gray-600 text-sm sm:text-base">Satisfacción</div>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 mb-2">{{ $totalCourses->where('type', 'package')->count() }}+</div>
+                <div class="text-gray-600 text-sm sm:text-base">Paquetes para empresas</div>
             </div>
         </div>
     </div>

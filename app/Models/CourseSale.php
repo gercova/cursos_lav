@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class CourseSale extends Model
-{
+class CourseSale extends Model {
     use HasFactory;
     protected $table        = 'course_sales';
     protected $primaryKey   = 'id';

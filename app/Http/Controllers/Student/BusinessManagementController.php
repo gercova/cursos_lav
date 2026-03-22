@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class BusinessManagementController extends Controller {
 
@@ -101,52 +102,94 @@ class BusinessManagementController extends Controller {
         return view('student.company.create-staff', compact('hasAnyPackage', 'user', 'codeCountries'));
     }
 
-    public function storeStaff(StaffValidate $request): JsonResponse {
+    // public function storeStaff(StaffValidate $request): JsonResponse {
+    //     $countUser  = User::where('parent_id', auth()->id())->count();
+    //     $user       = auth()->user();
+    //     $limitUser  = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
+
+    //     if($countUser == (int) $limitUser->seats_max + 1){
+    //         return response()->json([
+    //             'status' 	=> false,
+    //             'messages' 	=> 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador',
+    //         ]);
+    //     } else {
+    //         $validated  = $request->validated();
+    //         $id         = $request->input('user_id');
+    //         $data       = array_merge($validated, [
+    //             'parent_id'     => auth()->id(),
+    //             'company_code'  => auth()->user()->company_code,
+    //             'expires_at'    => now()->addYear(), 
+    //         ]);
+            
+    //         DB::beginTransaction();
+    //         try {
+    //             $result = User::updateOrCreate(['id' => $id], $data);
+
+    //             if ($request->has('role_id')) {
+    //                 // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
+    //                 DB::table('model_has_roles')->where('model_id', $result->id)->delete();
+    //                 // Asignar el nuevo rol
+    //                 DB::table('model_has_roles')->insert([
+    //                     'role_id'       => $request->input('role_id'),
+    //                     'model_type'    => 'App\Models\User',
+    //                     'model_id'      => $result->id
+    //                 ]);
+    //             }
+
+    //             DB::commit();
+    //             return response()->json([
+    //                 'status' 	=> true,
+    //                 'messages' 	=> empty($id) ? 'Datos del usuario actualizado exitosamente' : 'Se ha añadido un nuevo usuario',
+    //             ]);
+    //         } catch (\Exception $e) {
+    //             DB::rollBack();
+    //             return response()->json([
+    //                 'status' 	=> false,
+    //                 'messages' 	=> $e->getMessage(),
+    //             ], 500);
+    //         }
+    //     }
+    // }
+    public function storeStaff(StaffValidate $request) {
         $countUser  = User::where('parent_id', auth()->id())->count();
         $user       = auth()->user();
         $limitUser  = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
 
-        if($countUser == (int) $limitUser->seats_max + 1){
-            return response()->json([
-                'status' 	=> false,
-                'messages' 	=> 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador',
-            ]);
-        } else {
-            $validated  = $request->validated();
-            $id         = $request->input('user_id');
-            $data       = array_merge($validated, [
-                'parent_id'     => auth()->id(),
-                'company_code'  => auth()->user()->company_code,
-                'expires_at'    => now()->addYear(), 
-            ]);
-            
-            DB::beginTransaction();
-            try {
-                $result = User::updateOrCreate(['id' => $id], $data);
+        if ($countUser == (int) $limitUser->seats_max + 1) {
+            return redirect()->back()->with('error', 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador');
+        }
 
-                if ($request->has('role_id')) {
-                    // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
-                    DB::table('model_has_roles')->where('model_id', $result->id)->delete();
-                    // Asignar el nuevo rol
-                    DB::table('model_has_roles')->insert([
-                        'role_id'       => $request->input('role_id'),
-                        'model_type'    => 'App\Models\User',
-                        'model_id'      => $result->id
-                    ]);
-                }
+        $validated = $request->validated();
+        $id        = $request->input('user_id');
+        $data      = array_merge($validated, [
+            'password'      => Hash::make('P4$$w0rd#.'),
+            'parent_id'     => auth()->id(),
+            'company_code'  => auth()->user()->company_code,
+            'expires_at'    => now()->addYear(),
 
-                DB::commit();
-                return response()->json([
-                    'status' 	=> true,
-                    'messages' 	=> empty($id) ? 'Datos del usuario actualizado exitosamente' : 'Se ha añadido un nuevo usuario',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $result = User::updateOrCreate(['id' => $id], $data);
+
+            if ($request->has('role_id')) {
+                DB::table('model_has_roles')->where('model_id', $result->id)->delete();
+                DB::table('model_has_roles')->insert([
+                    'role_id'    => $request->input('role_id'),
+                    'model_type' => 'App\Models\User',
+                    'model_id'   => $result->id,
                 ]);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return response()->json([
-                    'status' 	=> false,
-                    'messages' 	=> $e->getMessage(),
-                ], 500);
             }
+
+            DB::commit();
+
+            $message = empty($id) ? 'Se ha añadido un nuevo usuario' : 'Datos del usuario actualizados exitosamente';
+            return redirect()->route('company.list')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

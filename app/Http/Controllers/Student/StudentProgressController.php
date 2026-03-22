@@ -22,69 +22,83 @@ class StudentProgressController extends Controller {
     public function __construct() {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
+
     /**
      * Mostrar página principal de progreso
      */
     public function index(Request $request): View {
         $user = Auth::user();
-
-        // Obtener estadísticas generales
+ 
+        // Estadísticas generales
         $stats = $this->getProgressStats($user);
-
-        // Obtener TODOS los cursos con progreso (activos y completados)
+ 
+        // ─── CORRECCIÓN 1 ───────────────────────────────────────────────────
+        // Se añade 'instructor' al with() de course para evitar N+1 y la
+        // posible excepción "Call to a member function names() on null" cuando
+        // el curso no tiene instructor asignado.
+        // ────────────────────────────────────────────────────────────────────
         $courses = $user->enrollments()
-            ->with(['course' => function($query) {
-                // CORRECCIÓN 1: Cambiamos 'exam' por 'exams'
-                $query->withCount(['lessons', 'documents'])->with('exams');
+            ->with(['course' => function ($query) {
+                $query->withCount(['lessons', 'documents'])->with(['exams', 'instructor']); // <-- 'instructor' AÑADIDO
             }])
-            ->whereHas('course', function($query) {
+            ->whereHas('course', function ($query) {
                 $query->where('is_active', true);
             })
             ->get()
-            ->map(function($enrollment) use ($user) {
-                $course             = $enrollment->course;
-                $totalLessons       = $course->lessons_count + $course->documents_count;
-                $completedLessons   = $enrollment->completedLessons()->count();
-                $progress           = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
-
-                // Determinar la última lección completada o la primera del curso
+            ->map(function ($enrollment) use ($user) {
+                $course = $enrollment->course;
+ 
+                // ─── CORRECCIÓN 2 ─────────────────────────────────────────
+                // Se suma lessons_count + documents_count (ambos cargados por
+                // withCount). Si alguno es null, ?? 0 lo neutraliza.
+                // ──────────────────────────────────────────────────────────
+                $totalLessons     = ($course->lessons_count ?? 0) + ($course->documents_count ?? 0);
+                $completedLessons = $enrollment->completedLessons()->count();
+                $progress         = $totalLessons > 0
+                    ? round(($completedLessons / $totalLessons) * 100)
+                    : 0;
+ 
+                // Última lección completada o primera del curso
                 $lastCompleted = CompletedLessons::where('enrollment_id', $enrollment->id)
-                    ->latest('completed_at')->first();
-                
+                    ->latest('completed_at')
+                    ->first();
+ 
                 $lastLessonId = null;
                 if ($lastCompleted) {
                     $lastLessonId = $lastCompleted->lesson_id;
                 } else {
-                    $firstLesson = Lesson::where('course_id', $course->id)->orderBy('order')->first();
-                    $lastLessonId = $firstLesson ? $firstLesson->id : null;
+                    $firstLesson  = Lesson::where('course_id', $course->id)->orderBy('order')->first();
+                    $lastLessonId = $firstLesson?->id;
                 }
-
-                // CORRECCIÓN 2: Tomar el primer examen de la colección 'exams'
-                $exam = $course->exams->first();
-                $hasExam = $exam ? true : false;
-                $examId = $exam ? $exam->id : null;
-                
+ 
+                $exam        = $course->exams->first();
+                $hasExam     = (bool) $exam;
+                $examId      = $exam?->id;
+ 
                 // Verificar si aprobó el examen
                 $hasPassedExam = false;
                 if ($hasExam) {
                     $hasPassedExam = \App\Models\ExamAttempt::where('user_id', $user->id)
                         ->where('exam_id', $examId)
-                        // CORRECCIÓN 3: Cambiamos 'is_passed' a 'passed' según tu modelo
                         ->where('passed', true)
                         ->exists();
                 }
-
-                // Verificar si ya tiene certificado
+ 
+                // Certificado
                 $certificate = Certificate::where('user_id', $user->id)
                     ->where('course_id', $course->id)
                     ->first();
-
+ 
                 return [
                     'id'                => $course->id,
                     'title'             => $course->title,
                     'slug'              => $course->slug,
                     'image_url'         => $course->image_url,
-                    'instructor'        => $course->instructor->names ?? 'Instructor',
+                    // ─── CORRECCIÓN 3 ─────────────────────────────────────
+                    // Operador null-safe ?-> evita fatal error si instructor
+                    // es null (curso sin instructor_id o instructor eliminado).
+                    // ──────────────────────────────────────────────────────
+                    'instructor'        => $course->instructor?->names ?? 'Instructor',
                     'progress'          => $progress,
                     'completed_lessons' => $completedLessons,
                     'total_lessons'     => $totalLessons,
@@ -92,61 +106,80 @@ class StudentProgressController extends Controller {
                     'has_exam'          => $hasExam,
                     'exam_id'           => $examId,
                     'has_passed_exam'   => $hasPassedExam,
-                    'certificate_id'    => $certificate ? $certificate->id : null,
+                    'certificate_id'    => $certificate?->id,
                     'last_lesson_id'    => $lastLessonId,
                 ];
             });
-
-        // Actividad reciente
+ 
+        // Actividad reciente (para el timeline lateral)
         $recentActivity = UserActivity::where('user_id', $user->id)
-            ->where('type', 'lesson_completed')
+            ->whereIn('type', [
+                'lesson_completed',
+                'document_completed',
+                'exam_completed',
+                'exam_started',
+                'certificate_earned',
+                'course_enrolled',
+                'course_accessed',
+            ])
             ->with('course')
             ->latest()
             ->limit(10)
             ->get();
-
-        // Filtrar completados para la sección lateral (y ordenarlos por más reciente)
-        $completedCourses = $courses->where('progress', 100)->sortByDesc('last_accessed')->values();
-
-        return view('student.progress.index', compact('stats', 'courses', 'completedCourses', 'recentActivity'));
+ 
+        // Actividad de los últimos 7 días SIN LÍMITE (para el gráfico semanal)
+        $weeklyActivity = UserActivity::where('user_id', $user->id)
+            ->whereIn('type', ['lesson_completed', 'document_completed'])
+            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
+            ->get();
+ 
+        // Cursos finalizados ordenados por más reciente
+        $completedCourses = $courses
+            ->where('progress', 100)
+            ->sortByDesc('last_accessed')
+            ->values();
+ 
+        return view('student.progress.index', compact(
+            'stats',
+            'courses',
+            'completedCourses',
+            'recentActivity',
+            'weeklyActivity'
+        ));
     }
 
     /**
      * Obtener estadísticas de progreso
      */
-    private function getProgressStats($user) {
+    private function getProgressStats($user): array {
         $enrollments = $user->enrollments()
             ->with('course')
-            ->whereHas('course', function($query) {
+            ->whereHas('course', function ($query) {
                 $query->where('is_active', true);
             })
             ->where('status', 'active')
             ->get();
-
-        $totalCourses       = $enrollments->count();
-        $completedCourses   = $enrollments->filter(function($enrollment) {
+ 
+        $totalCourses = $enrollments->count();
+ 
+        $completedCourses = $enrollments->filter(function ($enrollment) {
             $course = $enrollment->course;
-            
-            if (!$course) {
-                return false;
-            }
-
-            $totalLessons       = $course->lessons()->count() + $course->documents()->count();
-            $completedLessons   = $enrollment->completedLessons()->count();
-            
+            if (!$course) return false;
+ 
+            $totalLessons     = $course->lessons()->count() + $course->documents()->count();
+            $completedLessons = $enrollment->completedLessons()->count();
+ 
             return $totalLessons > 0 && ($completedLessons / $totalLessons) >= 1;
         })->count();
-
-        // SOLUCIÓN: Sumamos los minutos directamente de las lecciones completadas del usuario
-        $totalMinutes = CompletedLessons::whereHas('enrollment', function($query) use ($user) {
+ 
+        $totalMinutes = CompletedLessons::whereHas('enrollment', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })->sum('time_spent_minutes');
-
+ 
         $totalStudyHours = $totalMinutes > 0 ? ($totalMinutes / 60) : 0;
-
-        // Días consecutivos estudiando
+ 
         $streakDays = $this->calculateStreakDays($user);
-
+ 
         return [
             'total_courses'     => $totalCourses,
             'completed_courses' => $completedCourses,
@@ -160,30 +193,22 @@ class StudentProgressController extends Controller {
     /**
      * Calcular días consecutivos de estudio
      */
-    private function calculateStreakDays($user) {
-        // SOLUCIÓN: Cambiamos 'action_type' por 'type'
+    private function calculateStreakDays($user): int {
         $activities = UserActivity::where('user_id', $user->id)
-            ->where('type', UserActivity::TYPE_LESSON_COMPLETED) // <-- ESTA ES LA LÍNEA CORREGIDA
+            ->where('type', 'lesson_completed')
             ->select(DB::raw('DATE(created_at) as date'))
             ->distinct()
             ->orderBy('date', 'desc')
             ->get()
             ->pluck('date')
-            ->map(function($date) {
-                return Carbon::parse($date);
-            });
-
-        $streak = 0;
-        $today = Carbon::today();
+            ->map(fn ($date) => Carbon::parse($date));
+ 
+        $streak    = 0;
+        $today     = Carbon::today();
         $yesterday = Carbon::yesterday();
-
-        // Verificar si estudió hoy
-        if ($activities->contains(function($date) use ($today) {
-            return $date->isSameDay($today);
-        })) {
-            $streak = 1;
-
-            // Contar días consecutivos hacia atrás
+ 
+        if ($activities->contains(fn ($date) => $date->isSameDay($today))) {
+            $streak      = 1;
             $currentDate = $yesterday;
             foreach ($activities as $activityDate) {
                 if ($activityDate->isSameDay($currentDate)) {
@@ -193,14 +218,8 @@ class StudentProgressController extends Controller {
                     break;
                 }
             }
-        }
-        // Verificar si estudió ayer (para mantener racha)
-        elseif ($activities->contains(function($date) use ($yesterday) {
-            return $date->isSameDay($yesterday);
-        })) {
-            $streak = 1;
-
-            // Contar días consecutivos hacia atrás
+        } elseif ($activities->contains(fn ($date) => $date->isSameDay($yesterday))) {
+            $streak      = 1;
             $currentDate = $yesterday->subDay();
             foreach ($activities as $activityDate) {
                 if ($activityDate->isSameDay($currentDate)) {
@@ -211,7 +230,7 @@ class StudentProgressController extends Controller {
                 }
             }
         }
-
+ 
         return $streak;
     }
 
@@ -312,7 +331,7 @@ class StudentProgressController extends Controller {
                 'certificate_id'    => $certificate->id,
                 'issue_date'        => $certificate->issue_date,
                 'expiration_date'   => $certificate->expiration_date,
-                'download_url'      => route('certificates.download', $certificate->id),
+                'download_url'      => route('student.certificates.download-exact', $certificate->id),
             ];
         }
 
@@ -368,12 +387,12 @@ class StudentProgressController extends Controller {
                 'progress_percentage'   => $this->calculateCourseProgress($enrollment, $course),
             ]);
 
-            // Registrar actividad
+            // Registrar actividad (CORRECCIÓN: type y data)
             UserActivity::create([
                 'user_id'       => $user->id,
                 'course_id'     => $course->id,
-                'action_type'   => 'lesson_completed',
-                'details'       => json_encode([
+                'type'          => 'lesson_completed',
+                'data'          => json_encode([       
                     'lesson_id'     => $lessonId,
                     'lesson_title'  => $lesson->title,
                     'course_title'  => $course->title,
@@ -399,8 +418,6 @@ class StudentProgressController extends Controller {
                 // Si el curso tiene examen, enviar notificación de examen pendiente
                 if ($course->exam) {
                     NotificationService::sendExamPendingNotification($user, $course);
-
-                    // Actualizar estado del examen en la inscripción
                     $enrollment->update(['exam_status' => 'pending']);
                 }
             }
@@ -450,12 +467,12 @@ class StudentProgressController extends Controller {
             'last_accessed_at'      => now(),
         ]);
 
-        // Registrar actividad
+        // Registrar actividad (CORRECCIÓN: type y data)
         UserActivity::create([
             'user_id'       => $user->id,
             'course_id'     => $course->id,
-            'action_type'   => 'document_completed',
-            'details'       => json_encode([
+            'type'          => 'document_completed', 
+            'data'          => json_encode([         
                 'document_id'       => $documentId,
                 'document_title'    => $document->title,
                 'course_title'      => $course->title,
@@ -553,15 +570,15 @@ class StudentProgressController extends Controller {
         $activities = UserActivity::where('user_id', $user->id)
             ->with('course')
             ->latest()
-            ->limit($request->input('limit', 20))
+            ->limit(10)
             ->get()
             ->map(function($activity) {
-                // $details = json_decode($activity->details, true);
-                $details = $activity->data;
+                // CORRECCIÓN: Compatibilidad si es data o details por si acaso
+                $rawData = $activity->data ?? $activity->details ?? '{}';
+                $details = json_decode($rawData, true);
 
                 return [
                     'id'            => $activity->id,
-                    // 'type'          => $activity->action_type,
                     'type'          => $activity->type,
                     'description'   => $this->getActivityDescription($activity),
                     'course'    => $activity->course ? [
@@ -572,7 +589,6 @@ class StudentProgressController extends Controller {
                     'time'      => $activity->created_at->diffForHumans(),
                     'date'      => $activity->created_at->format('d/m/Y H:i'),
                     'details'   => $details,
-                    // 'duration'  => $activity->duration_minutes,
                 ];
             });
 
@@ -587,9 +603,12 @@ class StudentProgressController extends Controller {
      * Generar descripción de actividad
      */
     private function getActivityDescription($activity) {
-        $details = json_decode($activity->details, true);
+        // CORRECCIÓN: Usar data en vez de details, y prever si está en null
+        $rawData = $activity->data ?? $activity->details ?? '{}';
+        $details = json_decode($rawData, true);
 
-        switch ($activity->action_type) {
+        // CORRECCIÓN: Usar type en vez de action_type
+        switch ($activity->type) {
             case 'lesson_completed':
                 return "Completaste la lección: {$details['lesson_title']}";
             case 'document_completed':
@@ -613,7 +632,7 @@ class StudentProgressController extends Controller {
 
         // Progreso por día (últimos 30 días)
         $dailyProgress = UserActivity::where('user_id', $user->id)
-            ->where('action_type', 'lesson_completed')
+            ->where('type', 'lesson_completed') // CORRECCIÓN: Antes action_type
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as lessons_completed'),
@@ -819,9 +838,6 @@ class StudentProgressController extends Controller {
                 'progress'          => $enrollment->progress_percentage,
             ];
 
-            // TODO: Generar PDF específico del curso
-            // return PDF::loadView('student.progress.pdf.course', $data)->download();
-
         } else {
             // Exportar progreso general
             $stats      = $this->getProgressStats($user);
@@ -833,9 +849,6 @@ class StudentProgressController extends Controller {
                 'courses'       => $courses,
                 'export_date'   => now()->format('d/m/Y H:i'),
             ];
-
-            // TODO: Generar PDF general
-            // return PDF::loadView('student.progress.pdf.overview', $data)->download();
         }
 
         return response()->json([

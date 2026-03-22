@@ -402,7 +402,6 @@
             background: #94a3b8;
         }
     </style>
-    @yield('styles')
 </head>
 <body>
     <div class="app-layout" x-data="dashboardLayout()" x-init="init()">

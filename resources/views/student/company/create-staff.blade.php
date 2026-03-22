@@ -24,7 +24,7 @@
 
     <!-- Formulario -->
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-        <form action="{{ route('admin.users.store') }}" method="POST" id="userForm" enctype="multipart/form-data">
+        <form action="{{ route('company.create') }}" method="POST" id="userForm" enctype="multipart/form-data">
             @csrf
             <div class="p-4 sm:p-6 lg:p-8">
                 <!-- Información personal -->

@@ -196,59 +196,162 @@ class BusinessManagementController extends Controller {
     /**
      * Vista para matricular usuarios con código
      */
+    // public function enrollUsers(): View {
+    //     $enterprise    = Enterprise::first();
+    //     $hasAnyPackage = User::find(auth()->id())
+    //         ->studentCourses()
+    //         ->where('courses.type', 'package')
+    //         ->exists();
+    
+    //     if ($hasAnyPackage) {
+    
+    //         // Colaboradores activos de la empresa
+    //         $collaborators = User::where('company_code', auth()->user()->company_code)
+    //             ->where('is_active', true)
+    //             ->orderBy('names')
+    //             ->get();
+    
+    //         $totalCourses = Course::where('is_active', true)->get();
+    
+    //         // 1. Mejor paquete comprado por el usuario (el de mayor plan)
+    //         $bestPackageCourse = User::find(auth()->id())
+    //             ->studentCourses()
+    //             ->where('courses.type', 'package')
+    //             ->orderByDesc('courses.plan_type_id')
+    //             ->first();
+    
+    //         // 2. Matrícula exacta de ese paquete
+    //         $package = $bestPackageCourse
+    //             ? Enrollment::where('user_id', Auth::id())
+    //                 ->where('course_id', $bestPackageCourse->id)
+    //                 ->with('package')
+    //                 ->first()
+    //             : null;
+    
+    //         $planType = PlanType::get();
+    
+    //         // FIX BUG 1: inicializar siempre $courses como colección vacía
+    //         $courses = collect();
+    
+    //         // FIX BUG 4: verificar que $package y su relación existan antes de usarlos
+    //         if ($package && $package->package) {
+    //             $planTypeId  = $package->package->plan_type_id;
+    //             $courseLimit = $package->package->course_limit;
+    
+    //             if ($planTypeId == 1 && $courseLimit > 0) {
+    //                 // Plan Básico: el usuario eligió sus propios cursos
+    //                 $courses = UserCoursePackage::with('course')
+    //                     ->where('user_id', auth()->id())
+    //                     ->get();
+    
+    //             } elseif ($planTypeId != 1 && $courseLimit == 0) {
+    //                 // Plan superior: los cursos vienen asignados al paquete
+    //                 // FIX BUG 3: usar $package->course_id (ID del paquete/curso),
+    //                 //            NO $package->id (que es el ID del Enrollment)
+    //                 $courses = PackageCourse::with('course')
+    //                     ->where('package_id', $package->course_id)
+    //                     ->get();
+    
+    //             } else {
+    //                 // FIX BUG 2: era "$course" (typo), debe ser "$courses"
+    //                 $courses = Course::where('is_active', true)->get();
+    //             }
+    //         }
+    
+    //         return view('student.company.enroll-users', compact(
+    //             'collaborators',
+    //             'totalCourses',
+    //             'package',
+    //             'planType',
+    //             'courses'
+    //         ));
+    
+    //     } else {
+    //         return view('student.company.void', compact('enterprise'));
+    //     }
+    // }
     public function enrollUsers(): View {
-        $enterprise     = Enterprise::first();
-        $hasAnyPackage  = User::find(auth()->id())->studentCourses()->where('courses.type', 'package')->exists();
-
-        if($hasAnyPackage){
-            // Obtener todos los colaboradores de la empresa
+        $enterprise    = Enterprise::first();
+        $hasAnyPackage = User::find(auth()->id())
+            ->studentCourses()
+            ->where('courses.type', 'package')
+            ->exists();
+    
+        if ($hasAnyPackage) {
+    
+            // Colaboradores activos de la empresa
             $collaborators = User::where('company_code', auth()->user()->company_code)
                 ->where('is_active', true)
-                // ->where('id', '!=', Auth::id()) // Evita listar para matricular al usuario padres de la cuenta también
                 ->orderBy('names')
                 ->get();
-            
-            // $enrolledUsers = Enrollment::with('users')->get();
-
-            $totalCourses   = Course::where('is_active', true)->get();
-
-            // Verifica que el usuario padre está matriculado estrictamente en un paquete
-            // $package = Enrollment::where('user_id', Auth::id())
-            //     ->whereHas('package') 
-            //     ->with('package')
-            //     ->first();
-
-            // 1. Buscamos el mejor curso tipo paquete del usuario
+    
+            $totalCourses = Course::where('is_active', true)->get();
+    
+            // 1. Mejor paquete comprado (el de mayor plan_type_id)
             $bestPackageCourse = User::find(auth()->id())
                 ->studentCourses()
                 ->where('courses.type', 'package')
                 ->orderByDesc('courses.plan_type_id')
                 ->first();
-
-            // 2. Traemos la matrícula (Enrollment) exacta de ese mejor paquete
-            $package = $bestPackageCourse ? Enrollment::where('user_id', Auth::id())
-                ->where('course_id', $bestPackageCourse->id)
-                ->with('package')
-                ->first() : null;
-
-            $enrolledPackage = User::find(auth()->id())
-                ->studentCourses()
-                ->where('courses.type', 'package')
-                ->exists();
-
+    
+            // 2. Matrícula exacta de ese paquete
+            $package = $bestPackageCourse
+                ? Enrollment::where('user_id', Auth::id())
+                    ->where('course_id', $bestPackageCourse->id)
+                    ->with('package')
+                    ->first()
+                : null;
+    
             $planType = PlanType::get();
-            
-            if($enrolledPackage){
-                if ($package->package->plan_type_id == 1 && $package->package->course_limit > 0) {
-                    $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
-                } elseif($package->package->plan_type_id !== 1 && $package->package->course_limit == 0) {
-                    $courses = PackageCourse::with('course')->where('package_id', $package->id)->get();
+    
+            // ── Construir $courses normalizado ────────────────────────────────────
+            // SIEMPRE será una colección plana de modelos Course (no pivots),
+            // para que las vistas usen $course->id / $course->title / etc. directo.
+    
+            $courses = collect(); // fallback vacío seguro
+    
+            if ($package && $package->package) {
+                $planTypeId  = $package->package->plan_type_id;
+                $courseLimit = $package->package->course_limit;
+    
+                if ($planTypeId == 1 && $courseLimit > 0) {
+                    // Plan Básico: el usuario eligió sus propios cursos
+                    // UserCoursePackage es un pivot → extraer el Course relacionado
+                    $courses = UserCoursePackage::with('course')
+                        ->where('user_id', auth()->id())
+                        ->get()
+                        ->pluck('course')   // ← normalizar: Collection<Course>
+                        ->filter();         // ← quitar nulls si la relación falla
+    
+                } elseif ($planTypeId != 1 && $courseLimit == 0) {
+                    // Plan superior: cursos fijos asignados al paquete
+                    // PackageCourse es un pivot → extraer el Course relacionado
+                    // Usar $package->course_id (ID del curso/paquete), NO $package->id
+                    // $courses = PackageCourse::with('course')
+                    //     ->where('package_id', $package->course_id)
+                    //     ->get()
+                    //     ->pluck('course')   // ← normalizar: Collection<Course>
+                    //     ->filter();
+                    $courses = Course::where('is_active', true)->get();
+    
                 } else {
-                    $course = Course::where('is_active', true)->get();
+                    // Todos los cursos activos (ya son Course directos, sin pivot)
+                    $courses = Course::where('is_active', true)->get();
                 }
             }
-                
-            return view('student.company.enroll-users', compact('collaborators', 'totalCourses', 'package', 'planType', 'courses'));
+            // ─────────────────────────────────────────────────────────────────────
+    
+        
+
+
+            return view('student.company.enroll-users', compact(
+                'collaborators',
+                'totalCourses',
+                'package',
+                'planType',
+                'courses'       // ← siempre Collection<Course>
+            ));
+    
         } else {
             return view('student.company.void', compact('enterprise'));
         }

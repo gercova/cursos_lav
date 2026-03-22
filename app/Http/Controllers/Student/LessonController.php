@@ -19,18 +19,6 @@ class LessonController extends Controller {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
 
-    // public function show($courseSlug, $lessonId) {
-    //     $user   = Auth::user();
-    //     $course = Course::where('slug', $courseSlug)->where('is_active', true)->with(['sections.lessons', 'instructor', 'documents'])->firstOrFail();
-    //     $lesson = Lesson::where('id', $lessonId)->where('is_active', true)->with('section')->firstOrFail();
-    //     // Verificar que el usuario esté inscrito en el curso
-    //     $enrollment = Enrollment::where('user_id', $user->id)->where('course_id', $course->id)->firstOrFail();
-    //     // Registrar último acceso
-    //     $enrollment->update(['last_accessed_at' => now()]);
-
-    //     return view('student.courses.lesson', compact('course', 'lesson', 'enrollment'));
-    // }
-
     public function show($courseSlug, $lessonId): View {
         $user   = Auth::user();
         $course = Course::where('slug', $courseSlug)
@@ -41,7 +29,7 @@ class LessonController extends Controller {
         $lesson = Lesson::where('id', $lessonId)
             ->where('is_active', true)
             ->with('section')
-            ->with('vimeo')
+            ->with('video')
             ->firstOrFail();
 
         // Verificar que el usuario esté inscrito en el curso

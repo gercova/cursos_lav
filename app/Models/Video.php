@@ -14,13 +14,11 @@ class Video extends Model {
         'lesson_id','vimeo_id','title','hash','status'
     ];
 
-    public  function getUriAttribute()
-    {
-
+    public function getUriAttribute() {
         return '/videos/'.$this->getAttribute('vimeo_id');
     }
-    public function getDescriptionStatusAttribute()
-    {
+
+    public function getDescriptionStatusAttribute() {
         if($this->status=='processing'){
             return 'Vimeo está optimizando el video. Estará listo en unos minutos';
         }
@@ -32,14 +30,12 @@ class Video extends Model {
         }
         return 'video listo';
     }
-    public function getLinkAttribute()
-    {
+
+    public function getLinkAttribute() {
         return 'https://vimeo.com/'.$this->vimeo_id.'/'.$this->hash;
     }
-    public function getEmbedUrlAttribute()
-    {
+    
+    public function getEmbedUrlAttribute() {
         return 'https://player.vimeo.com/video/'.$this->vimeo_id.'?h='.$this->hash;
     }
-   
-
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EnterpriseValidate;
 use App\Models\Enterprise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,38 +30,10 @@ class EnterpriseAdminController extends Controller {
     /**
      * Actualizar los datos de la empresa
      */
-    public function update(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'ruc'                       => 'required|digits:11',
-            'company_name'              => 'required|string|max:255',
-            'trade_name'                => 'required|string|max:255',
-            'legal_representative_dni'  => 'nullable|digits:8',
-            'legal_representative'      => 'nullable|string|max:255',
-            'address'                   => 'required|string|max:500',
-            'geographical_code'         => 'nullable|string|max:10',
-            'city'                      => 'required|string|max:100',
-            'business_sector'           => 'nullable|string|max:255',
-            'phrase'                    => 'nullable|string|max:500',
-            'description'               => 'nullable|string',
-            'vision'                    => 'nullable|string',
-            'mission'                   => 'nullable|string',
-            'phone_number_1'            => 'required|string|max:20',
-            // 'phone_number_2'            => 'nullable|string|max:20',
-            'email'                     => 'required|email|max:100',
-            'facebook_link'             => 'nullable|url|max:255',
-            'linkedin_link'             => 'nullable|url|max:255',
-            'twitter_link'              => 'nullable|url|max:255',
-            'instagram_link'            => 'nullable|url|max:255',
-            'whatsapp_link'             => 'nullable|string|max:255',
-            'logo'                      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'favicon'                   => 'nullable|image|mimes:ico,png|max:1024',
-        ]);
+    public function update(EnterpriseValidate $request) {
+        $validated = $request->validated();
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $data = $request->except(['logo', 'favicon']);
+        $data = $request->except(['logo', 'favicon', 'signature']);
 
         // Buscar si ya existe un registro
         $enterprise = Enterprise::first();
@@ -97,6 +70,20 @@ class EnterpriseAdminController extends Controller {
             // Copiar al directorio raíz como favicon.ico
             $faviconContent = file_get_contents($request->file('favicon')->path());
             Storage::put('public/favicon.ico', $faviconContent);
+        }
+
+        if($request->hasFile('signature_photo')){
+            // Eliminar favicon anterior si existe
+            if ($enterprise->manager_signature && Storage::exists($enterprise->manager_signature)) {
+                Storage::delete($enterprise->manager_signature);
+            }
+
+            $signaturePath = $request->file('signature_photo')->store('public/enterprise');
+            $data['manager_signature'] = $signaturePath;
+
+            // Copiar al directorio raíz como favicon.ico
+            $signatureContent = file_get_contents($request->file('signature_photo')->path());
+            Storage::put('public/enterprise/manager_signature.png', $signatureContent);
         }
 
         $enterprise->fill($data);

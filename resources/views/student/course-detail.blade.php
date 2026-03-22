@@ -44,21 +44,13 @@
                             <svg class="w-5 h-5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            <span>{{ $course->duration }} horas</span>
-                        </div>
-
-                        <div class="flex items-center text-sm text-gray-600">
-                            <svg class="w-5 h-5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
-                            </svg>
-                            <span>{{ $course->level }}</span>
+                            <span>{{ $course->duration }} {{ $course->duration > 1 ? 'horas' : 'hora' }}</span>
                         </div>
                     </div>
 
                     <div class="flex items-center mb-6">
                         <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->photo ? asset('storage/' . $course->instructor->photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
+                            <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? $course->instructor->profile_photo : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
                             <div>
                                 <p class="text-sm font-medium text-gray-900">Instructor: {{ $course->instructor->names }}</p>
                                 <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>

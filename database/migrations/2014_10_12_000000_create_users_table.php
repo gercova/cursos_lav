@@ -26,7 +26,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('profile_photo')->nullable();
+            $table->string('company_code', 25)->default('IPF')->nullable();
+            $table->string('code', 20)->nullable()->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

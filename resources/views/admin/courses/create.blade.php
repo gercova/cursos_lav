@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Crear Nuevo Curso')
-
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
@@ -13,8 +11,7 @@
             </div>
 
             <div class="flex items-center gap-2 mt-4 md:mt-0">
-                <a href="{{ route('admin.courses.index') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                <a href="{{ route('admin.courses.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>

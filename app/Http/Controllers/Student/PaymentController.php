@@ -65,14 +65,14 @@ class PaymentController extends Controller {
             }
         }
         
-        $subtotalWithDiscount = max(0, $subtotal - $discount);
-        $tax = $subtotalWithDiscount * 0.18; // 18% IGV (Perú)
-        $total = $subtotalWithDiscount + $tax;
+        $subtotalWithDiscount   = max(0, $subtotal - $discount);
+        $tax                    = $subtotalWithDiscount * 0.18; // 18% IGV (Perú)
+        $total                  = $subtotalWithDiscount + $tax;
 
         // Formatear items para la vista
-        $formattedItems = $cartItems->map(function ($item) use ($promotionCode) {
-            $originalPrice = $item->course->price;
-            $finalPrice = $item->course->final_price;
+        $formattedItems         = $cartItems->map(function ($item) use ($promotionCode) {
+            $originalPrice      = $item->course->price;
+            $finalPrice         = $item->course->final_price;
             
             // Aplicar descuento adicional por código promocional si existe
             if ($promotionCode) {

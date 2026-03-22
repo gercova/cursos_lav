@@ -38,9 +38,7 @@ class Enterprise extends Model {
         'logo_path',
         'favicon_path',
         'logo_principal',
-        'logo_mini',
-        'logotipo',
-        'isologo',
+        'manager_signature',
     ];
 
     protected $casts = [
@@ -57,20 +55,8 @@ class Enterprise extends Model {
         return $this->imageAttribute($this->attributes['favicon_path'] ?? null);
     }
 
-    protected function logoPrincipal(): Attribute {
-        return $this->imageAttribute($this->attributes['logo_principal'] ?? null);
-    }
-
-    protected function logoMini(): Attribute {
-        return $this->imageAttribute($this->attributes['logo_mini'] ?? null);
-    }
-
-    protected function logotipo(): Attribute {
-        return $this->imageAttribute($this->attributes['logotipo'] ?? null);
-    }
-
-    protected function isologo(): Attribute {
-        return $this->imageAttribute($this->attributes['isologo'] ?? null);
+    protected function managerSignature(): Attribute {
+        return $this->imageAttribute($this->attributes['manager_signature'] ?? null);
     }
 
     // Método reutilizable para la lógica de imágenes

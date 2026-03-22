@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('enterprise', function (Blueprint $table) {
-            $table->string('logo_path')->nullable()->after('whatsapp_link');
-            $table->string('favicon_path')->nullable()->after('logo_path');
+        Schema::create('user_signatures', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->string('signature');
+            $table->timestamps();
         });
     }
 
@@ -22,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('enterprise', function (Blueprint $table) {
-            $table->dropColumn(['logo_path', 'favicon_path']);
-        });
+        Schema::dropIfExists('user_signatures');
     }
 };

@@ -95,7 +95,7 @@ class StudentExamsController extends Controller {
 
         // Verificar inscripción
         if (!$user->enrollments()->where('course_id', $exam->course_id)->exists()) {
-            return redirect()->route('student.exams.index')->with('error', 'No estás inscrito en este curso.');
+            return redirect()->route('student.exams')->with('error', 'No estás inscrito en este curso.');
         }
 
         // Obtener todos los intentos (completados e incompletos)
@@ -561,6 +561,7 @@ class StudentExamsController extends Controller {
      */
     public function view($attemptId): View {
         $attempt    = ExamAttempt::with(['exam.course'])->where('user_id', Auth::id())->findOrFail($attemptId);
+        $certificate = Certificate::where('exam_attempt_id', $attemptId)->first();
         $exam       = $attempt->exam;
         $questions  = $exam->questions()->get();
 
@@ -579,7 +580,7 @@ class StudentExamsController extends Controller {
         $incorrectCount = $questions->count() - $correctCount;
         $percentage     = $attempt->total_points > 0 ? ($attempt->score / $attempt->total_points) * 100 : 0;
 
-        return view('student.exams.view', compact( 'attempt', 'exam', 'questions', 'correctCount', 'incorrectCount', 'percentage'));
+        return view('student.exams.view', compact( 'attempt', 'exam', 'questions', 'correctCount', 'incorrectCount', 'percentage', 'certificate'));
     }
 
     /**

@@ -394,21 +394,14 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button type="button" @click="confirmSuperBulkEnroll()" :disabled="superBulkLoading || {{ $collaborators->whereNotNull('code')->count() }} === 0 || {{ $courses->count() }} === 0" class="flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-lg">
-                            <i class="fas fa-rocket" x-show="!superBulkLoading"></i>
-                            <svg x-show="superBulkLoading" class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span x-text="superBulkLoading ? 'Procesando Matrícula Expres...' : 'EJECUTAR MATRÍCULA EXPRES'"></span>
-                        </button>
-                        
-                        <button type="button" @click="simulateSuperBulkEnroll()" class="flex items-center gap-2 bg-white border-2 border-amber-300 text-amber-700 hover:bg-amber-50 font-semibold py-4 px-6 rounded-xl shadow transition-all duration-200">
-                            <i class="fas fa-eye"></i>
-                            Simular operación
-                        </button>
-                    </div>
+                    <button type="button" @click="confirmSuperBulkEnroll()" :disabled="superBulkLoading || {{ $collaborators->count() }} === 0 || {{ $courses->count() }} === 0" class="flex items-center gap-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 text-lg">
+                        <i class="fas fa-rocket" x-show="!superBulkLoading"></i>
+                        <svg x-show="superBulkLoading" class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="superBulkLoading ? 'Procesando Matrícula Expres...' : 'EJECUTAR MATRÍCULA EXPRES'"></span>
+                    </button>
 
                     <p class="text-xs text-gray-500 text-center mt-4">
                         <i class="fas fa-info-circle"></i> 
@@ -467,16 +460,7 @@
     </div>
 
     <!-- Modal de confirmación para Mega Matrícula -->
-    <div x-show="showSuperBulkConfirmModal" 
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 backdrop-blur-sm"
-        @click.self="showSuperBulkConfirmModal = false"
-    >
+    <div x-show="showSuperBulkConfirmModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-60 backdrop-blur-sm" @click.self="showSuperBulkConfirmModal = false">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
                 <div class="px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-600">
@@ -497,7 +481,7 @@
                         <div>
                             <p class="text-lg font-semibold text-gray-900">¿Estás completamente seguro?</p>
                             <p class="text-sm text-gray-600 mt-1">
-                                Vas a matricular <span class="font-bold text-amber-600">{{ $collaborators->whereNotNull('code')->count() }}</span> usuarios 
+                                Vas a matricular <span class="font-bold text-amber-600">{{ $collaborators->count() }}</span> usuarios 
                                 en <span class="font-bold text-amber-600">{{ $courses->count() }}</span> cursos.
                             </p>
                         </div>
@@ -506,7 +490,7 @@
                     <div class="bg-amber-50 rounded-xl p-4 mb-4">
                         <p class="text-sm text-amber-800">
                             <span class="font-bold">Total de matrículas a procesar:</span><br>
-                            <span class="text-2xl font-bold text-amber-600">{{ $collaborators->whereNotNull('code')->count() * $courses->count() }}</span> inscripciones
+                            <span class="text-2xl font-bold text-amber-600">{{ $collaborators->count() * $courses->count() }}</span> inscripciones
                         </p>
                     </div>
 
@@ -518,12 +502,10 @@
                     </div>
                     
                     <div class="flex gap-3 mt-6">
-                        <button @click="showSuperBulkConfirmModal = false" 
-                                class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+                        <button @click="showSuperBulkConfirmModal = false" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
                             Cancelar
                         </button>
-                        <button @click="executeSuperBulkEnroll(); showSuperBulkConfirmModal = false" 
-                                class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200">
+                        <button @click="executeSuperBulkEnroll(); showSuperBulkConfirmModal = false" class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200">
                             Sí, ejecutar Mega Matrícula
                         </button>
                     </div>
@@ -533,16 +515,7 @@
     </div>
 
     <!-- Modal de resultados de matriculación masiva -->
-    <div x-show="showBulkResultsModal" 
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm"
-        @click.self="showBulkResultsModal = false"
-    >
+    <div x-show="showBulkResultsModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 backdrop-blur-sm" @click.self="showBulkResultsModal = false">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -733,13 +706,13 @@
                     this.bulkLoading = false;
                 }
             },
-            
+
             confirmSuperBulkEnroll() {
-                const usersCount = {{ $collaborators->whereNotNull('code')->count() }};
+                const usersCount = {{ $collaborators->count() }};
                 const coursesCount = {{ $courses->count() }};
                 
                 if (usersCount === 0) {
-                    showNotification('No hay usuarios con código de promoción para matricular', 'error');
+                    showNotification('No hay usuarios para matricular', 'error');
                     return;
                 }
                 
@@ -784,22 +757,22 @@
                     this.superBulkLoading = false;
                 }
             },
-            
+
             simulateSuperBulkEnroll() {
-                const usersCount = {{ $collaborators->whereNotNull('code')->count() }};
-                const coursesCount = {{ $courses->count() }};
-                const totalEnrollments = usersCount * coursesCount;
+                const usersCount        = {{ $collaborators->count() }};
+                const coursesCount      = {{ $courses->count() }};
+                const totalEnrollments  = usersCount * coursesCount;
                 
-                let simulatedSuccess = 0;
-                let simulatedFailed = 0;
+                let simulatedSuccess    = 0;
+                let simulatedFailed     = 0;
                 const simulatedFailedList = [];
                 
                 // Simular que algunos ya están matriculados (10%)
-                const existingEnrollments = Math.floor(totalEnrollments * 0.1);
-                simulatedSuccess = totalEnrollments - existingEnrollments;
-                simulatedFailed = existingEnrollments;
+                const existingEnrollments   = Math.floor(totalEnrollments * 0.1);
+                simulatedSuccess            = totalEnrollments - existingEnrollments;
+                simulatedFailed             = existingEnrollments;
                 
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < Math.min(5, simulatedFailed); i++) {
                     simulatedFailedList.push({
                         user: 'Usuario ' + (i + 1),
                         course: 'Curso de ejemplo ' + (i + 1),
@@ -818,7 +791,7 @@
                     warning: 'Esta es solo una simulación. No se realizaron cambios reales.'
                 };
                 this.showBulkResultsModal = true;
-            }
+            },
         };
     }
 

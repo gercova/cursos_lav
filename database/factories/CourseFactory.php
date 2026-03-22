@@ -15,7 +15,7 @@ class CourseFactory extends Factory
 {
     protected $model = Course::class;
     public function definition(): array {
-        $category       = Category::inRandomOrder()->first();
+        $category       = Category::inRandomOrder()->where('id', '<>', 4)->first();
         $user           = User::inRandomOrder()->where('role', 'instructor')->first();
         $price          = $this->faker->randomFloat(2, 20, 200);
         $hasPromotion   = $this->faker->boolean(40);
@@ -35,7 +35,6 @@ class CourseFactory extends Factory
             'promotion_price'   => $promotionPrice,
             'category_id'       => $category->id,
             'instructor_id'     => $user->id,
-            'level'             => 'profesional',
             'duration'          => 5,
             'is_active'         => true,
             'requirements'      => $this->generateRequirementsArray(6),

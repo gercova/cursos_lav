@@ -515,8 +515,9 @@ function checkoutApp() {
             first_name: '{{ auth()->user()->names }}'.split(' ')[0] || '',
             last_name: '{{ auth()->user()->names }}'.split(' ').slice(1).join(' ') || '',
             email: '{{ auth()->user()->email }}',
-            phone: '',
+            phone: '{{ auth()->user()->country_code." ".auth()->user()->phone }}',
             address: '',
+            city: '',
             country: 'PE',
         },
         init() {
@@ -686,9 +687,6 @@ function checkoutApp() {
                 console.error('Error loading saved data:', e);
             }
         },
-
-        
-
 
         scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });

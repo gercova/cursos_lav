@@ -332,11 +332,11 @@ class BusinessManagementController extends Controller {
                     //     ->get()
                     //     ->pluck('course')   // ← normalizar: Collection<Course>
                     //     ->filter();
-                    $courses = Course::where('is_active', true)->get();
+                    $courses = Course::where('is_active', true)->where('type', 'course')->get();
     
                 } else {
                     // Todos los cursos activos (ya son Course directos, sin pivot)
-                    $courses = Course::where('is_active', true)->get();
+                    $courses = Course::where('is_active', true)->where('type', 'course')->get();
                 }
             }
             // ─────────────────────────────────────────────────────────────────────

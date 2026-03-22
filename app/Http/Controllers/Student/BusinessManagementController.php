@@ -332,6 +332,10 @@ class BusinessManagementController extends Controller {
                     //     ->get()
                     //     ->pluck('course')   // ← normalizar: Collection<Course>
                     //     ->filter();
+                    // $courses = p
+                    // if(){
+
+                    // }
                     $courses = Course::where('is_active', true)->where('type', 'course')->get();
     
                 } else {
@@ -568,7 +572,7 @@ class BusinessManagementController extends Controller {
         }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
             $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
         }else{
-            $course = Course::where('is_active', true)->get();
+            $courses = Course::where('is_active', true)->where('type', 'course')->get();
         }
 
         if ($students->isEmpty()) {

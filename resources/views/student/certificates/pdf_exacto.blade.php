@@ -109,6 +109,11 @@
             <img src="{{ $managerSignature }}" alt="Firma Gerente {{ $enterprise->legal_representative }}" style="size:100%;">
             <div class="firma-nombre">{{ $enterprise->legal_representative }}</div>
             <div class="firma-cargo">Gerente General</div>
+            @if($instructor->colegial_type && $instructor->colegial)
+                <div class="firma-cargo">
+                    {{ $instructor->colegial_type }}: {{ $instructor->colegial }}
+                </div>
+            @endif
         </div>
         <div class="firma-col">
             <img src="{{ $instructorSignature }}" alt="Firma Especialista {{ $instructor->names }}" style="size:100%;">

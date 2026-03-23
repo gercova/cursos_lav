@@ -33,7 +33,8 @@ class CertificatesController extends Controller {
         $certificate    = Certificate::with(['user', 'course'])->where('user_id', Auth::id())->findOrFail($certificateId);
         $enterprise     = Enterprise::first();
         $logoPath       = storage_path('app/public/ipf-logo.png');
-        $managerSignature = storage_path('app/public/signature-photos/francisco-llactas-flores.png');
+        // $managerSignature = storage_path('app/public/signature-photos/francisco-llactas-flores.png');
+        $managerSignature = storage_path('app/public/enterprise/pablo-torres-garcia.png');
 
         $instructor     = User::where('id', $certificate->course->instructor->id)->first();
 

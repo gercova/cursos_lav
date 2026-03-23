@@ -142,11 +142,17 @@
                         $certificate    = App\Models\Certificate::where('exam_attempt_id', $attempt->id)->first();
                         $certificateId  = $certificate->id;
                     @endphp
-
-                    <a href="{{ route('student.certificates.show', $certificateId) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
-                        <i class="fas fa-certificate text-white-600"></i>
-                        &nbsp;Ver certificado
-                    </a>
+                    @if($attempt->passed)
+                        <a href="{{ route('student.certificates.show', $certificateId) }}" class="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1">
+                            <i class="fas fa-certificate text-white-600"></i>
+                            &nbsp;Ver certificado
+                        </a>
+                    @else
+                        <a href="{{ route('student.exams.show', $exam->id) }}" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium py-3 px-4 rounded-lg text-center transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            Volver a dar el examen
+                        </a>
+                    @endif
 
                     <a href="{{ route('student.exams') }}" class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                         <i class="fas fa-list mr-2"></i>

@@ -913,6 +913,7 @@
 
             const response = await fetch('{{ route("student.exams.save-answers", $exam->id) }}', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
@@ -986,39 +987,6 @@
     }
 
     // Envío del examen
-    // async function submitExam() {
-    //     // Guardar progreso final
-    //     await saveToServer();
-
-    //     // Recolectar respuestas
-    //     const form = document.getElementById('exam-form');
-    //     const answers = {};
-
-    //     questions.forEach((questionElement, index) => {
-    //         const questionId = questionElement.dataset.questionId;
-    //         const saved = localStorage.getItem(`exam_attempt_{{ $attempt ? $attempt->id : 0 }}_q${questionId}`);
-    //         if (saved) {
-    //             answers[questionId] = saved;
-    //         }
-    //     });
-
-    //     // Agregar respuestas al formulario
-    //     const answersInput = document.createElement('input');
-    //     answersInput.type = 'hidden';
-    //     answersInput.name = 'answers';
-    //     answersInput.value = JSON.stringify(answers);
-    //     form.appendChild(answersInput);
-
-    //     // Limpiar localStorage
-    //     questions.forEach((questionElement, index) => {
-    //         const questionId = questionElement.dataset.questionId;
-    //         localStorage.removeItem(`exam_attempt_{{ $attempt ? $attempt->id : 0 }}_q${questionId}`);
-    //     });
-
-    //     // Enviar formulario
-    //     form.submit();
-    // }
-
     async function submitExam() {
         // Recolectar todas las respuestas del localStorage
         const answers = {};
@@ -1054,6 +1022,7 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             const response = await fetch('{{ route("student.exams.submit", $exam->id) }}', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,

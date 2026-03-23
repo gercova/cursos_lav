@@ -331,9 +331,35 @@ class StudentExamsController extends Controller {
             'attempt_id'    => 'required|exists:exam_attempts,id'
         ]);
 
-        $user       = Auth::user();
-        $exam       = Exam::with('questions')->findOrFail($id);
-        $attempt    = ExamAttempt::where('id', $request->attempt_id)->where('user_id', $user->id)->whereNull('completed_at')->firstOrFail();
+        $user   = Auth::user();
+        $exam   = Exam::with('questions')->findOrFail($id);
+
+        // Buscar intento activo (sin completar) del usuario
+        $attempt = ExamAttempt::where('id', $request->attempt_id)
+            ->where('user_id', $user->id)
+            ->whereNull('completed_at')
+            ->first();
+
+        if (!$attempt) {
+            // Verificar si ya fue completado (doble envío / refresco)
+            $completedAttempt = ExamAttempt::where('id', $request->attempt_id)
+                ->where('user_id', $user->id)
+                ->whereNotNull('completed_at')
+                ->first();
+
+            if ($completedAttempt) {
+                return response()->json([
+                    'success'   => false,
+                    'message'   => 'Este intento ya fue completado.',
+                    'redirect'  => route('student.exams.result', $completedAttempt->id)
+                ], 422);
+            }
+
+            return response()->json([
+                'success'   => false,
+                'message'   => 'Intento no encontrado o no autorizado.'
+            ], 404);
+        }
 
         // Verificar si el tiempo se agotó
         $startedAt      = $attempt->started_at;
@@ -456,7 +482,11 @@ class StudentExamsController extends Controller {
             ]);
         }
 
-        return redirect()->route('student.exams.result', $attempt->id);
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Examen completado',
+            'redirect'  => route('student.exams.result', $attempt->id)
+        ]);
     }
 
     public function createCertificateCode($userId): string {

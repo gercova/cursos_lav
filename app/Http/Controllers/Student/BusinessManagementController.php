@@ -102,54 +102,6 @@ class BusinessManagementController extends Controller {
         return view('student.company.create-staff', compact('hasAnyPackage', 'user', 'codeCountries'));
     }
 
-    // public function storeStaff(StaffValidate $request): JsonResponse {
-    //     $countUser  = User::where('parent_id', auth()->id())->count();
-    //     $user       = auth()->user();
-    //     $limitUser  = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
-
-    //     if($countUser == (int) $limitUser->seats_max + 1){
-    //         return response()->json([
-    //             'status' 	=> false,
-    //             'messages' 	=> 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador',
-    //         ]);
-    //     } else {
-    //         $validated  = $request->validated();
-    //         $id         = $request->input('user_id');
-    //         $data       = array_merge($validated, [
-    //             'parent_id'     => auth()->id(),
-    //             'company_code'  => auth()->user()->company_code,
-    //             'expires_at'    => now()->addYear(), 
-    //         ]);
-            
-    //         DB::beginTransaction();
-    //         try {
-    //             $result = User::updateOrCreate(['id' => $id], $data);
-
-    //             if ($request->has('role_id')) {
-    //                 // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
-    //                 DB::table('model_has_roles')->where('model_id', $result->id)->delete();
-    //                 // Asignar el nuevo rol
-    //                 DB::table('model_has_roles')->insert([
-    //                     'role_id'       => $request->input('role_id'),
-    //                     'model_type'    => 'App\Models\User',
-    //                     'model_id'      => $result->id
-    //                 ]);
-    //             }
-
-    //             DB::commit();
-    //             return response()->json([
-    //                 'status' 	=> true,
-    //                 'messages' 	=> empty($id) ? 'Datos del usuario actualizado exitosamente' : 'Se ha añadido un nuevo usuario',
-    //             ]);
-    //         } catch (\Exception $e) {
-    //             DB::rollBack();
-    //             return response()->json([
-    //                 'status' 	=> false,
-    //                 'messages' 	=> $e->getMessage(),
-    //             ], 500);
-    //         }
-    //     }
-    // }
     public function storeStaff(StaffValidate $request) {
         $countUser  = User::where('parent_id', auth()->id())->count();
         $user       = auth()->user();
@@ -196,80 +148,6 @@ class BusinessManagementController extends Controller {
     /**
      * Vista para matricular usuarios con código
      */
-    // public function enrollUsers(): View {
-    //     $enterprise    = Enterprise::first();
-    //     $hasAnyPackage = User::find(auth()->id())
-    //         ->studentCourses()
-    //         ->where('courses.type', 'package')
-    //         ->exists();
-    
-    //     if ($hasAnyPackage) {
-    
-    //         // Colaboradores activos de la empresa
-    //         $collaborators = User::where('company_code', auth()->user()->company_code)
-    //             ->where('is_active', true)
-    //             ->orderBy('names')
-    //             ->get();
-    
-    //         $totalCourses = Course::where('is_active', true)->get();
-    
-    //         // 1. Mejor paquete comprado por el usuario (el de mayor plan)
-    //         $bestPackageCourse = User::find(auth()->id())
-    //             ->studentCourses()
-    //             ->where('courses.type', 'package')
-    //             ->orderByDesc('courses.plan_type_id')
-    //             ->first();
-    
-    //         // 2. Matrícula exacta de ese paquete
-    //         $package = $bestPackageCourse
-    //             ? Enrollment::where('user_id', Auth::id())
-    //                 ->where('course_id', $bestPackageCourse->id)
-    //                 ->with('package')
-    //                 ->first()
-    //             : null;
-    
-    //         $planType = PlanType::get();
-    
-    //         // FIX BUG 1: inicializar siempre $courses como colección vacía
-    //         $courses = collect();
-    
-    //         // FIX BUG 4: verificar que $package y su relación existan antes de usarlos
-    //         if ($package && $package->package) {
-    //             $planTypeId  = $package->package->plan_type_id;
-    //             $courseLimit = $package->package->course_limit;
-    
-    //             if ($planTypeId == 1 && $courseLimit > 0) {
-    //                 // Plan Básico: el usuario eligió sus propios cursos
-    //                 $courses = UserCoursePackage::with('course')
-    //                     ->where('user_id', auth()->id())
-    //                     ->get();
-    
-    //             } elseif ($planTypeId != 1 && $courseLimit == 0) {
-    //                 // Plan superior: los cursos vienen asignados al paquete
-    //                 // FIX BUG 3: usar $package->course_id (ID del paquete/curso),
-    //                 //            NO $package->id (que es el ID del Enrollment)
-    //                 $courses = PackageCourse::with('course')
-    //                     ->where('package_id', $package->course_id)
-    //                     ->get();
-    
-    //             } else {
-    //                 // FIX BUG 2: era "$course" (typo), debe ser "$courses"
-    //                 $courses = Course::where('is_active', true)->get();
-    //             }
-    //         }
-    
-    //         return view('student.company.enroll-users', compact(
-    //             'collaborators',
-    //             'totalCourses',
-    //             'package',
-    //             'planType',
-    //             'courses'
-    //         ));
-    
-    //     } else {
-    //         return view('student.company.void', compact('enterprise'));
-    //     }
-    // }
     public function enrollUsers(): View {
         $enterprise    = Enterprise::first();
         $hasAnyPackage = User::find(auth()->id())
@@ -325,18 +203,12 @@ class BusinessManagementController extends Controller {
     
                 } elseif ($planTypeId != 1 && $courseLimit == 0) {
                     // Plan superior: cursos fijos asignados al paquete
-                    // PackageCourse es un pivot → extraer el Course relacionado
-                    // Usar $package->course_id (ID del curso/paquete), NO $package->id
-                    // $courses = PackageCourse::with('course')
-                    //     ->where('package_id', $package->course_id)
-                    //     ->get()
-                    //     ->pluck('course')   // ← normalizar: Collection<Course>
-                    //     ->filter();
-                    // $courses = p
-                    // if(){
-
-                    // }
-                    $courses = Course::where('is_active', true)->where('type', 'course')->get();
+                    $coursesByPackage = PackageCourse::where('package_id', $package->package->id)->exists();
+                    if($coursesByPackage){
+                        $courses = PackageCourse::where('package_id', $package->package->id)->get();
+                    }else{
+                        $courses = Course::where('is_active', true)->where('type', 'course')->get();
+                    }
     
                 } else {
                     // Todos los cursos activos (ya son Course directos, sin pivot)
@@ -585,7 +457,7 @@ class BusinessManagementController extends Controller {
         if ($courses->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No hay cursos con precio de promoción activo'
+                'message' => 'No hay cursos activos'
             ], 400);
         }
 

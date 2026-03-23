@@ -35,6 +35,8 @@ class User extends Authenticatable {
         'ubigeo',
         'address',
         'profession',
+        'colegial',
+        'colegial_type',
         'role',
         'email_verified_at',
         'profile_photo',

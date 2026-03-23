@@ -20,6 +20,8 @@ class Enterprise extends Model {
         'trade_name',
         'legal_representative_dni',
         'legal_representative',
+        'colegial_type',
+        'colegial',
         'address',
         'geographical_code',
         'city',
@@ -37,7 +39,7 @@ class Enterprise extends Model {
         'whatsapp_link',
         'logo_path',
         'favicon_path',
-        'logo_principal',
+        // 'logo_principal',
         'manager_signature',
     ];
 

@@ -114,7 +114,12 @@
             <img src="{{ $instructorSignature }}" alt="Firma Especialista {{ $instructor->names }}" style="size:100%;">
             <div class="firma-nombre">{{ $instructor->names }}</div>
             <div class="firma-cargo">{{ $instructor->profession }}</div>
-            <div class="firma-cargo">CIP: 1234567</div>
+            {{-- <div class="firma-cargo">CIP: 1234567</div> --}}
+            @if($instructor->colegial_type && $instructor->colegial)
+                <div class="firma-cargo">
+                    {{ $instructor->colegial_type }}: {{ $instructor->colegial }}
+                </div>
+            @endif
         </div>
     </div>
 

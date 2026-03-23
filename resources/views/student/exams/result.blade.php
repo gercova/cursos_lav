@@ -5,7 +5,7 @@
     <!-- Header con resultado -->
     <div class="text-center mb-10">
         @if($attempt->passed)
-            <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-emerald-100 to-green-100 flex items-center justify-center animate-bounce">
+            <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-emerald-100 to-green-100 flex items-center justify-center">
                 <i class="fas fa-trophy text-5xl text-emerald-500"></i>
             </div>
             <h1 class="text-4xl font-bold text-gray-900 mb-3">¡Felicidades!</h1>
@@ -220,7 +220,7 @@
 </div>
 
 <style>
-    .animate-bounce {
+    /* .animate-bounce {
         animation: bounce 1s infinite;
     }
 
@@ -231,7 +231,7 @@
         50% {
             transform: translateY(-10px);
         }
-    }
+    } */
 
     @media print {
         .no-print {
@@ -255,7 +255,7 @@
         @if($attempt->passed)
         setTimeout(() => {
             // Puedes agregar una librería de confeti aquí si lo deseas
-            console.log('¡Examen aprobado! 🎉');
+            console.log('¡Examen aprobado!');
         }, 1000);
         @endif
 

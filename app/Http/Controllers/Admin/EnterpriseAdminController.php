@@ -8,9 +8,9 @@ use App\Models\Enterprise;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class EnterpriseAdminController extends Controller {
-
 
     public function __construct() {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
@@ -20,7 +20,6 @@ class EnterpriseAdminController extends Controller {
         $enterprise = Enterprise::first();
 
         if (!$enterprise) {
-            // Crear un registro vacío si no existe
             $enterprise = new Enterprise();
         }
 
@@ -33,57 +32,71 @@ class EnterpriseAdminController extends Controller {
     public function update(EnterpriseValidate $request) {
         $validated = $request->validated();
 
-        $data = $request->except(['logo', 'favicon', 'signature']);
+        // Excluir todos los campos de archivo para no pisarlos con el fill()
+        $data = $request->except(['logo', 'favicon', 'signature_photo']);
 
-        // Buscar si ya existe un registro
         $enterprise = Enterprise::first();
 
         if (!$enterprise) {
             $enterprise = new Enterprise();
         }
 
-        // Procesar logo
+        // ── Procesar logo ────────────────────────────────────────────────────
         if ($request->hasFile('logo')) {
-            // Eliminar logo anterior si existe
-            if ($enterprise->logo_path && Storage::exists($enterprise->logo_path)) {
-                Storage::delete($enterprise->logo_path);
+            $logoRaw = $enterprise->getAttributes()['logo_path'] ?? null;
+            if ($logoRaw && Storage::exists($logoRaw)) {
+                Storage::delete($logoRaw);
             }
 
             $logoPath = $request->file('logo')->store('public/enterprise');
             $data['logo_path'] = $logoPath;
 
-            // También actualizar el favicon en storage/photos/
-            $logoContent = file_get_contents($request->file('logo')->path());
-            Storage::put('public/photos/ipf-logo.png', $logoContent);
+            // Copia sincronizada en photos/ (compatibilidad con otras vistas)
+            Storage::put(
+                'public/photos/ipf-logo.png',
+                file_get_contents($request->file('logo')->path())
+            );
         }
 
-        // Procesar favicon
+        // ── Procesar favicon ─────────────────────────────────────────────────
         if ($request->hasFile('favicon')) {
-            // Eliminar favicon anterior si existe
-            if ($enterprise->favicon_path && Storage::exists($enterprise->favicon_path)) {
-                Storage::delete($enterprise->favicon_path);
+            $faviRaw = $enterprise->getAttributes()['favicon_path'] ?? null;
+            if ($faviRaw && Storage::exists($faviRaw)) {
+                Storage::delete($faviRaw);
             }
 
             $faviconPath = $request->file('favicon')->store('public/enterprise');
             $data['favicon_path'] = $faviconPath;
 
-            // Copiar al directorio raíz como favicon.ico
-            $faviconContent = file_get_contents($request->file('favicon')->path());
-            Storage::put('public/favicon.ico', $faviconContent);
+            // Copia fija en raíz pública
+            Storage::put(
+                'public/favicon.ico',
+                file_get_contents($request->file('favicon')->path())
+            );
         }
 
-        if($request->hasFile('signature_photo')){
-            // Eliminar favicon anterior si existe
-            if ($enterprise->manager_signature && Storage::exists($enterprise->manager_signature)) {
-                Storage::delete($enterprise->manager_signature);
+        // ── Procesar firma ───────────────────────────────────────────────────
+        if ($request->hasFile('signature_photo')) {
+            // Eliminar archivo anterior
+            $rawSig = $enterprise->getAttributes()['manager_signature'] ?? null;
+            if ($rawSig && Storage::exists($rawSig)) {
+                Storage::delete($rawSig);
             }
 
-            $signaturePath = $request->file('signature_photo')->store('public/enterprise');
+            // Nombre del archivo = slug del representante legal + extensión original
+            $ext        = $request->file('signature_photo')->getClientOriginalExtension() ?: 'png';
+            $repName    = $request->input('legal_representative');
+            $fileName   = Str::slug($repName) . '.' . $ext;
+
+            // Guardar con nombre personalizado
+            $signaturePath = $request->file('signature_photo')->storeAs('public/enterprise', $fileName);
             $data['manager_signature'] = $signaturePath;
 
-            // Copiar al directorio raíz como favicon.ico
-            $signatureContent = file_get_contents($request->file('signature_photo')->path());
-            Storage::put('public/enterprise/manager_signature.png', $signatureContent);
+            // Copia con nombre fijo para compatibilidad con documentos/certificados
+            Storage::put(
+                'public/enterprise/manager_signature.png',
+                file_get_contents($request->file('signature_photo')->path())
+            );
         }
 
         $enterprise->fill($data);
@@ -98,12 +111,14 @@ class EnterpriseAdminController extends Controller {
     public function deleteLogo() {
         $enterprise = Enterprise::first();
 
-        if ($enterprise && $enterprise->logo_path && Storage::exists($enterprise->logo_path)) {
-            Storage::delete($enterprise->logo_path);
+        if ($enterprise) {
+            $logoRaw = $enterprise->getAttributes()['logo_path'] ?? null;
+            if ($logoRaw && Storage::exists($logoRaw)) {
+                Storage::delete($logoRaw);
+            }
             $enterprise->logo_path = null;
             $enterprise->save();
 
-            // También eliminar el logo de photos
             if (Storage::exists('public/photos/ipf-logo.png')) {
                 Storage::delete('public/photos/ipf-logo.png');
             }
@@ -118,12 +133,14 @@ class EnterpriseAdminController extends Controller {
     public function deleteFavicon() {
         $enterprise = Enterprise::first();
 
-        if ($enterprise && $enterprise->favicon_path && Storage::exists($enterprise->favicon_path)) {
-            Storage::delete($enterprise->favicon_path);
+        if ($enterprise) {
+            $faviRaw = $enterprise->getAttributes()['favicon_path'] ?? null;
+            if ($faviRaw && Storage::exists($faviRaw)) {
+                Storage::delete($faviRaw);
+            }
             $enterprise->favicon_path = null;
             $enterprise->save();
 
-            // También eliminar el favicon de la raíz
             if (Storage::exists('public/favicon.ico')) {
                 Storage::delete('public/favicon.ico');
             }

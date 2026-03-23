@@ -627,13 +627,7 @@
             }
         });
 
-        // Prevenir acciones no deseadas
-        window.addEventListener('beforeunload', function(e) {
-            if (timeRemaining > 0) {
-                e.preventDefault();
-                e.returnValue = '¿Estás seguro de que quieres salir? Tu progreso se guardará automáticamente.';
-            }
-        });
+
     }
 
     // Manejar selección de respuesta

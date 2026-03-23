@@ -244,7 +244,7 @@
                             </li>
                             <li class="flex items-center gap-2">
                                 <i class="fas fa-check-circle text-xs"></i>
-                                <span><span class="font-bold">{{ $courses->count() }}</span> cursos en promoción</span>
+                                <span><span class="font-bold">{{ $courses->count() }}</span> cursos</span>
                             </li>
                             <li class="flex items-center gap-2">
                                 <i class="fas fa-calculator text-xs"></i>

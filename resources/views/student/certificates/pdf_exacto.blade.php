@@ -61,7 +61,7 @@
 
         .descripcion { text-align:center; font-size:18px; font-style:italic; color:#333; margin-bottom:8px; }
 
-        .curso { text-align:center; font-size:30px; font-weight:bold; font-style:italic; color:#1ba009; margin-bottom:14px; }
+        .curso { text-align:center; font-size:30px; font-weight:bold; font-style:italic; color:#1ba009; margin-bottom:14px; margin: 30px !important; }
 
         .detalle { text-align:center; font-size:18px; font-style:italic; color:#222; margin-bottom:28px; }
 

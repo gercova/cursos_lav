@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 class StudentExamsController extends Controller {
 
     public  function __construct() {
-        $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
+        $this->middleware(['auth', 'student', 'prevent.back']);
     }
     
     public function index(): View {
@@ -257,7 +257,7 @@ class StudentExamsController extends Controller {
                 return response()->json([
                     'success'   => false,
                     'message'   => 'Intento no encontrado, ya completado o no autorizado'
-                ], 404);
+                ], 200);
             }
 
             // Verificar que el intento pertenece al examen correcto
@@ -358,7 +358,7 @@ class StudentExamsController extends Controller {
             return response()->json([
                 'success'   => false,
                 'message'   => 'Intento no encontrado o no autorizado.'
-            ], 404);
+            ], 200);
         }
 
         // Verificar si el tiempo se agotó

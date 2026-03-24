@@ -71,7 +71,7 @@
             <div class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-5">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-orange-800">Total Estudiantes</p>
+                        <p class="text-sm font-medium text-orange-800">Total de Matrículas</p>
                         <p class="text-2xl font-bold text-orange-900 mt-1">
                             {{ $courses->sum('students_count') }}
                         </p>

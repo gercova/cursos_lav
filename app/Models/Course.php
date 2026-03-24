@@ -179,11 +179,16 @@ class Course extends Model
         return $priceToUse / $this->seats_max;
     }
 
+    // public function package(): HasMany {
+    //     return $this->hasMany(PackageCourse::class, 'package_id', 'id');
+    // }
+
     /**
      * Relación con los registros de package_course (para acceso directo).
      */
     public function packageCourses(): HasMany {
-        return $this->hasMany(PackageCourse::class, 'course_id', 'id');
+        // return $this->hasMany(PackageCourse::class, 'course_id', 'id');
+        return $this->hasMany(PackageCourse::class, 'package_id', 'id');
     }
 
     /**

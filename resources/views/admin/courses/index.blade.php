@@ -328,6 +328,12 @@
                                                     Activar
                                                 @endif
                                             </button>
+                                            
+                                            <!-- Actualizar precio y precio promoción de un curso -->
+                                            <button @click="$dispatch('open-price-modal', { id: {{ $course->id }}, title: '{{ $course->title }}', price: {{ $course->price }}, promo: {{ $course->promotion_price ?? 0 }} }); open = false" class="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 flex items-center gap-2">
+                                                <i class="bi bi-currency-dollar"></i>
+                                                Actualizar Precios
+                                            </button>
 
                                             <!-- Editar -->
                                             <a href="{{ route('admin.courses.edit', $course) }}"
@@ -541,6 +547,62 @@
             </div>
         </div>
     </div>
+
+    <div x-show="priceModal.show" 
+        x-cloak 
+        class="fixed inset-0 z-50 overflow-y-auto"
+        @open-price-modal.window="
+            priceModal.show = true; 
+            priceModal.courseId = $event.detail.id; 
+            priceModal.courseTitle = $event.detail.title; 
+            priceModal.price = $event.detail.price; 
+            priceModal.promotionPrice = $event.detail.promo
+        ">
+        <div class="flex items-center justify-center min-h-screen p-4 text-center">
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" @click="priceModal.show = false"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all border border-gray-100">
+                <div class="mb-4 text-left">
+                    <h3 class="text-xl font-bold text-gray-900">Actualizar Precios</h3>
+                    <p class="text-sm text-gray-500" x-text="priceModal.courseTitle"></p>
+                </div>
+
+                <div class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Precio Normal (S/)</label>
+                        <input type="number" step="0.01" x-model="priceModal.price" 
+                            class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition border-gray-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Precio Promocional (S/)</label>
+                        <input type="number" step="0.01" x-model="priceModal.promotionPrice" 
+                            class="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"
+                            :class="isPriceInvalid ? 'border-red-500 ring-2 ring-red-200' : 'border-gray-300'">
+                        
+                        <template x-if="isPriceInvalid">
+                            <p class="text-xs text-red-600 mt-2 flex items-center gap-1 font-medium">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                El precio de promoción debe ser menor al normal.
+                            </p>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end gap-3">
+                    <button @click="priceModal.show = false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition font-medium">
+                        Cancelar
+                    </button>
+                    <button @click="savePrices()" 
+                            :disabled="priceModal.loading || isPriceInvalid" 
+                            class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:shadow-blue-200 transition flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-show="!priceModal.loading">Guardar Cambios</span>
+                        <span x-show="priceModal.loading" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -553,8 +615,52 @@
             categoryFilter: '{{ request('category', '') }}',
             loading: false,
 
+            // PAPU: Nueva estructura para el modal de precios
+            priceModal: {
+                show: false,
+                courseId: null,
+                courseTitle: '',
+                price: 0,
+                promotionPrice: 0,
+                loading: false
+            },
+
+            // Validación reactiva
+            get isPriceInvalid() {
+                return parseFloat(this.priceModal.promotionPrice) > 0 && 
+                    parseFloat(this.priceModal.promotionPrice) >= parseFloat(this.priceModal.price);
+            },
+
             init() {
                 // Inicializar
+            },
+
+            async savePrices() {
+                if (this.isPriceInvalid) return;
+
+                this.priceModal.loading = true;
+                
+                // Construimos la URL usando el ID guardado en el estado de Alpine
+                const url = `/admin/courses/${this.priceModal.courseId}/update-prices`;
+
+                try {
+                    const response = await axios.post(url, {
+                        price: this.priceModal.price,
+                        promotion_price: this.priceModal.promotionPrice,
+                        _token: '{{ csrf_token() }}'
+                    });
+
+                    if (response.data.success) {
+                        showNotification('Precios actualizados correctamente', 'success');
+                        setTimeout(() => window.location.reload(), 800);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    const msg = error.response?.data?.message || 'Error al actualizar precios';
+                    showNotification(msg, 'error');
+                } finally {
+                    this.priceModal.loading = false;
+                }
             },
 
             async performSearch() {

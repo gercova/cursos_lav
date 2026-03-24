@@ -177,21 +177,41 @@ class CoursesAdminController extends Controller {
         }
     }
 
-    // public function show(Course $course): View {
-    //     $course->load(['category', 'instructor', 'sections.lessons', 'documents', 'exam', 'enrollments.user']);
+    public function updatePrices(Request $request, Course $course): JsonResponse {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+            'promotion_price' => [
+                'nullable', 
+                'numeric', 
+                'min:0',
+                // Regla personalizada: promotion_price debe ser menor que price
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value > 0 && $value >= $request->price) {
+                        $fail('El precio promocional debe ser menor al precio normal.');
+                    }
+                },
+            ],
+        ]);
 
-    //     $stats = [
-    //         'total_students'        => $course->enrollments()->count(),
-    //         'completed_students'    => $course->enrollments()->where('status', 'completed')->count(),
-    //         'total_revenue'         => $course->enrollments()
-    //             ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
-    //             ->where('payments.status', 'completed')
-    //             ->sum('payments.amount'),
-    //         'average_rating' => 4.8, // Esto vendría de un sistema de reviews
-    //     ];
+        try {
+            $course->update([
+                'price' => $request->price,
+                'promotion_price' => $request->promotion_price > 0 ? $request->promotion_price : null,
+            ]);
 
-    //     return view('admin.courses.show', compact('course', 'stats'));
-    // }
+            $this->logActivity("Actualizó precios del curso: {$course->title} a S/ {$request->price}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Precios actualizados correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function destroy(Course $course) {
         // Verificar si hay inscripciones activas

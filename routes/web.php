@@ -265,6 +265,8 @@ Route::prefix('admin')->group(function () {
         // Rutas para cursos
         Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');
         Route::get('/courses/{course}/sections',        [CoursesAdminController::class, 'getSections']);
+        // Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
+        Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
         Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
         Route::get('/courses/create',                   [CoursesAdminController::class, 'create'])->name('admin.courses.create');
         Route::get('/courses/{course}',                 [CoursesAdminController::class, 'show'])->name('admin.courses.show');

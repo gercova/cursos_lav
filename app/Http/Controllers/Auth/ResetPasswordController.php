@@ -39,4 +39,30 @@ class ResetPasswordController extends Controller
     protected function sendResetResponse(Request $request, $response) {
         return redirect()->route('login')->with('status', trans($response));
     }
+
+    /**
+     * Personalizar los mensajes de error de validación.
+     */
+    protected function validationErrorMessages() {
+        return [
+            'password.confirmed' => 'Las contraseñas no coinciden. Por favor, verifica que escribiste la misma en ambos campos.',
+            'password.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.required'  => 'La contraseña es obligatoria.',
+            'email.required'     => 'No pudimos verificar tu correo electrónico.',
+            'token.required'     => 'El token de seguridad es inválido o ha expirado.',
+        ];
+    }
+
+    protected function sendResetFailedResponse(Request $request, $response) {
+        // Traducimos los errores del sistema de tokens al español
+        $mensaje = 'El enlace de recuperación es inválido, ya fue utilizado o ha expirado. Por favor, solicita uno nuevo.';
+        
+        if ($response === 'passwords.user') {
+            $mensaje = 'No podemos encontrar un usuario con ese correo electrónico.';
+        }
+
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => $mensaje]);
+    }
 }

@@ -23,7 +23,6 @@
             <!-- Form -->
             <form class="px-8 py-6" action="{{ route('password.email') }}" method="POST">
                 @csrf
-
                 <!-- Alertas -->
                 @if(session('status'))
                     <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r">

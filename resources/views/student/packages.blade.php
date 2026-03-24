@@ -236,7 +236,8 @@
                             {{-- <a href="{{ route('paquete.detail', $package->slug) }}" class="block mb-2 group-hover:text-blue-600 transition-colors"> --}}
                             <a href="{{ route('paquete.detail', ['slug' => $package->slug, 'code' => $code ?? null]) }}" class="block mb-2 group-hover:text-blue-600 transition-colors">
                                 <h3 class="text-lg font-bold text-gray-900 line-clamp-2 leading-tight">
-                                    {{ $package->title }}
+                                    {{ $package->title }} 
+                                    {{-- {{ $package->packageCourses->count() }} --}}
                                 </h3>
                             </a>
                             

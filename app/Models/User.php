@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\CustomResetPasswordNotification;
 use App\Traits\StudentActivityLogger;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -56,6 +57,7 @@ class User extends Authenticatable {
     ];
 
     protected $casts = [
+        'parent_id'             => 'integer',
         'email_verified_at'     => 'datetime',
         'last_login_at'         => 'datetime',
         'expires_at'            => 'datetime',
@@ -196,5 +198,9 @@ class User extends Authenticatable {
             'admin'      => Storage::url('admin/admin-ipf.png'),
             default      => null,
         };
+    }
+
+    public function sendPasswordResetNotification($token): void {
+        $this->notify(new CustomResetPasswordNotification($token));
     }
 }

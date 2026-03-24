@@ -156,9 +156,9 @@ class BusinessManagementController extends Controller {
             ->exists();
     
         if ($hasAnyPackage) {
-    
-            // Colaboradores activos de la empresa
+
             $collaborators = User::where('company_code', auth()->user()->company_code)
+                ->where('id', '!=', auth()->id())   // ← añadir esto
                 ->where('is_active', true)
                 ->orderBy('names')
                 ->get();
@@ -205,7 +205,11 @@ class BusinessManagementController extends Controller {
                     // Plan superior: cursos fijos asignados al paquete
                     $coursesByPackage = PackageCourse::where('package_id', $package->package->id)->exists();
                     if($coursesByPackage){
-                        $courses = PackageCourse::where('package_id', $package->package->id)->get();
+                        $courses = PackageCourse::with('course')
+                            ->where('package_id', $package->package->id)
+                            ->get()
+                            ->pluck('course')
+                            ->filter();
                     }else{
                         $courses = Course::where('is_active', true)->where('type', 'course')->get();
                     }
@@ -216,10 +220,6 @@ class BusinessManagementController extends Controller {
                 }
             }
             // ─────────────────────────────────────────────────────────────────────
-    
-        
-
-
             return view('student.company.enroll-users', compact(
                 'collaborators',
                 'totalCourses',
@@ -246,7 +246,7 @@ class BusinessManagementController extends Controller {
         $course     = Course::find($request->course_id);
 
         // Verificar que el estudiante pertenezca a la empresa
-        if ($student->parent_id !== Auth::id()) {
+        if ($student->parent_id !== (int) Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'El usuario no pertenece a tu empresa'
@@ -322,7 +322,7 @@ class BusinessManagementController extends Controller {
                 $student = User::find($userId);
 
                 // Verificiar que el estudiante tenga el parent_id del usuario que lo registro
-                if ($student->parent_id !== Auth::id()) {
+                if ($student->parent_id !== (int) Auth::id()) {
                     $results['failed'][] = [
                         'user'      => $student->names,
                         'reason'    => 'No pertenece a tu empresa'
@@ -439,7 +439,7 @@ class BusinessManagementController extends Controller {
 
         if($packageWithCourses){
             // Paquete con cursos
-            $courses = PackageCourse::with('course')->where('package_id', $package)->get();
+            $courses = PackageCourse::with('course')->where('package_id', $package->course_id)->get();
             // Verificamos si el paquete el plan del paquete es 'Plan Básico' con un límite de cursos > 0
         }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
             $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
@@ -475,7 +475,7 @@ class BusinessManagementController extends Controller {
 
                     // Verificar si ya está matriculado
                     $existingEnrollment = Enrollment::where('user_id', $student->id)
-                        ->where('course_id', $course->id)
+                        ->where('course_id', $course->course_id)
                         ->exists();
 
                     if ($existingEnrollment) {
@@ -498,7 +498,7 @@ class BusinessManagementController extends Controller {
 
                     $results['success'][] = [
                         'user'      => $student->names,
-                        'course'    => $course->title
+                        'course'    => $course->course->title
                     ];
                     
                     $results['total_processed']++;

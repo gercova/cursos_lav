@@ -707,7 +707,7 @@
         } finally {
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Agregar';
+                btn.innerHTML = 'Agregar al carrito';
             }
         }
     }

@@ -641,19 +641,6 @@
             this.applyFilters();
         }
 
-        // updateURL() {
-        //     const params = new URLSearchParams();
-
-        //     if (this.filters.search) params.append('search', this.filters.search);
-        //     if (this.filters.category) params.append('category', this.filters.category);
-        //     if (this.filters.sort && this.filters.sort !== 'newest') {
-        //         params.append('sort', this.filters.sort);
-        //     }
-
-        //     const newURL = params.toString() ? `/cursos?${params.toString()}` : '/cursos';
-        //     window.history.replaceState({}, '', newURL);
-        // }
-
         updateURL() {
             const params = new URLSearchParams();
             if (this.filters.search) params.append('search', this.filters.search);
@@ -756,7 +743,7 @@
         } finally {
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Agregar';
+                btn.innerHTML = 'Agregar al carrito';
             }
         }
     }

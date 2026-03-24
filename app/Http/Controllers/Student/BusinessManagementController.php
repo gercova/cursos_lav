@@ -481,16 +481,25 @@ class BusinessManagementController extends Controller {
                     if ($existingEnrollment) {
                         $results['failed'][] = [
                             'user'      => $student->names,
-                            'course'    => $course->title,
+                            // 'course'    => $course->title,
+                            'course' => $course->course->title,
                             'reason'    => 'Ya está matriculado'
                         ];
                         continue;
                     }
 
                     // Crear matrícula
+                    // Enrollment::create([
+                    //     'user_id'       => $student->id,
+                    //     'course_id'     => $course->id,
+                    //     'enrolled_at'   => now(),
+                    //     'progress'      => 0,
+                    //     'status'        => 'active',
+                    // ]);
+
                     Enrollment::create([
                         'user_id'       => $student->id,
-                        'course_id'     => $course->id,
+                        'course_id'     => $course->course_id, // ← igual que en el WHERE del check
                         'enrolled_at'   => now(),
                         'progress'      => 0,
                         'status'        => 'active',

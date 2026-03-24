@@ -421,31 +421,182 @@ class BusinessManagementController extends Controller {
      * Mega matrícula - Todos los usuarios en todos los cursos
      */
 
-    public function superBulkEnroll(Request $request): JsonResponse {
-        // Obtener todos los colaboradores (filtrados por el id del usuario padre)
-        $students = User::where('parent_id', Auth::id())
-            ->orWhere('id', Auth::id()) // Incluimos al usuario padre para matricular en los cursos
-            ->get();
+    // public function superBulkEnroll(Request $request): JsonResponse {
+    //     // Obtener todos los colaboradores (filtrados por el id del usuario padre)
+    //     $students = User::where('parent_id', Auth::id())
+    //         ->orWhere('id', Auth::id()) // Incluimos al usuario padre para matricular en los cursos
+    //         ->get();
         
-        // Obtener todos los cursos activos por paquete o tipo de paquete
-        // Verifica que el usuario padre está matriculado estrictamente en un paquete
-            $package = Enrollment::where('user_id', Auth::id())
-                ->whereHas('package') 
-                ->with('package')
-                ->first();
+    //     // Obtener todos los cursos activos por paquete o tipo de paquete
+    //     // Verifica que el usuario padre está matriculado estrictamente en un paquete
+    //         $package = Enrollment::where('user_id', Auth::id())
+    //             ->whereHas('package') 
+    //             ->with('package')
+    //             ->first();
 
-        // Verificamos que el paquete tenga cursos 
-        $packageWithCourses = PackageCourse::with('course')->where('package_id', $package->course_id)->exists();
+    //     // Verificamos que el paquete tenga cursos 
+    //     $packageWithCourses = PackageCourse::with('course')->where('package_id', $package->course_id)->exists();
 
-        if($packageWithCourses){
-            // Paquete con cursos
-            $courses = PackageCourse::with('course')->where('package_id', $package->course_id)->get();
-            // Verificamos si el paquete el plan del paquete es 'Plan Básico' con un límite de cursos > 0
-        }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
-            $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
-        }else{
-            $courses = Course::where('is_active', true)->where('type', 'course')->get();
+    //     if($packageWithCourses){
+    //         // Paquete con cursos
+    //         $courses = PackageCourse::with('course')->where('package_id', $package->course_id)->get();
+    //         // Verificamos si el paquete el plan del paquete es 'Plan Básico' con un límite de cursos > 0
+    //     }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
+    //         $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
+    //     }else{
+    //         $courses = Course::where('is_active', true)->where('type', 'course')->get();
+    //     }
+
+    //     if ($students->isEmpty()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'No hay usuarios para matricular'
+    //         ], 400);
+    //     }
+
+    //     if ($courses->isEmpty()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'No hay cursos activos'
+    //         ], 400);
+    //     }
+
+    //     $results = [
+    //         'success'           => [],
+    //         'failed'            => [],
+    //         'total_processed'   => 0,
+    //         'total_enrollments' => $students->count() * $courses->count()
+    //     ];
+
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($students as $student) {
+    //             foreach ($courses as $course) {
+
+    //                 // Verificar si ya está matriculado
+    //                 $existingEnrollment = Enrollment::where('user_id', $student->id)
+    //                     ->where('course_id', $course->course_id)
+    //                     ->exists();
+
+    //                 if ($existingEnrollment) {
+    //                     $results['failed'][] = [
+    //                         'user'      => $student->names,
+    //                         // 'course'    => $course->title,
+    //                         'course' => $course->course->title,
+    //                         'reason'    => 'Ya está matriculado'
+    //                     ];
+    //                     continue;
+    //                 }
+
+    //                 // Crear matrícula
+    //                 // Enrollment::create([
+    //                 //     'user_id'       => $student->id,
+    //                 //     'course_id'     => $course->id,
+    //                 //     'enrolled_at'   => now(),
+    //                 //     'progress'      => 0,
+    //                 //     'status'        => 'active',
+    //                 // ]);
+
+    //                 Enrollment::create([
+    //                     'user_id'       => $student->id,
+    //                     'course_id'     => $course->course_id, // ← igual que en el WHERE del check
+    //                     'enrolled_at'   => now(),
+    //                     'progress'      => 0,
+    //                     'status'        => 'active',
+    //                 ]);
+
+    //                 $results['success'][] = [
+    //                     'user'      => $student->names,
+    //                     'course'    => $course->course->title
+    //                 ];
+                    
+    //                 $results['total_processed']++;
+    //             }
+    //         }
+
+    //         DB::commit();
+
+    //         $message = "Matrículas completadas: {$results['total_processed']} inscripciones realizadas exitosamente";
+            
+    //         if (count($results['failed']) > 0) {
+    //             $message .= ". " . count($results['failed']) . " inscripciones fallidas.";
+    //         }
+
+    //         return response()->json([
+    //             'success'   => true,
+    //             'message'   => $message,
+    //             'data'      => [
+    //                 'success'   => $results['success'],
+    //                 'failed'    => $results['failed'],
+    //                 'summary'   => "Total de usuarios: {$students->count()}<br>
+    //                     Total de cursos: {$courses->count()}<br>
+    //                     Matrículas realizadas: <span class='text-green-600 font-bold'>{$results['total_processed']}</span><br>
+    //                     Matrículas fallidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
+    //                 'total_processed' => $results['total_processed']
+    //             ]
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error en Mega Matrícula: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    public function superBulkEnroll(Request $request): JsonResponse {
+        // Colaboradores de la empresa + el propio owner
+        $students = User::where('parent_id', Auth::id())
+            ->orWhere('id', Auth::id())
+            ->get();
+
+        // Matrícula de paquete del owner
+        $package = Enrollment::where('user_id', Auth::id())
+            ->whereHas('package')
+            ->with('package')
+            ->first();
+
+        // ── Normalizar $courses a Collection<Course> siempre ──────────────────
+        // Igual que enrollUsers(): el loop usa $course->id y $course->title directo,
+        // sin importar de dónde vengan los cursos.
+        $courses = collect();
+
+        if ($package && $package->package) {
+            $planTypeId  = $package->package->plan_type_id;
+            $courseLimit = $package->package->course_limit;
+
+            if ($planTypeId == 1 && $courseLimit > 0) {
+                // Plan Básico: el usuario eligió sus propios cursos
+                $courses = UserCoursePackage::with('course')
+                    ->where('user_id', Auth::id())
+                    ->get()
+                    ->pluck('course')
+                    ->filter();
+
+            } elseif ($planTypeId != 1 && $courseLimit == 0) {
+                // Plan superior: cursos fijos asignados al paquete
+                $packageHasCourses = PackageCourse::where('package_id', $package->course_id)->exists();
+
+                if ($packageHasCourses) {
+                    $courses = PackageCourse::with('course')
+                        ->where('package_id', $package->course_id)
+                        ->get()
+                        ->pluck('course')   // ← normalizar: Collection<Course>
+                        ->filter();
+                } else {
+                    $courses = Course::where('is_active', true)
+                        ->where('type', 'course')
+                        ->get();
+                }
+            } else {
+                // Fallback: todos los cursos activos
+                $courses = Course::where('is_active', true)
+                    ->where('type', 'course')
+                    ->get();
+            }
         }
+        // ─────────────────────────────────────────────────────────────────────
 
         if ($students->isEmpty()) {
             return response()->json([
@@ -473,43 +624,33 @@ class BusinessManagementController extends Controller {
             foreach ($students as $student) {
                 foreach ($courses as $course) {
 
-                    // Verificar si ya está matriculado
+                    // $course ahora ES un Course directamente → usar ->id y ->title
                     $existingEnrollment = Enrollment::where('user_id', $student->id)
-                        ->where('course_id', $course->course_id)
+                        ->where('course_id', $course->id)   // ← $course->id siempre
                         ->exists();
 
                     if ($existingEnrollment) {
                         $results['failed'][] = [
-                            'user'      => $student->names,
-                            // 'course'    => $course->title,
-                            'course' => $course->course->title,
-                            'reason'    => 'Ya está matriculado'
+                            'user'   => $student->names,
+                            'course' => $course->title,     // ← $course->title siempre
+                            'reason' => 'Ya está matriculado'
                         ];
                         continue;
                     }
 
-                    // Crear matrícula
-                    // Enrollment::create([
-                    //     'user_id'       => $student->id,
-                    //     'course_id'     => $course->id,
-                    //     'enrolled_at'   => now(),
-                    //     'progress'      => 0,
-                    //     'status'        => 'active',
-                    // ]);
-
                     Enrollment::create([
-                        'user_id'       => $student->id,
-                        'course_id'     => $course->course_id, // ← igual que en el WHERE del check
-                        'enrolled_at'   => now(),
-                        'progress'      => 0,
-                        'status'        => 'active',
+                        'user_id'     => $student->id,
+                        'course_id'   => $course->id,       // ← $course->id siempre
+                        'enrolled_at' => now(),
+                        'progress'    => 0,
+                        'status'      => 'active',
                     ]);
 
                     $results['success'][] = [
-                        'user'      => $student->names,
-                        'course'    => $course->course->title
+                        'user'   => $student->names,
+                        'course' => $course->title,         // ← $course->title siempre
                     ];
-                    
+
                     $results['total_processed']++;
                 }
             }
@@ -517,21 +658,20 @@ class BusinessManagementController extends Controller {
             DB::commit();
 
             $message = "Matrículas completadas: {$results['total_processed']} inscripciones realizadas exitosamente";
-            
             if (count($results['failed']) > 0) {
-                $message .= ". " . count($results['failed']) . " inscripciones fallidas.";
+                $message .= '. ' . count($results['failed']) . ' inscripciones omitidas (ya matriculadas).';
             }
 
             return response()->json([
-                'success'   => true,
-                'message'   => $message,
-                'data'      => [
-                    'success'   => $results['success'],
-                    'failed'    => $results['failed'],
-                    'summary'   => "Total de usuarios: {$students->count()}<br>
+                'success' => true,
+                'message' => $message,
+                'data'    => [
+                    'success'         => $results['success'],
+                    'failed'          => $results['failed'],
+                    'summary'         => "Total de usuarios: {$students->count()}<br>
                         Total de cursos: {$courses->count()}<br>
                         Matrículas realizadas: <span class='text-green-600 font-bold'>{$results['total_processed']}</span><br>
-                        Matrículas fallidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
+                        Matrículas omitidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
                     'total_processed' => $results['total_processed']
                 ]
             ]);

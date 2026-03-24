@@ -343,7 +343,7 @@
         </div>
 
         {{-- ══════════════════════════════════════
-             PANEL 5 — CONTENIDO
+            PANEL 5 — CONTENIDO
         ══════════════════════════════════════ --}}
         <div class="ent-panel" id="panel-contenido">
             <div class="ent-card">

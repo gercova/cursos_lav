@@ -317,7 +317,7 @@
                 <!-- Cabecera -->
                 <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div class="flex-1">Categoría</div>
-                    <div class="sm:w-48">Máx. Cursos</div>
+                    {{-- <div class="sm:w-48">Máx. Cursos</div> --}}
                     <div class="w-10"></div>
                 </div>
                 
@@ -336,9 +336,9 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="sm:w-48">
+                                {{-- <div class="sm:w-48">
                                     <input type="number" x-model="category.max_courses_per_category" placeholder="Máx. cursos" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                                </div>
+                                </div> --}}
                                 <button type="button" @click="removeCategory(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
                                     <i class="fas fa-trash"></i>
                                 </button>

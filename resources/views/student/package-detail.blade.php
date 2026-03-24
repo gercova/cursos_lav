@@ -199,7 +199,7 @@
                 </div>
 
                 <!-- Cursos incluidos en el paquete (basado en create.blade.php) -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
+                {{-- <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <i class="fas fa-book text-indigo-600"></i>
                         Cursos incluidos en este paquete
@@ -231,6 +231,82 @@
                                 @endif
                                 
                                 <!-- Precio original del curso -->
+                                <div class="text-right">
+                                    <span class="text-sm text-gray-500">Curso valorizado en:</span>
+                                    <p class="font-semibold text-indigo-600">S/ {{ number_format($course->price, 2) }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <!-- Resumen de valor total (basado en create.blade.php) -->
+                    <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            @php
+                                // 1. Inicializamos la variable para evitar el "Undefined variable"
+                                $final_price = 0;
+                                
+                                // Corregido: Course en lugar de Courses y validación de plan_type_id
+                                if ($package->plan_type_id == 1 && $package->course_limit > 0) {
+                                    $averagePrice = \App\Models\Course::inRandomOrder()
+                                        ->limit($package->courses_limit)
+                                        ->get()
+                                        ->avg('price');
+                                    
+                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
+                                } 
+                                elseif ($package->plan_type_id !== 1) {
+                                    $averagePrice = \App\Models\Course::where('is_active', true)
+                                        ->get()
+                                        ->avg('price');
+                                    
+                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
+                                }
+                            @endphp
+
+                            <div>
+                                <p class="text-sm text-indigo-600 font-medium">Valor total de cursos por separado</p>
+                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($final_price, 2) }}</p>
+                            </div>
+
+                            <div class="text-right">
+                                <p class="text-sm text-green-600 font-medium">Ahorro con este paquete</p>
+                                <p class="text-2xl font-bold text-green-600">
+                                    S/ {{ number_format(max(0, $final_price - $package->price), 2) }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div> --}}
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                        <i class="fas fa-book text-indigo-600"></i>
+                        Cursos incluidos en este paquete
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {{ $package->courses->count() }}
+                        </span>
+                    </h2>
+                    
+                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                        @foreach($package->courses as $index => $course)
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
+                                <div class="flex-1 flex items-center gap-3">
+                                    <span class="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full text-sm font-bold flex-shrink-0">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-medium text-gray-900">{{ $course->title }}</h3>
+                                        <p class="text-sm text-gray-500">{{ $course->category->name ?? 'Sin categoría' }}</p>
+                                    </div>
+                                </div>
+                                
+                                @if($course->pivot && $course->pivot->quantity)
+                                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                                        <i class="fas fa-video"></i>
+                                        <span>{{ $course->pivot->quantity }} sesiones</span>
+                                    </div>
+                                @endif
+                                
                                 <div class="text-right">
                                     <span class="text-sm text-gray-500">Curso valorizado en:</span>
                                     <p class="font-semibold text-indigo-600">S/ {{ number_format($course->price, 2) }}</p>
@@ -420,7 +496,6 @@
         </button>
     </div>
 </div>
-
 @endsection
 
 @section('scripts')
@@ -590,6 +665,21 @@
     
     .animate-fade-in-up {
         animation: fade-in-up 0.8s ease-out;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #c7d2fe; /* indigo-200 */
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #818cf8; /* indigo-400 */
     }
 </style>
 @endsection

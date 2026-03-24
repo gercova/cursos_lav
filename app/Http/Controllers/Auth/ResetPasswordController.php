@@ -29,7 +29,7 @@ class ResetPasswordController extends Controller
         // 2. Usamos el modelo en lugar de app('enterprise')
         $enterprise = Enterprise::first() ?? (object) [
             'trade_name'    => 'Plataforma de Cursos',
-            'logo_path'     => asset('images/logo.png'),
+            'logo_path'     => asset('storage/photos/ipf-logo.png'),
             'favicon_path'  => asset('favicon.ico'), // Agregué el favicon por si tu vista base lo pide
         ];
 

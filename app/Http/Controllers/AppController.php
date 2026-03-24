@@ -326,27 +326,22 @@ class AppController extends Controller {
         }
 
         try {
-            // Aquí puedes:
-            // 1. Guardar en la base de datos
-            // 2. Enviar email
-            // 3. Integrar con CRM
-
             $contactData = [
                 'name'          => $request->name,
                 'email'         => $request->email,
                 'phone'         => $request->phone,
                 'subject'       => $request->subject,
-                'message'       => $request->message,
+                'user_message'  => $request->message, // <-- ¡CAMBIO AQUÍ! Le cambiamos el nombre
                 'ip_address'    => $request->ip(),
                 'user_agent'    => $request->userAgent(),
             ];
 
-            // Ejemplo de envío de email (descomentar cuando configures mail)
-
-            Mail::send('emails.contact', $contactData, function($message) use ($contactData) {
-                $message->to('consultores.ipf@gmail.com')
+            // Envío de email real
+            Mail::send('emails.contact.contact', $contactData, function($message) use ($contactData) {
+                // Aquí pones a dónde quieres que lleguen los mensajes de tus clientes
+                $message->to('informes@ipf-educa.com') 
                     ->subject('Nuevo mensaje de contacto: ' . $contactData['subject'])
-                    ->from($contactData['email'], $contactData['name']);
+                    ->replyTo($contactData['email'], $contactData['name']);
             });
 
             return response()->json([
@@ -357,7 +352,7 @@ class AppController extends Controller {
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al enviar el mensaje. Por favor, intenta nuevamente.'
+                'message' => 'Error al enviar el mensaje: ' . $e->getMessage()
             ], 500);
         }
     }

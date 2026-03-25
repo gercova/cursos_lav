@@ -577,12 +577,8 @@
             // Mostrar notificación
             showNotification(message, type = 'success') {
                 const notification = document.createElement('div');
-                const bgClass = type === 'success'
-                    ? 'bg-gradient-to-r from-green-500 to-green-600'
-                    : 'bg-gradient-to-r from-red-500 to-red-600';
-
+                const bgClass = type === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600';
                 notification.className = `fixed top-6 right-6 z-50 px-6 py-4 rounded-xl shadow-xl transform transition-all duration-300 ${bgClass} text-white`;
-
                 notification.innerHTML = `
                     <div class="flex items-center gap-3">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

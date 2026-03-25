@@ -95,48 +95,6 @@
     </div>
 </div>
 
-{{-- 4. TABLA: PROGRESO TOTAL POR COLABORADOR --}}
-{{-- <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
-    <div class="p-5 border-b border-gray-100 bg-gray-50">
-        <h3 class="font-bold text-gray-800">Ranking de Progreso por Colaborador</h3>
-    </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-gray-50 text-gray-500 text-xs uppercase">
-                    <th class="p-4">Colaborador</th>
-                    <th class="p-4">Puesto</th>
-                    <th class="p-4 text-center">Cursos</th>
-                    <th class="p-4">Progreso Promedio</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @foreach($collaboratorProgress as $collab)
-                <tr class="hover:bg-gray-50">
-                    <td class="p-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                                {{ substr($collab['name'], 0, 1) }}
-                            </div>
-                            <span class="text-sm font-medium">{{ $collab['name'] }}</span>
-                        </div>
-                    </td>
-                    <td class="p-4 text-sm text-gray-500">{{ $collab['profession'] }}</td>
-                    <td class="p-4 text-center text-sm font-bold">{{ $collab['completed'] }}/{{ $collab['total_courses'] }}</td>
-                    <td class="p-4">
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
-                                <div class="bg-emerald-500 h-full" style="width: {{ $collab['avg_progress'] }}%"></div>
-                            </div>
-                            <span class="text-xs font-bold">{{ $collab['avg_progress'] }}%</span>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div> --}}
 {{-- 4. TABLA: PROGRESO TOTAL POR COLABORADOR (CON SCROLL) --}}
 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
     <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">

@@ -347,6 +347,7 @@
             statusFilter: '{{ request('status', '') }}',
             loading: false,
             debounceTimer: null,
+            isSubmitting: false,
 
             // Inicialización
             init() {
@@ -446,6 +447,10 @@
 
             // Manejar submit del modal
             async handleModalSubmit(detail) {
+                // <-- 2. Si ya se está enviando, bloqueamos la ejecución
+                if (this.isSubmitting) return; 
+                this.isSubmitting = true;
+
                 const { formData, closeModal } = detail;
 
                 try {
@@ -480,6 +485,9 @@
 
                 } catch (error) {
                     this.handleSubmitError(error);
+                } finally {
+                    // <-- 3. Liberamos la cerradura pase lo que pase (éxito o error)
+                    this.isSubmitting = false; 
                 }
             },
 

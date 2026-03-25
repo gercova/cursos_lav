@@ -168,7 +168,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @foreach($courses as $course)
-                            <tr class="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-white transition-all duration-200 group">
+                            <tr class="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-white transition-all duration-200 group" data-course-id="{{ $course->id }}">
                                 <!-- Información del curso -->
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-4">
@@ -345,22 +345,27 @@
                                             </a>
 
                                             <!-- Documentos -->
-                                            <a href="#" class="block px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2">
+                                            {{-- <a href="#" class="block px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                                 Documentos
-                                            </a>
+                                            </a> --}}
 
                                             <!-- Eliminar (opcional: descomenta si lo usas) -->
-                                            <!--
                                             <button @click="deleteCourse({{ $course->id }}); open = false" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
                                                 Eliminar
                                             </button>
-                                            -->
+
+                                            {{-- <button @click="deleteCategory({{ $category->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Eliminar
+                                            </button> --}}
                                         </div>
                                     </div>
                                 </td>
@@ -633,6 +638,7 @@
 
             init() {
                 // Inicializar
+                this.setupEventListeners();
             },
 
             async savePrices() {
@@ -680,6 +686,28 @@
                 }
             },
 
+            // Configurar listeners de eventos
+            setupEventListeners() {
+                window.addEventListener('course-deleted', (e) => {
+                    this.handleCourseDeleted(e.detail); // Renombrado a Course para mayor claridad
+                });
+            },
+
+            handleCourseDeleted(courseId) {
+                const row = document.querySelector(`tr[data-course-id="${courseId}"]`);
+                if (row) {
+                    row.style.transition = 'all 0.3s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(20px)';
+
+                    setTimeout(() => {
+                        row.remove();
+                        // Eliminamos las llamadas que rompían el código aquí,
+                        // la notificación ya se muestra desde deleteCourse()
+                    }, 300);
+                }
+            },
+
             resetFilters() {
                 this.searchQuery    = '';
                 this.statusFilter   = '';
@@ -710,20 +738,57 @@
     }
 
     // Función para eliminar curso
+    // async function deleteCourse(courseId) {
+    //     if (!confirm('¿Estás seguro de eliminar este curso?\n\nEsta acción no se puede deshacer.')) {
+    //         return;
+    //     }
+
+    //     try {
+    //         await axios.delete(`${API_URL}/admin/courses/${courseId}`, {
+    //             headers: {
+    //                 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value,
+    //                 'Accept': 'application/json', // <-- Aseguramos que Laravel sepa que queremos JSON
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         });
+
+    //         // <-- SOLUCIÓN: Cambiado categoryId a courseId
+    //         window.dispatchEvent(new CustomEvent('course-deleted', {
+    //             detail: courseId 
+    //         }));
+
+    //     } catch (error) {
+    //         console.error('Error al eliminar:', error);
+    //         // Mostrar mensaje de error proveniente del backend (ej: si tiene estudiantes)
+    //         const msg = error.response?.data?.message || 'Error al eliminar el curso. Por favor, intenta nuevamente.';
+    //         alert(msg);
+    //     }
+    // }
+
     async function deleteCourse(courseId) {
-        if (!confirm('¿Estás seguro de eliminar este curso? Esta acción no se puede deshacer.')) {
+        if (!confirm('¿Estás seguro de eliminar este curso?\n\nEsta acción no se puede deshacer.')) {
             return;
         }
 
         try {
-            const response = await axios.delete(`/admin/courses/${courseId}`);
-            if (response.data.success) {
-                showNotification('Curso eliminado exitosamente', 'success');
-                setTimeout(() => window.location.reload(), 1000);
-            }
+            await axios.delete(`${API_URL}/admin/courses/${courseId}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            showNotification('Curso borrado exitosamente', 'success');
+
+            window.dispatchEvent(new CustomEvent('course-deleted', {
+                detail: courseId
+            }));
+
         } catch (error) {
-            console.error('Error al eliminar curso:', error);
-            showNotification('Error al eliminar el curso', 'error');
+            console.error('Error al eliminar:', error);
+            const msg = error.response?.data?.message || 'Error al eliminar el curso. Por favor, intenta nuevamente.';
+            showNotification(msg, 'error');
         }
     }
 

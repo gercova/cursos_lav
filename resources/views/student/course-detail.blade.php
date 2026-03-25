@@ -346,49 +346,156 @@
 
 @section('scripts')
 <script>
+    // async function addToCart(courseId) {
+    //     try {
+    //         // const response = await axios.post('/cart/add', {
+    //         //     course_id: courseId
+    //         // });
+    //         const response = await fetch(`/cart/add/${courseId}`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         });
+
+    //         if (response.data.success) {
+    //             // Mostrar notificación de éxito
+    //             showNotification('Curso agregado al carrito', 'success');
+    //             // Actualizar contador del carrito
+    //             updateCartCount();
+    //         }
+    //     } catch (error) {
+    //         console.error('Error adding to cart:', error);
+    //         showNotification('Error al agregar al carrito', 'error');
+    //     }
+    // }
+
     async function addToCart(courseId) {
+        const btn = event?.target;
+        if (btn) {
+            btn.disabled    = true;
+            btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+        }
+
         try {
-            const response = await axios.post('/api/cart/add', {
-                course_id: courseId
+            const response = await fetch(`/cart/add/${courseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             });
 
-            if (response.data.success) {
-                // Mostrar notificación de éxito
-                showNotification('Curso agregado al carrito', 'success');
-                // Actualizar contador del carrito
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('✓ Curso agregado al carrito', 'success');
                 updateCartCount();
+            } else if(data.success == false) {
+                showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+            } else {
+                throw new Error(data.message || 'Error al agregar el curso');
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
-            showNotification('Error al agregar al carrito', 'error');
+            console.error('Error:', error);
+
+            if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+                showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showNotification('Error al agregar el curso al carrito', 'error');
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Agregar al carrito';
+            }
         }
     }
 
-    function showNotification(message, type) {
-        // Crear elemento de notificación
+    function showNotification(message, type = 'info') {
+        // Remover notificaciones existentes
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
+
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
         const notification = document.createElement('div');
-        notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-transform duration-300 translate-x-full ${
-            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
-        notification.textContent = message;
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-lg">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
 
         document.body.appendChild(notification);
 
-        // Animar entrada
         setTimeout(() => {
-            notification.classList.remove('translate-x-full');
-        }, 100);
-
-        // Remover después de 3 segundos
-        setTimeout(() => {
-            notification.classList.add('translate-x-full');
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
+
+    async function updateCartCount() {
+        try {
+            const response = await fetch('/api/cart/count', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount && data.count !== undefined) {
+                cartCount.textContent = data.count;
+
+                // Animación del contador
+                cartCount.classList.add('animate-bounce');
+                setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
+    }
+
+    // function showNotification(message, type) {
+    //     // Crear elemento de notificación
+    //     const notification = document.createElement('div');
+    //     notification.className = `fixed top-20 right-4 z-50 p-4 rounded-lg shadow-lg transform transition-transform duration-300 translate-x-full ${
+    //         type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    //     }`;
+    //     notification.textContent = message;
+
+    //     document.body.appendChild(notification);
+
+    //     // Animar entrada
+    //     setTimeout(() => {
+    //         notification.classList.remove('translate-x-full');
+    //     }, 100);
+
+    //     // Remover después de 3 segundos
+    //     setTimeout(() => {
+    //         notification.classList.add('translate-x-full');
+    //         setTimeout(() => {
+    //             if (document.body.contains(notification)) {
+    //                 document.body.removeChild(notification);
+    //             }
+    //         }, 300);
+    //     }, 3000);
+    // }
 
     // Carousel functionality
     function courseCarousel() {

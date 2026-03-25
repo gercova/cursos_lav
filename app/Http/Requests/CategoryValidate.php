@@ -15,6 +15,7 @@ class CategoryValidate extends FormRequest
         return [
             'name'          => 'required|unique:categories,name,'.$this->id,
             'description'   => 'required|string',
+            'is_active'     => 'nullable|boolean',
         ];
     }
 

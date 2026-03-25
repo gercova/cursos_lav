@@ -216,6 +216,12 @@ class CoursesAdminController extends Controller {
     public function destroy(Course $course) {
         // Verificar si hay inscripciones activas
         if ($course->enrollments()->where('status', 'active')->exists()) {
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se puede eliminar el curso porque tiene estudiantes inscritos activamente.'
+                ], 422);
+            }
             return redirect()->back()
                 ->with('error', 'No se puede eliminar el curso porque tiene estudiantes inscritos activamente.');
         }
@@ -229,6 +235,15 @@ class CoursesAdminController extends Controller {
 
         $course->delete();
         $this->logActivity("Eliminó el curso: {$courseTitle}");
+
+        // <-- SOLUCIÓN: Si es Axios, devolvemos JSON
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Curso eliminado exitosamente.'
+            ]);
+        }
+
         return redirect()->route('admin.courses.index')->with('success', 'Curso eliminado exitosamente.');
     }
 
@@ -292,26 +307,26 @@ class CoursesAdminController extends Controller {
     /**
      * Course Statistics
      */
-    public function statistics(Course $course): View {
-        $course->load(['enrollments.user', 'enrollments.payments']);
-        $stats = [
-            'total_enrollments'     => $course->enrollments()->count(),
-            'active_enrollments'    => $course->enrollments()->where('status', 'active')->count(),
-            'completed_enrollments' => $course->enrollments()->where('status', 'completed')->count(),
-            'total_revenue'         => $course->enrollments()
-                ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
-                ->where('payments.status', 'completed')
-                ->sum('payments.amount'),
-            'completion_rate'       => $this->calculateCourseCompletionRate($course),
-            'average_progress'      => $course->enrollments()->avg('progress') ?? 0,
-        ];
+    // public function statistics(Course $course): View {
+    //     $course->load(['enrollments.user', 'enrollments.payments']);
+    //     $stats = [
+    //         'total_enrollments'     => $course->enrollments()->count(),
+    //         'active_enrollments'    => $course->enrollments()->where('status', 'active')->count(),
+    //         'completed_enrollments' => $course->enrollments()->where('status', 'completed')->count(),
+    //         'total_revenue'         => $course->enrollments()
+    //             ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
+    //             ->where('payments.status', 'completed')
+    //             ->sum('payments.amount'),
+    //         'completion_rate'       => $this->calculateCourseCompletionRate($course),
+    //         'average_progress'      => $course->enrollments()->avg('progress') ?? 0,
+    //     ];
 
-        // Datos para gráficos
-        $enrollmentTrends   = $this->getEnrollmentTrends($course);
-        $revenueByMonth     = $this->getRevenueByMonth($course);
+    //     // Datos para gráficos
+    //     $enrollmentTrends   = $this->getEnrollmentTrends($course);
+    //     $revenueByMonth     = $this->getRevenueByMonth($course);
 
-        return view('admin.courses.statistics', compact('course', 'stats', 'enrollmentTrends', 'revenueByMonth'));
-    }
+    //     return view('admin.courses.statistics', compact('course', 'stats', 'enrollmentTrends', 'revenueByMonth'));
+    // }
 
     /**
      * Bulk Actions

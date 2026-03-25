@@ -254,14 +254,14 @@ Route::prefix('admin')->group(function () {
         Route::delete('/roles/{role}',          [RoleController::class, 'destroy'])->name('admin.roles.destroy');
 
         // Rutas para categorias
-        Route::get('categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
-        Route::get('categories/stats',                          [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
-        Route::post('categories/store',                         [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
-        Route::get('categories/{category}',                     [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
-        Route::put('categories/{category}',                     [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
-        Route::delete('categories/{category}',                  [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
-        Route::post('categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
-        Route::post('categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
+        Route::get('/categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
+        Route::get('/categories/stats',                          [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
+        Route::post('/categories/store',                         [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
+        Route::get('/categories/{category}',                     [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
+        Route::put('/categories/{category}',                     [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
+        Route::delete('/categories/{category}',                  [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
+        Route::post('/categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
+        Route::post('/categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
 
         // Rutas para cursos
         Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');

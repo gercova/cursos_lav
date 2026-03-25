@@ -430,7 +430,8 @@
 
                 @if ($hasAnyPackage)
                     <hr>
-                    @if($purchasedPackage && in_array($purchasedPackage->plan_type_id, [5, 6, 7]))
+                    {{-- @if($purchasedPackage && in_array($purchasedPackage->plan_type_id, [5, 6, 7])) --}}
+                    @if($purchasedPackage)
                         <a href="{{ route('company.dashboard-admin') }}" class="sidebar-link {{ request()->routeIs('company.dashboard-admin') ? 'active bg-purple-700' : '' }}">
                             <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
                         </a>

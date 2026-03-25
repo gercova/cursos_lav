@@ -102,7 +102,8 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
     // si usuario tiene compro un paquete
-    Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin')->middleware('company.plan');
+    // Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin')->middleware('company.plan');
+    Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
     Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
     Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');

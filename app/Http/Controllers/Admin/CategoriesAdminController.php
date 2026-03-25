@@ -95,24 +95,25 @@ class CategoriesAdminController extends Controller {
         DB::beginTransaction();
 
         try {
+            // is_active ya vendrá incluido porque lo agregamos a las reglas
             $validated  = $request->validated();
-            $categoryId = $request->input('id');
+            
             $validated['slug'] = Str::slug($validated['name']);
-            $validated['slug'] = $this->generateUniqueSlug($validated['slug'], $categoryId);
-            $category = Category::updateOrCreate(['id' => $categoryId], $validated);
+            $validated['slug'] = $this->generateUniqueSlug($validated['slug']);
+            
+            // Creamos el registro directamente
+            $category = Category::create($validated);
             DB::commit();
-
-            $message = $categoryId ? 'Categoría actualizada exitosamente' : 'Categoría creada exitosamente';
 
             if ($request->wantsJson()) {
                 return response()->json([
                     'success'   => true,
                     'category'  => $category->fresh(['courses']),
-                    'message'   => $message
-                ], $categoryId ? 200 : 201);
+                    'message'   => 'Categoría creada exitosamente'
+                ], 201);
             }
 
-            return redirect()->route('admin.categories.index')->with('success', $message);
+            return redirect()->route('admin.categories.index')->with('success', 'Categoría creada exitosamente');
 
         } catch (Throwable $e) {
             DB::rollBack();

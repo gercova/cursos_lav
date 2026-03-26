@@ -87,6 +87,61 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
     }
 
+    // public function students(Request $request, Course $course) {
+    //     $query = $course->enrollments()->with('user');
+
+    //     if ($request->filled('search')) {
+    //         $search = $request->search;
+    //         $query->whereHas('user', function ($q) use ($search) {
+    //             $q->where('names', 'like', "%{$search}%")
+    //             ->orWhere('email', 'like', "%{$search}%")
+    //             ->orWhere('dni', 'like', "%{$search}%");
+    //         });
+    //     }
+
+    //     $enrollments = $query->latest('enrolled_at')->paginate(10);
+
+    //     // ✅ Si es AJAX, retorna solo las filas (el partial)
+    //     if ($request->ajax()) {
+    //         return view('admin.courses.partials.students-table', compact('enrollments'));
+    //     }
+
+    //     // Carga normal de la página completa
+    //     return view('admin.courses.students', compact('course', 'enrollments'));
+    // }
+
+    public function students(Request $request, Course $course) {
+        $query = $course->enrollments()->with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('names', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('dni', 'like', "%{$search}%");
+            });
+        }
+
+        $enrollments = $query->latest('enrolled_at')->paginate(10);
+
+        // AJAX: retorna JSON con las 3 partes por separado
+        if ($request->ajax()) {
+            $tableHtml = view('admin.courses.partials.students-table', compact('enrollments'))->render();
+
+            $paginationHtml = $enrollments->hasPages()
+                ? $enrollments->appends(['search' => $request->search])->links()->render()
+                : '';
+
+            return response()->json([
+                'table'      => $tableHtml,
+                'pagination' => $paginationHtml,
+                'total'      => $enrollments->total(),
+            ]);
+        }
+
+        return view('admin.courses.students', compact('course', 'enrollments'));
+    }
+
     public function store(CourseValidate $request) {
         try {
             $validated = $request->validated();
@@ -303,30 +358,6 @@ class CoursesAdminController extends Controller {
         $this->logActivity("Duplicó el curso: {$course->title}");
         return redirect()->route('admin.courses.index')->with('success', 'Curso duplicado exitosamente.');
     }
-
-    /**
-     * Course Statistics
-     */
-    // public function statistics(Course $course): View {
-    //     $course->load(['enrollments.user', 'enrollments.payments']);
-    //     $stats = [
-    //         'total_enrollments'     => $course->enrollments()->count(),
-    //         'active_enrollments'    => $course->enrollments()->where('status', 'active')->count(),
-    //         'completed_enrollments' => $course->enrollments()->where('status', 'completed')->count(),
-    //         'total_revenue'         => $course->enrollments()
-    //             ->join('payments', 'enrollments.id', '=', 'payments.enrollment_id')
-    //             ->where('payments.status', 'completed')
-    //             ->sum('payments.amount'),
-    //         'completion_rate'       => $this->calculateCourseCompletionRate($course),
-    //         'average_progress'      => $course->enrollments()->avg('progress') ?? 0,
-    //     ];
-
-    //     // Datos para gráficos
-    //     $enrollmentTrends   = $this->getEnrollmentTrends($course);
-    //     $revenueByMonth     = $this->getRevenueByMonth($course);
-
-    //     return view('admin.courses.statistics', compact('course', 'stats', 'enrollmentTrends', 'revenueByMonth'));
-    // }
 
     /**
      * Bulk Actions

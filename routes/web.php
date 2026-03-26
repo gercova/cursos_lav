@@ -266,13 +266,13 @@ Route::prefix('admin')->group(function () {
         // Rutas para cursos
         Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');
         Route::get('/courses/{course}/sections',        [CoursesAdminController::class, 'getSections']);
-        // Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
-        Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
-        Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
         Route::get('/courses/create',                   [CoursesAdminController::class, 'create'])->name('admin.courses.create');
         Route::get('/courses/{course}',                 [CoursesAdminController::class, 'show'])->name('admin.courses.show');
         Route::post('/courses/store',                   [CoursesAdminController::class, 'store'])->name('admin.courses.store');
         Route::get('/courses/{course}/edit',            [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
+        Route::get('/courses/{course}/students',        [CoursesAdminController::class, 'students'])->name('admin.courses.students');
+        Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
+        Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
         Route::put('/courses/update',                   [CoursesAdminController::class, 'update'])->name('admin.courses.update');
         Route::delete('/courses/{course}',              [CoursesAdminController::class, 'destroy'])->name('admin.courses.destroy');
         
@@ -304,6 +304,8 @@ Route::prefix('admin')->group(function () {
         
         // Rutas para documentos
         Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
+        Route::get('/documents/{course}/create',            [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
+        Route::get('/documents/{course}/view',              [DocumentsAdminController::class, 'view'])->name('admin.documents.view');
         Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
         Route::post('/documents/store',                     [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
         Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
@@ -323,6 +325,8 @@ Route::prefix('admin')->group(function () {
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');
+        Route::get('/exams/{course}/create',                    [ExamsAdminController::class, 'create'])->name('admin.exams.create');
+        Route::get('/exams/{course}/view',                      [ExamsAdminController::class, 'view'])->name('admin.exams.view');
         Route::get('/exams/{exam}/edit',                        [ExamsAdminController::class, 'edit'])->name('admin.exams.edit');
         Route::post('/exams/{exam}/duplicate',                  [ExamsAdminController::class, 'duplicate'])->name('admin.exams.duplicate');
         Route::get('/exams/{exam}/show',                        [ExamsAdminController::class, 'show'])->name('admin.exams.show');

@@ -17,18 +17,12 @@
         <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
                 <div class="relative">
-                    <input type="text" 
-                           x-model="search"
-                           @input.debounce.300ms="filterPackages"
-                           placeholder="Buscar paquetes..." 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" x-model="search" @input.debounce.300ms="filterPackages" placeholder="Buscar paquetes..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
             <div class="flex gap-2">
-                <select x-model="statusFilter" 
-                        @change="filterPackages"
-                        class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                <select x-model="statusFilter" @change="filterPackages" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
                     <option value="all">Todos los estados</option>
                     <option value="active">Activos</option>
                     <option value="inactive">Inactivos</option>
@@ -120,11 +114,9 @@
                                    title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <button @click="confirmDelete({{ $package->id }}, '{{ $package->name }}')" 
-                                        class="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-full transition duration-150"
-                                        title="Eliminar">
+                                {{-- <button @click="confirmDelete({{ $package->id }}, '{{ $package->name }}')" class="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-full transition duration-150" title="Eliminar">
                                     <i class="fas fa-trash"></i>
-                                </button>
+                                </button> --}}
                             </div>
                         </td>
                     </tr>
@@ -135,8 +127,7 @@
                                 <i class="fas fa-cubes text-4xl mb-3 text-gray-400"></i>
                                 <p class="text-lg mb-2">No hay paquetes creados</p>
                                 <p class="text-sm mb-4">Comienza creando tu primer paquete de cursos</p>
-                                <a href="{{ route('admin.packages.create') }}" 
-                                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2">
+                                <a href="{{ route('admin.packages.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2">
                                     <i class="fas fa-plus"></i>
                                     <span>Crear Paquete</span>
                                 </a>
@@ -155,7 +146,7 @@
     </div>
 
     <!-- Modal de Confirmación de Eliminación -->
-    <div x-show="showDeleteModal" 
+    {{-- <div x-show="showDeleteModal" 
          x-cloak
          class="fixed inset-0 z-50 overflow-y-auto"
          x-transition:enter="transition ease-out duration-300"
@@ -198,7 +189,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 @endsection
 

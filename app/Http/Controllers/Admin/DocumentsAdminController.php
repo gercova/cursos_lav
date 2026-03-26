@@ -23,48 +23,125 @@ class DocumentsAdminController extends Controller {
         $query = Document::with(['course.category'])
             ->latest();
 
-        // Filtros
+        // Filtro por curso específico
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        // Filtros existentes
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('file_type', 'like', "%{$search}%")
-                    ->orWhereHas('course', function ($q) use ($search) {
-                        $q->where('title', 'like', "%{$search}%");
-                    });
-                });
+                    ->orWhere('file_type', 'like', "%{$search}%");
+            });
         }
 
         if ($request->filled('status')) {
             $query->where('is_active', $request->status === 'active');
         }
 
-        if ($request->filled('course')) {
-            $query->where('course_id', $request->course);
+        if ($request->filled('type')) {
+            $query->where('file_type', $request->type);
+        }
+
+        $documents = $query->paginate(20);
+
+        // Para las vistas que requieren cursos
+        $courses = Course::where('is_active', true)->get();
+        $fileTypes = Document::distinct()->pluck('file_type');
+
+        // Para la vista específica de documentos por curso
+        if ($request->ajax()) {
+            return view('admin.documents.partials.table', compact('documents'));
+        }
+
+        return view('admin.documents.index', compact('documents', 'courses', 'fileTypes'));
+    }
+
+    public function create(Course $course): View {
+        return view('admin.documents.create', compact('course'));
+    }
+
+    // public function view(Request $request, Course $course) {
+    //     // Iniciamos la consulta base solo para este curso
+    //     $query = Document::where('course_id', $course->id)->latest();
+
+    //     // Filtro de búsqueda (por título o descripción)
+    //     if ($request->filled('search')) {
+    //         $search = $request->search;
+    //         $query->where(function ($q) use ($search) {
+    //             $q->where('title', 'like', "%{$search}%")
+    //               ->orWhere('description', 'like', "%{$search}%");
+    //         });
+    //     }
+
+    //     // Filtro por estado (Activo / Inactivo)
+    //     if ($request->filled('status')) {
+    //         $query->where('is_active', $request->status === 'active');
+    //     }
+
+    //     // Filtro por tipo de documento (pdf, doc, etc.)
+    //     if ($request->filled('type')) {
+    //         $query->where('file_type', $request->type);
+    //     }
+
+    //     // Paginamos los resultados (puedes cambiar el 10 al número que prefieras)
+    //     $documents = $query->paginate(10);
+
+    //     // Si la petición viene de nuestro AJAX (al filtrar o cambiar de página), 
+    //     // devolvemos solo la porción de la tabla renderizada
+    //     if ($request->ajax()) {
+    //         return view('admin.documents.partials.table', compact('documents'))->render();
+    //     }
+
+    //     // Si es la carga normal de la página, devolvemos la vista completa
+    //     return view('admin.documents.view', compact('course', 'documents'));
+    // }
+
+    public function view(Request $request, Course $course) {
+        $query = Document::where('course_id', $course->id)->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
         }
 
         if ($request->filled('type')) {
             $query->where('file_type', $request->type);
         }
 
-        $documents  = $query->paginate(20);
+        $documents = $query->paginate(10);
 
-        // Datos para filtros
-        $courses    = Course::where('is_active', true)->get();
-        $fileTypes  = Document::distinct()->pluck('file_type');
+        // ¡AQUÍ ESTÁ EL CAMBIO PAPU! Apuntamos al nuevo partial
+        if ($request->ajax()) {
+            return view('admin.documents.partials.view-table', compact('documents'))->render();
+        }
 
-        return view('admin.documents.index', compact('documents', 'courses', 'fileTypes'));
+        return view('admin.documents.view', compact('course', 'documents'));
     }
 
-    /*public function create(): View {
+    public function show(Document $document): View {
+        $document->load(['course.category', 'course.enrollments']);
+        return view('admin.documents.show', compact('document'));
+    }
+
+    public function edit(Document $document): View {
         $courses = Course::where('is_active', true)
             ->with(['category'])
             ->withCount('enrollments as students_count')
             ->get();
 
-        return view('admin.documents.create', compact('courses'));
-    }*/
+        return view('admin.documents.edit', compact('document', 'courses'));
+    }
 
     public function store(DocumentValidate $request) {
         $validator = $request->validated();
@@ -102,20 +179,6 @@ class DocumentsAdminController extends Controller {
         return redirect()->route('admin.documents.index')
             ->with('success', 'Documento subido exitosamente.');
         // --- FIN CORRECCIÓN ---
-    }
-
-    public function show(Document $document): View {
-        $document->load(['course.category', 'course.enrollments']);
-        return view('admin.documents.show', compact('document'));
-    }
-
-    public function edit(Document $document): View {
-        $courses = Course::where('is_active', true)
-            ->with(['category'])
-            ->withCount('enrollments as students_count')
-            ->get();
-
-        return view('admin.documents.edit', compact('document', 'courses'));
     }
 
     public function update(DocumentValidate $request, Document $document) {

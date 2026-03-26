@@ -1,7 +1,5 @@
 @extends('layouts.admin')
-
 @section('title', 'Editar Documento: ' . $document->title)
-
 @section('content')
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
@@ -166,9 +164,7 @@
                     @if($document->course)
                         <div class="flex items-center gap-4">
                             @if($document->course->image_url)
-                                <img src="{{ Storage::url($document->course->image_url) }}"
-                                     alt="{{ $document->course->title }}"
-                                     class="w-16 h-16 rounded-xl object-cover border border-gray-200">
+                                <img src="{{ $document->course->image_url }}" alt="{{ $document->course->title }}" class="w-16 h-16 rounded-xl object-cover border border-gray-200">
                             @endif
                             <div class="flex-1">
                                 <h5 class="font-semibold text-gray-900">{{ $document->course->title }}</h5>

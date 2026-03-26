@@ -189,9 +189,9 @@
                                                 class="text-green-600 hover:text-green-900">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <a href="#" class="text-purple-600 hover:text-purple-900">
+                                        {{-- <a href="#" class="text-purple-600 hover:text-purple-900">
                                             <i class="fas fa-chart-line"></i>
-                                        </a>
+                                        </a> --}}
                                     @else
                                         <span class="text-gray-400" title="Inscripción incompleta">
                                             <i class="fas fa-exclamation-triangle"></i>

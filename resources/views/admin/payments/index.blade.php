@@ -62,9 +62,7 @@
             <form id="filterForm" method="GET" action="{{ route('admin.payments.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="ID, Usuario o Curso"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="ID, Usuario o Curso" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
@@ -121,7 +119,7 @@
                     @forelse($payments as $payment)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="text-sm font-medium text-gray-900">{{ $payment->transaction_id ?? 'N/A' }}</span>
+                            <span class="text-sm font-medium text-gray-900">{{ $payment->payment_id ?? $payment->id }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
@@ -131,18 +129,6 @@
                                 </div>
                             </div>
                         </td>
-                        {{-- <td class="px-6 py-4 whitespace-nowrap">
-                            @if($payment->order && $payment->order->items->first())
-                                <div class="text-sm text-gray-900">
-                                    {{ $payment->order->items->first()->course_title ?? 'N/A' }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    {{ $payment->order->items->count() }} curso(s)
-                                </div>
-                            @else
-                                <span class="text-sm text-gray-500">N/A</span>
-                            @endif
-                        </td> --}}
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($payment->order && $payment->order->items->first())
                                 <div class="text-sm text-gray-900">

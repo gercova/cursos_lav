@@ -168,9 +168,9 @@
                     </div>
                     <div>
                         <label for="course_limit" class="block text-sm font-medium text-gray-700 mb-2">
-                            Límite de cursos para este paquete <span class="text-red-500">*</span>
+                            Límite de cursos para este paquete <span class="text-red-500" x-show="form.plan_type_id == 1">*</span>
                         </label>
-                        <input type="number" id="course_limit" x-model="form.course_limit" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0">
+                        <input type="number" id="course_limit" x-model="form.course_limit" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0" :required="form.plan_type_id == 1">
                     </div>
                 </div>
 
@@ -238,126 +238,128 @@
         </div>
 
         <!-- Sección de Cursos EspecíficOS -->
-        <div class="mt-8 border-t pt-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-book text-blue-600"></i>
-                    Cursos Específicos Incluidos
-                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.courses.length > 0" x-text="form.courses.length"></span>
-                </h2>
-                <button type="button" @click="openCourseModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Agregar Cursos</span>
-                </button>
-            </div>
-            
-            <!-- Lista de cursos seleccionados CON SCROLL -->
-            <div class="space-y-3" x-show="form.courses.length > 0">
-                <!-- Cabecera de la lista (visible en desktop) -->
-                <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex-1">Curso</div>
-                    <div class="w-10"></div>
+        <div x-show="form.plan_type_id != 1" x-cloak>
+            <div class="mt-8 border-t pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-book text-blue-600"></i>
+                        Cursos Específicos Incluidos
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.courses.length > 0" x-text="form.courses.length"></span>
+                    </h2>
+                    <button type="button" @click="openCourseModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Agregar Cursos</span>
+                    </button>
                 </div>
                 
-                <!-- Contenedor con scroll -->
-                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-                    x-ref="coursesContainer">
-                    <div class="space-y-3 p-1">
-                        <template x-for="(course, index) in form.courses" :key="index">
-                            <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
-                                <div class="flex-1 flex items-center gap-3">
-                                    <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="font-medium text-gray-900 truncate" x-text="getCourseName(course.id)" :title="getCourseName(course.id)"></p>
-                                        <p class="text-xs text-gray-500">ID: <span x-text="course.id"></span></p>
+                <!-- Lista de cursos seleccionados CON SCROLL -->
+                <div class="space-y-3" x-show="form.courses.length > 0">
+                    <!-- Cabecera de la lista (visible en desktop) -->
+                    <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div class="flex-1">Curso</div>
+                        <div class="w-10"></div>
+                    </div>
+                    
+                    <!-- Contenedor con scroll -->
+                    <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                        x-ref="coursesContainer">
+                        <div class="space-y-3 p-1">
+                            <template x-for="(course, index) in form.courses" :key="index">
+                                <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
+                                    <div class="flex-1 flex items-center gap-3">
+                                        <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-medium text-gray-900 truncate" x-text="getCourseName(course.id)" :title="getCourseName(course.id)"></p>
+                                            <p class="text-xs text-gray-500">ID: <span x-text="course.id"></span></p>
+                                        </div>
                                     </div>
+                                    <button type="button" @click="removeCourse(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                <button type="button" @click="removeCourse(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </template>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Resumen de cursos seleccionados -->
+                    <div class="flex justify-between items-center mt-3 px-4 py-2 bg-gray-100 rounded-lg text-sm">
+                        <span class="text-gray-600">Total de cursos:</span>
+                        <span class="font-semibold text-blue-600" x-text="form.courses.length"></span>
                     </div>
                 </div>
                 
-                <!-- Resumen de cursos seleccionados -->
-                <div class="flex justify-between items-center mt-3 px-4 py-2 bg-gray-100 rounded-lg text-sm">
-                    <span class="text-gray-600">Total de cursos:</span>
-                    <span class="font-semibold text-blue-600" x-text="form.courses.length"></span>
+                <!-- Estado vacío -->
+                <div x-show="form.courses.length === 0" 
+                    class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <i class="fas fa-book-open text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-gray-500 mb-2">No hay cursos seleccionados</p>
+                    <button type="button" @click="openCourseModal" class="text-blue-600 hover:text-blue-800 font-medium">
+                        + Agregar cursos al paquete
+                    </button>
                 </div>
             </div>
-            
-            <!-- Estado vacío -->
-            <div x-show="form.courses.length === 0" 
-                class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                <i class="fas fa-book-open text-4xl text-gray-400 mb-3"></i>
-                <p class="text-gray-500 mb-2">No hay cursos seleccionados</p>
-                <button type="button" @click="openCourseModal" class="text-blue-600 hover:text-blue-800 font-medium">
-                    + Agregar cursos al paquete
-                </button>
-            </div>
-        </div>
 
-        <!-- Sección de Categorías -->
-        <div class="mt-8 border-t pt-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <i class="fas fa-folder text-purple-600"></i>
-                    Categorías Incluidas
-                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.categories.length > 0" x-text="form.categories.length"></span>
-                </h2>
-                <button type="button" @click="addCategory" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Agregar Categoría</span>
-                </button>
-            </div>
-            
-            <!-- Contenedor con scroll para categorías -->
-            <div class="space-y-3" x-show="form.categories.length > 0">
-                <!-- Cabecera -->
-                <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex-1">Categoría</div>
-                    {{-- <div class="sm:w-48">Máx. Cursos</div> --}}
-                    <div class="w-10"></div>
+            <!-- Sección de Categorías -->
+            <div class="mt-8 border-t pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-folder text-purple-600"></i>
+                        Categorías Incluidas
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.categories.length > 0" x-text="form.categories.length"></span>
+                    </h2>
+                    <button type="button" @click="addCategory" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Agregar Categoría</span>
+                    </button>
                 </div>
                 
-                <!-- Scroll container -->
-                <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                    <div class="space-y-3 p-1">
-                        <template x-for="(category, index) in form.categories" :key="index">
-                            <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
-                                <div class="flex-1">
-                                    <select x-model="category.id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                                        <option value="">Seleccionar categoría</option>
-                                        @foreach($categories as $cat)
-                                        <option value="{{ $cat->id }}">
-                                            {{ $cat->name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                <!-- Contenedor con scroll para categorías -->
+                <div class="space-y-3" x-show="form.categories.length > 0">
+                    <!-- Cabecera -->
+                    <div class="hidden sm:flex gap-3 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <div class="flex-1">Categoría</div>
+                        {{-- <div class="sm:w-48">Máx. Cursos</div> --}}
+                        <div class="w-10"></div>
+                    </div>
+                    
+                    <!-- Scroll container -->
+                    <div class="max-h-80 overflow-y-auto border border-gray-200 rounded-lg scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                        <div class="space-y-3 p-1">
+                            <template x-for="(category, index) in form.categories" :key="index">
+                                <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
+                                    <div class="flex-1">
+                                        <select x-model="category.id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                            <option value="">Seleccionar categoría</option>
+                                            @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}">
+                                                {{ $cat->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    {{-- <div class="sm:w-48">
+                                        <input type="number" x-model="category.max_courses_per_category" placeholder="Máx. cursos" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    </div> --}}
+                                    <button type="button" @click="removeCategory(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
-                                {{-- <div class="sm:w-48">
-                                    <input type="number" x-model="category.max_courses_per_category" placeholder="Máx. cursos" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                                </div> --}}
-                                <button type="button" @click="removeCategory(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </template>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Resumen -->
+                    <div class="flex justify-between items-center mt-3 px-4 py-2 bg-gray-100 rounded-lg text-sm">
+                        <span class="text-gray-600">Total de categorías:</span>
+                        <span class="font-semibold text-purple-600" x-text="form.categories.length"></span>
                     </div>
                 </div>
                 
-                <!-- Resumen -->
-                <div class="flex justify-between items-center mt-3 px-4 py-2 bg-gray-100 rounded-lg text-sm">
-                    <span class="text-gray-600">Total de categorías:</span>
-                    <span class="font-semibold text-purple-600" x-text="form.categories.length"></span>
+                <!-- Estado vacío categorías -->
+                <div x-show="form.categories.length === 0" 
+                    class="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <p class="text-gray-500">No hay categorías agregadas</p>
                 </div>
-            </div>
-            
-            <!-- Estado vacío categorías -->
-            <div x-show="form.categories.length === 0" 
-                class="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                <p class="text-gray-500">No hay categorías agregadas</p>
             </div>
         </div>
 

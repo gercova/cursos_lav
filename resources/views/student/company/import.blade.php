@@ -103,10 +103,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('company.import.process') }}" method="POST" enctype="multipart/form-data"
-                      x-data="importForm({{ $availableSlots }})"
-                      @submit.prevent="handleSubmit($event)"
-                      class="space-y-4 sm:space-y-6">
+                <form action="{{ route('company.import.process') }}" method="POST" enctype="multipart/form-data" x-data="importForm({{ $availableSlots }})" @submit.prevent="handleSubmit($event)" class="space-y-4 sm:space-y-6">
                     @csrf
                     
                     <div x-data="{ fileName: '' }" class="border-2 border-dashed border-gray-300 rounded-xl sm:rounded-2xl p-6 sm:p-8 hover:border-blue-500 transition-colors duration-200">

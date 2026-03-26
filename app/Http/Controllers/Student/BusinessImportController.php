@@ -25,7 +25,6 @@ class BusinessImportController extends Controller {
      */
     public function showImportForm() {
         $user           = Auth::user();
-        $companyCode    = $user->company_code;
         
         $enrolledPackage = User::find(auth()->id())
             ->studentCourses()
@@ -39,7 +38,7 @@ class BusinessImportController extends Controller {
             ->exists();
         
         // Obtener límite de usuarios
-        $countUser = User::where('company_code', $companyCode)->count();
+        $countUser = User::where('parent_id', $user->id)->count();
         
         // Obtener total de asientos que tiene un paquete comprado
         $availableSlots = ($enrolledPackage->seats_max ?? 0) + 1 - $countUser;
@@ -168,7 +167,6 @@ class BusinessImportController extends Controller {
         }
 
         $authUser = Auth::user();
-        $companyCode = $authUser->company_code ?? '';
 
         // ── 2. Verificar paquete activo ──────────────────────────────────────
         $package = User::find($authUser->id)
@@ -184,8 +182,8 @@ class BusinessImportController extends Controller {
         $seatsMax = $package->seats_max ?? 0;
 
         // ── 3. Pre-check: usuarios ya registrados bajo este administrador ────
-        $existingUsersCount = User::where(function ($query) use ($authUser, $companyCode) {
-                $query->where('parent_id', $authUser->id)->orWhere('company_code', $companyCode);
+        $existingUsersCount = User::where(function ($query) use ($authUser) {
+                $query->where('parent_id', $authUser->id);
             })
             ->where('id', '!=', $authUser->id) // excluir al propio administrador
             ->count();

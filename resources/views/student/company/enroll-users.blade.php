@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        @if($package->package->plan_type_id == 1 && $courses->count() == 0)
+        @if($package->package->plan_type_id == 1)
             <div class="bg-red-50 border-l-4 border-red-500 p-3 sm:p-4 mb-6 rounded-lg">
                 <div class="flex items-start gap-2 sm:gap-3">
                     <div class="flex-shrink-0">
@@ -83,7 +83,7 @@
 
     <!-- Panel principal -->
     <div class="card overflow-hidden border border-gray-200">
-        @if($package->package->plan_type_id == 1 && $courses->count() == 0)
+        @if($package->package->plan_type_id == 1)
             @include('student.company.partials.enrollment-options-1')
         @elseif ($package->package->plan_type_id !== 1)
             @include('student.company.partials.enrollment-options-2')

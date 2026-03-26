@@ -59,13 +59,12 @@ class ExamsAdminController extends Controller {
         return view('admin.exams.index', compact('exams', 'courses'));
     }
 
-    public function create(): View {
-        $courses = Course::where('is_active', true)
-            ->with('category')
-            ->orderBy('title')
-            ->get();
+    public function view(Course $course): View {
+        return view('admin.exams.view', compact('course'));
+    }
 
-        return view('admin.exams.create', compact('courses'));
+    public function create(Course $course): View {
+        return view('admin.exams.create', compact('course'));
     }
 
     public function edit(Exam $exam): View {

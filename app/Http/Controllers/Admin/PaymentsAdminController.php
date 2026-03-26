@@ -15,23 +15,64 @@ class PaymentsAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
-    public function index(Request $request): View {
-        $query = Payment::with(['user', 'order.items.course'])
-        // $query = Payment::with(['user', 'order'])
-            ->latest();
+    // public function index(Request $request): View {
+    //     $query = Payment::with(['user', 'order.items.course'])
+    //     // $query = Payment::with(['user', 'order'])
+    //         ->latest();
 
-        // Filtros
+    //     if ($request->filled('search')) {
+    //         $search = $request->search;
+    //         $query->where(function ($q) use ($search) {
+    //             $q->where('payments.payment_id', 'like', "%{$search}%") 
+    //                 ->orWhereHas('user', function ($q) use ($search) {
+    //                     $q->where('names', 'like', "%{$search}%")
+    //                     ->orWhere('email', 'like', "%{$search}%");
+    //                 })
+    //                 ->orWhereHas('order.items.course', function ($q) use ($search) {
+    //                     $q->where('title', 'like', "%{$search}%");
+    //                 });
+    //         });
+    //     }
+
+    //     if ($request->filled('status')) {
+    //         $query->where('payments.status', $request->status);
+    //     }
+
+    //     if ($request->filled('method')) {
+    //         $query->where('payments.payment_method', $request->method);
+    //     }
+
+    //     $payments = $query->paginate(20);
+
+    //     $stats = [
+    //         'total'     => Payment::sum('amount'),
+    //         'pending'   => Payment::where('status', 'pending')->sum('amount'),
+    //         'completed' => Payment::where('status', 'completed')->sum('amount'),
+    //         'failed'    => Payment::where('status', 'failed')->sum('amount'),
+    //     ];
+
+    //     return view('admin.payments.index', compact('payments', 'stats'));
+        
+    // }
+
+    public function index(Request $request): View {
+        // Quitamos '.course' del with() porque no lo necesitamos para buscar el título
+        $query = Payment::with(['user', 'order.items'])->latest();
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('payment_id', 'like', "%{$search}%") // Cambiar transaction_id por payment_id
-                    ->orWhereHas('user', function ($q) use ($search) {
-                        $q->where('names', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('order.items.course', function ($q) use ($search) {
-                        $q->where('title', 'like', "%{$search}%");
-                    });
+                // Buscamos por el ID interno de tu BD o el payment_id de la pasarela
+                $q->where('id', 'like', "%{$search}%")
+                  ->orWhere('payment_id', 'like', "%{$search}%") 
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
+                      $userQuery->where('names', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                  })
+                  // Buscamos directamente en order.items porque ahí tienes 'course_title'
+                  ->orWhereHas('order.items', function ($itemQuery) use ($search) {
+                      $itemQuery->where('course_title', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -43,7 +84,8 @@ class PaymentsAdminController extends Controller {
             $query->where('payment_method', $request->method);
         }
 
-        $payments = $query->paginate(20);
+        // ¡Súper truco! appends() asegura que al darle a la página 2, no se borren tus filtros
+        $payments = $query->paginate(20)->appends($request->query());
 
         $stats = [
             'total'     => Payment::sum('amount'),

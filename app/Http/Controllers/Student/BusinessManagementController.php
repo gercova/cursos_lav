@@ -157,7 +157,7 @@ class BusinessManagementController extends Controller {
     
         if ($hasAnyPackage) {
 
-            $collaborators = User::where('company_code', auth()->user()->company_code)
+            $collaborators = User::where('parent_id', auth()->id())
                 ->where('id', '!=', auth()->id())   // ← añadir esto
                 ->where('is_active', true)
                 ->orderBy('names')
@@ -192,14 +192,14 @@ class BusinessManagementController extends Controller {
                 $planTypeId  = $package->package->plan_type_id;
                 $courseLimit = $package->package->course_limit;
     
-                if ($planTypeId == 1 && $courseLimit > 0) {
+                if ($planTypeId == 1 && $courseLimit !== 0) {
                     // Plan Básico: el usuario eligió sus propios cursos
                     // UserCoursePackage es un pivot → extraer el Course relacionado
                     $courses = UserCoursePackage::with('course')
                         ->where('user_id', auth()->id())
                         ->get()
-                        ->pluck('course')   // ← normalizar: Collection<Course>
-                        ->filter();         // ← quitar nulls si la relación falla
+                        ->pluck('course')   // normalizar: Collection<Course>
+                        ->filter();         // quitar nulls si la relación falla
     
                 } elseif ($planTypeId != 1 && $courseLimit == 0) {
                     // Plan superior: cursos fijos asignados al paquete

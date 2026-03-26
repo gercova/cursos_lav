@@ -23,10 +23,11 @@ class DashboardPackageController extends Controller {
 
         // 1. Obtener IDs de colaboradores vinculados
         $employeeIds = User::where(function ($query) use ($user) {
-            $query->where('parent_id', $user->id);
-            if (!empty($user->company_code)) {
-                $query->orWhere('company_code', $user->company_code);
-            }
+            // $query->where('parent_id', $user->id);
+            $query->where('parent_id', Auth::id());
+            // if (!empty($user->company_code)) {
+            //     $query->orWhere('company_code', $user->company_code);
+            // }
         })
         ->where('id', '!=', $user->id)
         ->pluck('id');

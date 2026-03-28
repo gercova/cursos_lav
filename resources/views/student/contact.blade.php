@@ -91,7 +91,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 mb-1">WhatsApp</h3>
-                            <p class="text-gray-600">+51 987 654 321</p>
+                            <p class="text-gray-600">+51 {{ $enterprise->phone_number_1 }}</p>
                             <p class="text-sm text-gray-500">Chat directo con nuestros asesores</p>
                         </div>
                     </div>

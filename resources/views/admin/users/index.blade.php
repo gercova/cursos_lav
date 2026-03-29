@@ -461,21 +461,41 @@
                                 <!-- Información del documento -->
                                 <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
                                     <h4 class="text-lg font-semibold text-gray-900 mb-4">Información del Documento</h4>
-
-                                    <!-- Título -->
                                     <div class="mb-4">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             Contraseña *
                                         </label>
-                                        <input type="password" x-model="formData.password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <div class="relative">
+                                            <input :type="showPassword ? 'text' : 'password'" x-model="formData.password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 pr-10">
+                                            <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
+                                                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-2" x-show="formData.password.length > 0" x-transition>
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                                                    <div class="h-full transition-all duration-300" :class="passwordStrength.color" :style="`width: ${passwordStrength.percentage}%`"></div>
+                                                </div>
+                                                <span class="text-xs font-semibold" :class="passwordStrength.textColor" x-text="passwordStrength.label"></span>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Descripción -->
                                     <div class="mb-4">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             Confirmar contraseña *
                                         </label>
-                                        <input type="password" x-model="formData.password_confirmation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <div class="relative">
+                                            <input :type="showPassword ? 'text' : 'password'" x-model="formData.password_confirmation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 pr-10">
+                                            <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
+                                                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-2 text-xs font-medium text-red-500 flex items-center gap-1" x-show="formData.password_confirmation.length > 0 && formData.password !== formData.password_confirmation" x-transition>
+                                            <i class="fa-solid fa-circle-exclamation"></i> Las contraseñas no coinciden
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -680,26 +700,50 @@
             showModal: false,
             userId: null,
             isSubmitting: false,
+            showPassword: false, // Controla si se ve o no el texto
             formData: {
                 password: '',
                 password_confirmation: ''
             },
+            
+            // Propiedad computada para evaluar la fuerza
+            get passwordStrength() {
+                const pass = this.formData.password;
+                let score = 0;
+
+                if (!pass) return { score: 0, percentage: 0, label: '', color: 'bg-transparent', textColor: '' };
+
+                if (pass.length >= 8) score += 1; // Longitud recomendada
+                if (/[a-z]/.test(pass)) score += 1; // Tiene minúsculas
+                if (/[A-Z]/.test(pass)) score += 1; // Tiene mayúsculas
+                if (/\d/.test(pass)) score += 1; // Tiene números
+                if (/[^A-Za-z0-9]/.test(pass)) score += 1; // Tiene símbolos especiales
+
+                if (score <= 2) return { score, percentage: 33, label: 'Débil', color: 'bg-red-500', textColor: 'text-red-500' };
+                if (score === 3 || score === 4) return { score, percentage: 66, label: 'Media', color: 'bg-amber-500', textColor: 'text-amber-500' };
+                return { score, percentage: 100, label: 'Fuerte', color: 'bg-emerald-500', textColor: 'text-emerald-500' };
+            },
+
             handleOpen(detail) {
                 this.userId = detail.userId;
                 this.showModal = true;
                 this.resetForm();
             },
+            
             resetForm() {
+                this.showPassword = false; // Ocultar al cerrar o abrir
                 this.formData = {
                     password: '',
                     password_confirmation: ''
                 };
             },
+            
             closeModal() {
                 this.showModal = false;
                 this.userId = null;
                 this.resetForm();
             },
+            
             async submitPassword() {
                 if (this.formData.password !== this.formData.password_confirmation) {
                     showNotification('Las contraseñas no coinciden', 'error');
@@ -848,121 +892,119 @@
     // }
 
     // En tu archivo Blade o script
-    function createLimitUser() {
-        return {
-            showModal: false,
-            userId: null, // Almacena el ID del usuario objetivo
-            isSubmitting: false,
-            formData: {
-                quantity: '', // Campo para la cantidad
-                // user_id no es necesario aquí, se envía en la URL
-            },
-            loadingDetails: false, // Indicador de carga para obtener datos previos
+    // function createLimitUser() {
+    //     return {
+    //         showModal: false,
+    //         userId: null, // Almacena el ID del usuario objetivo
+    //         isSubmitting: false,
+    //         formData: {
+    //             quantity: '', // Campo para la cantidad
+    //             // user_id no es necesario aquí, se envía en la URL
+    //         },
+    //         loadingDetails: false, // Indicador de carga para obtener datos previos
 
-            // Cambia el nombre para claridad, aunque puedes seguir usando open-company-policies
-            async handleOpen(detail) {
-                this.userId = detail.userId;
-                this.loadingDetails = true; // Mostrar indicador de carga si lo deseas
-                this.resetForm(); // Limpiar formulario antes de cargar datos nuevos
+    //         // Cambia el nombre para claridad, aunque puedes seguir usando open-company-policies
+    //         async handleOpen(detail) {
+    //             this.userId = detail.userId;
+    //             this.loadingDetails = true; // Mostrar indicador de carga si lo deseas
+    //             this.resetForm(); // Limpiar formulario antes de cargar datos nuevos
 
-                try {
-                    // Intenta obtener la política existente para prellenar el formulario
-                    // Usamos la ruta GET que ya tienes definida
-                    const response = await axios.get(`${API_URL}/admin/users/get-policy/${this.userId}`);
+    //             try {
+    //                 // Intenta obtener la política existente para prellenar el formulario
+    //                 // Usamos la ruta GET que ya tienes definida
+    //                 const response = await axios.get(`${API_URL}/admin/users/get-policy/${this.userId}`);
 
-                    // Si la respuesta es exitosa (status 200), pero data es null,
-                    // significa que no hay política previa para este usuario.
-                    if (response.status === 200) {
-                        if (response.data && response.data.quantity !== undefined) {
-                            // Política encontrada, precarga el valor
-                            this.formData.quantity = response.data.quantity.toString(); // Convertir a string por si es número
-                            // console.log("Datos cargados para actualización:", response.data); // Opcional: para debug
-                        } else {
-                            // console.log("No se encontró política previa, listo para crear."); // Opcional: para debug
-                            // No hay datos que precargar, el formulario ya está limpio por resetForm()
-                        }
-                    } else {
-                        // Manejar otros códigos de estado si es necesario
-                        console.error("Error obteniendo datos previos:", response);
-                        showNotification("Error obteniendo datos previos.", 'error');
-                        return; // No abrir el modal si falla
-                    }
+    //                 // Si la respuesta es exitosa (status 200), pero data es null,
+    //                 // significa que no hay política previa para este usuario.
+    //                 if (response.status === 200) {
+    //                     if (response.data && response.data.quantity !== undefined) {
+    //                         // Política encontrada, precarga el valor
+    //                         this.formData.quantity = response.data.quantity.toString(); // Convertir a string por si es número
+    //                         // console.log("Datos cargados para actualización:", response.data); // Opcional: para debug
+    //                     } else {
+    //                         // console.log("No se encontró política previa, listo para crear."); // Opcional: para debug
+    //                         // No hay datos que precargar, el formulario ya está limpio por resetForm()
+    //                     }
+    //                 } else {
+    //                     // Manejar otros códigos de estado si es necesario
+    //                     console.error("Error obteniendo datos previos:", response);
+    //                     showNotification("Error obteniendo datos previos.", 'error');
+    //                     return; // No abrir el modal si falla
+    //                 }
 
-                } catch (error) {
-                    // Manejar errores de red o del servidor
-                    console.error("Error obteniendo datos previos:", error);
-                    const errorMessage = error.response?.data?.message || 'Error obteniendo datos previos.';
-                    showNotification(errorMessage, 'error');
-                    // Opcional: decidir si abrir o no el modal en caso de error al cargar detalles
-                    // Por ahora, no abrimos si falla la carga de detalles.
-                    return;
-                } finally {
-                    this.loadingDetails = false; // Ocultar indicador de carga
-                }
+    //             } catch (error) {
+    //                 // Manejar errores de red o del servidor
+    //                 console.error("Error obteniendo datos previos:", error);
+    //                 const errorMessage = error.response?.data?.message || 'Error obteniendo datos previos.';
+    //                 showNotification(errorMessage, 'error');
+    //                 // Opcional: decidir si abrir o no el modal en caso de error al cargar detalles
+    //                 // Por ahora, no abrimos si falla la carga de detalles.
+    //                 return;
+    //             } finally {
+    //                 this.loadingDetails = false; // Ocultar indicador de carga
+    //             }
 
-                // Finalmente, mostrar el modal
-                this.showModal = true;
-            },
+    //             // Finalmente, mostrar el modal
+    //             this.showModal = true;
+    //         },
 
 
-            resetForm() {
-                this.formData = {
-                    quantity: '', // Reiniciar el campo de cantidad
-                };
-            },
+    //         resetForm() {
+    //             this.formData = {
+    //                 quantity: '', // Reiniciar el campo de cantidad
+    //             };
+    //         },
 
-            closeModal() {
-                this.showModal = false;
-                this.userId = null;
-                this.resetForm();
-            },
+    //         closeModal() {
+    //             this.showModal = false;
+    //             this.userId = null;
+    //             this.resetForm();
+    //         },
 
-            async submitData() {
-                if (this.isSubmitting) return; // Prevenir doble clic
+    //         async submitData() {
+    //             if (this.isSubmitting) return; // Prevenir doble clic
 
-                this.isSubmitting = true;
-                try {
-                    // Realizar la solicitud PUT/POST para crear o actualizar
-                    // La URL incluye el userId dinámicamente
-                    const response = await axios.put(`${API_URL}/admin/users/policy/${this.userId}`, this.formData, {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Content-Type': 'application/json', // Asegura envío como JSON
-                        }
-                    });
+    //             this.isSubmitting = true;
+    //             try {
+    //                 // Realizar la solicitud PUT/POST para crear o actualizar
+    //                 // La URL incluye el userId dinámicamente
+    //                 const response = await axios.put(`${API_URL}/admin/users/policy/${this.userId}`, this.formData, {
+    //                     headers: {
+    //                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    //                         'Content-Type': 'application/json', // Asegura envío como JSON
+    //                     }
+    //                 });
 
-                    if (response.data.success) {
-                        showNotification(response.data.message, 'success'); // Usa el mensaje del backend
-                        this.closeModal();
-                        // Opcional: recargar la tabla o parte específica sin recargar toda la página
-                        // dispatchEvent para notificar a la tabla que se actualizó
-                        // document.dispatchEvent(new CustomEvent('policy-updated'));
-                        setTimeout(() => window.location.reload(), 1000); // Recarga después de notificación
-                    } else {
-                        // Manejar respuesta de error desde el backend (aunque updateOrCreate debería tener éxito con validación)
-                        showNotification(response.data.message || 'Error desconocido al guardar.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error al guardar los datos:', error);
-                    let errorMessage = 'Error al guardar los datos.';
-                    if (error.response) {
-                        // El servidor respondió con un código de error (4xx, 5xx)
-                        errorMessage = error.response.data.message || error.response.data.errors?.quantity?.[0] || errorMessage;
-                    } else if (error.request) {
-                        // La solicitud se hizo pero no hubo respuesta
-                        errorMessage = 'No se pudo conectar con el servidor.';
-                    }
-                    showNotification(errorMessage, 'error');
-                } finally {
-                    this.isSubmitting = false;
-                }
-            }
-        };
-    }
+    //                 if (response.data.success) {
+    //                     showNotification(response.data.message, 'success'); // Usa el mensaje del backend
+    //                     this.closeModal();
+    //                     // Opcional: recargar la tabla o parte específica sin recargar toda la página
+    //                     // dispatchEvent para notificar a la tabla que se actualizó
+    //                     // document.dispatchEvent(new CustomEvent('policy-updated'));
+    //                     setTimeout(() => window.location.reload(), 1000); // Recarga después de notificación
+    //                 } else {
+    //                     // Manejar respuesta de error desde el backend (aunque updateOrCreate debería tener éxito con validación)
+    //                     showNotification(response.data.message || 'Error desconocido al guardar.', 'error');
+    //                 }
+    //             } catch (error) {
+    //                 console.error('Error al guardar los datos:', error);
+    //                 let errorMessage = 'Error al guardar los datos.';
+    //                 if (error.response) {
+    //                     // El servidor respondió con un código de error (4xx, 5xx)
+    //                     errorMessage = error.response.data.message || error.response.data.errors?.quantity?.[0] || errorMessage;
+    //                 } else if (error.request) {
+    //                     // La solicitud se hizo pero no hubo respuesta
+    //                     errorMessage = 'No se pudo conectar con el servidor.';
+    //                 }
+    //                 showNotification(errorMessage, 'error');
+    //             } finally {
+    //                 this.isSubmitting = false;
+    //             }
+    //         }
+    //     };
+    // }
 
-    function updateLimitUser() {
-
-    }
+    // function updateLimitUser() {}
 
     // Función para cambiar estado del usuario
     async function toggleUserStatus(userId) {

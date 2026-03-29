@@ -105,6 +105,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     // Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin')->middleware('company.plan');
     Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
+    Route::put('/mi-colaborador/{user}/password', [BusinessManagementController::class, 'updatePassword'])->name('company.password');
     Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
     Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
     Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');

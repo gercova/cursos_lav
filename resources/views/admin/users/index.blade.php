@@ -544,17 +544,17 @@
                             <div class="space-y-6">
                                 <!-- Información del documento -->
                                 <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
-                                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Información del Documento</h4>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Información de esta acción</h4>
 
                                     <!-- Título -->
                                     <div class="mb-4">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Insertar porcentaje de descuento, sin no lo inserta, el valor por defecto es del 20%
+                                            El porcentaje de comisión por la venta de cada curso es del 20%
                                         </label>
-                                        <input type="number" step="0.01" x-model="formData.discount_percentage" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        {{-- <input type="number" step="0.01" x-model="formData.discount_percentage" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"> --}}
                                     </div>
 
-                                    <div class="flex items-center">
+                                    {{-- <div class="flex items-center">
                                         <div class="flex items-center h-5">
                                             <input type="checkbox" name="promotion_price_is_active" x-model="formData.promotion_price_is_active" id="promotion_price_is_active" value="0" {{ old('promotion_price_is_active') }} class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                         </div>
@@ -566,7 +566,7 @@
                                                 El curso será visible para los estudiantes
                                             </p>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 

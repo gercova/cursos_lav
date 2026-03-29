@@ -140,27 +140,6 @@ class UserAdminController extends Controller {
             
             $user->update($validated);
         }
-        // Determinar si es creación por la presencia de ID en el request
-        // if (!$request->has('id') || empty($request->id)) {
-        //     $request->role == 'business' ? 
-        //         $proccessData['company_code'] = $this->createNickname($validated['names']) : 
-        //         $proccessData['company_code'] = '';
-        //     $proccessData = [
-        //         'password'          => Hash::make('P4$$w0rd#.'),
-        //         'email_verified_at' => now(),
-        //     ];
-
-        //     $data = array_merge($validated, $proccessData);
-        //     // Creación - usar email como identificador único
-        //     $user = User::updateOrCreate(
-        //         ['id' => $request->input('id')],
-        //         $data
-        //     );
-        // } else {
-        //     // Actualización - usar ID del request
-        //     $user = User::where('id', $request->id)->first();
-        //     $user->update($validated);
-        // }
 
         if ($request->has('role')) {
             // Eliminar todos los roles actuales (asumiendo que un usuario solo tiene un rol)
@@ -398,7 +377,7 @@ class UserAdminController extends Controller {
 
         if($user->where('code', null)->where('id', $user->id)->first()){
             $newCode = $this->createNickname($user->names);
-            $user->update(['code' => $newCode, 'promotion_price_is_active' => $validated['promotion_price_is_active']]);
+            $user->update(['code' => $newCode, 'promotion_price_is_active' => '1']);
         }
 
         return response()->json([
@@ -415,39 +394,39 @@ class UserAdminController extends Controller {
     //     return response()->json(CompanyPolicy::where('user_id', $user->id)->first(), 200);
     // }
 
-    public function createLimitUser(Request $request, User $user): JsonResponse {
-        $rules = [
-            'quantity' => 'required|numeric|min:1',
-        ];
+    // public function createLimitUser(Request $request, User $user): JsonResponse {
+    //     $rules = [
+    //         'quantity' => 'required|numeric|min:1',
+    //     ];
         
-        $messages = [
-            'quantity.required' => 'El campo cantidad es obligatorio.',
-            'quantity.numeric'  => 'La cantidad debe ser un número válido.',
-            'quantity.min'      => 'La cantidad debe ser al menos :min.',
-        ];
+    //     $messages = [
+    //         'quantity.required' => 'El campo cantidad es obligatorio.',
+    //         'quantity.numeric'  => 'La cantidad debe ser un número válido.',
+    //         'quantity.min'      => 'La cantidad debe ser al menos :min.',
+    //     ];
         
-        $attributes = [
-            'quantity' => 'cantidad de usuarios',
-        ];
+    //     $attributes = [
+    //         'quantity' => 'cantidad de usuarios',
+    //     ];
     
-        $request->validate($rules, $messages, $attributes);
+    //     $request->validate($rules, $messages, $attributes);
         
-        // Usamos updateOrCreate para manejar crear o actualizar
-        // Busca por user_id, y actualiza/crea con los campos especificados
-        $policy = CompanyPolicy::updateOrCreate(
-            ['user_id'  => $user->id], // Condiciones para encontrar el registro
-            ['quantity' => $request->input('quantity')] // Valores a insertar o actualizar
-        );
+    //     // Usamos updateOrCreate para manejar crear o actualizar
+    //     // Busca por user_id, y actualiza/crea con los campos especificados
+    //     $policy = CompanyPolicy::updateOrCreate(
+    //         ['user_id'  => $user->id], // Condiciones para encontrar el registro
+    //         ['quantity' => $request->input('quantity')] // Valores a insertar o actualizar
+    //     );
 
-        // Verificamos si la operación fue exitosa
-        $wasCreated     = $policy->wasRecentlyCreated; // Es true si se creó, false si se actualizó
+    //     // Verificamos si la operación fue exitosa
+    //     $wasCreated     = $policy->wasRecentlyCreated; // Es true si se creó, false si se actualizó
 
-        return response()->json([
-            'success'   => true, // updateOrCreate debería funcionar si la validación pasa
-            'message'   => $wasCreated ? 'Política creada exitosamente.' : 'Política actualizada exitosamente.', // Mensaje distinto según acción
-            'data'      => $policy, // Opcional: devolver los datos guardados
-        ], 200);
-    }
+    //     return response()->json([
+    //         'success'   => true, // updateOrCreate debería funcionar si la validación pasa
+    //         'message'   => $wasCreated ? 'Política creada exitosamente.' : 'Política actualizada exitosamente.', // Mensaje distinto según acción
+    //         'data'      => $policy, // Opcional: devolver los datos guardados
+    //     ], 200);
+    // }
 
     public function createNickname($name): string {
         $nickname   = '';

@@ -462,13 +462,37 @@
                                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                             Nueva contraseña *
                                         </label>
-                                        <input type="password" x-model="formData.password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <div class="relative">
+                                            <input :type="showPassword ? 'text' : 'password'" x-model="formData.password" required class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 pr-10">
+                                            <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
+                                                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-2" x-show="formData.password.length > 0" x-transition>
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex-1 h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                                                    <div class="h-full transition-all duration-300" :class="passwordStrength.color" :style="`width: ${passwordStrength.percentage}%`"></div>
+                                                </div>
+                                                <span class="text-xs font-semibold" :class="passwordStrength.textColor" x-text="passwordStrength.label"></span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                     <div class="mb-4">
                                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                             Confirmar contraseña *
                                         </label>
-                                        <input type="password" x-model="formData.password_confirmation" required class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                                        <div class="relative">
+                                            <input :type="showPassword ? 'text' : 'password'" x-model="formData.password_confirmation" required class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 pr-10">
+                                            <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors">
+                                                <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="mt-2 text-xs font-medium text-red-500 flex items-center gap-1" x-show="formData.password_confirmation.length > 0 && formData.password !== formData.password_confirmation" x-transition>
+                                            <i class="fa-solid fa-circle-exclamation"></i> Las contraseñas no coinciden
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -609,27 +633,52 @@
             showModal: false,
             userId: null,
             isSubmitting: false,
+            showPassword: false, // Variable para controlar el ojito de la contraseña
             formData: {
                 password: '',
                 password_confirmation: ''
             },
+            
+            // Propiedad computada para evaluar la fuerza
+            get passwordStrength() {
+                const pass = this.formData.password;
+                let score = 0;
+
+                if (!pass) return { score: 0, percentage: 0, label: '', color: 'bg-transparent', textColor: '' };
+
+                if (pass.length >= 8) score += 1;
+                if (/[a-z]/.test(pass)) score += 1;
+                if (/[A-Z]/.test(pass)) score += 1;
+                if (/\d/.test(pass)) score += 1;
+                if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+
+                if (score <= 2) return { score, percentage: 33, label: 'Débil', color: 'bg-red-500', textColor: 'text-red-500' };
+                if (score === 3 || score === 4) return { score, percentage: 66, label: 'Media', color: 'bg-amber-500', textColor: 'text-amber-500' };
+                return { score, percentage: 100, label: 'Fuerte', color: 'bg-emerald-500', textColor: 'text-emerald-500' };
+            },
+
             handleOpen(detail) {
                 this.userId = detail.userId;
                 this.showModal = true;
                 this.resetForm();
             },
+            
             resetForm() {
+                this.showPassword = false; // Se reinicia al cerrar/abrir
                 this.formData = {
                     password: '',
                     password_confirmation: ''
                 };
             },
+            
             closeModal() {
                 this.showModal = false;
                 this.userId = null;
                 this.resetForm();
             },
+            
             async submitPassword() {
+                // Validar de nuevo por si acaso el usuario no vio el mensaje rojo
                 if (this.formData.password !== this.formData.password_confirmation) {
                     showNotification('Las contraseñas no coinciden', 'error');
                     return;
@@ -637,8 +686,9 @@
 
                 this.isSubmitting = true;
                 try {
+                    // Mantengo tu ruta de este archivo: /mi-colaborador/
                     const response = await axios.put(
-                        `/admin/users/${this.userId}/password`,
+                        `/mi-colaborador/${this.userId}/password`,
                         this.formData,
                         {
                             headers: {

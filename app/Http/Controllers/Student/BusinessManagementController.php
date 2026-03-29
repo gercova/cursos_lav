@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\StaffValidate;
 use App\Models\CompanyPolicy;
 use App\Models\Course;
@@ -420,131 +421,6 @@ class BusinessManagementController extends Controller {
     /**
      * Mega matrícula - Todos los usuarios en todos los cursos
      */
-
-    // public function superBulkEnroll(Request $request): JsonResponse {
-    //     // Obtener todos los colaboradores (filtrados por el id del usuario padre)
-    //     $students = User::where('parent_id', Auth::id())
-    //         ->orWhere('id', Auth::id()) // Incluimos al usuario padre para matricular en los cursos
-    //         ->get();
-        
-    //     // Obtener todos los cursos activos por paquete o tipo de paquete
-    //     // Verifica que el usuario padre está matriculado estrictamente en un paquete
-    //         $package = Enrollment::where('user_id', Auth::id())
-    //             ->whereHas('package') 
-    //             ->with('package')
-    //             ->first();
-
-    //     // Verificamos que el paquete tenga cursos 
-    //     $packageWithCourses = PackageCourse::with('course')->where('package_id', $package->course_id)->exists();
-
-    //     if($packageWithCourses){
-    //         // Paquete con cursos
-    //         $courses = PackageCourse::with('course')->where('package_id', $package->course_id)->get();
-    //         // Verificamos si el paquete el plan del paquete es 'Plan Básico' con un límite de cursos > 0
-    //     }elseif($package->package->plan_type_id == 1 && $package->package->course_limit > 0) { 
-    //         $courses = UserCoursePackage::with('course')->where('user_id', auth()->id())->get();
-    //     }else{
-    //         $courses = Course::where('is_active', true)->where('type', 'course')->get();
-    //     }
-
-    //     if ($students->isEmpty()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'No hay usuarios para matricular'
-    //         ], 400);
-    //     }
-
-    //     if ($courses->isEmpty()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'No hay cursos activos'
-    //         ], 400);
-    //     }
-
-    //     $results = [
-    //         'success'           => [],
-    //         'failed'            => [],
-    //         'total_processed'   => 0,
-    //         'total_enrollments' => $students->count() * $courses->count()
-    //     ];
-
-    //     DB::beginTransaction();
-    //     try {
-    //         foreach ($students as $student) {
-    //             foreach ($courses as $course) {
-
-    //                 // Verificar si ya está matriculado
-    //                 $existingEnrollment = Enrollment::where('user_id', $student->id)
-    //                     ->where('course_id', $course->course_id)
-    //                     ->exists();
-
-    //                 if ($existingEnrollment) {
-    //                     $results['failed'][] = [
-    //                         'user'      => $student->names,
-    //                         // 'course'    => $course->title,
-    //                         'course' => $course->course->title,
-    //                         'reason'    => 'Ya está matriculado'
-    //                     ];
-    //                     continue;
-    //                 }
-
-    //                 // Crear matrícula
-    //                 // Enrollment::create([
-    //                 //     'user_id'       => $student->id,
-    //                 //     'course_id'     => $course->id,
-    //                 //     'enrolled_at'   => now(),
-    //                 //     'progress'      => 0,
-    //                 //     'status'        => 'active',
-    //                 // ]);
-
-    //                 Enrollment::create([
-    //                     'user_id'       => $student->id,
-    //                     'course_id'     => $course->course_id, // ← igual que en el WHERE del check
-    //                     'enrolled_at'   => now(),
-    //                     'progress'      => 0,
-    //                     'status'        => 'active',
-    //                 ]);
-
-    //                 $results['success'][] = [
-    //                     'user'      => $student->names,
-    //                     'course'    => $course->course->title
-    //                 ];
-                    
-    //                 $results['total_processed']++;
-    //             }
-    //         }
-
-    //         DB::commit();
-
-    //         $message = "Matrículas completadas: {$results['total_processed']} inscripciones realizadas exitosamente";
-            
-    //         if (count($results['failed']) > 0) {
-    //             $message .= ". " . count($results['failed']) . " inscripciones fallidas.";
-    //         }
-
-    //         return response()->json([
-    //             'success'   => true,
-    //             'message'   => $message,
-    //             'data'      => [
-    //                 'success'   => $results['success'],
-    //                 'failed'    => $results['failed'],
-    //                 'summary'   => "Total de usuarios: {$students->count()}<br>
-    //                     Total de cursos: {$courses->count()}<br>
-    //                     Matrículas realizadas: <span class='text-green-600 font-bold'>{$results['total_processed']}</span><br>
-    //                     Matrículas fallidas: <span class='text-amber-600 font-bold'>" . count($results['failed']) . "</span>",
-    //                 'total_processed' => $results['total_processed']
-    //             ]
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Error en Mega Matrícula: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
     public function superBulkEnroll(Request $request): JsonResponse {
         // Colaboradores de la empresa + el propio owner
         $students = User::where('parent_id', Auth::id())
@@ -695,6 +571,15 @@ class BusinessManagementController extends Controller {
             'message'   => 'Estado del usuario actualizado.',
             'status'    => $user->is_active
         ]);
+    }
+
+    public function updatePassword(PasswordValidate $request, User $user): JsonResponse {
+        $validated = $request->validated();
+        $user->update(['password' => Hash::make($validated['password'])]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada',
+        ], 200);
     }
 
     public function destroy(User $user): JsonResponse {

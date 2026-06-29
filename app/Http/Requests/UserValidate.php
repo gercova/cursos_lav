@@ -50,10 +50,9 @@ class UserValidate extends FormRequest {
             'profile_photo.image'   => 'El archivo debe ser una imagen válida.',
             'profile_photo.mimes'   => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
             'profile_photo.max'     => 'La imagen no debe pesar más de 5MB.',
-
-            'signature_photo.image'   => 'El archivo debe ser una imagen válida.',
-            'signature_photo.mimes'   => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
-            'signature_photo.max'     => 'La imagen no debe pesar más de 5MB.',
+            'signature_photo.image' => 'El archivo debe ser una imagen válida.',
+            'signature_photo.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
+            'signature_photo.max'   => 'La imagen no debe pesar más de 5MB.',
         ];
     }
 }

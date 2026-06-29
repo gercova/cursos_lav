@@ -111,7 +111,12 @@
                     <a href="{{ route('admin.packages.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.packages.*') ? 'bg-blue-700' : '' }}">
                         <i class="fa-solid fa-cubes mr-2"></i>Gestión de Paquetes
                     </a>
-                    
+                @endrole
+
+                @role('admin')
+                    <a href="{{ route('admin.schedules.index') }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.schedules.*') ? 'bg-blue-700' : '' }}">
+                        <i class="fa-solid fa-calendar-alt mr-2"></i>Cronograma de Capacitaciones
+                    </a>
                 @endrole
                 
                 @role('admin|instructor')

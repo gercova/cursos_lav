@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CalendarsAdminController;
 use App\Http\Controllers\Admin\CategoriesAdminController;
+use App\Http\Controllers\Admin\ScheduleAdminController;
 use App\Http\Controllers\Admin\CertificatesAdminController;
 use App\Http\Controllers\Admin\CoursesAdminController;
 use App\Http\Controllers\Admin\CourseSectionAdminController;
@@ -24,6 +26,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Student\AffiliateController;
 use App\Http\Controllers\Student\BusinessImportController;
+use App\Http\Controllers\Student\CompanyScheduleController;
 use App\Http\Controllers\Student\BusinessManagementController;
 use App\Http\Controllers\Student\CartsController;
 use App\Http\Controllers\Student\CertificatesController;
@@ -38,17 +41,6 @@ use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 //ruta webhook 
 Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'handle'])->name('webhook');
@@ -121,6 +113,9 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/enroll/recent',                [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
     Route::get('/users/without-code',           [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
     Route::post('/enroll/super-bulk',           [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
+
+    // Cronograma de capacitaciones (vista empresa/colaboradores)
+    Route::get('/cronograma',                   [CompanyScheduleController::class, 'index'])->name('company.schedule');
 
     Route::get('/package/{packageId}/select-courses',   [PackageSelectionController::class, 'showSelectionForm'])->name('student.package.select');
     Route::post('/package/{packageId}/save-courses',    [PackageSelectionController::class, 'storeSelection'])->name('student.package.save');
@@ -323,6 +318,30 @@ Route::prefix('admin')->group(function () {
         Route::put('/packages/{package}/update',            [PackagesAdminController::class, 'update'])->name('admin.packages.update');
         Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
         Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
+
+        Route::name('admin.calendars.')->group(function(){
+            Route::get('/calendars/home', [CalendarsAdminController::class, 'index'])->name('index');
+            Route::post('/calendars/store', [CalendarsAdminController::class, 'index'])->name('store');
+        });
+
+        // Cronograma de Capacitaciones (Empresas)
+        Route::prefix('schedules')->name('admin.schedules.')->group(function () {
+            Route::get('/',               [ScheduleAdminController::class, 'index'])->name('index');
+            Route::post('/',              [ScheduleAdminController::class, 'store'])->name('store');
+            Route::put('/{schedule}',     [ScheduleAdminController::class, 'update'])->name('update');
+            Route::delete('/{schedule}',  [ScheduleAdminController::class, 'destroy'])->name('destroy');
+            Route::get('/api',            [ScheduleAdminController::class, 'apiIndex'])->name('api');
+            Route::post('/copy-year',     [ScheduleAdminController::class, 'copyYear'])->name('copy-year');
+        });
+
+        // Route::prefix('admin-services')->name('admin.services.')->group(function () {
+        //     Route::get('/',                 [ServiceController::class, 'index'])->name('index');
+        //     Route::get('/create',           [ServiceController::class, 'create'])->name('create');
+        //     Route::post('/',                [ServiceController::class, 'store'])->name('store');
+        //     Route::get('/{service:id}/edit',    [ServiceController::class, 'edit'])->name('edit');
+        //     Route::put('/{service:id}',         [ServiceController::class, 'update'])->name('update');
+        //     Route::delete('/{service:id}',      [ServiceController::class, 'destroy'])->name('destroy');
+        // });
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');

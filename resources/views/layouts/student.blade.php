@@ -442,6 +442,12 @@
                     <a href="{{ route('company.enroll.users') }}" class="sidebar-link {{ request()->routeIs('company.enroll.*') ? 'active bg-purple-300' : '' }}">
                         <i class="bi bi-book-fill mr-2"></i> Inscribir mis usuarios
                     </a>
+                    {{-- Cronograma de Capacitaciones --}}
+                    @if(auth()->user()->company_code || (auth()->user()->parent && auth()->user()->parent->company_code))
+                    <a href="{{ route('company.schedule') }}" class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
+                    </a>
+                    @endif
                     <hr>
                 @endif
 

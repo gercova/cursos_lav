@@ -1,6 +1,5 @@
 @extends('layouts.student')
 @section('title', 'Mi perfil')
-
 @section('content')
 <div class="max-w-7xl mx-auto" x-data="{ activeTab: 'info' }">
     <!-- Header del perfil -->

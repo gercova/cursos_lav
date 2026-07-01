@@ -105,10 +105,16 @@
                 <!-- Filtros y búsqueda mejorados -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
-                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text" name="search" id="searchCategory" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar categorías..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <svg x-show="searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <input type="text" name="search" id="searchCategory" x-model="searchQuery" @input.debounce.400ms="performSearch()"
+                               placeholder="Buscar categorías..."
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
@@ -346,36 +352,50 @@
             searchQuery: '{{ request('search') }}',
             statusFilter: '{{ request('status', '') }}',
             loading: false,
+            searching: false,
             debounceTimer: null,
             isSubmitting: false,
 
             // Inicialización
             init() {
                 this.setupEventListeners();
-                //this.restoreFiltersFromURL();
-                console.log('CategoryManager inicializado');
             },
 
             async performSearch() {
-                this.loading = true;
+                this.searching = true;
+
+                const params = new URLSearchParams();
+                if (this.searchQuery)    params.append('search',   this.searchQuery);
+                if (this.statusFilter)   params.append('status',   this.statusFilter);
+                if (this.categoryFilter) params.append('category', this.categoryFilter);
+                params.append('ajax', '1');
+
+                const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
+
+                const displayUrl = `{{ route('admin.categories.index') }}?${params.toString().replace('&ajax=1','').replace('ajax=1&','').replace('ajax=1','')}`;
+                window.history.replaceState(null, '', displayUrl || '{{ route('admin.categories.index') }}');
 
                 try {
-                    const params = new URLSearchParams();
-                    if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.statusFilter) params.append('status', this.statusFilter);
-                    if (this.categoryFilter) params.append('category', this.categoryFilter);
+                    const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const html = await res.text();
 
-                    const url = `{{ route('admin.categories.index') }}?${params.toString()}`;
-                    window.location.href = url;
+                    const parser   = new DOMParser();
+                    const doc      = parser.parseFromString(html, 'text/html');
+                    const newTable = doc.getElementById('categories-table-container');
+
+                    if (newTable) {
+                        document.getElementById('categories-table-container').innerHTML = newTable.innerHTML;
+                    }
                 } catch (error) {
                     console.error('Error en búsqueda:', error);
-                    this.loading = false;
+                } finally {
+                    this.searching = false;
                 }
             },
 
             resetFilters() {
-                this.searchQuery = '';
-                this.statusFilter = '';
+                this.searchQuery    = '';
+                this.statusFilter   = '';
                 this.categoryFilter = '';
                 this.performSearch();
             },

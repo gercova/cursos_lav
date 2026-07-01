@@ -103,10 +103,16 @@
                 <!-- Filtros y búsqueda -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
-                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar documentos..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <svg x-show="searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <input type="text" x-model="searchQuery" @input.debounce.400ms="performSearch()"
+                               placeholder="Buscar documentos..."
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
@@ -153,7 +159,7 @@
         </div>
 
         <!-- Tabla de documentos -->
-        <div class="overflow-x-auto" x-show="!loading">
+        <div class="overflow-x-auto" id="documents-table-container" x-show="!loading">
             @if($documents->isEmpty())
                 <!-- Estado vacío -->
                 <div class="text-center py-16 px-6">
@@ -420,7 +426,7 @@
 
         <!-- Paginación -->
         @if($documents->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+            <div id="documents-pagination" class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="text-sm text-gray-700">
                         Mostrando
@@ -668,26 +674,42 @@
             courseFilter: '{{ request('course', '') }}',
             typeFilter: '{{ request('type', '') }}',
             loading: false,
+            searching: false,
 
             init() {
                 // Inicializar
             },
 
             async performSearch() {
-                this.loading = true;
+                this.searching = true;
+
+                const params = new URLSearchParams();
+                if (this.searchQuery)  params.append('search', this.searchQuery);
+                if (this.statusFilter) params.append('status', this.statusFilter);
+                if (this.courseFilter) params.append('course', this.courseFilter);
+                if (this.typeFilter)   params.append('type',   this.typeFilter);
+                params.append('ajax', '1');
+
+                const url = `{{ route('admin.documents.index') }}?${params.toString()}`;
+                const displayUrl = `{{ route('admin.documents.index') }}?${params.toString().replace('&ajax=1','').replace('ajax=1&','').replace('ajax=1','')}`;
+                window.history.replaceState(null, '', displayUrl || '{{ route('admin.documents.index') }}');
 
                 try {
-                    const params = new URLSearchParams();
-                    if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.statusFilter) params.append('status', this.statusFilter);
-                    if (this.courseFilter) params.append('course', this.courseFilter);
-                    if (this.typeFilter) params.append('type', this.typeFilter);
+                    const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const html = await res.text();
+                    const parser = new DOMParser();
+                    const doc    = parser.parseFromString(html, 'text/html');
 
-                    const url = `{{ route('admin.documents.index') }}?${params.toString()}`;
-                    window.location.href = url;
-                } catch (error) {
-                    console.error('Error en búsqueda:', error);
-                    this.loading = false;
+                    const newTable = doc.getElementById('documents-table-container');
+                    if (newTable) document.getElementById('documents-table-container').innerHTML = newTable.innerHTML;
+
+                    const newPag = doc.getElementById('documents-pagination');
+                    const curPag = document.getElementById('documents-pagination');
+                    if (newPag && curPag) curPag.innerHTML = newPag.innerHTML;
+                } catch (err) {
+                    console.error('Error en búsqueda:', err);
+                } finally {
+                    this.searching = false;
                 }
             },
 

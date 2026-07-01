@@ -24,9 +24,11 @@ class CompanyScheduleController extends Controller
         $year = (int) $request->get('year', now()->year);
 
         // Obtener los cronogramas visibles para este código de empresa
+        // Solo se muestran cursos del mes actual y meses anteriores (no futuros)
         $schedules = CompanySchedule::with('course:id,title,image_url,slug')
             ->where('year', $year)
             ->where('is_active', true)
+            ->released()   // ← solo mes actual y anteriores
             ->when($companyCode, function ($q) use ($companyCode) {
                 // Incluye globales (null) + los específicos de su empresa
                 $q->where(function ($q2) use ($companyCode) {

@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div class="sticky top-16 z-30 bg-white shadow-sm border-b border-gray-200">
+    <div class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex-1 w-full lg:max-w-md">

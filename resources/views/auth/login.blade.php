@@ -21,92 +21,130 @@
             </div>
 
             <!-- Form -->
-            <form class="px-8 py-6" action="{{ route('login') }}" method="POST">
+            <form class="px-8 py-6" action="{{ route('login') }}" method="POST" id="login-form">
                 @csrf
 
-                <!-- Alertas -->
-                @if($errors->any())
-                    <div class="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-red-700">
-                                    @foreach($errors->all() as $error)
-                                        {{ $error }}<br>
-                                    @endforeach
-                                </p>
-                            </div>
+                {{-- ── Alerta de error mejorada ──────────────────────────────── --}}
+                @php
+                    $errorMsg   = $errors->first();
+                    $hasError   = $errors->any();
+                    $isThrottle = $hasError && str_contains($errorMsg, 'intentos') || str_contains($errorMsg ?? '', 'segundo');
+                    $isExpired  = $hasError && str_contains($errorMsg, 'caducado');
+                    $isInactive = $hasError && str_contains($errorMsg, 'desactivada');
+                @endphp
+
+                @if($hasError)
+                    <div id="login-alert"
+                         class="mb-5 rounded-xl border px-4 py-3.5 flex gap-3 items-start animate-shake
+                             {{ $isThrottle ? 'bg-amber-50 border-amber-300 text-amber-800'
+                                 : ($isExpired || $isInactive ? 'bg-orange-50 border-orange-300 text-orange-800'
+                                 : 'bg-red-50 border-red-300 text-red-800') }}">
+
+                        {{-- Ícono contextual --}}
+                        <div class="flex-shrink-0 mt-0.5">
+                            @if($isThrottle)
+                                <i class="fas fa-clock text-amber-500 text-lg"></i>
+                            @elseif($isExpired)
+                                <i class="fas fa-calendar-times text-orange-500 text-lg"></i>
+                            @elseif($isInactive)
+                                <i class="fas fa-user-slash text-orange-500 text-lg"></i>
+                            @else
+                                <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
+                            @endif
                         </div>
+
+                        {{-- Texto --}}
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold leading-snug">
+                                @if($isThrottle)
+                                    Demasiados intentos fallidos
+                                @elseif($isExpired)
+                                    Cuenta expirada
+                                @elseif($isInactive)
+                                    Cuenta desactivada
+                                @else
+                                    Credenciales incorrectas
+                                @endif
+                            </p>
+                            <p class="text-xs mt-0.5 opacity-80">{{ $errorMsg }}</p>
+                        </div>
+
+                        {{-- Botón cerrar --}}
+                        <button type="button" onclick="document.getElementById('login-alert').remove()"
+                                class="flex-shrink-0 opacity-50 hover:opacity-100 transition-opacity mt-0.5">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
                     </div>
                 @endif
 
+                {{-- Mensaje de éxito (p. ej. tras restablecer contraseña) --}}
                 @if(session('status'))
-                    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-r">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-green-700">{{ session('status') }}</p>
-                            </div>
-                        </div>
+                    <div class="mb-5 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3.5 flex gap-3 items-start">
+                        <i class="fas fa-check-circle text-emerald-500 text-lg flex-shrink-0 mt-0.5"></i>
+                        <p class="text-sm text-emerald-800">{{ session('status') }}</p>
                     </div>
                 @endif
 
-                <!-- Campos del formulario -->
+                {{-- ── Campos del formulario ────────────────────────────────── --}}
                 <div class="space-y-5">
-                    <!-- Email -->
+
+                    {{-- Email --}}
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-envelope mr-2 text-blue-500"></i>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
                             Correo electrónico
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 {{ $errors->has('email') ? 'text-red-400' : 'text-gray-400' }}"
+                                     fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
                                 </svg>
                             </div>
-                            <input id="email" name="email" type="email" autocomplete="email" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('email') border-red-500 @enderror" placeholder="correo@ejemplo.com" value="{{ old('email') }}">
+                            <input id="email" name="email" type="email" autocomplete="email" required
+                                   placeholder="correo@ejemplo.com"
+                                   value="{{ old('email') }}"
+                                   class="pl-10 block w-full px-4 py-3 border rounded-lg text-sm transition-colors duration-200
+                                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                       @error('email')
+                                           border-red-400 bg-red-50 text-red-900 placeholder-red-300
+                                           focus:ring-red-400 focus:border-red-400
+                                       @else
+                                           border-gray-300 bg-white text-gray-900 placeholder-gray-400
+                                       @enderror">
                         </div>
-                        @error('email')
-                            <p class="mt-2 text-sm text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
-                    <!-- Password -->
+                    {{-- Contraseña --}}
                     <div>
-                        <div class="flex justify-between items-center mb-2">
+                        <div class="flex justify-between items-center mb-1.5">
                             <label for="password" class="block text-sm font-medium text-gray-700">
-                                <i class="fas fa-lock mr-2 text-blue-500"></i>
                                 Contraseña
                             </label>
-                            <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-200">
+                            <a href="{{ route('password.request') }}"
+                               class="text-xs text-blue-600 hover:text-blue-500 transition-colors duration-200 font-medium">
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
                             </div>
-                            <input id="password" name="password" type="password" autocomplete="current-password" required class="pl-10 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 @error('password') border-red-500 @enderror" placeholder="••••••••">
+                            <input id="password" name="password" type="password"
+                                   autocomplete="current-password" required
+                                   placeholder="••••••••"
+                                   class="pl-10 pr-10 block w-full px-4 py-3 border rounded-lg text-sm transition-colors duration-200
+                                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                       @error('email') border-red-400 bg-red-50 @else border-gray-300 bg-white @enderror">
+                            {{-- Toggle mostrar/ocultar contraseña --}}
+                            <button type="button" id="toggle-password"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                                <i class="fas fa-eye text-sm" id="eye-icon"></i>
+                            </button>
                         </div>
-                        @error('password')
-                            <p class="mt-2 text-sm text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     <!-- Remember me -->
@@ -176,27 +214,49 @@
 </div>
 
 <style>
-    /* Animaciones suaves para inputs */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        15%       { transform: translateX(-6px); }
+        30%       { transform: translateX(6px); }
+        45%       { transform: translateX(-4px); }
+        60%       { transform: translateX(4px); }
+        75%       { transform: translateX(-2px); }
+        90%       { transform: translateX(2px); }
+    }
+    .animate-shake { animation: shake 0.5s ease-in-out; }
+
+    /* Ring de error en inputs */
+    input.border-red-400:focus {
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+    }
+    /* Ring normal */
     input:focus {
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Estilo para botón hover */
-    button:hover {
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
     }
 </style>
 
 <script>
-    // Efecto de enfoque en campos
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('ring-2', 'ring-blue-200');
-        });
+    // Toggle ver/ocultar contraseña
+    const toggleBtn = document.getElementById('toggle-password');
+    const pwdInput  = document.getElementById('password');
+    const eyeIcon   = document.getElementById('eye-icon');
 
-        input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('ring-2', 'ring-blue-200');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function () {
+            const isHidden = pwdInput.type === 'password';
+            pwdInput.type  = isHidden ? 'text' : 'password';
+            eyeIcon.className = isHidden ? 'fas fa-eye-slash text-sm' : 'fas fa-eye text-sm';
         });
-    });
+    }
+
+    // Auto-dismiss de la alerta de error después de 8 segundos
+    const alert = document.getElementById('login-alert');
+    if (alert) {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.4s ease';
+            alert.style.opacity    = '0';
+            setTimeout(() => alert.remove(), 400);
+        }, 8000);
+    }
 </script>
 @endsection

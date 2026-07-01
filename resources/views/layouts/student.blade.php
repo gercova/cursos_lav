@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -50,7 +51,7 @@
             bottom: 0;
             width: var(--sidebar-width);
             background: white;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
             border-right: 1px solid #e5e7eb;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 60;
@@ -239,14 +240,14 @@
         .card {
             background: white;
             border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
             transition: all 0.2s;
             height: 100%;
         }
 
         .card:hover {
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             transform: translateY(-2px);
         }
 
@@ -403,6 +404,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout" x-data="dashboardLayout()" x-init="init()">
         <!-- Overlay para móvil -->
@@ -414,7 +416,8 @@
                 <div class="flex items-center justify-between">
                     <a href="{{ route('student.dashboard') }}" class="flex items-center gap-2">
                         <img class="h-8 w-auto" src="{{ $enterprise->logo_path }}" alt="Logo">
-                        <span class="font-semibold text-gray-800 text-sm hidden lg:inline">{{ $enterprise->trade_name }}</span>
+                        <span
+                            class="font-semibold text-gray-800 text-sm hidden lg:inline">{{ $enterprise->trade_name }}</span>
                     </a>
                     <button @click="toggleMobileMenu" class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
                         <i class="fas fa-times text-gray-500 mr-2"></i>
@@ -423,60 +426,71 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{{ route('student.dashboard') }}" class="sidebar-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('student.dashboard') }}"
+                    class="sidebar-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
 
                 @if ($hasAnyPackage)
                     <hr>
-                    {{-- @if($purchasedPackage && in_array($purchasedPackage->plan_type_id, [5, 6, 7])) --}}
-                    @if($purchasedPackage)
-                        <a href="{{ route('company.dashboard-admin') }}" class="sidebar-link {{ request()->routeIs('company.dashboard-admin') ? 'active bg-purple-700' : '' }}">
+                    {{-- @if ($purchasedPackage && in_array($purchasedPackage->plan_type_id, [5, 6, 7])) --}}
+                    @if ($purchasedPackage)
+                        <a href="{{ route('company.dashboard-admin') }}"
+                            class="sidebar-link {{ request()->routeIs('company.dashboard-admin') ? 'active bg-purple-700' : '' }}">
                             <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
                         </a>
                     @endif
-                    <a href="{{ route('company.list') }}" class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
+                    <a href="{{ route('company.list') }}"
+                        class="sidebar-link {{ request()->routeIs('company.dashboard') ? 'active bg-purple-700' : '' }}">
                         <i class="fa-regular fa-building mr-2"></i> Gestionar mis usuarios
                     </a>
-                    <a href="{{ route('company.enroll.users') }}" class="sidebar-link {{ request()->routeIs('company.enroll.*') ? 'active bg-purple-300' : '' }}">
+                    <a href="{{ route('company.enroll.users') }}"
+                        class="sidebar-link {{ request()->routeIs('company.enroll.*') ? 'active bg-purple-300' : '' }}">
                         <i class="bi bi-book-fill mr-2"></i> Inscribir mis usuarios
                     </a>
                     {{-- Cronograma de Capacitaciones --}}
-                    @if(auth()->user()->company_code || (auth()->user()->parent && auth()->user()->parent->company_code))
-                    <a href="{{ route('company.schedule') }}" class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
-                        <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
-                    </a>
+                    @if (auth()->user()->company_code || (auth()->user()->parent && auth()->user()->parent->company_code))
+                        <a href="{{ route('company.schedule') }}"
+                            class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
+                        </a>
                     @endif
                     <hr>
                 @endif
 
-                <a href="{{ route('student.my-courses') }}" class="sidebar-link {{ request()->routeIs('student.my-courses') ? 'active' : '' }}">
+                <a href="{{ route('student.my-courses') }}"
+                    class="sidebar-link {{ request()->routeIs('student.my-courses') ? 'active' : '' }}">
                     <i class="fas fa-book mr-2"></i>
                     <span>Mis Cursos</span>
                 </a>
-                <a href="{{ route('student.certificates') }}" class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
+                <a href="{{ route('student.certificates') }}"
+                    class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
                     <i class="fas fa-certificate mr-2"></i>
                     <span>Certificados</span>
                 </a>
-                <a href="{{ route('student.exams') }}" class="sidebar-link {{ request()->routeIs('student.exams') ? 'active' : '' }}">
+                <a href="{{ route('student.exams') }}"
+                    class="sidebar-link {{ request()->routeIs('student.exams') ? 'active' : '' }}">
                     <i class="fas fa-file-alt mr-2"></i>
                     <span>Exámenes</span>
                 </a>
-                <a href="{{ route('student.progress') }}" class="sidebar-link {{ request()->routeIs('student.progress') ? 'active' : '' }}">
+                <a href="{{ route('student.progress') }}"
+                    class="sidebar-link {{ request()->routeIs('student.progress') ? 'active' : '' }}">
                     <i class="fas fa-chart-line mr-2"></i>
                     <span>Mi Progreso</span>
                 </a>
-                <a href="{{ route('student.profile') }}" class="sidebar-link {{ request()->routeIs('student.profile') ? 'active' : '' }}">
+                <a href="{{ route('student.profile') }}"
+                    class="sidebar-link {{ request()->routeIs('student.profile') ? 'active' : '' }}">
                     <i class="fas fa-user"></i>
                     <span>Mi Perfil</span>
                 </a>
-                @if(auth()->user()->hasPromotionCode())
-                    <a href="{{ route('student.affiliate.dashboard') }}" class="sidebar-link {{ request()->routeIs('student.affiliate.*') ? 'active' : '' }}">
+                @if (auth()->user()->hasPromotionCode())
+                    <a href="{{ route('student.affiliate.dashboard') }}"
+                        class="sidebar-link {{ request()->routeIs('student.affiliate.*') ? 'active' : '' }}">
                         <i class="fas fa-users mr-2"></i>
                         <span>Mis Ventas</span>
                         @php $salesCount = auth()->user()->courses_sold_count ?? 0; @endphp
-                        @if($salesCount > 0)
+                        @if ($salesCount > 0)
                             <span class="badge bg-purple-100 text-purple-800">{{ $salesCount }}</span>
                         @endif
                     </a>
@@ -484,7 +498,7 @@
             </nav>
 
             <!-- Sección de metas (solo en desktop) -->
-            <div class="sidebar-footer p-4 border-t border-gray-200 hidden lg:block">
+            {{-- <div class="sidebar-footer p-4 border-t border-gray-200 hidden lg:block">
                 <h3 class="text-xs font-semibold text-gray-500 uppercase mb-3">
                     <i class="fas fa-bullseye text-emerald-500 mr-1"></i> Metas del Mes
                 </h3>
@@ -498,7 +512,7 @@
                     </div>
                     <p class="text-xs text-gray-500">Completa tus cursos</p>
                 </div>
-            </div>
+            </div> --}}
         </aside>
 
         <!-- Header -->
@@ -544,18 +558,20 @@
 
                     <!-- Perfil -->
                     @auth
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition">
-                            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                {{ substr(auth()->user()->names, 0, 1) }}
-                            </div>
-                            <span class="user-info hidden md:block text-sm font-medium text-gray-700">
-                                {{ auth()->user()->names }}
-                            </span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500" :class="{ 'rotate-180': open }"></i>
-                        </button>
-                        @include('layouts.partials.student-profile')
-                    </div>
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open"
+                                class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 transition">
+                                <div
+                                    class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    {{ substr(auth()->user()->names, 0, 1) }}
+                                </div>
+                                <span class="user-info hidden md:block text-sm font-medium text-gray-700">
+                                    {{ auth()->user()->names }}
+                                </span>
+                                <i class="fas fa-chevron-down text-xs text-gray-500" :class="{ 'rotate-180': open }"></i>
+                            </button>
+                            @include('layouts.partials.student-profile')
+                        </div>
                     @endauth
                 </div>
             </div>
@@ -564,13 +580,13 @@
         <!-- Contenido principal -->
         <main class="main-content" :class="{ 'sidebar-collapsed': !isDesktop && mobileMenuOpen }">
             <div class="content-wrapper">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                         <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
                     </div>
                 @endif
 
-                @if(session('error'))
+                @if (session('error'))
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
                     </div>
@@ -589,9 +605,12 @@
                     <div class="flex flex-wrap justify-center gap-4 text-xs">
                         <a href="{{ url('/') }}" class="text-gray-400 hover:text-white transition">Inicio</a>
                         <a href="{{ route('cursos') }}" class="text-gray-400 hover:text-white transition">Cursos</a>
-                        <a href="{{ route('paquetes') }}" class="text-gray-400 hover:text-white transition">Servicios para empresas</a>
-                        <a href="{{ url('contacto') }}" class="text-gray-400 hover:text-white transition">Contacto</a>
-                        <a href="{{ url('privacidad') }}" class="text-gray-400 hover:text-white transition">Privacidad</a>
+                        <a href="{{ route('paquetes') }}" class="text-gray-400 hover:text-white transition">Servicios
+                            para empresas</a>
+                        <a href="{{ url('contacto') }}"
+                            class="text-gray-400 hover:text-white transition">Contacto</a>
+                        <a href="{{ url('privacidad') }}"
+                            class="text-gray-400 hover:text-white transition">Privacidad</a>
                     </div>
                     <div class="text-xs text-gray-500">
                         &copy; {{ date('Y') }} Todos los derechos reservados.
@@ -606,7 +625,7 @@
             return {
                 mobileMenuOpen: false,
                 isDesktop: window.innerWidth >= 1024,
-                
+
                 init() {
                     this.checkScreenSize();
                     window.addEventListener('resize', () => this.checkScreenSize());
@@ -635,7 +654,7 @@
                     try {
                         const response = await axios.get('/api/student/dashboard-stats');
                         const data = response.data;
-                        
+
                         if (data.monthlyProgress !== undefined) {
                             this.animateProgress(data.monthlyProgress);
                         }
@@ -658,7 +677,7 @@
                         }
                         current += increment;
                         if (current > target) current = target;
-                        
+
                         progressBar.style.width = current + '%';
                         progressText.textContent = Math.round(current) + '%';
                     }, 20);
@@ -703,7 +722,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Transiciones */
@@ -716,7 +737,7 @@
             .action-button {
                 padding: 0.4rem;
             }
-            
+
             .action-button i {
                 font-size: 1rem;
             }
@@ -732,13 +753,14 @@
 
         /* Print styles */
         @media print {
+
             .sidebar,
             .header,
             .footer,
             .action-button {
                 display: none !important;
             }
-            
+
             .main-content {
                 margin: 0 !important;
                 padding: 0 !important;
@@ -750,4 +772,5 @@
         }
     </style>
 </body>
+
 </html>

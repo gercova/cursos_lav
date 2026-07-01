@@ -10,6 +10,7 @@ use App\Models\PackageCourse;
 use App\Models\PlanType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -22,14 +23,22 @@ class PackagesAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
     }
 
-    public function index(): View {
+    public function index(Request $request): View {
+        $search = $request->get('search');
         $packages = Course::with(['categories', 'courses'])
             ->where('category_id', 4)
             ->where('type', 'package')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
-            
-        return view('admin.packages.index', compact('packages'));
+            ->paginate(10)
+            ->withQueryString(); // importante para que la paginación conserve el filtro
+
+        return view('admin.packages.index', compact('packages', 'search'));
     }
 
     public function create(): View {

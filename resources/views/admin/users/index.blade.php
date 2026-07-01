@@ -94,10 +94,16 @@
                 <!-- Filtros y búsqueda -->
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
-                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <input type="text" x-model="searchQuery" @input.debounce.500ms="performSearch()" placeholder="Buscar por nombre, email o DNI..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <svg x-show="searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <input type="text" x-model="searchQuery" @input.debounce.400ms="performSearch()"
+                               placeholder="Buscar por nombre, email o DNI..."
+                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
                     </div>
 
                     <div class="flex gap-2">
@@ -117,7 +123,7 @@
         </div>
 
         <!-- Tabla de usuarios -->
-        <div class="overflow-x-auto" x-show="!loading">
+        <div class="overflow-x-auto" id="users-table-container" x-show="!loading">
             @if($users->isEmpty())
                 <!-- Estado vacío -->
                 <div class="text-center py-16 px-6">
@@ -390,7 +396,7 @@
 
         <!-- Paginación -->
         @if($users->hasPages())
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
+            <div id="users-pagination" class="px-6 py-4 border-t border-gray-200 bg-gray-50/50">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="text-sm text-gray-700">
                         Mostrando
@@ -650,31 +656,56 @@
             roleFilter: '{{ request('role', '') }}',
             statusFilter: '{{ request('status', '') }}',
             loading: false,
+            searching: false,
 
             init() {
-                // Inicializar
+                // nada extra
             },
 
             async performSearch() {
-                this.loading = true;
+                this.searching = true;
+
+                const params = new URLSearchParams();
+                if (this.searchQuery) params.append('search', this.searchQuery);
+                if (this.roleFilter)  params.append('role',   this.roleFilter);
+                if (this.statusFilter) params.append('status', this.statusFilter);
+                params.append('ajax', '1');   // marcador para respuesta parcial
+
+                const url = `{{ route('admin.users.index') }}?${params.toString()}`;
+
+                // Actualizar la URL del navegador sin recargar
+                const displayUrl = `{{ route('admin.users.index') }}?${params.toString().replace('&ajax=1','').replace('ajax=1&','').replace('ajax=1','')}`;
+                window.history.replaceState(null, '', displayUrl || '{{ route('admin.users.index') }}');
 
                 try {
-                    const params = new URLSearchParams();
-                    if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.roleFilter) params.append('role', this.roleFilter);
-                    if (this.statusFilter) params.append('status', this.statusFilter);
+                    const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const html = await res.text();
 
-                    const url = `{{ route('admin.users.index') }}?${params.toString()}`;
-                    window.location.href = url;
+                    // Extraer solo el contenido de #users-table-container del HTML devuelto
+                    const parser = new DOMParser();
+                    const doc    = parser.parseFromString(html, 'text/html');
+                    const newTable = doc.getElementById('users-table-container');
+
+                    if (newTable) {
+                        document.getElementById('users-table-container').innerHTML = newTable.innerHTML;
+                    }
+
+                    // Actualizar también la paginación si existe
+                    const newPagination = doc.getElementById('users-pagination');
+                    const curPagination = document.getElementById('users-pagination');
+                    if (newPagination && curPagination) {
+                        curPagination.innerHTML = newPagination.innerHTML;
+                    }
                 } catch (error) {
                     console.error('Error en búsqueda:', error);
-                    this.loading = false;
+                } finally {
+                    this.searching = false;
                 }
             },
 
             resetFilters() {
-                this.searchQuery = '';
-                this.roleFilter = '';
+                this.searchQuery  = '';
+                this.roleFilter   = '';
                 this.statusFilter = '';
                 this.performSearch();
             },
@@ -683,7 +714,7 @@
                 try {
                     const params = new URLSearchParams();
                     if (this.searchQuery) params.append('search', this.searchQuery);
-                    if (this.roleFilter) params.append('role', this.roleFilter);
+                    if (this.roleFilter)  params.append('role',   this.roleFilter);
 
                     const url = `{{ route('admin.users.index') }}/export?${params.toString()}`;
                     window.open(url, '_blank');

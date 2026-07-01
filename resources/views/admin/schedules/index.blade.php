@@ -117,36 +117,72 @@
                             <td class="px-4 py-3 align-top">
                                 <div class="flex flex-wrap gap-2">
                                     @forelse($items as $item)
-                                        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border
-                                            {{ $item->is_released
-                                                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                                                : 'bg-blue-50 border-blue-200 text-blue-800' }}
-                                            relative group/item">
-                                            <i class="fas fa-book-open text-xs opacity-60"></i>
-                                            <span class="max-w-[200px] truncate" title="{{ $item->course?->title }}">
-                                                {{ $item->course?->title ?? 'Curso eliminado' }}
-                                            </span>
-                                            @if($item->company_code)
-                                                <span class="text-xs bg-white/70 px-1 rounded border border-current opacity-70">
-                                                    {{ $item->company_code }}
-                                                </span>
-                                            @else
-                                                <span class="text-xs bg-white/70 px-1 rounded border border-current opacity-70">Global</span>
-                                            @endif
-                                            @if($item->modality)
-                                                <span class="opacity-60">· {{ $item->modality }}</span>
-                                            @endif
-                                            {{-- Botón eliminar --}}
-                                            <button @click="deleteItem({{ $item->id }}, '{{ addslashes($item->course?->title ?? '') }}')"
-                                                class="ml-1 w-4 h-4 flex items-center justify-center rounded-full bg-red-100 text-red-500 hover:bg-red-200 opacity-0 group-hover/item:opacity-100 transition-opacity flex-shrink-0"
-                                                title="Eliminar">
-                                                <i class="fas fa-times text-[10px]"></i>
-                                            </button>
-                                        </div>
-                                    @empty
-                                        <span class="text-xs text-gray-400 italic">Sin cursos programados</span>
-                                    @endforelse
-                                </div>
+                                         <div class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border
+                                             {{ !$item->is_active
+                                                 ? 'bg-gray-50 border-gray-200 text-gray-500'
+                                                 : ($item->is_released
+                                                     ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                                                     : 'bg-blue-50 border-blue-200 text-blue-800') }}
+                                             relative group/item shadow-sm">
+                                             
+                                             {{-- Botón toggle (Activar/Desactivar) --}}
+                                             <button @click="toggleActive({{ $item->id }}, {{ $item->is_active ? 'false' : 'true' }})"
+                                                 class="flex-shrink-0 hover:scale-110 transition-transform focus:outline-none"
+                                                 title="{{ $item->is_active ? 'Desactivar (Ocultar por falta de pago)' : 'Activar (Mostrar)' }}">
+                                                 <i class="fas {{ $item->is_active ? 'fa-toggle-on text-emerald-500 text-lg' : 'fa-toggle-off text-gray-400 text-lg' }}"></i>
+                                             </button>
+
+                                             <div class="flex flex-col {{ !$item->is_active ? 'line-through opacity-70' : '' }}">
+                                                 <span class="max-w-[200px] truncate font-bold" title="{{ $item->course?->title }}">
+                                                     {{ $item->course?->title ?? 'Curso eliminado' }}
+                                                 </span>
+                                                 <div class="flex gap-1 mt-0.5 items-center">
+                                                     @if($item->company_code)
+                                                         <span class="text-[10px] bg-white/80 px-1.5 py-0.5 rounded border border-current opacity-80 font-semibold">
+                                                             {{ $item->company_code }}
+                                                         </span>
+                                                     @else
+                                                         <span class="text-[10px] bg-white/80 px-1.5 py-0.5 rounded border border-current opacity-80 font-semibold">
+                                                             Global
+                                                         </span>
+                                                     @endif
+                                                     @if($item->modality)
+                                                         <span class="opacity-70 text-[10px]">· {{ $item->modality }}</span>
+                                                     @endif
+                                                 </div>
+                                             </div>
+
+                                             {{-- Contenedor de acciones (Editar / Eliminar) --}}
+                                             <div class="ml-auto flex items-center gap-1">
+                                                 {{-- Botón editar --}}
+                                                 <button @click="editItem({
+                                                     id: {{ $item->id }},
+                                                     course_id: {{ $item->course_id }},
+                                                     month: {{ $item->month }},
+                                                     year: {{ $item->year }},
+                                                     company_code: '{{ $item->company_code ?? '' }}',
+                                                     modality: '{{ $item->modality ?? '' }}',
+                                                     responsible_area: '{{ $item->responsible_area ?? '' }}',
+                                                     scope: '{{ $item->scope ?? '' }}',
+                                                     notes: '{{ addslashes($item->notes ?? '') }}',
+                                                     is_active: {{ $item->is_active ? 'true' : 'false' }}
+                                                 })"
+                                                     class="w-6 h-6 flex items-center justify-center rounded bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors flex-shrink-0"
+                                                     title="Editar programacion">
+                                                     <i class="fas fa-pencil-alt text-xs"></i>
+                                                 </button>
+
+                                                 {{-- Botón eliminar --}}
+                                                 <button @click="deleteItem({{ $item->id }}, '{{ addslashes($item->course?->title ?? '') }}')"
+                                                     class="w-6 h-6 flex items-center justify-center rounded bg-red-100 text-red-500 hover:bg-red-600 hover:text-white transition-colors flex-shrink-0"
+                                                     title="Eliminar del cronograma">
+                                                     <i class="fas fa-trash text-xs"></i>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     @empty
+                                         <span class="text-xs text-gray-400 italic">Sin cursos programados</span>
+                                     @endforelse                                </div>
                             </td>
 
                             {{-- Columna ACCIONES --}}
@@ -216,8 +252,8 @@
              x-transition:enter-end="opacity-100 scale-100">
             <div class="flex items-center justify-between p-5 border-b border-gray-100">
                 <h3 class="text-lg font-bold text-gray-900">
-                    <i class="fas fa-calendar-plus text-blue-600 mr-2"></i>
-                    Agregar Curso al Cronograma
+                    <i class="fas text-blue-600 mr-2" :class="isEditMode ? 'fa-calendar-check text-emerald-600' : 'fa-calendar-plus text-blue-600'"></i>
+                    <span x-text="isEditMode ? 'Editar Curso Programado' : 'Agregar Curso al Cronograma'"></span>
                 </h3>
                 <button @click="showAddModal = false" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <i class="fas fa-times text-lg"></i>
@@ -309,6 +345,22 @@
                         class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
                 </div>
 
+                {{-- Estado de Visibilidad (Suscripción) --}}
+                <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl border border-gray-200/80">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            Visibilidad del Curso (Suscripción)
+                        </label>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            Ocular si la empresa no ha pagado la cuota mensual.
+                        </p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" x-model="form.is_active" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
                 {{-- Alerta de error --}}
                 <div x-show="errorMsg" class="bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2 rounded-lg" x-text="errorMsg"></div>
 
@@ -369,9 +421,10 @@ function scheduleManager() {
         showDeleteModal: false,
         saving:          false,
         errorMsg:        '',
-
-        // Formulario "Agregar"
+        isEditMode:      false,
+        // Formulario
         form: {
+            id:               null,
             course_id:        '',
             month:            '',
             year:             {{ $year }},
@@ -380,17 +433,20 @@ function scheduleManager() {
             responsible_area: '',
             scope:            '',
             notes:            '',
+            is_active:        true,
         },
 
         // Para eliminar
         deleteTarget: { id: null, title: '' },
 
         init() {
-            // Nada que inicializar de forma asíncrona
+            // Nada que inicializar
         },
 
         openAddModal(month = null, year = null) {
-            this.errorMsg     = '';
+            this.isEditMode            = false;
+            this.errorMsg              = '';
+            this.form.id               = null;
             this.form.course_id        = '';
             this.form.month            = month ?? '';
             this.form.year             = year  ?? {{ $year }};
@@ -399,7 +455,24 @@ function scheduleManager() {
             this.form.responsible_area = '';
             this.form.scope            = '';
             this.form.notes            = '';
-            this.showAddModal = true;
+            this.form.is_active        = true;
+            this.showAddModal          = true;
+        },
+
+        editItem(item) {
+            this.isEditMode            = true;
+            this.errorMsg              = '';
+            this.form.id               = item.id;
+            this.form.course_id        = item.course_id;
+            this.form.month            = item.month;
+            this.form.year             = item.year;
+            this.form.company_code     = item.company_code || '';
+            this.form.modality         = item.modality || '';
+            this.form.responsible_area = item.responsible_area || '';
+            this.form.scope            = item.scope || '';
+            this.form.notes            = item.notes || '';
+            this.form.is_active        = !!item.is_active;
+            this.showAddModal          = true;
         },
 
         async submitAdd() {
@@ -410,9 +483,16 @@ function scheduleManager() {
             this.saving   = true;
             this.errorMsg = '';
             try {
-                const res = await axios.post('{{ route('admin.schedules.store') }}', this.form, {
-                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-                });
+                let res;
+                if (this.isEditMode) {
+                    res = await axios.put(`{{ url('admin/schedules') }}/${this.form.id}`, this.form, {
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                } else {
+                    res = await axios.post('{{ route('admin.schedules.store') }}', this.form, {
+                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                }
                 if (res.data.success) {
                     this.showAddModal = false;
                     window.location.reload();
@@ -421,6 +501,27 @@ function scheduleManager() {
                 }
             } catch (err) {
                 this.errorMsg = err.response?.data?.message ?? 'Error de servidor.';
+            } finally {
+                this.saving = false;
+            }
+        },
+
+        async toggleActive(id, newStatus) {
+            this.saving = true;
+            try {
+                const res = await axios.put(`{{ url('admin/schedules') }}/${id}`, {
+                    is_active: newStatus
+                }, {
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                if (res.data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Error al actualizar el estado.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error de servidor al actualizar el estado.');
             } finally {
                 this.saving = false;
             }
@@ -465,8 +566,7 @@ function scheduleManager() {
             }
         },
     };
-}
-</script>
+}</script>
 
 <style>
 [x-cloak] { display: none !important; }

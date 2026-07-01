@@ -371,7 +371,3 @@ Route::prefix('admin')->group(function () {
         Route::get('/certificates/{certificate}/view',          [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
     });
 });
-
-# Cuenta de correo IPF
-# user: informes@ipf-educa.com
-# pass: f%{21%[x7bF)

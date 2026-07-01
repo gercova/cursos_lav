@@ -1,6 +1,5 @@
 @extends('layouts.student')
 @section('title', 'Cronograma Anual de Capacitaciones')
-
 @section('content')
 {{-- Contenido inyectado en el layout student --}}
 <div class="space-y-6">
@@ -22,15 +21,15 @@
         @php $currentYear = now()->year; @endphp
         <div class="flex items-center gap-2">
             <a href="{{ request()->fullUrlWithQuery(['year' => $year - 1]) }}"
-               class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
                 <i class="fas fa-chevron-left text-xs"></i>
             </a>
             <span class="text-lg font-bold text-blue-700 px-2">{{ $year }}</span>
             {{-- Solo permitir avanzar al año siguiente si es un año pasado --}}
             @if($year < $currentYear)
                 <a href="{{ request()->fullUrlWithQuery(['year' => $year + 1]) }}"
-                   class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
-                    <i class="fas fa-chevron-right text-xs"></i>
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
+                <i class="fas fa-chevron-right text-xs"></i>
                 </a>
             @else
                 <span class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-300 cursor-not-allowed" title="No hay cursos programados en años futuros">
@@ -74,14 +73,13 @@
     {{-- ── GRILLA POR MES ────────────────────────────────────────────────── --}}
     <div class="space-y-3">
         @php $months = \App\Models\CompanySchedule::$months; @endphp
-
         @foreach($months as $num => $monthName)
             @php
-                $now       = now();
-                $isPast    = ($year < $now->year) || ($year == $now->year && $num < $now->month);
+                $now = now();
+                $isPast = ($year < $now->year) || ($year == $now->year && $num < $now->month);
                 $isCurrent = ($year == $now->year && $num == $now->month);
-                $isFuture  = !$isPast && !$isCurrent;
-                $items     = $byMonth->get($num, collect());
+                $isFuture = !$isPast && !$isCurrent;
+                $items = $byMonth->get($num, collect());
             @endphp
 
             {{-- Ocultar meses futuros del año actual y años futuros --}}
@@ -91,12 +89,10 @@
 
             <div class="bg-white rounded-xl border {{ $isCurrent ? 'border-blue-300 shadow-md' : ($isPast ? 'border-gray-200' : 'border-gray-100') }} overflow-hidden">
                 {{-- Cabecera del mes --}}
-                <div class="px-5 py-3 flex items-center gap-3
-                    {{ $isCurrent ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' 
-                        : ($isPast ? 'bg-gray-50' : 'bg-white') }}">
+                <div class="px-5 py-3 flex items-center gap-3 {{ $isCurrent ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' : ($isPast ? 'bg-gray-50' : 'bg-white') }}">
                     {{-- Indicador --}}
                     @if($isCurrent)
-                        <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse flex-shrink-0"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-white flex-shrink-0"></span>
                     @elseif($isPast)
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
                     @else
@@ -124,64 +120,63 @@
                 @if($items->count() > 0)
                     <div class="divide-y divide-gray-50">
                         @foreach($items as $item)
-                            <div class="px-5 py-3 flex items-center gap-4 hover:bg-gray-50/50 transition-colors duration-150">
-                                {{-- Imagen del curso --}}
-                                <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                                    @if($item->course)
-                                        <img src="{{ $item->course->image_url }}"
-                                             alt="{{ $item->course->title }}"
-                                             class="w-full h-full object-cover {{ $isFuture ? 'grayscale opacity-60' : '' }}">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                            <i class="fas fa-book"></i>
-                                        </div>
+                        <div class="px-5 py-3 flex items-center gap-4 hover:bg-gray-50/50 transition-colors duration-150">
+                            {{-- Imagen del curso --}}
+                            <div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                                @if($item->course)
+                                <img src="{{ $item->course->image_url }}"
+                                    alt="{{ $item->course->title }}"
+                                    class="w-full h-full object-cover {{ $isFuture ? 'grayscale opacity-60' : '' }}">
+                                @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                @endif
+                            </div>
+
+                            {{-- Info del curso --}}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-800 truncate">
+                                    {{ $item->course?->title ?? 'Curso no disponible' }}
+                                </p>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @if($item->modality)
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                        <i class="fas fa-laptop-house mr-1"></i>{{ $item->modality }}
+                                    </span>
                                     @endif
-                                </div>
-
-                                {{-- Info del curso --}}
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-gray-800 truncate">
-                                        {{ $item->course?->title ?? 'Curso no disponible' }}
-                                    </p>
-                                    <div class="flex flex-wrap gap-2 mt-1">
-                                        @if($item->modality)
-                                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                                                <i class="fas fa-laptop-house mr-1"></i>{{ $item->modality }}
-                                            </span>
-                                        @endif
-                                        @if($item->responsible_area)
-                                            <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">
-                                                <i class="fas fa-user-tie mr-1"></i>{{ $item->responsible_area }}
-                                            </span>
-                                        @endif
-                                        @if($item->scope)
-                                            <span class="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
-                                                <i class="fas fa-users mr-1"></i>{{ $item->scope }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- Estado / Acción --}}
-                                <div class="flex-shrink-0 text-right">
-                                    @if($item->is_released && $item->course)
-                                        <a href="{{ route('student.course.learn', $item->course->id) }}"
-                                           class="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                                            <i class="fas fa-play-circle"></i> Iniciar
-                                        </a>
-                                    @elseif($isFuture)
-                                        {{-- Nunca se renderiza (los meses futuros se omiten arriba) --}}
-                                        <span class="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-lg">
-                                            <i class="fas fa-lock"></i>
-                                            Próximamente
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg font-medium">
-                                            <i class="fas fa-check-circle"></i> Liberado
-                                        </span>
+                                    @if($item->responsible_area)
+                                    <span class="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full">
+                                        <i class="fas fa-user-tie mr-1"></i>{{ $item->responsible_area }}
+                                    </span>
+                                    @endif
+                                    @if($item->scope)
+                                    <span class="text-xs bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full">
+                                        <i class="fas fa-users mr-1"></i>{{ $item->scope }}
+                                    </span>
                                     @endif
                                 </div>
                             </div>
+
+                            {{-- Estado / Acción --}}
+                            <div class="flex-shrink-0 text-right">
+                                @if($item->is_released && $item->course)
+                                    <a href="{{ route('student.course.learn', $item->course->id) }}" class="inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors">
+                                        <i class="fas fa-play-circle"></i> Iniciar
+                                    </a>
+                                @elseif($isFuture)
+                                    {{-- Nunca se renderiza (los meses futuros se omiten arriba) --}}
+                                    <span class="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-lg">
+                                        <i class="fas fa-lock"></i>
+                                        Próximamente
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg font-medium">
+                                        <i class="fas fa-check-circle"></i> Liberado
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                         @endforeach
                     </div>
                 @else

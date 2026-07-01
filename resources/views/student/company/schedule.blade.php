@@ -13,22 +13,30 @@
                 Cronograma Anual de Capacitaciones
             </h1>
             <p class="text-gray-500 text-sm mt-1">
-                Cursos programados para tu empresa — Los cursos marcados como
-                <span class="font-semibold text-emerald-600">Liberado</span>
-                ya están disponibles para capacitarte.
+                Cursos programados para tu empresa — Solo se muestran los cursos del
+                <span class="font-semibold text-blue-600">mes actual y meses anteriores</span>.
+                Los cursos de próximos meses se mostrarán al llegar su fecha.
             </p>
         </div>
-        {{-- Selector de año --}}
+        {{-- Selector de año: solo se puede navegar hacia atrás --}}
+        @php $currentYear = now()->year; @endphp
         <div class="flex items-center gap-2">
             <a href="{{ request()->fullUrlWithQuery(['year' => $year - 1]) }}"
                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
                 <i class="fas fa-chevron-left text-xs"></i>
             </a>
             <span class="text-lg font-bold text-blue-700 px-2">{{ $year }}</span>
-            <a href="{{ request()->fullUrlWithQuery(['year' => $year + 1]) }}"
-               class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
-                <i class="fas fa-chevron-right text-xs"></i>
-            </a>
+            {{-- Solo permitir avanzar al año siguiente si es un año pasado --}}
+            @if($year < $currentYear)
+                <a href="{{ request()->fullUrlWithQuery(['year' => $year + 1]) }}"
+                   class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </a>
+            @else
+                <span class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-300 cursor-not-allowed" title="No hay cursos programados en años futuros">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </span>
+            @endif
         </div>
     </div>
 
@@ -75,6 +83,11 @@
                 $isFuture  = !$isPast && !$isCurrent;
                 $items     = $byMonth->get($num, collect());
             @endphp
+
+            {{-- Ocultar meses futuros del año actual y años futuros --}}
+            @if($isFuture)
+                @continue
+            @endif
 
             <div class="bg-white rounded-xl border {{ $isCurrent ? 'border-blue-300 shadow-md' : ($isPast ? 'border-gray-200' : 'border-gray-100') }} overflow-hidden">
                 {{-- Cabecera del mes --}}
@@ -157,9 +170,10 @@
                                             <i class="fas fa-play-circle"></i> Iniciar
                                         </a>
                                     @elseif($isFuture)
+                                        {{-- Nunca se renderiza (los meses futuros se omiten arriba) --}}
                                         <span class="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-lg">
                                             <i class="fas fa-lock"></i>
-                                            Disponible en {{ \Carbon\Carbon::create($item->year, $item->month)->locale('es')->isoFormat('MMM') }}
+                                            Próximamente
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg font-medium">

@@ -130,7 +130,7 @@
 
         /* Botón hamburguesa */
         .menu-toggle {
-            display: none;
+            display: block;
             background: none;
             border: none;
             color: #4b5563;
@@ -257,9 +257,6 @@
 
         /* Media queries */
         @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
 
             .sidebar {
                 transform: translateX(calc(var(--sidebar-width) * -1));
@@ -411,7 +408,7 @@
         <div class="sidebar-overlay" :class="{ 'active': mobileMenuOpen }" @click="toggleMobileMenu"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar" :class="{ 'mobile-open': mobileMenuOpen }">
+        <aside class="sidebar" :class="{ 'mobile-open': mobileMenuOpen, 'collapsed': isDesktop && sidebarCollapsed }">
             <div class="sidebar-header">
                 <div class="flex items-center justify-between">
                     <a href="{{ route('student.dashboard') }}" class="flex items-center gap-2">
@@ -457,6 +454,16 @@
                         </a>
                     @endif
                     <hr>
+                @else
+                    {{-- Cronograma de Capacitaciones para colaboradores asociados --}}
+                    @if (auth()->user()->company_code && auth()->user()->parent_id)
+                        <hr>
+                        <a href="{{ route('company.schedule') }}"
+                            class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
+                        </a>
+                        <hr>
+                    @endif
                 @endif
 
                 <a href="{{ route('student.my-courses') }}"
@@ -516,10 +523,10 @@
         </aside>
 
         <!-- Header -->
-        <header class="header" :class="{ 'sidebar-collapsed': !isDesktop && mobileMenuOpen }">
+        <header class="header" :class="{ 'sidebar-collapsed': isDesktop && sidebarCollapsed }">
             <div class="header-content">
                 <div class="header-left">
-                    <button class="menu-toggle" @click="toggleMobileMenu">
+                    <button class="menu-toggle" @click="toggleSidebar">
                         <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
                     </button>
                     <span class="logo-text text-gray-800 font-medium hidden sm:inline">
@@ -578,7 +585,7 @@
         </header>
 
         <!-- Contenido principal -->
-        <main class="main-content" :class="{ 'sidebar-collapsed': !isDesktop && mobileMenuOpen }">
+        <main class="main-content" :class="{ 'sidebar-collapsed': isDesktop && sidebarCollapsed }">
             <div class="content-wrapper">
                 @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -625,6 +632,7 @@
             return {
                 mobileMenuOpen: false,
                 isDesktop: window.innerWidth >= 1024,
+                sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
 
                 init() {
                     this.checkScreenSize();
@@ -648,6 +656,15 @@
 
                 toggleMobileMenu() {
                     this.mobileMenuOpen = !this.mobileMenuOpen;
+                },
+
+                toggleSidebar() {
+                    if (this.isDesktop) {
+                        this.sidebarCollapsed = !this.sidebarCollapsed;
+                        localStorage.setItem('sidebarCollapsed', this.sidebarCollapsed);
+                    } else {
+                        this.mobileMenuOpen = !this.mobileMenuOpen;
+                    }
                 },
 
                 async loadDashboardData() {

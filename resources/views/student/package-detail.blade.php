@@ -199,85 +199,6 @@
                 </div>
 
                 <!-- Cursos incluidos en el paquete (basado en create.blade.php) -->
-                {{-- <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <i class="fas fa-book text-indigo-600"></i>
-                        Cursos incluidos en este paquete
-                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            {{ $package->courses->count() }}
-                        </span>
-                    </h2>
-                    
-                    <div class="space-y-4">
-                        @foreach($package->courses as $index => $course)
-                            <div class="flex flex-col sm:flex-row sm:items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
-                                <div class="flex-1 flex items-center gap-3">
-                                    <!-- Número de orden (como en create.blade.php) -->
-                                    <span class="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full text-sm font-bold">
-                                        {{ $index + 1 }}
-                                    </span>
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="font-medium text-gray-900 truncate">{{ $course->title }}</h3>
-                                        <p class="text-sm text-gray-500">{{ $course->category->name ?? 'Sin categoría' }}</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Cantidad de sesiones (quantity del pivot) -->
-                                @if($course->pivot && $course->pivot->quantity)
-                                    <div class="flex items-center gap-2 text-sm text-gray-600">
-                                        <i class="fas fa-video"></i>
-                                        <span>{{ $course->pivot->quantity }} sesiones</span>
-                                    </div>
-                                @endif
-                                
-                                <!-- Precio original del curso -->
-                                <div class="text-right">
-                                    <span class="text-sm text-gray-500">Curso valorizado en:</span>
-                                    <p class="font-semibold text-indigo-600">S/ {{ number_format($course->price, 2) }}</p>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Resumen de valor total (basado en create.blade.php) -->
-                    <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            @php
-                                // 1. Inicializamos la variable para evitar el "Undefined variable"
-                                $final_price = 0;
-                                
-                                // Corregido: Course en lugar de Courses y validación de plan_type_id
-                                if ($package->plan_type_id == 1 && $package->course_limit > 0) {
-                                    $averagePrice = \App\Models\Course::inRandomOrder()
-                                        ->limit($package->courses_limit)
-                                        ->get()
-                                        ->avg('price');
-                                    
-                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
-                                } 
-                                elseif ($package->plan_type_id !== 1) {
-                                    $averagePrice = \App\Models\Course::where('is_active', true)
-                                        ->get()
-                                        ->avg('price');
-                                    
-                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
-                                }
-                            @endphp
-
-                            <div>
-                                <p class="text-sm text-indigo-600 font-medium">Valor total de cursos por separado</p>
-                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($final_price, 2) }}</p>
-                            </div>
-
-                            <div class="text-right">
-                                <p class="text-sm text-green-600 font-medium">Ahorro con este paquete</p>
-                                <p class="text-2xl font-bold text-green-600">
-                                    S/ {{ number_format(max(0, $final_price - $package->price), 2) }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <i class="fas fa-book text-indigo-600"></i>
@@ -315,44 +236,73 @@
                         @endforeach
                     </div>
                     
-                    <!-- Resumen de valor total (basado en create.blade.php) -->
+                    <!-- Resumen de valor total -->
+                    @php
+                        $coursesSum     = 0;
+                        $showSavingsBox = true;
+
+                        if ($package->courses->isNotEmpty()) {
+                            // Caso 1: cursos fijos asignados al paquete → suma real de precios
+                            $coursesSum = (float) $package->courses->sum('price');
+
+                        } elseif ($package->categories->isNotEmpty()) {
+                            // Caso 2: paquete por categorías → suma REAL de todos los cursos activos de esas categorías
+                            $categoryIds = $package->categories->pluck('id');
+                            $coursesSum  = (float) \App\Models\Course::where('type', 'course')
+                                ->where('is_active', true)
+                                ->whereIn('category_id', $categoryIds)
+                                ->sum('price');
+
+                        } elseif ($package->course_limit > 0) {
+                            // Caso 3: plan dinámico/flexible → promedio × límite de cursos
+                            $avgPrice   = (float) (\App\Models\Course::where('type', 'course')
+                                ->where('is_active', true)
+                                ->avg('price') ?? 0);
+                            $coursesSum = $avgPrice * (int) $package->course_limit;
+
+                        } else {
+                            // Caso 4: sin datos suficientes → ocultar bloque
+                            $showSavingsBox = false;
+                        }
+
+                        // "Valor por separado" = cada alumno comprando sus cursos individualmente
+                        $seats          = max(1, (int) $package->seats_max);
+                        $separateTotal  = $coursesSum * $seats;
+
+                        // Precio efectivo del paquete (respeta promoción vigente)
+                        $effectivePrice = $package->has_promotion
+                            ? (float) $package->final_price
+                            : (float) $package->price;
+
+                        $savings        = max(0, $separateTotal - $effectivePrice);
+                        $savingsPct     = $separateTotal > 0 ? round(($savings / $separateTotal) * 100) : 0;
+                    @endphp
+
+                    @if($showSavingsBox && $separateTotal > 0 && $savings > 0)
                     <div class="mt-6 p-4 bg-indigo-50 rounded-lg">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            @php
-                                // 1. Inicializamos la variable para evitar el "Undefined variable"
-                                $final_price = 0;
-                                
-                                // Corregido: Course en lugar de Courses y validación de plan_type_id
-                                if ($package->plan_type_id == 1 && $package->course_limit > 0) {
-                                    $averagePrice = \App\Models\Course::inRandomOrder()
-                                        ->limit($package->courses_limit)
-                                        ->get()
-                                        ->avg('price');
-                                    
-                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
-                                } 
-                                elseif ($package->plan_type_id !== 1) {
-                                    $averagePrice = \App\Models\Course::where('is_active', true)
-                                        ->get()
-                                        ->avg('price');
-                                    
-                                    $final_price = (float) $averagePrice * (int) $package->seats_max;
-                                }
-                            @endphp
-
                             <div>
                                 <p class="text-sm text-indigo-600 font-medium">Valor total de cursos por separado</p>
-                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($final_price, 2) }}</p>
+                                <p class="text-2xl font-bold text-gray-900">S/ {{ number_format($separateTotal, 2) }}</p>
+                                @if($package->courses->isNotEmpty())
+                                    <p class="text-xs text-gray-400 mt-1">{{ $package->courses->count() }} curso(s) × {{ $seats }} alumno(s)</p>
+                                @elseif($package->categories->isNotEmpty())
+                                    <p class="text-xs text-gray-400 mt-1">Cursos de las categorías incluidas × {{ $seats }} alumno(s)</p>
+                                @else
+                                    <p class="text-xs text-gray-400 mt-1">Precio promedio estimado × {{ $package->course_limit }} curso(s) × {{ $seats }} alumno(s)</p>
+                                @endif
                             </div>
 
                             <div class="text-right">
                                 <p class="text-sm text-green-600 font-medium">Ahorro con este paquete</p>
-                                <p class="text-2xl font-bold text-green-600">
-                                    S/ {{ number_format(max(0, $final_price - $package->price), 2) }}
-                                </p>
+                                <p class="text-2xl font-bold text-green-600">S/ {{ number_format($savings, 2) }}</p>
+                                @if($savingsPct > 0)
+                                    <p class="text-xs text-green-500 mt-1">{{ $savingsPct }}% menos que comprar por separado</p>
+                                @endif
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Categorías del paquete (como en create.blade.php) -->

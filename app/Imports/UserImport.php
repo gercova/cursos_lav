@@ -58,6 +58,7 @@ class UserImport implements ToCollection, WithHeadingRow {
                 $existingByDni->update([
                     'parent_id'    => $parentId,
                     'company_code' => $companyCode,
+                    'expires_at'   => now()->addYear(),
                 ]);
                 $this->updated++;
                 continue; // no consume slot

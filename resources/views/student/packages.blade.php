@@ -51,10 +51,11 @@
         </div>
     </div>
 
-    <div class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
+    <div class="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200" x-data="{ showSearchMobile: {{ request('search') ? 'true' : 'false' }} }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div class="flex-1 w-full lg:max-w-md">
+                <!-- Buscador para Desktop (siempre visible en pantallas grandes, oculto en móviles) -->
+                <div class="hidden lg:block flex-1 w-full lg:max-w-md">
                     {{-- <form id="search-form" method="GET" action="{{ route('paquetes') }}" class="flex gap-2"> --}}
                     <form id="search-form" method="GET" action="{{ route('paquetes', ['code' => $code ?? null]) }}" class="flex gap-2">
                         <div class="relative flex-1">
@@ -68,8 +69,46 @@
                         </button>
                     </form>
                 </div>
+
                 
                 <div class="flex flex-wrap items-center gap-3">
+                    <!-- Botón de búsqueda para móviles -->
+                    <button type="button" @click="showSearchMobile = !showSearchMobile" 
+                            class="lg:hidden w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg text-gray-500 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            :class="showSearchMobile ? 'text-blue-600 border-blue-500 bg-blue-50' : ''">
+                        <span class="text-sm font-medium">
+                            <i class="fas fa-search mr-2"></i>
+                            @if(request('search'))
+                                Búsqueda: "{{ request('search') }}"
+                            @else
+                                Buscar paquetes...
+                            @endif
+                        </span>
+                        <i class="fas text-xs" :class="showSearchMobile ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    </button>
+
+                    <!-- Buscador para móviles (desplegable) -->
+                    <div x-show="showSearchMobile" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         class="lg:hidden w-full bg-gray-50/50 p-2 rounded-xl border border-gray-100 mb-2"
+                         style="display: none;">
+                        <form id="search-form-mobile" method="GET" action="{{ route('paquetes', ['code' => $code ?? null]) }}" class="flex gap-2">
+                            <div class="relative flex-1">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" name="search" id="search-input-mobile" value="{{ request('search') }}" placeholder="Buscar paquetes..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
+                            </div>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Buscar
+                            </button>
+                        </form>
+                    </div>
                     <select name="min_price" id="min-price-filter" class="block w-full sm:w-auto pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg bg-gray-50">
                         <option value="">Precio mín.</option>
                         <option value="50" {{ request('min_price') == 50 ? 'selected' : '' }}>S/ 50</option>
@@ -333,12 +372,17 @@
             form.action = "{{ route('paquetes', ['code' => $code ?? null]) }}";
             
             // Preservar search si existe
-            const searchInput = document.querySelector('input[name="search"]');
-            if (searchInput && searchInput.value) {
+            let searchVal = '';
+            document.querySelectorAll('input[name="search"]').forEach(input => {
+                if (input.value) {
+                    searchVal = input.value;
+                }
+            });
+            if (searchVal) {
                 const searchField = document.createElement('input');
                 searchField.type = 'hidden';
                 searchField.name = 'search';
-                searchField.value = searchInput.value;
+                searchField.value = searchVal;
                 form.appendChild(searchField);
             }
             

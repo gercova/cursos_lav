@@ -32,9 +32,9 @@
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <meta name="google-site-verification" content="aMGrxQTlV-Zasf1Z3OoKmkT-u9prEHoNoUzhQ6zS0hc" />
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" x-data="{ mobileMenuOpen: false, mobileSidebarOpen: false }" @close-mobile-sidebar.window="mobileSidebarOpen = false">
     <!-- Header Fijo -->
-    <header class="header-fixed bg-white shadow-sm w-full" x-data="{ mobileMenuOpen: false }">
+    <header class="header-fixed bg-white shadow-sm w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo y botón hamburguesa para móviles -->
@@ -94,13 +94,13 @@
             </div>
 
             <!-- Menú móvil (se muestra al hacer clic en el botón hamburguesa) -->
-            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="md:hidden">
+            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="md:hidden" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 mt-2">
-                    <a href="{{ url('/') }}" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Inicio</a>
-                    <a href="{{ route('cursos') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Cursos</a>
-                    <a href="{{ route('paquetes') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios para empresas</a>
-                    <a href="{{ route('nosotros') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
-                    <a href="{{ route('contacto') }}" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
+                    <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Inicio</a>
+                    <a href="{{ route('cursos') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Cursos</a>
+                    <a href="{{ route('paquetes') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios para empresas</a>
+                    <a href="{{ route('nosotros') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
+                    <a href="{{ route('contacto') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
                 </div>
             </div>
         </div>
@@ -109,27 +109,127 @@
     <div class="flex content-with-fixed-header">
         <!-- Mobile sidebar toggle -->
         <div class="lg:hidden fixed bottom-4 right-4 z-40">
-            <button id="sidebar-toggle" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200">
+            <button id="sidebar-toggle" @click="mobileSidebarOpen = !mobileSidebarOpen" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
         </div>
 
-        <!-- Mobile sidebar -->
-        <div id="mobile-sidebar" class="lg:hidden fixed inset-0 z-30 hidden">
-            <div class="fixed inset-0 bg-black bg-opacity-50" id="sidebar-backdrop"></div>
-            <div class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 -translate-x-full">
-                <div class="p-4 mt-16"> <!-- mt-16 para evitar superposición con header fijo -->
-                    <button id="close-sidebar" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors duration-200">
+        <!-- Mobile sidebar (Modal) -->
+        <div id="mobile-sidebar" 
+             x-show="mobileSidebarOpen" 
+             class="lg:hidden fixed inset-0 z-50" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:leave="transition ease-in duration-200"
+             x-cloak>
+            <!-- Backdrop overlay -->
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+                 x-show="mobileSidebarOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="mobileSidebarOpen = false"></div>
+            
+            <!-- Panel content -->
+            <div class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col z-50 transform transition-transform duration-300"
+                 x-show="mobileSidebarOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="-translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="-translate-x-full">
+                
+                <!-- Header -->
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <a href="{{ url('/') }}" class="flex items-center gap-2">
+                        <img class="h-8 w-auto" src="{{ $enterprise->logo_path }}" alt="Logo">
+                    </a>
+                    <button @click="mobileSidebarOpen = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorías</h3>
-                    <ul class="space-y-2" id="mobile-categories-list">
-                        <!-- Las categorías se cargarán via JavaScript -->
-                    </ul>
+                </div>
+
+                <!-- Scrollable Body -->
+                <div class="flex-1 overflow-y-auto px-5 py-6 space-y-8">
+                    <!-- Navigation links (similar to mobileMenuOpen) -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Menú Principal</h3>
+                        <nav class="flex flex-col space-y-1">
+                            <a href="{{ url('/') }}" @click="mobileSidebarOpen = false" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                                <i class="fas fa-home w-6 text-gray-400 mr-2 text-lg"></i> Inicio
+                            </a>
+                            <a href="{{ route('cursos') }}" @click="mobileSidebarOpen = false" class="text-gray-905 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                                <i class="fas fa-book w-6 text-gray-400 mr-2 text-lg"></i> Cursos
+                            </a>
+                            <a href="{{ route('paquetes') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                                <i class="fas fa-cubes w-6 text-gray-400 mr-2 text-lg"></i> Servicios Empresas
+                            </a>
+                            <a href="{{ url('nosotros') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                                <i class="fas fa-info-circle w-6 text-gray-400 mr-2 text-lg"></i> Nosotros
+                            </a>
+                            <a href="{{ url('contacto') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                                <i class="fas fa-envelope w-6 text-gray-400 mr-2 text-lg"></i> Contacto
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Categories section (dynamic or static if available) -->
+                    <div id="sidebar-categories-section" class="space-y-4 hidden">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías de Cursos</h3>
+                        <ul class="space-y-1.5" id="mobile-categories-list">
+                            <!-- Populated dynamically via Javascript from #category-filter -->
+                        </ul>
+                    </div>
+
+                    <!-- User Account / Actions -->
+                    <div class="space-y-4 pt-4 border-t border-gray-100">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cuenta</h3>
+                        @auth
+                            <div class="px-3 py-2 bg-gray-50 rounded-xl mb-4">
+                                <p class="text-sm font-semibold text-gray-900 truncate">{{ auth()->user()->names }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                            </div>
+                            <nav class="flex flex-col space-y-1">
+                                @if(auth()->user()->role == 'student')
+                                    <a href="{{ route('student.dashboard') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-tachometer-alt w-5 text-gray-400 mr-2"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ route('student.profile') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-user w-5 text-gray-400 mr-2"></i> Mi Perfil
+                                    </a>
+                                    <a href="{{ route('student.my-courses') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-play-circle w-5 text-gray-400 mr-2"></i> Mis Cursos
+                                    </a>
+                                @elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'instructor')
+                                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-tachometer-alt w-5 text-gray-400 mr-2"></i> Dashboard Admin
+                                    </a>
+                                @elseif(auth()->user()->role == 'business')
+                                    <a href="{{ route('company.list') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-building w-5 text-gray-400 mr-2"></i> Panel Empresa
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left text-red-600 hover:bg-red-50 flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-sign-out-alt w-5 text-red-500 mr-2"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </nav>
+                        @else
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="{{ route('login') }}" class="text-center py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Iniciar Sesión</a>
+                                <a href="{{ route('register') }}" class="text-center py-2.5 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors">Registrarse</a>
+                            </div>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </div>
@@ -660,7 +760,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateCartCount();
 
-            // Sidebar móvil
+            // Sidebar móvil (desactivado a favor de mobileMenuOpen global)
+            /*
             const sidebarToggle     = document.getElementById('sidebar-toggle');
             const mobileSidebar     = document.getElementById('mobile-sidebar');
             const closeSidebar      = document.getElementById('close-sidebar');
@@ -670,7 +771,8 @@
                 sidebarToggle.addEventListener('click', function() {
                     mobileSidebar.classList.remove('hidden');
                     setTimeout(() => {
-                        mobileSidebar.querySelector('div').classList.remove('-translate-x-full');
+                        const panel = mobileSidebar.querySelector('.w-64');
+                        if (panel) panel.classList.remove('-translate-x-full');
                     }, 50);
                 });
             }
@@ -684,7 +786,8 @@
             }
 
             function closeMobileSidebar() {
-                mobileSidebar.querySelector('div').classList.add('-translate-x-full');
+                const panel = mobileSidebar.querySelector('.w-64');
+                if (panel) panel.classList.add('-translate-x-full');
                 setTimeout(() => {
                     mobileSidebar.classList.add('hidden');
                 }, 300);
@@ -696,6 +799,32 @@
                     Alpine.store('mobileMenuOpen', false);
                 });
             });
+            */
+
+            // Dynamically populate categories in the mobile sidebar if category filter exists
+            const categoryFilter = document.getElementById('category-filter');
+            const mobileCategoriesList = document.getElementById('mobile-categories-list');
+            const sidebarCategoriesSection = document.getElementById('sidebar-categories-section');
+            if (categoryFilter && mobileCategoriesList && sidebarCategoriesSection) {
+                mobileCategoriesList.innerHTML = '';
+                const options = Array.from(categoryFilter.options);
+                options.slice(1).forEach(option => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.className = 'block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors';
+                    a.textContent = option.text;
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        categoryFilter.value = option.value;
+                        categoryFilter.dispatchEvent(new Event('change'));
+                        window.dispatchEvent(new CustomEvent('close-mobile-sidebar'));
+                    });
+                    li.appendChild(a);
+                    mobileCategoriesList.appendChild(li);
+                });
+                sidebarCategoriesSection.classList.remove('hidden');
+            }
 
             // Efecto de scroll en header
             window.addEventListener('scroll', function() {

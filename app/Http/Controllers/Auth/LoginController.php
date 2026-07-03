@@ -95,8 +95,8 @@ class LoginController extends Controller
             ])->onlyInput('email');
         }
 
-        if ($user->expires_at != NULL && !$user->isAdmin()) {
-            if ($user->expires_at->format('Y-m-d') <= now()->format('Y-m-d')) {
+        if ($user->expires_at !== null && !$user->isAdmin()) {
+            if ($user->expires_at->isPast()) {
                 return back()->withErrors([
                     'email' => 'Tu cuenta ha caducado, contacte con nuestro canal de atención al cliente.',
                 ])->onlyInput('email');

@@ -24,6 +24,7 @@ class CourseValidate extends FormRequest {
             'instructor_id'     => 'required|exists:users,id',
             'duration'          => 'required|numeric|min:0',
             'is_active'         => 'boolean',
+            'is_training'       => 'boolean',
             'requirements'      => 'nullable|array',
             'requirements.*'    => 'string',
             'what_you_learn'    => 'required|array',

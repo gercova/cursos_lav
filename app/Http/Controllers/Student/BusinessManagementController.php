@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\StaffValidate;
-use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Enterprise;

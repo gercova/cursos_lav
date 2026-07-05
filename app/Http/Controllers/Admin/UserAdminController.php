@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CodeValidate;
 use App\Http\Requests\PasswordValidate;
 use App\Http\Requests\UserValidate;
+use App\Http\Requests\UserExpirationValidate;
 use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
@@ -341,6 +342,17 @@ class UserAdminController extends Controller {
         return response()->json([
             'success' => true,
             'message' => 'Contraseña actualizada',
+        ], 200);
+    }
+
+    public function updateExpiration(UserExpirationValidate $request, User $user): JsonResponse {
+        $validated = $request->validated();
+        $user->update([
+            'expires_at' => $validated['expires_at'] ? date('Y-m-d H:i:s', strtotime($validated['expires_at'])) : null
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Fecha de expiración actualizada exitosamente.',
         ], 200);
     }
 

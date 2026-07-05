@@ -141,11 +141,9 @@
                                 <td class="px-4 py-3 align-top">
                                     <div class="flex flex-wrap gap-2" id="month-row-{{ $num }}">
                                         @forelse($items as $item)
-                                            <div
-                                                x-show="!filterCategoryId || filterCategoryId == '{{ $item->course?->category_id }}'"
+                                            <div x-show="!filterCategoryId || filterCategoryId == '{{ $item->course?->category_id }}'"
                                                 x-transition:leave="transition ease-in duration-100"
-                                                x-transition:leave-start="opacity-100"
-                                                x-transition:leave-end="opacity-0"
+                                                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                                                 class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border
                                              {{ !$item->is_active
                                                  ? 'bg-gray-50 border-gray-200 text-gray-500'
@@ -224,7 +222,7 @@
                                         @endforelse
 
                                         {{-- Mensaje vacío cuando el filtro de categoría oculta todos los cursos del mes --}}
-                                        @if($items->count() > 0)
+                                        @if ($items->count() > 0)
                                             <span
                                                 x-show="filterCategoryId && $el.parentElement.querySelectorAll('[data-category-id]:not([style*=\'display: none\'])').length === 0"
                                                 class="text-xs text-purple-400 italic flex items-center gap-1">
@@ -328,8 +326,11 @@
                             {{-- Trigger / Valor seleccionado --}}
                             <button type="button" @click="toggleCourseDropdown()"
                                 class="w-full flex items-center justify-between border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150"
-                                :class="courseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-200' :
-                                    'border-gray-200 hover:border-gray-300'">
+                                :class="errors.course
+                                    ? 'border-red-400 ring-2 ring-red-100'
+                                    : (courseDropdownOpen
+                                        ? 'border-blue-500 ring-2 ring-blue-200'
+                                        : 'border-gray-200 hover:border-gray-300')">
                                 <span :class="form.course_id ? 'text-gray-800' : 'text-gray-400'"
                                     x-text="getCourseLabel()"></span>
                                 <i class="fas text-gray-400 text-xs transition-transform duration-200"
@@ -364,19 +365,57 @@
                                     </template>
                                     <template x-for="course in filteredCourses" :key="course.id">
                                         <li @click="selectCourse(course)"
-                                            class="flex items-center gap-2 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100"
-                                            :class="form.course_id == course.id ? 'bg-blue-50 text-blue-700 font-semibold' :
-                                                'text-gray-700 hover:bg-gray-50'">
-                                            <i class="fas fa-check text-blue-500 text-xs"
-                                                x-show="form.course_id == course.id"></i>
-                                            <span x-text="course.title"></span>
+                                            class="px-4 py-2.5 cursor-pointer transition-colors duration-100"
+                                            :class="form.course_id == course.id ?
+                                                'bg-blue-50' :
+                                                'hover:bg-gray-50'">
+                                            <div class="flex items-start gap-2">
+                                                {{-- Checkmark cuando está seleccionado --}}
+                                                <i class="fas fa-check text-blue-500 text-xs mt-1 flex-shrink-0"
+                                                    x-show="form.course_id == course.id"></i>
+                                                <div class="flex-1 min-w-0 flex items-center gap-2">
+                                                    {{-- Título --}}
+                                                    <p class="text-sm font-medium truncate"
+                                                        :class="form.course_id == course.id ? 'text-blue-700' : 'text-gray-800'"
+                                                        x-text="course.title"></p>
+                                                    {{-- Badges: Categoría + Tipo --}}
+                                                    <div class="flex flex-wrap gap-1 mt-1">
+                                                        {{-- Badge Categoría --}}
+                                                        <span x-show="course.category_name"
+                                                            class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                                                            <i class="fas fa-layer-group text-[8px]"></i>
+                                                            <span x-text="course.category_name"></span>
+                                                        </span>
+                                                        {{-- Badge Tipo: Normal / Capacitación --}}
+                                                        <span x-show="course.is_training"
+                                                            class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                                                            <i class="fas fa-building text-[8px]"></i>
+                                                            Capacitación
+                                                        </span>
+                                                        <span x-show="!course.is_training"
+                                                            class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+                                                            <i class="fas fa-graduation-cap text-[8px]"></i>
+                                                            Normal
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </li>
                                     </template>
                                 </ul>
                             </div>
                         </div>
                         {{-- Hidden input for native form required validation --}}
-                        <input type="hidden" x-model="form.course_id" :required="!form.course_id">
+                        <input type="hidden" x-model="form.course_id">
+                        {{-- Error inline: Curso --}}
+                        <p x-show="errors.course"
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 -translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
+                            <i class="fas fa-exclamation-circle text-[10px]"></i>
+                            <span x-text="errors.course"></span>
+                        </p>
                     </div>
 
                     {{-- Mes / Año --}}
@@ -385,20 +424,45 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
                                 Mes <span class="text-red-500">*</span>
                             </label>
-                            <select x-model="form.month" required
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select x-model="form.month" @change="errors.course_month = ''; errors.month = ''"
+                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors"
+                                :class="errors.month
+                                    ? 'border-red-400 ring-2 ring-red-100 focus:ring-red-300'
+                                    : 'border-gray-200 focus:ring-blue-500'">
                                 <option value="">— Mes —</option>
                                 @foreach ($months as $num => $name)
                                     <option value="{{ $num }}">{{ $name }}</option>
                                 @endforeach
                             </select>
+                            {{-- Error inline: Mes --}}
+                            <p x-show="errors.month"
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                <span x-text="errors.month"></span>
+                            </p>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">
                                 Año <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" x-model="form.year" min="2024" max="2100" required
-                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="number" x-model="form.year" min="2024" max="2100"
+                                @input="errors.year = ''"
+                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors"
+                                :class="errors.year
+                                    ? 'border-red-400 ring-2 ring-red-100 focus:ring-red-300'
+                                    : 'border-gray-200 focus:ring-blue-500'">
+                            {{-- Error inline: Año --}}
+                            <p x-show="errors.year"
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                <span x-text="errors.year"></span>
+                            </p>
                         </div>
                     </div>
 
@@ -467,10 +531,15 @@
                         </label>
                     </div>
 
-                    {{-- Alerta de error --}}
-                    <div x-show="errorMsg"
-                        class="bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2 rounded-lg"
-                        x-text="errorMsg"></div>
+                    {{-- Alerta servidor / duplicado --}}
+                    <div x-show="errors.server"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-1"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        class="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2.5 rounded-lg">
+                        <i class="fas fa-circle-exclamation mt-0.5 flex-shrink-0"></i>
+                        <span x-text="errors.server"></span>
+                    </div>
 
                     {{-- Botones --}}
                     <div class="flex gap-3 pt-2">
@@ -515,14 +584,24 @@
                 </div>
             </div>
         </div>
-
     </div>
 @endsection
 
 @section('scripts')
     <script>
-        // Datos de cursos por categoría (generados desde PHP)
-        const ALL_COURSES = @json($courses->map(fn($c) => ['id' => $c->id, 'title' => $c->title, 'category_id' => $c->category_id]));
+        // Datos de cursos (con categoría y tipo) generados desde PHP
+        @php
+            $coursesForJs = $courses->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'title' => $c->title,
+                    'category_id' => $c->category_id,
+                    'category_name' => $c->category?->name ?? '',
+                    'is_training' => (bool) $c->is_training,
+                ];
+            });
+        @endphp
+        const ALL_COURSES = @json($coursesForJs);
 
         function scheduleManager() {
             return {
@@ -530,8 +609,15 @@
                 showAddModal: false,
                 showDeleteModal: false,
                 saving: false,
-                errorMsg: '',
                 isEditMode: false,
+
+                // Errores de validación por campo
+                errors: {
+                    course: '',
+                    month: '',
+                    year: '',
+                    server: '',
+                },
 
                 // Estado buscador de cursos
                 courseDropdownOpen: false,
@@ -612,7 +698,7 @@
                 // ── Modales ─────────────────────────────────────────────────────
                 openAddModal(month = null, year = null) {
                     this.isEditMode = false;
-                    this.errorMsg = '';
+                    this.errors = { course: '', month: '', year: '', server: '' };
                     this.form.id = null;
                     this.form.course_id = '';
                     this.form.month = month ?? '';
@@ -632,7 +718,7 @@
 
                 editItem(item) {
                     this.isEditMode = true;
-                    this.errorMsg = '';
+                    this.errors = { course: '', month: '', year: '', server: '' };
                     this.form.id = item.id;
                     this.form.course_id = item.course_id;
                     this.form.month = item.month;
@@ -651,12 +737,26 @@
                 },
 
                 async submitAdd() {
-                    if (!this.form.course_id || !this.form.month || !this.form.year) {
-                        this.errorMsg = 'Por favor completa los campos obligatorios.';
-                        return;
+                    // ── Validación client-side por campo ────────────────────────
+                    this.errors = { course: '', month: '', year: '', server: '' };
+                    let valid = true;
+
+                    if (!this.form.course_id) {
+                        this.errors.course = 'Debes seleccionar un curso.';
+                        valid = false;
                     }
+                    if (!this.form.month) {
+                        this.errors.month = 'El mes es obligatorio.';
+                        valid = false;
+                    }
+                    const yr = parseInt(this.form.year);
+                    if (!yr || yr < 2024 || yr > 2100) {
+                        this.errors.year = 'Ingresa un año válido (2024–2100).';
+                        valid = false;
+                    }
+                    if (!valid) return;
+
                     this.saving = true;
-                    this.errorMsg = '';
                     try {
                         let res;
                         if (this.isEditMode) {
@@ -676,10 +776,10 @@
                             this.showAddModal = false;
                             window.location.reload();
                         } else {
-                            this.errorMsg = res.data.message ?? 'Error al guardar.';
+                            this.errors.server = res.data.message ?? 'Error al guardar.';
                         }
                     } catch (err) {
-                        this.errorMsg = err.response?.data?.message ?? 'Error de servidor.';
+                        this.errors.server = err.response?.data?.message ?? 'Error de servidor.';
                     } finally {
                         this.saving = false;
                     }

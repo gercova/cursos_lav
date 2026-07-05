@@ -48,9 +48,10 @@ class ScheduleAdminController extends Controller
         $byMonth = $schedules->groupBy('month');
 
         // Todos los cursos activos (para el selector)
-        $courses = Course::where('is_active', true)
+        $courses = Course::with('category:id,name')
+            ->where('is_active', true)
             ->orderBy('title')
-            ->get(['id', 'title', 'category_id']);
+            ->get(['id', 'title', 'category_id', 'is_training']);
 
         // Categorías con cursos activos (para filtro del selector)
         $categories = Category::whereHas('courses', function ($q) {

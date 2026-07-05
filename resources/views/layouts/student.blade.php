@@ -450,7 +450,7 @@
                     @if (auth()->user()->company_code || (auth()->user()->parent && auth()->user()->parent->company_code))
                         <a href="{{ route('company.schedule') }}"
                             class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
+                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Programa Anual de Capacitación
                         </a>
                     @endif
                     <hr>
@@ -460,7 +460,7 @@
                         <hr>
                         <a href="{{ route('company.schedule') }}"
                             class="sidebar-link {{ request()->routeIs('company.schedule') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Cronograma
+                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Programa Anual de Capacitación
                         </a>
                         <hr>
                     @endif

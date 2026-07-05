@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\CompanySchedule;
 use App\Models\Course;
 use App\Models\User;
@@ -49,7 +50,13 @@ class ScheduleAdminController extends Controller
         // Todos los cursos activos (para el selector)
         $courses = Course::where('is_active', true)
             ->orderBy('title')
-            ->get(['id', 'title']);
+            ->get(['id', 'title', 'category_id']);
+
+        // Categorías con cursos activos (para filtro del selector)
+        $categories = Category::whereHas('courses', function ($q) {
+            $q->where('category_id', '!=', 4); // categoria es para paquetes de cursos
+            $q->where('is_active', true);
+        })->orderBy('name')->get(['id', 'name']);
 
         $months = CompanySchedule::$months;
 
@@ -57,6 +64,7 @@ class ScheduleAdminController extends Controller
             'year',
             'byMonth',
             'courses',
+            'categories',
             'months',
             'companyCodes',
             'filterCode',

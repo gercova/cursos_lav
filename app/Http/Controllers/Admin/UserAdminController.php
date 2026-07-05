@@ -28,8 +28,8 @@ class UserAdminController extends Controller {
         $this->middleware(['auth:sanctum', 'admin', 'prevent.back']);
         $this->middleware('permission:view_users')->only('index');
 		$this->middleware('permission:create_users')->only('create');
-		$this->middleware('permission:edit_users')->only('edit');
-		$this->middleware('permission:delete_users')->only('detroy');
+		$this->middleware('permission:edit_users')->only(['edit', 'updatePassword', 'updateExpiration']);
+		$this->middleware('permission:delete_users')->only('destroy');
     }
 
     public function index(Request $request): View {
@@ -342,6 +342,39 @@ class UserAdminController extends Controller {
             'success' => true,
             'message' => 'Contraseña actualizada',
         ], 200);
+    }
+
+    public function updateExpiration(Request $request, User $user): JsonResponse {
+        $request->validate([
+            'expires_at' => 'required|date|after_or_equal:today',
+        ]);
+
+        $expiresAt = $request->input('expires_at') 
+            ? \Carbon\Carbon::parse($request->input('expires_at'))->endOfDay() 
+            : null;
+
+        DB::beginTransaction();
+        try {
+            $user->update(['expires_at' => $expiresAt]);
+
+            if ($user->role === 'business') {
+                User::where('parent_id', $user->id)->update(['expires_at' => $expiresAt]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Fecha de vencimiento actualizada correctamente.',
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la fecha: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function destroy(User $user): JsonResponse {

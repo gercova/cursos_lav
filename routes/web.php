@@ -234,6 +234,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/users/{user}/edit',            [UserAdminController::class, 'edit'])->name('admin.users.edit');
         Route::post('/users/store',                 [UserAdminController::class, 'store'])->name('admin.users.store');
         Route::put('/users/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('admin.users.password');
+        Route::put('/users/{user}/expiration',      [UserAdminController::class, 'updateExpiration'])->name('admin.users.expiration');
         Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');

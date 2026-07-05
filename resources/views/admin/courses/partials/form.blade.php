@@ -330,6 +330,73 @@
                     @enderror
                 </div>
 
+                <!-- Tipo de Curso: Normal vs. Capacitación -->
+                <div class="mb-4"
+                    x-data="{ isTraining: {{ old('is_training', isset($course) ? ($course->is_training ? 'true' : 'false') : 'false') }} }">
+                    <div class="p-4 rounded-xl border transition-all duration-300"
+                        :class="isTraining
+                            ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300'
+                            : 'bg-gradient-to-r from-gray-50 to-white border-gray-300'">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <!-- Ícono dinámico -->
+                                <div class="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300"
+                                    :class="isTraining ? 'bg-amber-100' : 'bg-gray-100'">
+                                    <svg class="w-5 h-5 transition-colors duration-300"
+                                        :class="isTraining ? 'text-amber-600' : 'text-gray-400'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium transition-colors duration-300"
+                                        :class="isTraining ? 'text-amber-800' : 'text-gray-700'"
+                                        x-text="isTraining ? 'Curso de Capacitación' : 'Curso Normal'">
+                                    </p>
+                                    <p class="text-xs transition-colors duration-300"
+                                        :class="isTraining ? 'text-amber-600' : 'text-gray-500'"
+                                        x-text="isTraining
+                                            ? 'Orientado a formación corporativa y entrenamiento'
+                                            : 'Curso estándar de aprendizaje individual'">
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Toggle switch -->
+                            <button type="button" @click="isTraining = !isTraining"
+                                class="relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                :class="isTraining ? 'bg-amber-500 focus:ring-amber-400' : 'bg-gray-300 focus:ring-gray-400'"
+                                role="switch" :aria-checked="isTraining.toString()">
+                                <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition-transform duration-300"
+                                    :class="isTraining ? 'translate-x-6' : 'translate-x-1'"></span>
+                            </button>
+                        </div>
+
+                        <!-- Badge indicador -->
+                        <div x-show="isTraining"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 -translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 translate-y-0"
+                            x-transition:leave-end="opacity-0 -translate-y-1"
+                            class="mt-3 flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 w-fit px-2.5 py-1 rounded-full">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Capacitación activa
+                        </div>
+                    </div>
+
+                    <!-- Input oculto que envía el valor real al servidor -->
+                    <input type="hidden" name="is_training" :value="isTraining ? '1' : '0'">
+
+                    @error('is_training')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Características -->
                 <div class="space-y-3">
                     <div class="flex items-center p-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200">

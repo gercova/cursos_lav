@@ -91,7 +91,7 @@
     </div>
 
     <!-- Panel principal -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden md:overflow-visible border border-gray-200">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
         <!-- Header del panel -->
         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -159,7 +159,7 @@
         </div>
 
         <!-- Tabla de documentos -->
-        <div class="overflow-x-auto md:overflow-visible" id="documents-table-container" x-show="!loading">
+        <div class="overflow-x-auto" id="documents-table-container" x-show="!loading">
             @if($documents->isEmpty())
                 <!-- Estado vacío -->
                 <div class="text-center py-16 px-6">
@@ -341,18 +341,18 @@
                                 </td>
 
                                 <!-- Acciones -->
-                                <td class="px-6 py-5 relative" x-data="{ dropdownOpen: false }" :class="{ 'z-30': dropdownOpen }">
-                                    <div class="relative flex items-center justify-end">
+                                <td class="px-6 py-5">
+                                    <div x-data="{ open: false }" class="relative flex items-center justify-end">
                                         <!-- Botón del menú (tres puntos) -->
-                                        <button @click="dropdownOpen = !dropdownOpen" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-indigo-300" title="Más opciones">
+                                        <button @click="open = !open" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 outline-none focus:ring-2 focus:ring-indigo-300" title="Más opciones">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                                             </svg>
                                         </button>
 
                                         <!-- Menú desplegable -->
-                                        <div x-show="dropdownOpen" @click.away="dropdownOpen = false"
-                                            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden"
+                                        <div x-show="open" @click.away="open = false"
+                                            class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20 overflow-hidden"
                                             x-transition:enter="transition ease-out duration-200"
                                             x-transition:enter-start="opacity-0 scale-95"
                                             x-transition:enter-end="opacity-100 scale-100"
@@ -362,7 +362,7 @@
                                             style="display: none;"
                                         >
                                             <!-- Activar / Desactivar -->
-                                            <button @click="toggleDocumentStatus({{ $document->id }}); dropdownOpen = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium {{ $document->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }} transition-colors duration-150">
+                                            <button @click="toggleDocumentStatus({{ $document->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium {{ $document->is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50' }} transition-colors duration-150">
                                                 @if($document->is_active)
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
@@ -402,7 +402,7 @@
                                             </a>
 
                                             <!-- Eliminar -->
-                                            <button @click="deleteDocument({{ $document->id }}); dropdownOpen = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                            <button @click="deleteDocument({{ $document->id }}); open = false" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors duration-150">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
@@ -1032,9 +1032,9 @@
     }
 
     /* Estilos para la tabla */
-    /* table tbody tr {
+    table tbody tr {
         transition: all 0.2s ease;
-    } */
+    }
 
     table tbody tr:hover {
         transform: translateY(-1px);

@@ -39,13 +39,15 @@ class Course extends Model
         'type',
         'instructor_id',
         'duration',
-        'is_active'
+        'is_active',
+        'is_training',
     ];
 
     protected $casts = [
         'price'             => 'decimal:2',
         'promotion_price'   => 'decimal:2',
         'is_active'         => 'boolean',
+        'is_training'       => 'boolean',
         'requirements'      => 'array',
         'what_you_learn'    => 'array',
         'which_includes'    => 'array',

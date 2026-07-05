@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\CalendarsAdminController;
 use App\Http\Controllers\Admin\CategoriesAdminController;
 use App\Http\Controllers\Admin\ScheduleAdminController;
 use App\Http\Controllers\Admin\CertificatesAdminController;
@@ -234,6 +233,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/users/{user}/edit',            [UserAdminController::class, 'edit'])->name('admin.users.edit');
         Route::post('/users/store',                 [UserAdminController::class, 'store'])->name('admin.users.store');
         Route::put('/users/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('admin.users.password');
+        Route::put('/users/{user}/expiration',      [UserAdminController::class, 'updateExpiration'])->name('admin.users.expiration');
         Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
         Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
         Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
@@ -319,29 +319,15 @@ Route::prefix('admin')->group(function () {
         Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
         Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
 
-        Route::name('admin.calendars.')->group(function(){
-            Route::get('/calendars/home', [CalendarsAdminController::class, 'index'])->name('index');
-            Route::post('/calendars/store', [CalendarsAdminController::class, 'index'])->name('store');
-        });
-
         // Cronograma de Capacitaciones (Empresas)
         Route::prefix('schedules')->name('admin.schedules.')->group(function () {
-            Route::get('/',               [ScheduleAdminController::class, 'index'])->name('index');
+            Route::get('/home',               [ScheduleAdminController::class, 'index'])->name('index');
             Route::post('/',              [ScheduleAdminController::class, 'store'])->name('store');
             Route::put('/{schedule}',     [ScheduleAdminController::class, 'update'])->name('update');
             Route::delete('/{schedule}',  [ScheduleAdminController::class, 'destroy'])->name('destroy');
             Route::get('/api',            [ScheduleAdminController::class, 'apiIndex'])->name('api');
             Route::post('/copy-year',     [ScheduleAdminController::class, 'copyYear'])->name('copy-year');
         });
-
-        // Route::prefix('admin-services')->name('admin.services.')->group(function () {
-        //     Route::get('/',                 [ServiceController::class, 'index'])->name('index');
-        //     Route::get('/create',           [ServiceController::class, 'create'])->name('create');
-        //     Route::post('/',                [ServiceController::class, 'store'])->name('store');
-        //     Route::get('/{service:id}/edit',    [ServiceController::class, 'edit'])->name('edit');
-        //     Route::put('/{service:id}',         [ServiceController::class, 'update'])->name('update');
-        //     Route::delete('/{service:id}',      [ServiceController::class, 'destroy'])->name('destroy');
-        // });
 
         // Rutas adicionales para exámenes
         Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');

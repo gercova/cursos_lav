@@ -59,6 +59,12 @@
                                 <i class="fas fa-calendar text-xs"></i>
                                 Desde {{ $user->created_at->format('d/m/Y') }}
                             </span>
+
+                            {{-- Expiración --}}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $user->expires_at ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-gray-100 text-gray-700' }}">
+                                <i class="fas fa-calendar-times text-xs"></i>
+                                Expiración: {{ $user->expires_at ? $user->expires_at->format('d/m/Y') : 'Acceso Ilimitado' }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -225,11 +231,12 @@
                         {{-- Información adicional --}}
                         <div class="space-y-5">
                             <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Información Adicional</h4>
-                            @foreach([
+                             @foreach([
                                 ['label' => 'Nacionalidad', 'value' => $user->nationality ?? 'No registrada', 'icon' => 'fa-flag'],
                                 ['label' => 'Profesión', 'value' => $user->profession ?? 'No registrada', 'icon' => 'fa-briefcase'],
                                 ['label' => 'Dirección', 'value' => $user->address ?? 'No registrada', 'icon' => 'fa-map-marker-alt'],
                                 ['label' => 'Fecha de Registro', 'value' => $user->created_at->format('d/m/Y H:i'), 'icon' => 'fa-calendar-check'],
+                                ['label' => 'Fecha de Expiración', 'value' => $user->expires_at ? $user->expires_at->format('d/m/Y H:i') : 'Acceso Ilimitado', 'icon' => 'fa-calendar-times'],
                             ] as $field)
                             <div class="flex items-start gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">

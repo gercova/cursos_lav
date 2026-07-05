@@ -9,7 +9,7 @@
         <div>
             <h1 class="text-2xl font-bold text-gray-900">
                 <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
-                Cronograma Anual de Capacitaciones
+                Programa Anual de Capacitaciones
             </h1>
             <p class="text-gray-500 text-sm mt-1">
                 Cursos programados para tu empresa — Solo se muestran los cursos del

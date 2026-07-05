@@ -1,10 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Gestión de Agenda')
 @section('content')
-    <div class="space-y-6" x-data="scheduleManager()" x-init="init()">
-
+    <div x-data="scheduleManager()" x-init="init()">
         {{-- ── CABECERA ──────────────────────────────────────────────────────── --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
                     <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
@@ -26,8 +25,9 @@
             </div>
         </div>
 
-        {{-- ── FILTROS AÑO / EMPRESA ─────────────────────────────────────────── --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-wrap gap-4 items-center">
+        {{-- ── FILTROS AÑO / EMPRESA / CATEGORÍA ─────────────────────────────── --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-wrap gap-4 items-center mb-6">
+            {{-- Año --}}
             <div class="flex items-center gap-2">
                 <label class="text-sm font-semibold text-gray-600">Año:</label>
                 <div class="flex items-center gap-1">
@@ -43,6 +43,7 @@
                 </div>
             </div>
 
+            {{-- Empresa --}}
             <div class="flex items-center gap-2">
                 <label class="text-sm font-semibold text-gray-600">Empresa:</label>
                 <form method="GET" class="flex items-center gap-2">
@@ -59,6 +60,27 @@
                 </form>
             </div>
 
+            {{-- Categoría (filtro client-side) --}}
+            <div class="flex items-center gap-2">
+                <label class="text-sm font-semibold text-gray-600">
+                    <i class="fas fa-layer-group text-purple-500 mr-1"></i>Categoría:
+                </label>
+                <select x-model="filterCategoryId"
+                    class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white transition-colors"
+                    :class="filterCategoryId ? 'border-purple-400 ring-1 ring-purple-200' : ''">
+                    <option value="">— Todas las categorías —</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+                <button x-show="filterCategoryId" @click="filterCategoryId = ''"
+                    class="text-xs text-purple-500 hover:text-purple-700 transition-colors flex items-center gap-1"
+                    title="Limpiar filtro de categoría">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+
+            {{-- Leyenda --}}
             <div class="ml-auto flex items-center gap-4 text-xs text-gray-500">
                 <span class="flex items-center gap-1">
                     <span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> Liberado
@@ -117,16 +139,21 @@
 
                                 {{-- Columna CURSOS --}}
                                 <td class="px-4 py-3 align-top">
-                                    <div class="flex flex-wrap gap-2">
+                                    <div class="flex flex-wrap gap-2" id="month-row-{{ $num }}">
                                         @forelse($items as $item)
                                             <div
+                                                x-show="!filterCategoryId || filterCategoryId == '{{ $item->course?->category_id }}'"
+                                                x-transition:leave="transition ease-in duration-100"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0"
                                                 class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium border
                                              {{ !$item->is_active
                                                  ? 'bg-gray-50 border-gray-200 text-gray-500'
                                                  : ($item->is_released
                                                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                                                      : 'bg-blue-50 border-blue-200 text-blue-800') }}
-                                             relative group/item shadow-sm">
+                                             relative group/item shadow-sm"
+                                                data-category-id="{{ $item->course?->category_id }}">
 
                                                 {{-- Botón toggle (Activar/Desactivar) --}}
                                                 <button
@@ -195,6 +222,16 @@
                                         @empty
                                             <span class="text-xs text-gray-400 italic">Sin cursos programados</span>
                                         @endforelse
+
+                                        {{-- Mensaje vacío cuando el filtro de categoría oculta todos los cursos del mes --}}
+                                        @if($items->count() > 0)
+                                            <span
+                                                x-show="filterCategoryId && $el.parentElement.querySelectorAll('[data-category-id]:not([style*=\'display: none\'])').length === 0"
+                                                class="text-xs text-purple-400 italic flex items-center gap-1">
+                                                <i class="fas fa-filter text-[10px]"></i>
+                                                Sin cursos en esta categoría
+                                            </span>
+                                        @endif
                                     </div>
                                 </td>
 
@@ -270,18 +307,76 @@
                 </div>
 
                 <form @submit.prevent="submitAdd()" class="p-5 space-y-4">
-                    {{-- Curso --}}
+                    {{-- Filtro por categoría --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Filtrar por categoría</label>
+                        <select x-model="selectedCategory" @change="filterCourses()"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">— Todas las categorías —</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Curso (Buscador Select2 personalizado) --}}
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
                             Curso <span class="text-red-500">*</span>
                         </label>
-                        <select x-model="form.course_id" required
-                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">— Seleccionar curso —</option>
-                            @foreach ($courses as $course)
-                                <option value="{{ $course->id }}">{{ $course->title }}</option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            {{-- Trigger / Valor seleccionado --}}
+                            <button type="button" @click="toggleCourseDropdown()"
+                                class="w-full flex items-center justify-between border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150"
+                                :class="courseDropdownOpen ? 'border-blue-500 ring-2 ring-blue-200' :
+                                    'border-gray-200 hover:border-gray-300'">
+                                <span :class="form.course_id ? 'text-gray-800' : 'text-gray-400'"
+                                    x-text="getCourseLabel()"></span>
+                                <i class="fas text-gray-400 text-xs transition-transform duration-200"
+                                    :class="courseDropdownOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            </button>
+
+                            {{-- Panel desplegable --}}
+                            <div x-show="courseDropdownOpen" x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-100"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 -translate-y-1"
+                                @click.outside="courseDropdownOpen = false"
+                                class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
+                                style="display:none;">
+                                {{-- Buscador --}}
+                                <div class="p-2 border-b border-gray-100 bg-gray-50">
+                                    <div class="relative">
+                                        <i
+                                            class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                                        <input type="text" x-model="courseSearch" @input="filterCourses()"
+                                            placeholder="Buscar curso…" x-ref="courseSearchInput"
+                                            class="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
+                                    </div>
+                                </div>
+
+                                {{-- Lista de opciones --}}
+                                <ul class="max-h-52 overflow-y-auto py-1 divide-y divide-gray-50">
+                                    <template x-if="filteredCourses.length === 0">
+                                        <li class="px-4 py-3 text-sm text-gray-400 italic text-center">Sin resultados</li>
+                                    </template>
+                                    <template x-for="course in filteredCourses" :key="course.id">
+                                        <li @click="selectCourse(course)"
+                                            class="flex items-center gap-2 px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100"
+                                            :class="form.course_id == course.id ? 'bg-blue-50 text-blue-700 font-semibold' :
+                                                'text-gray-700 hover:bg-gray-50'">
+                                            <i class="fas fa-check text-blue-500 text-xs"
+                                                x-show="form.course_id == course.id"></i>
+                                            <span x-text="course.title"></span>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                        {{-- Hidden input for native form required validation --}}
+                        <input type="hidden" x-model="form.course_id" :required="!form.course_id">
                     </div>
 
                     {{-- Mes / Año --}}
@@ -426,6 +521,9 @@
 
 @section('scripts')
     <script>
+        // Datos de cursos por categoría (generados desde PHP)
+        const ALL_COURSES = @json($courses->map(fn($c) => ['id' => $c->id, 'title' => $c->title, 'category_id' => $c->category_id]));
+
         function scheduleManager() {
             return {
                 // Estado modales
@@ -434,6 +532,16 @@
                 saving: false,
                 errorMsg: '',
                 isEditMode: false,
+
+                // Estado buscador de cursos
+                courseDropdownOpen: false,
+                courseSearch: '',
+                selectedCategory: '',
+                filteredCourses: [...ALL_COURSES],
+
+                // Filtro de categoría del cronograma (client-side)
+                filterCategoryId: '',
+
                 // Formulario
                 form: {
                     id: null,
@@ -458,6 +566,50 @@
                     // Nada que inicializar
                 },
 
+                // ── Buscador de cursos ──────────────────────────────────────────
+                toggleCourseDropdown() {
+                    this.courseDropdownOpen = !this.courseDropdownOpen;
+                    if (this.courseDropdownOpen) {
+                        this.$nextTick(() => {
+                            if (this.$refs.courseSearchInput) {
+                                this.$refs.courseSearchInput.focus();
+                            }
+                        });
+                    }
+                },
+
+                filterCourses() {
+                    const q = this.courseSearch.trim().toLowerCase();
+                    const cat = this.selectedCategory ? parseInt(this.selectedCategory) : null;
+                    this.filteredCourses = ALL_COURSES.filter(c => {
+                        const matchesCategory = !cat || c.category_id === cat;
+                        const matchesSearch = !q || c.title.toLowerCase().includes(q);
+                        return matchesCategory && matchesSearch;
+                    });
+                    // Si el currently selected course is no longer visible, don't deselect it
+                    // but if category changes and selected course is filtered out, clear selection
+                    if (cat && this.form.course_id) {
+                        const stillVisible = this.filteredCourses.some(c => c.id == this.form.course_id);
+                        if (!stillVisible) {
+                            this.form.course_id = '';
+                        }
+                    }
+                },
+
+                selectCourse(course) {
+                    this.form.course_id = course.id;
+                    this.courseDropdownOpen = false;
+                    this.courseSearch = '';
+                    this.filterCourses();
+                },
+
+                getCourseLabel() {
+                    if (!this.form.course_id) return '— Seleccionar curso —';
+                    const course = ALL_COURSES.find(c => c.id == this.form.course_id);
+                    return course ? course.title : '— Seleccionar curso —';
+                },
+
+                // ── Modales ─────────────────────────────────────────────────────
                 openAddModal(month = null, year = null) {
                     this.isEditMode = false;
                     this.errorMsg = '';
@@ -471,6 +623,10 @@
                     this.form.scope = '';
                     this.form.notes = '';
                     this.form.is_active = true;
+                    this.selectedCategory = '';
+                    this.courseSearch = '';
+                    this.filteredCourses = [...ALL_COURSES];
+                    this.courseDropdownOpen = false;
                     this.showAddModal = true;
                 },
 
@@ -487,6 +643,10 @@
                     this.form.scope = item.scope || '';
                     this.form.notes = item.notes || '';
                     this.form.is_active = !!item.is_active;
+                    this.selectedCategory = '';
+                    this.courseSearch = '';
+                    this.filteredCourses = [...ALL_COURSES];
+                    this.courseDropdownOpen = false;
                     this.showAddModal = true;
                 },
 

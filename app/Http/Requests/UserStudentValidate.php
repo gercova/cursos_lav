@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserStudentValidate extends FormRequest {
 
@@ -15,7 +16,14 @@ class UserStudentValidate extends FormRequest {
             'dni'           => 'required|string|max:20|unique:users',
             'names'         => 'required|string|max:255',
             'email'         => 'required|string|email|max:255|unique:users',
-            'password'      => 'required|string|min:8|confirmed',
+            'password'      => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers(),
+                'confirmed'
+            ],
             'country_code'  => 'required|string|max:5',
             'phone'         => 'required|string|max:20',
             'nationality'   => 'required|string|max:100',
@@ -41,7 +49,6 @@ class UserStudentValidate extends FormRequest {
             'address.max'           => 'La dirección tiene una longitud máxima de 500 caracteres',
             'profession.max'        => 'La profesión tiene una longitud máxima de 500 caracteres',
             'password.required'     => 'La contraseña es requerida',
-            'password.min'          => 'La contraseña tiene una longitud mínima de 8 caracteres',
             'password.confirmed'    => 'Debe confirmar la contraseña',
             'country_code.required' => 'El código de país es obligatorio',
         ];

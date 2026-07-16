@@ -161,115 +161,244 @@
     </div>
 </div>
 <!-- Cursos Destacados Section -->
-<div id="cursos" class="py-12 sm:py-16 lg:py-0 mb-8 bg-white">
+<div id="cursos" class="py-14 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-8 sm:mb-12">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Cursos Destacados</h2>
-            <p class="text-lg sm:text-xl text-gray-600">Los cursos más populares entre nuestros estudiantes</p>
+
+        <!-- Section Header -->
+        <div class="text-center mb-10">
+            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-widest px-4 py-1 rounded-full mb-3">Catálogo</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Cursos Destacados</h2>
+            <p class="text-gray-500 text-lg max-w-xl mx-auto">Encuentra el curso perfecto para impulsar tu carrera profesional</p>
         </div>
 
-        <!-- Filtros -->
-        <div class="flex flex-wrap gap-3 sm:gap-4 mb-8 justify-center">
-            <select id="category-filter" class="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm sm:text-base">
-                <option value="">Todas las categorías</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
+        <!-- Filter Bar (server-side GET form) -->
+        <form id="filter-form" method="GET" action="{{ route('home') }}" class="mb-8">
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
 
-            <select id="sort-filter" class="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm sm:text-base">
-                <option value="newest">Más recientes</option>
-                <option value="popular">Más populares</option>
-                <option value="price_low">Precio: menor a mayor</option>
-                <option value="price_high">Precio: mayor a menor</option>
-            </select>
-        </div>
+                <!-- Search Input -->
+                <div class="relative flex-1 min-w-0">
+                    <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/>
+                        </svg>
+                    </span>
+                    <input
+                        id="search-input"
+                        type="text"
+                        name="search"
+                        value="{{ $currentSearch ?? '' }}"
+                        placeholder="Buscar por nombre, categoría o instructor…"
+                        autocomplete="off"
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 transition"
+                    >
+                </div>
 
-        <!-- Grid de Cursos -->
+                <!-- Category Filter -->
+                <div class="relative">
+                    <select id="category-filter" name="category"
+                        onchange="document.getElementById('filter-form').submit()"
+                        class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
+                        <option value="">Todas las categorías</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ ($currentCategory ?? '') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <!-- Sort Filter -->
+                <div class="relative">
+                    <select id="sort-filter" name="sort"
+                        onchange="document.getElementById('filter-form').submit()"
+                        class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
+                        <option value="newest"    {{ ($currentSort ?? 'newest') === 'newest'   ? 'selected' : '' }}>Más recientes</option>
+                        <option value="popular"   {{ ($currentSort ?? '') === 'popular'        ? 'selected' : '' }}>Más populares</option>
+                        <option value="price_low"  {{ ($currentSort ?? '') === 'price_low'    ? 'selected' : '' }}>Precio: menor a mayor</option>
+                        <option value="price_high" {{ ($currentSort ?? '') === 'price_high'   ? 'selected' : '' }}>Precio: mayor a menor</option>
+                        <option value="name_asc"   {{ ($currentSort ?? '') === 'name_asc'     ? 'selected' : '' }}>Nombre A–Z</option>
+                        <option value="name_desc"  {{ ($currentSort ?? '') === 'name_desc'    ? 'selected' : '' }}>Nombre Z–A</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <!-- Search Button -->
+                <button type="submit"
+                    class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/>
+                    </svg>
+                    Buscar
+                </button>
+
+                @if(!empty($currentSearch) || !empty($currentCategory) || (!empty($currentSort) && $currentSort !== 'newest'))
+                    <a href="{{ route('home') }}"
+                        class="flex items-center justify-center gap-2 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800 px-4 py-2.5 rounded-xl text-sm font-medium transition whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Limpiar
+                    </a>
+                @endif
+            </div>
+
+            @if(!empty($currentSearch) || !empty($currentCategory))
+                <div class="flex flex-wrap gap-2 mt-3 px-1 items-center">
+                    @if(!empty($currentSearch))
+                        <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/></svg>
+                            "{{ $currentSearch }}"
+                        </span>
+                    @endif
+                    @if(!empty($currentCategory))
+                        @php $activeCat = $categories->firstWhere('id', $currentCategory); @endphp
+                        @if($activeCat)
+                            <span class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                {{ $activeCat->name }}
+                            </span>
+                        @endif
+                    @endif
+                    <span class="text-xs text-gray-400">{{ $courses->total() }} resultado(s)</span>
+                </div>
+            @endif
+        </form>
+
+        <!-- Course Grid -->
         <div id="courses-container">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-                @foreach($courses as $course)
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
-                        <a href="{{ route('course.show', $course->slug) }}">
-                            <div class="relative">
-                                <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
-                                @if($course->promotion_price)
-                                    <span class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                                        -{{ number_format((($course->price - $course->promotion_price) / $course->price) * 100, 0) }}%
-                                    </span>
+            @if($courses->count() > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    @foreach($courses as $course)
+                        @php
+                            $finalPrice  = $course->promotion_price ?? $course->price;
+                            $hasPromo    = $course->promotion_price && $course->promotion_price < $course->price;
+                            $discount    = $hasPromo ? round((($course->price - $course->promotion_price) / $course->price) * 100) : 0;
+                            $levelColors = ['basico' => 'bg-emerald-500', 'intermedio' => 'bg-amber-500', 'avanzado' => 'bg-red-500'];
+                            $levelColor  = $levelColors[strtolower($course->level ?? '')] ?? 'bg-slate-500';
+                        @endphp
+                        <div class="course-card group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+                             data-category="{{ $course->category_id }}"
+                             data-price="{{ $finalPrice }}"
+                             data-date="{{ $course->created_at->timestamp }}"
+                             data-popularity="{{ $course->enrollments_count ?? 0 }}">
+
+                            <!-- Thumbnail -->
+                            <a href="{{ route('course.show', $course->slug) }}" class="block relative overflow-hidden" style="padding-top:56.25%">
+                                @if($course->image_url)
+                                    <img src="{{ $course->image_url }}"
+                                         alt="{{ $course->title }}"
+                                         loading="lazy"
+                                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @else
+                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
+                                        <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                        </svg>
+                                    </div>
                                 @endif
-                                <span class="absolute bottom-3 left-3 bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium shadow-lg">
-                                    {{ $course->category->name }}
-                                </span>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
                                 @if($course->level)
-                                    <span class="absolute top-3 left-3 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium shadow-lg level-badge">
+                                    <span class="absolute top-3 left-3 {{ $levelColor }} text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md shadow">
                                         {{ ucfirst($course->level) }}
                                     </span>
                                 @endif
-                            </div>
 
-                            <div class="p-6">
-                                <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors duration-200">
+                                @if($hasPromo)
+                                    <span class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
+                                        -{{ $discount }}%
+                                    </span>
+                                @endif
+
+                                <span class="absolute bottom-3 left-3 bg-blue-600/90 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow">
+                                    {{ $course->category->name ?? '-' }}
+                                </span>
+
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span class="bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
+                                        Ver curso &rarr;
+                                    </span>
+                                </div>
+                            </a>
+
+                            <!-- Body -->
+                            <div class="flex flex-col flex-1 p-5">
+                                <h3 class="font-bold text-gray-900 text-base leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
                                     <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
                                 </h3>
-                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: Str::limit($course->description, 120) }}</p>
-                                <div class="flex items-center mb-6">
-                                    <div class="flex items-center">
-                                        <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">{{ $course->instructor->names }}</p>
-                                            <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
-                                        </div>
+
+                                <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">
+                                    {{ $course->short_description ?: Str::limit($course->description, 100) }}
+                                </p>
+
+                                <div class="flex items-center gap-2.5 mb-4 pb-4 border-b border-gray-100">
+                                    <img class="h-8 w-8 rounded-full object-cover ring-2 ring-blue-100 flex-shrink-0"
+                                         src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}"
+                                         alt="{{ $course->instructor->names }}">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-semibold text-gray-800 truncate">{{ $course->instructor->names }}</p>
+                                        <p class="text-[11px] text-gray-400 truncate">{{ $course->instructor->profession ?? 'Instructor' }}</p>
                                     </div>
                                 </div>
-                                
-                                {{-- <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-sm text-gray-600 students-count">{{ $course->students_count ?? 125 }} estudiantes</span>
-                                    </div>
-                                </div> --}}
 
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2 px-4 py-3">
-                                        @if($course->promotion_price)
-                                            <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->promotion_price, 2) }}</span>
-                                            <span class="text-sm text-gray-500 line-through">S/ {{ number_format($course->price, 2) }}</span>
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex flex-col leading-none">
+                                        @if($hasPromo)
+                                            <span class="text-xl font-extrabold text-blue-600">S/ {{ number_format($course->promotion_price, 2) }}</span>
+                                            <span class="text-xs text-gray-400 line-through mt-0.5">S/ {{ number_format($course->price, 2) }}</span>
                                         @else
-                                            <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
+                                            <span class="text-xl font-extrabold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
                                         @endif
                                     </div>
-                                </div>
 
-                                <div class="flex items-center justify-between">
-                                    <button onclick="addToCart({{ $course->id }})" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
-                                        Agregar al carrito
+                                    <button onclick="addToCart({{ $course->id }}, event)"
+                                        class="add-to-cart-btn flex-shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        </svg>
+                                        Agregar
                                     </button>
                                 </div>
                             </div>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
+                        </div>
+                    @endforeach
+                </div>
 
-            @if($courses->hasPages())
-                <div class="mt-12 flex justify-center">
-                    <div class="bg-white px-4 py-3 rounded-lg shadow-lg">
-                        {{ $courses->links() }}
+                @if($courses->hasPages())
+                    <div class="mt-10 flex justify-center">
+                        <div class="bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
+                            {{ $courses->links() }}
+                        </div>
                     </div>
+                @endif
+
+            @else
+                <div class="text-center py-20">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-5">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">No se encontraron cursos</h3>
+                    <p class="text-gray-500 mb-6">Intenta con otros términos de búsqueda o filtra por otra categoría.</p>
+                    <a href="{{ route('home') }}"
+                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Limpiar filtros
+                    </a>
                 </div>
             @endif
-        </div>
-
-        <!-- Mensaje cuando no hay resultados -->
-        <div id="no-results" class="hidden text-center py-12">
-            <svg class="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-600 mb-2">No se encontraron cursos</h3>
-            <p class="text-gray-500">Intenta con otros filtros de búsqueda</p>
-            <button id="reset-filters" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Limpiar filtros
-            </button>
         </div>
     </div>
 </div>
@@ -667,11 +796,11 @@
     });
 
     // Función global para agregar al carrito
-    async function addToCart(courseId) {
-        const btn = event?.target;
+    async function addToCart(courseId, event) {
+        const btn = event?.currentTarget ?? event?.target;
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin">⏳</span>';
+            btn.innerHTML = '<span class="animate-spin inline-block">⏳</span>';
         }
 
         try {
@@ -708,7 +837,7 @@
         } finally {
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Agregar al carrito';
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Agregar';
             }
         }
     }

@@ -1,66 +1,130 @@
 @extends('layouts.app')
-@section('title', $enterprise->trade_name.' - Catálogo de Cursos')
+@section('title', $enterprise->trade_name.' - Catálogo de Cursos Profesionales')
 @section('meta')
     <meta name="description" content="Explora nuestro catálogo completo de cursos online en Seguridad y Salud en el Trabajo (SST), normas ISO y Medio Ambiente. Capacítate a tu ritmo y certifícate con {{ $enterprise->trade_name }}.">
     <meta name="keywords" content="catálogo de cursos, cursos online SST, cursos ISO 9001, ISO 14001, ISO 45001, prevención de riesgos, diplomados SST, aula virtual, certificaciones Perú">
     <meta name="author" content="{{ $enterprise->trade_name }}">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ route('cursos') }}">
+
+    <!-- Open Graph -->
     <meta property="og:title" content="Catálogo de Cursos Profesionales - {{ $enterprise->trade_name }}">
     <meta property="og:description" content="Potencia tu perfil profesional con nuestros cursos en Prevención de Riesgos, Calidad y Medio Ambiente. ¡Inscríbete hoy!">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
+    @if(isset($enterprise->logo_path))
+        <meta property="og:image" content="{{ asset($enterprise->logo_path) }}">
+    @endif
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Catálogo de Cursos Profesionales - {{ $enterprise->trade_name }}">
+    <meta name="twitter:description" content="Potencia tu perfil profesional con nuestros cursos en Prevención de Riesgos, Calidad y Medio Ambiente.">
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ItemList",
+          "name": "{{ $enterprise->trade_name }} - Catálogo de Cursos",
+          "description": "Explora nuestro catálogo de cursos profesionales de capacitación.",
+          "numberOfItems": {{ $courses->total() }},
+          "itemListElement": [
+            @foreach($courses->take(12) as $index => $c)
+            {
+              "@type": "ListItem",
+              "position": {{ $index + 1 }},
+              "item": {
+                "@type": "Course",
+                "name": "{{ $c->title }}",
+                "description": "{{ $c->short_description ?: Str::limit($c->description, 150) }}",
+                "provider": {
+                  "@type": "Organization",
+                  "name": "{{ $enterprise->trade_name }}",
+                  "sameAs": "{{ url('/') }}"
+                },
+                "image": "{{ $c->image_url }}",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "{{ $c->promotion_price ?? $c->price }}",
+                  "priceCurrency": "PEN"
+                }
+              }
+            }{{ !$loop->last ? ',' : '' }}
+            @endforeach
+          ]
+        }
+      ]
+    }
+    </script>
 @endsection
+
 @section('content')
 <!-- Hero Section -->
-<div class="bg-gradient-to-r from-blue-600 to-purple-700 py-16 sm:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-gradient-to-r from-blue-900 to-indigo-900 py-16 sm:py-20 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.15),transparent)]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center">
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
-                Catálogo de <span class="text-yellow-300">Cursos</span>
+            <span class="inline-block bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-4">Catálogo Completo</span>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
+                Catálogo de <span class="text-blue-400">Cursos</span>
             </h1>
-            <p class="text-xl text-blue-100 max-w-3xl mx-auto">
-                Descubre todos nuestros cursos profesionales y encuentra el perfecto para tus objetivos
+            <p class="text-lg sm:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
+                Descubre programas diseñados por expertos de la industria para expandir tus conocimientos y certificar tu futuro.
             </p>
         </div>
     </div>
 </div>
 
 <!-- Filtros y Búsqueda -->
-<section class="bg-white border-b border-gray-200 py-8">
+<section class="bg-white border-b border-gray-100 py-6 sticky top-0 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+        <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
             <!-- Búsqueda -->
             <div class="w-full lg:w-96">
                 <div class="relative">
-                    <input type="text" id="search-input" placeholder="Buscar cursos..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
-                    <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                    </div>
+                    </span>
+                    <input type="text" 
+                           id="search-input" 
+                           placeholder="Buscar cursos por título, instructor..." 
+                           autocomplete="off"
+                           class="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 transition-all duration-200">
+                    <button type="button" 
+                            id="clear-search-btn" 
+                            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
             <!-- Filtros -->
-            <div class="flex flex-wrap gap-4 w-full lg:w-auto">
+            <div class="flex flex-wrap gap-3 items-center">
                 <!-- Filtro por Categoría -->
-                <div class="relative">
-                    <select id="category-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
+                <div class="relative min-w-[200px]">
+                    <select id="category-filter" class="w-full appearance-none bg-white border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition cursor-pointer">
                         <option value="">Todas las categorías</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }}</option>
                         @endforeach
                     </select>
-                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                 </div>
 
                 <!-- Ordenar por -->
-                <div class="relative">
-                    <select id="sort-filter" class="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-3 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer min-w-48">
+                <div class="relative min-w-[180px]">
+                    <select id="sort-filter" class="w-full appearance-none bg-white border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition cursor-pointer">
                         <option value="newest">Más recientes primero</option>
                         <option value="oldest">Más antiguos primero</option>
                         <option value="popular">Más populares</option>
@@ -69,29 +133,30 @@
                         <option value="name_asc">Nombre: A-Z</option>
                         <option value="name_desc">Nombre: Z-A</option>
                     </select>
-                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                 </div>
 
                 <!-- Botón Limpiar Filtros -->
-                <button id="clear-filters" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-all duration-200 font-medium">
+                <button id="clear-filters" class="border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 px-4 py-2.5 rounded-xl text-sm font-medium transition whitespace-nowrap hidden flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
                     Limpiar
                 </button>
             </div>
         </div>
 
-        <!-- Filtros Activos -->
-        <div id="active-filters" class="mt-4 flex flex-wrap gap-2 hidden">
-            <!-- Los filtros activos se mostrarán aquí -->
-        </div>
+        <!-- Filtros Activos Chips -->
+        <div id="active-filters" class="mt-4 flex flex-wrap gap-2 hidden"></div>
     </div>
 </section>
 
 <!-- Resultados y Grid de Cursos -->
-<section class="py-12 bg-gray-50 min-h-screen">
+<section class="py-12 bg-gray-50 min-h-[500px]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header de Resultados -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -99,19 +164,19 @@
                 <h2 id="results-count" class="text-2xl font-bold text-gray-900">
                     {{ $courses->total() }} cursos encontrados
                 </h2>
-                <p id="filter-description" class="text-gray-600 mt-1">
+                <p id="filter-description" class="text-sm text-gray-500 mt-1">
                     Mostrando todos los cursos disponibles
                 </p>
             </div>
 
-            <!-- Vista (Grid/List) -->
-            <div class="flex items-center space-x-2 bg-white rounded-lg border border-gray-300 p-1">
-                <button id="grid-view" class="p-2 rounded-md bg-blue-100 text-blue-600 transition-all duration-200">
+            <!-- Vista (Grid/List Toggle) -->
+            <div class="flex items-center space-x-1 bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
+                <button id="grid-view" class="p-2 rounded-lg bg-blue-50 text-blue-600 transition-all duration-200" title="Vista Cuadrícula">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                     </svg>
                 </button>
-                <button id="list-view" class="p-2 rounded-md text-gray-500 hover:text-blue-600 transition-all duration-200">
+                <button id="list-view" class="p-2 rounded-lg text-gray-400 hover:text-blue-600 transition-all duration-200" title="Vista Lista">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                     </svg>
@@ -119,205 +184,32 @@
             </div>
         </div>
 
-        <!-- Grid/List de Cursos -->
+        <!-- Grid/List de Cursos Renderizado Dinámicamente -->
         <div id="courses-container">
-            <!-- Vista Grid (Por defecto) -->
-            <div id="grid-view-container" class="courses-view">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-                    @foreach($courses as $course)
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover border border-gray-100 course-card">
-                            {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
-                            <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
-                                <div class="relative">
-                                    <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-48 object-cover">
-                                    @if($course->promotion_price)
-                                        <span class="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                                            -{{ number_format((($course->price - $course->promotion_price) / $course->price) * 100, 0) }}%
-                                        </span>
-                                    @endif
-                                    <span class="absolute bottom-3 left-3 bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium shadow-lg">
-                                        {{ $course->category->name }}
-                                    </span>
-                                    @if($course->level)
-                                        <span class="absolute top-3 left-3 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium shadow-lg level-badge">
-                                            {{ ucfirst($course->level) }}
-                                        </span>
-                                    @endif
-                                </div>
-
-                                <div class="p-6">
-                                    <h3 class="font-bold text-lg mb-2 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors duration-200">
-                                        {{-- <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a> --}}
-                                        <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">{{ $course->title }}</a>
-                                    </h3>
-                                    <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ $course->short_description ?: Str::limit($course->description, 120) }}</p>
-                                    <div class="flex items-center mb-6">
-                                        <div class="flex items-center">
-                                            <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
-                                            <div>
-                                                <p class="text-sm font-medium text-gray-900">{{ $course->instructor->names }}</p>
-                                                <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- <div class="flex items-center justify-between mb-4">
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-sm text-gray-600 students-count">{{ $course->students_count ?? 125 }} estudiantes</span>
-                                        </div>
-                                    </div> --}}
-
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center space-x-2 px-4 py-3">
-                                            @if($course->promotion_price)
-                                                <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->promotion_price, 2) }}</span>
-                                                <span class="text-sm text-gray-500 line-through">S/ {{ number_format($course->price, 2) }}</span>
-                                            @else
-                                                <span class="text-xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center justify-between">
-                                        <button onclick="addToCart({{ $course->id }})" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg add-to-cart-btn">
-                                            Agregar al carrito
-                                        </button>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Vista Lista (Oculta por defecto) -->
-            <div id="list-view-container" class="courses-view hidden">
-                <div class="space-y-6">
-                    @foreach($courses as $course)
-                        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-200">
-                            <div class="md:flex">
-                                <!-- Imagen del curso -->
-                                <div class="md:w-1/4">
-                                    {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
-                                    <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
-                                        <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
-                                            <img src="{{ $course->image_url }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 flex items-center justify-center" style="display: none;">
-                                                <i class="fas fa-book text-white text-5xl opacity-20"></i>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-
-                                <!-- Contenido del curso -->
-                                <div class="md:w-3/4 p-6">
-                                    <div class="flex flex-col h-full">
-                                        <div class="flex-1">
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    {{-- <a href="{{ route('course.show', $course->slug) }}"> --}}
-                                                    <a href="{{ route('course.show', ['slug' => $course->slug, 'code' => $code ?? null]) }}">
-                                                        <h3 class="text-xl font-bold text-gray-800">{{ $course->title }}</h3>
-                                                    </a>
-                                                    <div class="flex items-center mt-2 space-x-4">
-                                                        <span class="text-sm text-gray-600">
-                                                            <i class="fas fa-layer-group mr-1"></i>
-                                                            <span>{{ $course->sections->count() }}</span> {{ $course->sections->count() > 1 ? 'Módulos' : 'Módulo' }} 
-                                                        </span>
-                                                        <span class="text-sm text-gray-600">
-                                                            <i class="fas fa-video mr-1"></i>
-                                                            <span>{{ $course->lessons->count() }}</span> {{ $course->lessons->count() > 1 ? 'Lecciones' : 'Lección' }}
-                                                        </span>
-                                                    </div>
-                                                    <p class="text-gray-600 mt-3">{{ $course->description }}</p>
-                                                </div>
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <div class="lg:text-right">
-                                                        <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
-                                                            {{ $course->category->name }}
-                                                        </span>
-                                                        &nbsp;
-                                                        @if($course->promotion_price)
-                                                            <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                                                                Oferta Especial
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="lg:text-right">
-                                                <div class="mb-4">
-                                                    @if($course->promotion_price)
-                                                        <span class="text-2xl font-bold text-gray-900">S/ {{ number_format($course->promotion_price, 2) }}</span>
-                                                        <span class="text-lg text-gray-500 line-through block">S/ {{ number_format($course->price, 2) }}</span>
-                                                    @else
-                                                        <span class="text-2xl font-bold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
-                                                    @endif
-                                                </div>
-                                                <button onclick="addToCart({{ $course->id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg w-full lg:w-auto">
-                                                    Agregar al Carrito
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-6 pt-6 border-t border-gray-100">
-                                            <div class="flex items-center mb-6">
-                                                <div class="flex items-center">
-                                                    <img class="h-10 w-10 rounded-full object-cover mr-3" src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}" alt="{{ $course->instructor->names }}">
-                                                    <div>
-                                                        <p class="text-sm font-medium text-gray-900">Instructor: {{ $course->instructor->names }}</p>
-                                                        <p class="text-sm text-gray-600">{{ $course->instructor->profession ?? 'Instructor' }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Paginación -->
-            @if($courses->hasPages())
-                <div class="mt-12 flex justify-center">
-                    <div class="bg-white px-6 py-4 rounded-lg shadow-lg">
-                        {{ $courses->links() }}
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        <!-- Estado vacío -->
-        <div id="empty-state" class="hidden text-center py-16">
-            <svg class="mx-auto h-24 w-24 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">No se encontraron cursos</h3>
-            <p class="text-gray-600 mb-6">Intenta ajustar tus filtros o términos de búsqueda</p>
-            <button id="reset-search" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                Mostrar todos los cursos
-            </button>
+            @include('student.partials.courses-grid')
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="bg-gray-900 py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold text-white mb-4">¿No encuentras lo que buscas?</h2>
-        <p class="text-xl text-gray-300 mb-8">Contáctanos y te ayudaremos a encontrar el curso perfecto para ti</p>
-        <a href="{{ route('contacto') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+<section class="bg-gray-900 py-16 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.1),transparent)]"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h2 class="text-3xl font-extrabold text-white mb-3">¿No encuentras lo que estás buscando?</h2>
+        <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto">Contáctanos directamente y uno de nuestros asesores de capacitación te guiará para encontrar el programa ideal para ti.</p>
+        <a href="{{ route('contacto') }}" class="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-8 py-4 rounded-xl text-base font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform inline-block">
             Contactar Asesor
         </a>
     </div>
 </section>
+@endsection
 
+@section('scripts')
 <script>
     class CoursesPage {
         constructor() {
-            this.currentView    = localStorage.getItem('coursesView') || 'grid';
-            this.filters        = {
+            this.currentView = localStorage.getItem('coursesView') || 'grid';
+            this.filters = {
                 search: '',
                 category: '',
                 sort: 'newest'
@@ -334,16 +226,34 @@
         }
 
         setupEventListeners() {
-            // Búsqueda con debounce
             const searchInput = document.getElementById('search-input');
+            const clearSearchBtn = document.getElementById('clear-search-btn');
+
             if (searchInput) {
                 searchInput.addEventListener('input', this.debounce(() => {
-                    this.filters.search = searchInput.value;
+                    // Sanitización simple
+                    let cleanSearch = searchInput.value.replace(/<[^>]*>/g, '').trim();
+                    this.filters.search = cleanSearch;
+
+                    if (cleanSearch.length > 0) {
+                        clearSearchBtn?.classList.remove('hidden');
+                    } else {
+                        clearSearchBtn?.classList.add('hidden');
+                    }
                     this.applyFilters();
-                }, 500));
+                }, 400));
             }
 
-            // Filtro de categoría
+            clearSearchBtn?.addEventListener('click', () => {
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                clearSearchBtn.classList.add('hidden');
+                this.filters.search = '';
+                this.applyFilters();
+            });
+
+            // Filtro por categoría
             const categoryFilter = document.getElementById('category-filter');
             if (categoryFilter) {
                 categoryFilter.addEventListener('change', (e) => {
@@ -367,16 +277,13 @@
                 clearBtn.addEventListener('click', () => this.clearFilters());
             }
 
-            // Botón reset en empty state
-            const resetBtn = document.getElementById('reset-search');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', () => this.clearFilters());
-            }
-
-            // Navegación con teclado (Escape para limpiar)
+            // Atajo de teclado: Escape para limpiar búsqueda
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && (this.filters.search || this.filters.category)) {
-                    this.clearFilters();
+                if (e.key === 'Escape' && this.filters.search) {
+                    if (searchInput) searchInput.value = '';
+                    clearSearchBtn?.classList.add('hidden');
+                    this.filters.search = '';
+                    this.applyFilters();
                 }
             });
         }
@@ -384,35 +291,20 @@
         setupViewToggle() {
             const gridViewBtn = document.getElementById('grid-view');
             const listViewBtn = document.getElementById('list-view');
-            const gridContainer = document.getElementById('grid-view-container');
-            const listContainer = document.getElementById('list-view-container');
 
             if (!gridViewBtn || !listViewBtn) return;
 
             gridViewBtn.addEventListener('click', () => {
                 this.currentView = 'grid';
                 localStorage.setItem('coursesView', 'grid');
-                this.updateViewUI(gridViewBtn, listViewBtn, gridContainer, listContainer);
+                this.restoreView();
             });
 
             listViewBtn.addEventListener('click', () => {
                 this.currentView = 'list';
                 localStorage.setItem('coursesView', 'list');
-                this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
+                this.restoreView();
             });
-        }
-
-        updateViewUI(activeBtn, inactiveBtn, showContainer, hideContainer) {
-            // Actualizar botones
-            activeBtn.classList.add('bg-blue-100', 'text-blue-600');
-            activeBtn.classList.remove('text-gray-500');
-
-            inactiveBtn.classList.remove('bg-blue-100', 'text-blue-600');
-            inactiveBtn.classList.add('text-gray-500');
-
-            // Actualizar contenedores
-            showContainer?.classList.remove('hidden');
-            hideContainer?.classList.add('hidden');
         }
 
         restoreView() {
@@ -422,14 +314,27 @@
             const listContainer = document.getElementById('list-view-container');
 
             if (this.currentView === 'list') {
-                this.updateViewUI(listViewBtn, gridViewBtn, listContainer, gridContainer);
+                listViewBtn?.classList.add('bg-blue-50', 'text-blue-600');
+                listViewBtn?.classList.remove('text-gray-400');
+                gridViewBtn?.classList.remove('bg-blue-50', 'text-blue-600');
+                gridViewBtn?.classList.add('text-gray-400');
+
+                gridContainer?.classList.add('hidden');
+                listContainer?.classList.remove('hidden');
+            } else {
+                gridViewBtn?.classList.add('bg-blue-50', 'text-blue-600');
+                gridViewBtn?.classList.remove('text-gray-400');
+                listViewBtn?.classList.remove('bg-blue-50', 'text-blue-600');
+                listViewBtn?.classList.add('text-gray-400');
+
+                listContainer?.classList.add('hidden');
+                gridContainer?.classList.remove('hidden');
             }
         }
 
         loadInitialFilters() {
             const urlParams = new URLSearchParams(window.location.search);
 
-            // Cargar categoría
             const categoryParam = urlParams.get('category');
             if (categoryParam) {
                 this.filters.category = categoryParam;
@@ -437,15 +342,14 @@
                 if (categoryFilter) categoryFilter.value = categoryParam;
             }
 
-            // Cargar búsqueda
             const searchParam = urlParams.get('search');
             if (searchParam) {
                 this.filters.search = searchParam;
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) searchInput.value = searchParam;
+                document.getElementById('clear-search-btn')?.classList.remove('hidden');
             }
 
-            // Cargar ordenamiento
             const sortParam = urlParams.get('sort');
             if (sortParam) {
                 this.filters.sort = sortParam;
@@ -458,7 +362,6 @@
 
         async applyFilters() {
             if (this.isLoading) return;
-
             this.isLoading = true;
             this.updateURL();
             this.updateActiveFilters();
@@ -471,17 +374,13 @@
             if (!coursesContainer) return;
 
             try {
-                // Construir parámetros
                 const params = new URLSearchParams();
                 if (this.filters.search)    params.append('search', this.filters.search);
                 if (this.filters.category)  params.append('category', this.filters.category);
                 if (this.filters.sort)      params.append('sort', this.filters.sort);
 
-                // Mostrar loading
                 this.showLoading();
 
-                // Realizar petición AJAX
-                // const response = await fetch(`/cursos?${params.toString()}`, {
                 const baseUrl = '{{ isset($code) ? route("cursos", ["code" => $code]) : route("cursos") }}';
                 const response = await fetch(`${baseUrl}?${params.toString()}`, {
                     method: 'GET',
@@ -491,22 +390,13 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
+                if (!response.ok) throw new Error('Servidor falló al responder');
 
                 const html = await response.text();
-
-                // Actualizar contenido
                 coursesContainer.innerHTML = html;
 
-                // Actualizar contador y UI
                 this.updateResultsCount();
                 this.restoreView();
-
-                // Scroll suave al contenedor
-                coursesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
             } catch (error) {
                 console.error('Error filtering courses:', error);
                 this.showError();
@@ -514,129 +404,105 @@
         }
 
         updateResultsCount() {
-            const courseCards       = document.querySelectorAll('.course-card');
-            const resultsCount      = document.getElementById('results-count');
-            const filterDescription = document.getElementById('filter-description');
-            const emptyState        = document.getElementById('empty-state');
-            const gridContainer     = document.getElementById('grid-view-container');
-            const listContainer     = document.getElementById('list-view-container');
-            const paginationInfo    = document.getElementById('pagination-info');
+            const paginationInfo = document.getElementById('pagination-info');
+            const total = paginationInfo ? parseInt(paginationInfo.dataset.total) : 0;
 
-            const count = courseCards.length;
-            const total = paginationInfo?.dataset.total || count;
-
-            if (count === 0) {
-                // Mostrar estado vacío
-                if (gridContainer) gridContainer.style.display = 'none';
-                if (listContainer) listContainer.style.display = 'none';
-                if (emptyState) emptyState.classList.remove('hidden');
-                if (resultsCount) resultsCount.textContent = '0 cursos encontrados';
-            } else {
-                // Mostrar resultados
-                if (emptyState) emptyState.classList.add('hidden');
-                if (resultsCount) resultsCount.textContent = `${total} ${total === 1 ? 'curso encontrado' : 'cursos encontrados'}`;
+            const resultsCount = document.getElementById('results-count');
+            if (resultsCount) {
+                resultsCount.textContent = `${total} ${total === 1 ? 'curso encontrado' : 'cursos encontrados'}`;
             }
 
-            // Actualizar descripción de filtros
+            const filterDescription = document.getElementById('filter-description');
             this.updateFilterDescription(filterDescription);
         }
 
-        updateFilterDescription(filterDescription) {
-            if (!filterDescription) return;
+        updateFilterDescription(el) {
+            if (!el) return;
 
-            let description = 'Mostrando todos los cursos disponibles';
-            const parts = [];
-
-            if (this.filters.search) {
-                parts.push(`búsqueda: "${this.filters.search}"`);
-            }
+            let parts = [];
+            if (this.filters.search) parts.push(`búsqueda "${this.filters.search}"`);
 
             if (this.filters.category) {
-                const categoryFilter    = document.getElementById('category-filter');
-                const categoryName      = categoryFilter?.selectedOptions[0]?.text;
-                if (categoryName) {
-                    parts.push(`categoría: ${categoryName}`);
-                }
+                const catFilter = document.getElementById('category-filter');
+                const catName = catFilter?.selectedOptions[0]?.text;
+                if (catName && catName !== 'Todas las categorías') parts.push(`categoría "${catName}"`);
             }
 
             if (parts.length > 0) {
-                description = `Resultados para ${parts.join(' y ')}`;
+                el.textContent = `Resultados para ${parts.join(' y ')}`;
+            } else {
+                el.textContent = 'Mostrando todos los cursos disponibles';
             }
-
-            filterDescription.textContent = description;
         }
 
         updateActiveFilters() {
             const container = document.getElementById('active-filters');
+            const clearFiltersBtn = document.getElementById('clear-filters');
             if (!container) return;
 
             container.innerHTML = '';
             let hasFilters = false;
 
-            // Filtro de búsqueda
             if (this.filters.search) {
-                this.addActiveFilter('search', `Búsqueda: "${this.filters.search}"`, container);
+                this.addActiveFilterChip('search', `Búsqueda: "${this.filters.search}"`, container);
                 hasFilters = true;
             }
 
-            // Filtro de categoría
             if (this.filters.category) {
-                const categoryFilter = document.getElementById('category-filter');
-                const categoryName = categoryFilter?.selectedOptions[0]?.text;
-                if (categoryName) {
-                    this.addActiveFilter('category', `Categoría: ${categoryName}`, container);
+                const catFilter = document.getElementById('category-filter');
+                const catName = catFilter?.selectedOptions[0]?.text;
+                if (catName && catName !== 'Todas las categorías') {
+                    this.addActiveFilterChip('category', `Categoría: ${catName}`, container);
                     hasFilters = true;
                 }
             }
 
             container.classList.toggle('hidden', !hasFilters);
+            clearFiltersBtn?.classList.toggle('hidden', !hasFilters);
         }
 
-        addActiveFilter(type, text, container) {
-            const filterElement = document.createElement('div');
-            filterElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full text-sm font-medium flex items-center gap-2 animate-fade-in';
-            filterElement.innerHTML = `
+        addActiveFilterChip(type, text, container) {
+            const chip = document.createElement('div');
+            chip.className = 'inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full';
+            chip.innerHTML = `
                 <span>${text}</span>
-                <button type="button" onclick="coursesPage.removeFilter('${type}')" class="text-blue-600 hover:text-blue-800 focus:outline-none" aria-label="Eliminar filtro">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="coursesPage.removeFilter('${type}')" class="text-blue-500 hover:text-blue-700 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             `;
-            container.appendChild(filterElement);
+            container.appendChild(chip);
         }
 
         removeFilter(type) {
-            switch(type) {
-                case 'search':
-                    this.filters.search = '';
-                    const searchInput   = document.getElementById('search-input');
-                    if (searchInput) searchInput.value = '';
-                    break;
-                case 'category':
-                    this.filters.category = '';
-                    const categoryFilter = document.getElementById('category-filter');
-                    if (categoryFilter) categoryFilter.value = '';
-                    break;
+            if (type === 'search') {
+                this.filters.search = '';
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) searchInput.value = '';
+                document.getElementById('clear-search-btn')?.classList.add('hidden');
+            } else if (type === 'category') {
+                this.filters.category = '';
+                const categoryFilter = document.getElementById('category-filter');
+                if (categoryFilter) categoryFilter.value = '';
             }
             this.applyFilters();
         }
 
         clearFilters() {
-            this.filters = {
-                search: '',
-                category: '',
-                sort: 'newest'
-            };
+            this.filters.search = '';
+            this.filters.category = '';
+            this.filters.sort = 'newest';
 
-            // Limpiar inputs
-            const searchInput       = document.getElementById('search-input');
-            const categoryFilter    = document.getElementById('category-filter');
-            const sortFilter        = document.getElementById('sort-filter');
+            const searchInput = document.getElementById('search-input');
+            const categoryFilter = document.getElementById('category-filter');
+            const sortFilter = document.getElementById('sort-filter');
 
             if (searchInput) searchInput.value = '';
             if (categoryFilter) categoryFilter.value = '';
             if (sortFilter) sortFilter.value = 'newest';
+
+            document.getElementById('clear-search-btn')?.classList.add('hidden');
 
             this.applyFilters();
         }
@@ -647,7 +513,6 @@
             if (this.filters.category) params.append('category', this.filters.category);
             if (this.filters.sort && this.filters.sort !== 'newest') params.append('sort', this.filters.sort);
 
-            // Generar la URL base considerando el código desde Blade
             const baseUrl = '{{ isset($code) ? route("cursos", ["code" => $code]) : route("cursos") }}';
             const newURL = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
             window.history.replaceState({}, '', newURL);
@@ -655,32 +520,34 @@
 
         showLoading() {
             const container = document.getElementById('courses-container');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="flex flex-col justify-center items-center py-16">
-                    <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-                    <p class="text-gray-600 text-lg">Cargando cursos...</p>
-                </div>
-            `;
+            if (container) {
+                container.innerHTML = `
+                    <div class="flex flex-col justify-center items-center py-20">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                        <p class="text-gray-500 text-sm">Cargando cursos...</p>
+                    </div>
+                `;
+            }
         }
 
         showError() {
             const container = document.getElementById('courses-container');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="text-center py-16 bg-white rounded-lg shadow-lg">
-                    <svg class="mx-auto h-20 w-20 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.082 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Error al cargar los cursos</h3>
-                    <p class="text-gray-600 mb-6">Ocurrió un problema al obtener los cursos. Por favor, intenta nuevamente.</p>
-                    <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
-                        Recargar Página
-                    </button>
-                </div>
-            `;
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm max-w-md mx-auto">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-red-50 rounded-full mb-4">
+                            <svg class="h-8 w-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.082 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">Ocurrió un error</h3>
+                        <p class="text-gray-500 text-sm mb-6">No se pudo procesar la solicitud. Por favor intenta recargar la página.</p>
+                        <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
+                            Recargar página
+                        </button>
+                    </div>
+                `;
+            }
         }
 
         debounce(func, wait) {
@@ -696,17 +563,16 @@
         }
     }
 
-    // Inicializar cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
         window.coursesPage = new CoursesPage();
     });
 
     // Función global para agregar al carrito
-    async function addToCart(courseId) {
-        const btn = event?.target;
+    async function addToCart(courseId, event) {
+        const btn = event?.currentTarget ?? event?.target;
         if (btn) {
-            btn.disabled    = true;
-            btn.innerHTML   = '<span class="animate-spin">⏳</span>';
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin inline-block">⏳</span>';
         }
 
         try {
@@ -724,14 +590,13 @@
             if (data.success) {
                 showNotification('✓ Curso agregado al carrito', 'success');
                 updateCartCount();
-            } else if(data.success == false) {
+            } else if (data.success === false) {
                 showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
             } else {
                 throw new Error(data.message || 'Error al agregar el curso');
             }
         } catch (error) {
             console.error('Error:', error);
-
             if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
                 showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
                 setTimeout(() => {
@@ -743,13 +608,17 @@
         } finally {
             if (btn) {
                 btn.disabled = false;
-                btn.innerHTML = 'Agregar al carrito';
+                btn.innerHTML = `
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    ${btn.classList.contains('text-xs') ? 'Agregar' : 'Agregar al carrito'}
+                `;
             }
         }
     }
 
     function showNotification(message, type = 'info') {
-        // Remover notificaciones existentes
         const existing = document.querySelectorAll('.custom-notification');
         existing.forEach(n => n.remove());
 
@@ -761,11 +630,11 @@
         };
 
         const notification = document.createElement('div');
-        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
         notification.innerHTML = `
-            <span class="text-lg">${message}</span>
-            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span class="text-sm font-semibold">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-auto text-white/80 hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -791,8 +660,6 @@
             const cartCount = document.getElementById('cart-count');
             if (cartCount && data.count !== undefined) {
                 cartCount.textContent = data.count;
-
-                // Animación del contador
                 cartCount.classList.add('animate-bounce');
                 setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
             }
@@ -803,13 +670,39 @@
 </script>
 
 <style>
-    .card-hover {
-        transition: all 0.3s ease;
+    /* Keyframe Animations */
+    @keyframes slide-in-right {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
-    .card-hover:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    .animate-slide-in-right {
+        animation: slide-in-right 0.3s ease-out;
+    }
+
+    .animate-fade-out {
+        animation: fade-out 0.3s ease-out forwards;
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 
     .line-clamp-2 {
@@ -819,24 +712,11 @@
         overflow: hidden;
     }
 
-    .courses-view {
-        transition: opacity 0.3s ease;
-    }
-
-    /* Estilos para los badges de nivel */
-    .level-badge {
-        text-transform: capitalize;
-    }
-
-    /* Mejoras para los filtros */
-    select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 0.5rem center;
-        background-repeat: no-repeat;
-        background-size: 1.5em 1.5em;
-        padding-right: 2.5rem;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 </style>
 @endsection

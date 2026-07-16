@@ -222,6 +222,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                                 {{-- <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-2">
                                         <span class="text-sm text-gray-600 students-count">{{ $course->students_count ?? 125 }} estudiantes</span>

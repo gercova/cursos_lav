@@ -326,11 +326,11 @@
                             {{-- Trigger / Valor seleccionado --}}
                             <button type="button" @click="toggleCourseDropdown()"
                                 class="w-full flex items-center justify-between border rounded-lg px-3 py-2 text-sm bg-white transition-all duration-150"
-                                :class="errors.course
-                                    ? 'border-red-400 ring-2 ring-red-100'
-                                    : (courseDropdownOpen
-                                        ? 'border-blue-500 ring-2 ring-blue-200'
-                                        : 'border-gray-200 hover:border-gray-300')">
+                                :class="errors.course ?
+                                    'border-red-400 ring-2 ring-red-100' :
+                                    (courseDropdownOpen ?
+                                        'border-blue-500 ring-2 ring-blue-200' :
+                                        'border-gray-200 hover:border-gray-300')">
                                 <span :class="form.course_id ? 'text-gray-800' : 'text-gray-400'"
                                     x-text="getCourseLabel()"></span>
                                 <i class="fas text-gray-400 text-xs transition-transform duration-200"
@@ -395,7 +395,7 @@
                                                         <span x-show="!course.is_training"
                                                             class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                                                             <i class="fas fa-graduation-cap text-[8px]"></i>
-                                                            Normal
+                                                            Curso
                                                         </span>
                                                     </div>
                                                 </div>
@@ -408,8 +408,7 @@
                         {{-- Hidden input for native form required validation --}}
                         <input type="hidden" x-model="form.course_id">
                         {{-- Error inline: Curso --}}
-                        <p x-show="errors.course"
-                            x-transition:enter="transition ease-out duration-150"
+                        <p x-show="errors.course" x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="opacity-0 -translate-y-1"
                             x-transition:enter-end="opacity-100 translate-y-0"
                             class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
@@ -426,17 +425,16 @@
                             </label>
                             <select x-model="form.month" @change="errors.course_month = ''; errors.month = ''"
                                 class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors"
-                                :class="errors.month
-                                    ? 'border-red-400 ring-2 ring-red-100 focus:ring-red-300'
-                                    : 'border-gray-200 focus:ring-blue-500'">
+                                :class="errors.month ?
+                                    'border-red-400 ring-2 ring-red-100 focus:ring-red-300' :
+                                    'border-gray-200 focus:ring-blue-500'">
                                 <option value="">— Mes —</option>
                                 @foreach ($months as $num => $name)
                                     <option value="{{ $num }}">{{ $name }}</option>
                                 @endforeach
                             </select>
                             {{-- Error inline: Mes --}}
-                            <p x-show="errors.month"
-                                x-transition:enter="transition ease-out duration-150"
+                            <p x-show="errors.month" x-transition:enter="transition ease-out duration-150"
                                 x-transition:enter-start="opacity-0 -translate-y-1"
                                 x-transition:enter-end="opacity-100 translate-y-0"
                                 class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
@@ -451,12 +449,11 @@
                             <input type="number" x-model="form.year" min="2024" max="2100"
                                 @input="errors.year = ''"
                                 class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors"
-                                :class="errors.year
-                                    ? 'border-red-400 ring-2 ring-red-100 focus:ring-red-300'
-                                    : 'border-gray-200 focus:ring-blue-500'">
+                                :class="errors.year ?
+                                    'border-red-400 ring-2 ring-red-100 focus:ring-red-300' :
+                                    'border-gray-200 focus:ring-blue-500'">
                             {{-- Error inline: Año --}}
-                            <p x-show="errors.year"
-                                x-transition:enter="transition ease-out duration-150"
+                            <p x-show="errors.year" x-transition:enter="transition ease-out duration-150"
                                 x-transition:enter-start="opacity-0 -translate-y-1"
                                 x-transition:enter-end="opacity-100 translate-y-0"
                                 class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
@@ -532,8 +529,7 @@
                     </div>
 
                     {{-- Alerta servidor / duplicado --}}
-                    <div x-show="errors.server"
-                        x-transition:enter="transition ease-out duration-200"
+                    <div x-show="errors.server" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 translate-y-1"
                         x-transition:enter-end="opacity-100 translate-y-0"
                         class="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2.5 rounded-lg">
@@ -698,7 +694,12 @@
                 // ── Modales ─────────────────────────────────────────────────────
                 openAddModal(month = null, year = null) {
                     this.isEditMode = false;
-                    this.errors = { course: '', month: '', year: '', server: '' };
+                    this.errors = {
+                        course: '',
+                        month: '',
+                        year: '',
+                        server: ''
+                    };
                     this.form.id = null;
                     this.form.course_id = '';
                     this.form.month = month ?? '';
@@ -718,7 +719,12 @@
 
                 editItem(item) {
                     this.isEditMode = true;
-                    this.errors = { course: '', month: '', year: '', server: '' };
+                    this.errors = {
+                        course: '',
+                        month: '',
+                        year: '',
+                        server: ''
+                    };
                     this.form.id = item.id;
                     this.form.course_id = item.course_id;
                     this.form.month = item.month;
@@ -738,7 +744,12 @@
 
                 async submitAdd() {
                     // ── Validación client-side por campo ────────────────────────
-                    this.errors = { course: '', month: '', year: '', server: '' };
+                    this.errors = {
+                        course: '',
+                        month: '',
+                        year: '',
+                        server: ''
+                    };
                     let valid = true;
 
                     if (!this.form.course_id) {

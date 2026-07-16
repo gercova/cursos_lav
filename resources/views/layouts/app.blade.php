@@ -11,7 +11,6 @@
         <meta name="keywords" content="cursos SST Perú, capacitación seguridad y salud en el trabajo, certificación normas ISO, gestión de calidad, medio ambiente, prevención de riesgos, auditoría SST">
         <meta name="author" content="{{ $enterprise->trade_name ?? 'Plataforma de Capacitación' }}">
         <meta name="robots" content="index, follow">
-
         <meta property="og:title" content="{{ $enterprise->trade_name ?? 'Capacitación Especializada en SST y Calidad' }}">
         <meta property="og:description" content="Impulsa tu carrera profesional con nuestros cursos y diplomados en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente.">
         <meta property="og:type" content="website">
@@ -66,7 +65,7 @@
                     </nav>
                 </div>
 
-                <!-- Menú de usuario (siempre visible) -->
+                <!-- Menú de usuario -->
                 <div class="flex items-center space-x-4">
                     @auth
                         @if(auth()->user()->role == 'student')
@@ -118,31 +117,31 @@
 
         <!-- Mobile sidebar (Modal) -->
         <div id="mobile-sidebar" 
-             x-show="mobileSidebarOpen" 
-             class="lg:hidden fixed inset-0 z-50" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:leave="transition ease-in duration-200"
-             x-cloak>
+            x-show="mobileSidebarOpen" 
+            class="lg:hidden fixed inset-0 z-50" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:leave="transition ease-in duration-200"
+            x-cloak>
             <!-- Backdrop overlay -->
             <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
-                 x-show="mobileSidebarOpen"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 @click="mobileSidebarOpen = false"></div>
+                x-show="mobileSidebarOpen"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                @click="mobileSidebarOpen = false"></div>
             
             <!-- Panel content -->
             <div class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col z-50 transform transition-transform duration-300"
-                 x-show="mobileSidebarOpen"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="-translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="-translate-x-full">
+                x-show="mobileSidebarOpen"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="-translate-x-full"
+                x-transition:enter-end="translate-x-0"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="translate-x-0"
+                x-transition:leave-end="-translate-x-full">
                 
                 <!-- Header -->
                 <div class="p-5 border-b border-gray-100 flex items-center justify-between">
@@ -286,15 +285,6 @@
             </div>
         </div>
     </footer>
-
-    {{-- =====================================================================
-        COOKIE CONSENT SYSTEM
-        - Banner principal (aparece en todas las páginas)
-        - Modal de preferencias granulares
-        - Botón flotante para reabrir preferencias (post-consentimiento)
-        Almacena en localStorage bajo la clave "cookie_consent" con estructura:
-        { version, status, preferences: {necessary, analytics, marketing, functional}, timestamp }
-        ===================================================================== --}}
  
     {{-- Banner principal --}}
     <div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[9998] transform translate-y-full transition-transform duration-500 ease-in-out" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
@@ -464,9 +454,7 @@
         <i class="fas fa-cookie-bite text-amber-400 text-base"></i>
     </button>
  
-    {{-- =====================================================================
-        SCRIPT GLOBAL DE CONSENTIMIENTO DE COOKIES
-        ===================================================================== --}}
+    {{-- SCRIPT GLOBAL DE CONSENTIMIENTO DE COOKIES --}}
     <script>
         window.CookieConsent = (function () {
     
@@ -650,10 +638,8 @@
                 const consent = _load();
     
                 if (consent) {
-                    // Ya tiene consentimiento válido → mostrar solo el botón flotante
                     _showReopenButton();
                 } else {
-                    // Sin consentimiento → mostrar banner después de 1.5 s
                     setTimeout(_showBanner, 1500);
                 }
     
@@ -709,20 +695,15 @@
     </script>
 
     <script>
-        // 1. Estado global para control de flujo
         window.cartState = {
             isUpdating: false,
             lastCount: null
         };
 
         async function updateCartCount() {
-            // Buscamos el elemento y lo guardamos en una constante
             const cartCountEl = document.getElementById('cart-count');
 
-            // SI NO EXISTE EL ELEMENTO (ej. en el login), CORTAMOS AQUÍ
             if (!cartCountEl) return;
-            
-            // SI YA SE ESTÁ ACTUALIZANDO, CORTAMOS AQUÍ
             if (window.cartState.isUpdating) return;
 
             try {
@@ -730,7 +711,6 @@
                 const response = await axios.get('/api/cart/count');
                 const count = response.data.count;
 
-                // Solo actualizamos si el número cambió para no estresar al navegador
                 if (window.cartState.lastCount !== count) {
                     cartCountEl.textContent = count;
                     window.cartState.lastCount = count;
@@ -738,7 +718,6 @@
                     if (count > 0) {
                         cartCountEl.classList.add('animate-pulse');
                         setTimeout(() => {
-                            // Verificamos de nuevo que el elemento siga ahí antes de quitar la clase
                             const el = document.getElementById('cart-count');
                             if (el) el.classList.remove('animate-pulse');
                         }, 1000);
@@ -759,47 +738,6 @@
         // Cargar categorías
         document.addEventListener('DOMContentLoaded', function() {
             updateCartCount();
-
-            // Sidebar móvil (desactivado a favor de mobileMenuOpen global)
-            /*
-            const sidebarToggle     = document.getElementById('sidebar-toggle');
-            const mobileSidebar     = document.getElementById('mobile-sidebar');
-            const closeSidebar      = document.getElementById('close-sidebar');
-            const sidebarBackdrop   = document.getElementById('sidebar-backdrop');
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    mobileSidebar.classList.remove('hidden');
-                    setTimeout(() => {
-                        const panel = mobileSidebar.querySelector('.w-64');
-                        if (panel) panel.classList.remove('-translate-x-full');
-                    }, 50);
-                });
-            }
-
-            if (closeSidebar) {
-                closeSidebar.addEventListener('click', closeMobileSidebar);
-            }
-
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener('click', closeMobileSidebar);
-            }
-
-            function closeMobileSidebar() {
-                const panel = mobileSidebar.querySelector('.w-64');
-                if (panel) panel.classList.add('-translate-x-full');
-                setTimeout(() => {
-                    mobileSidebar.classList.add('hidden');
-                }, 300);
-            }
-
-            // Cerrar menú móvil al hacer clic en un enlace
-            document.querySelectorAll('#mobile-menu a').forEach(link => {
-                link.addEventListener('click', () => {
-                    Alpine.store('mobileMenuOpen', false);
-                });
-            });
-            */
 
             // Dynamically populate categories in the mobile sidebar if category filter exists
             const categoryFilter = document.getElementById('category-filter');
@@ -826,7 +764,6 @@
                 sidebarCategoriesSection.classList.remove('hidden');
             }
 
-            // Efecto de scroll en header
             window.addEventListener('scroll', function() {
                 const header = document.querySelector('.header-fixed');
                 if (window.scrollY > 10) {
@@ -843,23 +780,18 @@
                 if (error.response) {
                     switch (error.response.status) {
                         case 401:
-                            // No autorizado - redirigir al login
                             window.location.href = "{{ route('login') }}";
                             break;
                         case 403:
-                            // Acceso denegado
                             alert('No tienes permisos para realizar esta acción');
                             break;
                         case 419:
-                            // Sesión expirada
                             window.location.href = "{{ route('login') }}";
                             break;
                         case 429:
-                            // Demasiadas solicitudes
                             alert('Demasiadas solicitudes. Por favor, espera unos segundos.');
                             break;
                         case 500:
-                            // Error del servidor
                             alert('Error interno del servidor. Por favor, intenta más tarde.');
                             break;
                     }
@@ -869,9 +801,7 @@
         );
     </script>
 
-    {{-- =====================================================================
-        CSS switches de cookies
-        ===================================================================== --}}
+    {{-- CSS switches de cookies --}}
     <style>
         /* ── Track ─────────────────────────────────────────────────────────── */
         .cookie-switch {

@@ -223,6 +223,28 @@
                             @enderror
                         </div>
 
+                        <!-- Colegio Profesional / Tipo -->
+                        <div>
+                            <label for="colegial_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                Colegio Profesional / Tipo
+                            </label>
+                            <input type="text" name="colegial_type" id="colegial_type" value="{{ old('colegial_type', $user->colegial_type) }}" placeholder="Ej: CIP, COP" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            @error('colegial_type')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Número de Colegiatura -->
+                        <div>
+                            <label for="colegial" class="block text-sm font-medium text-gray-700 mb-2">
+                                Número de Colegiatura
+                            </label>
+                            <input type="text" name="colegial" id="colegial" value="{{ old('colegial', $user->colegial) }}" placeholder="Ej: 123456" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            @error('colegial')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Dirección -->
                         <div class="md:col-span-2">
                             <label for="address" class="block text-sm font-medium text-gray-700 mb-2">

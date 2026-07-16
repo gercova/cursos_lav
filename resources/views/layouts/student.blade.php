@@ -503,23 +503,6 @@
                     </a>
                 @endif
             </nav>
-
-            <!-- Sección de metas (solo en desktop) -->
-            {{-- <div class="sidebar-footer p-4 border-t border-gray-200 hidden lg:block">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase mb-3">
-                    <i class="fas fa-bullseye text-emerald-500 mr-1"></i> Metas del Mes
-                </h3>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs">
-                        <span class="text-gray-600">Progreso</span>
-                        <span class="font-bold text-emerald-600" id="monthly-progress">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div id="monthly-progress-bar" class="bg-gradient-to-r from-emerald-400 to-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <p class="text-xs text-gray-500">Completa tus cursos</p>
-                </div>
-            </div> --}}
         </aside>
 
         <!-- Header -->

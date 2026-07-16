@@ -32,7 +32,6 @@
     </style>
     <script>
         const API_URL = "{{ url('/') }}";
-
         // Inicializar Alpine.js para el sidebar
         document.addEventListener('alpine:init', () => {
             Alpine.data('sidebar', () => ({
@@ -173,7 +172,6 @@
 
             </nav>
         </div>
-
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden w-full">
             <!-- Header -->
@@ -199,7 +197,6 @@
                     </div>
                 </div>
             </header>
-
             <!-- Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 @if (session('success'))
@@ -213,12 +210,10 @@
                         <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
                     </div>
                 @endif
-
                 @yield('content')
             </main>
         </div>
     </div>
-
     @yield('scripts')
 </body>
 

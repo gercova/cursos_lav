@@ -51,10 +51,22 @@ class UserImport implements ToCollection, WithHeadingRow {
                 continue;
             }
 
-            // ── 3. DNI duplicado → solo actualizar parent_id y company_code ──
+            // ── 3. DNI duplicado → solo actualizar parent_id y company_code si es un estudiante permitido ──
             $existingByDni = User::where('dni', $dni)->first();
 
             if ($existingByDni) {
+                if ($existingByDni->role !== 'student') {
+                    $this->warnings[] = "Fila {$rowNumber}: El DNI «{$dni}» pertenece a un usuario con rol administrativo o instructor. Omitida.";
+                    $this->skippedInvalid++;
+                    continue;
+                }
+
+                if ($existingByDni->parent_id !== null && $existingByDni->parent_id !== $parentId) {
+                    $this->warnings[] = "Fila {$rowNumber}: El DNI «{$dni}» ya pertenece a colaboradores de otra empresa. Omitida.";
+                    $this->skippedInvalid++;
+                    continue;
+                }
+
                 $existingByDni->update([
                     'parent_id'    => $parentId,
                     'company_code' => $companyCode,

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 class CertificatesController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
+        $this->middleware(['auth:sanctum', 'student', 'prevent.back'])->except('verify');
     }
 
     public function index() {

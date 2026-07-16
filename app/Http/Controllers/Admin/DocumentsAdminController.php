@@ -46,7 +46,7 @@ class DocumentsAdminController extends Controller {
             $query->where('file_type', $request->type);
         }
 
-        $documents = $query->paginate(20);
+        $documents = $query->paginate(10);
 
         // Para las vistas que requieren cursos
         $courses = Course::where('is_active', true)->get();

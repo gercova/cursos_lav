@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanySchedule;
 use App\Models\Course;
 use App\Models\Enrollment;
 use Illuminate\Contracts\View\View;
@@ -59,8 +60,54 @@ class CoursesController extends Controller {
         return view('student.my-courses', compact('enrollments', 'coursesData'));
     }
 
-    public function learn(Course $course): View {
-        return view('student.courses.learn', compact('course'));
+    public function learn(Course $course) {
+        $user = Auth::user();
+        
+        // Registrar el acceso del usuario a este curso
+        // Esto actualiza 'last_accessed_at' automáticamente
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+
+        // Si no está matriculado, verificar si el curso está programado para la empresa del usuario
+        if (!$enrollment) {
+            $companyCode = $user->company_code ?? ($user->parent ? $user->parent->company_code : null);
+
+            if ($companyCode) {
+                // Verificar si el curso está programado y activo en el cronograma de la empresa
+                $hasSchedule = CompanySchedule::where('course_id', $course->id)
+                    ->where(function($q) use ($companyCode) {
+                        $q->where('company_code', $companyCode)
+                          ->orWhereNull('company_code');
+                    })
+                    ->where('is_active', true)
+                    ->exists();
+
+                if ($hasSchedule) {
+                    $enrollment = Enrollment::create([
+                        'user_id'       => $user->id,
+                        'course_id'     => $course->id,
+                        'enrolled_at'   => now(),
+                        'progress'      => 0,
+                        'status'        => 'active',
+                    ]);
+                }
+            }
+        }
+
+        if ($enrollment) {
+            $enrollment->touch(); // Actualiza last_accessed_at a la fecha y hora actual
+            return view('student.courses.learn', compact('course'));
+        }
+
+        $companyCode = $user->company_code ?? ($user->parent ? $user->parent->company_code : null);
+        if ($companyCode) {
+            return redirect()->route('company.schedule')
+                ->with('error', 'No estás inscrito en este curso o no está programado para tu empresa.');
+        } else {
+            return redirect()->route('student.dashboard')
+                ->with('error', 'No estás inscrito en este curso.');
+        }
     }
 
     /**

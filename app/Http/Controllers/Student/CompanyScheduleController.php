@@ -22,7 +22,6 @@ class CompanyScheduleController extends Controller
             ?? ($user->parent ? $user->parent->company_code : null);
 
         $year = (int) $request->get('year', now()->year);
-
         // Obtener los cronogramas visibles para este código de empresa
         // Solo se muestran cursos del mes actual y meses anteriores (no futuros)
         $schedules = CompanySchedule::with('course:id,title,image_url,slug')

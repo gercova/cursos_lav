@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanySchedule;
 use App\Models\CompletedLessons;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -23,6 +24,7 @@ class LessonController extends Controller {
 
     public function show($courseSlug, $lessonId): View|RedirectResponse {
         $user   = Auth::user();
+
         $course = Course::where('slug', $courseSlug)
             ->where('is_active', true)
             ->with(['sections.lessons', 'instructor', 'documents'])
@@ -34,10 +36,47 @@ class LessonController extends Controller {
             ->with('video')
             ->firstOrFail();
 
-        // Verificar que el usuario esté inscrito en el curso
+        // Obtener la matrícula actual
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $course->id)
-            ->firstOrFail();
+            ->first();
+
+        // Si no está matriculado, verificar si el curso está programado para la empresa del usuario
+        if (!$enrollment) {
+            $companyCode = $user->company_code ?? ($user->parent ? $user->parent->company_code : null);
+
+            if ($companyCode) {
+                // Verificar si el curso está programado y activo en el cronograma de la empresa
+                $hasSchedule = CompanySchedule::where('course_id', $course->id)
+                    ->where(function($q) use ($companyCode) {
+                        $q->where('company_code', $companyCode)
+                          ->orWhereNull('company_code');
+                    })
+                    ->where('is_active', true)
+                    ->exists();
+
+                if ($hasSchedule) {
+                    $enrollment = Enrollment::create([
+                        'user_id'       => $user->id,
+                        'course_id'     => $course->id,
+                        'enrolled_at'   => now(),
+                        'progress'      => 0,
+                        'status'        => 'active',
+                    ]);
+                }
+            }
+        }
+
+        if (!$enrollment) {
+            $companyCode = $user->company_code ?? ($user->parent ? $user->parent->company_code : null);
+            if ($companyCode) {
+                return redirect()->route('company.schedule')
+                    ->with('error', 'No estás inscrito en este curso o no está programado para tu empresa.');
+            } else {
+                return redirect()->route('student.dashboard')
+                    ->with('error', 'No estás inscrito en este curso.');
+            }
+        }
 
         $allLessons = $course->sections->pluck('lessons')->flatten();
         

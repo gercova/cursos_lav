@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PasswordValidate;
-use App\Http\Requests\UserValidate;
+use App\Http\Requests\StudentProfileValidate;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -25,7 +25,7 @@ class StudentProfileController extends Controller {
         return view('student.profile', compact('user'));
     }
 
-    public function update(UserValidate $request): RedirectResponse {
+    public function update(StudentProfileValidate $request): RedirectResponse {
         $user = Auth::user();
         $data = $request->validated();
 

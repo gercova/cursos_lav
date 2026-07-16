@@ -43,12 +43,16 @@ class CoursesController extends Controller {
     public function myCourses() {
         $user = Auth::user();
         
+        // Solo se muestran inscripciones de origen directo (compra, admin, código).
+        // Las inscripciones generadas automáticamente desde el cronograma de empresa
+        // (source = 'schedule') NO aparecen aquí; se gestionan desde /cronograma.
         $enrollments = Enrollment::with([
             'course.category',
             'course.sections.lessons',
             'completedLessons'
         ])
         ->where('user_id', $user->id)
+        ->direct()                          // ← solo source = 'direct'
         ->whereHas('course', function($query) {
             $query->where('type', 'course');
         })
@@ -90,6 +94,7 @@ class CoursesController extends Controller {
                         'enrolled_at'   => now(),
                         'progress'      => 0,
                         'status'        => 'active',
+                        'source'        => 'schedule', // ← origen: cronograma empresa
                     ]);
                 }
             }

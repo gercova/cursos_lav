@@ -103,36 +103,59 @@ class BusinessManagementController extends Controller {
     }
 
     public function storeStaff(StaffValidate $request) {
-        $countUser  = User::where('parent_id', auth()->id())->count();
-        $user       = auth()->user();
-        $limitUser  = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
+        $user = auth()->user();
+        $id   = $request->input('user_id');
 
-        if ($countUser == (int) $limitUser->seats_max + 1) {
-            return redirect()->back()->with('error', 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador');
+        // Si se está editando un usuario existente, validar la propiedad
+        if (!empty($id)) {
+            $collaborator = User::where('id', $id)->where('parent_id', $user->id)->first();
+            if (!$collaborator) {
+                return redirect()->back()->with('error', 'No tienes permisos para modificar este usuario.');
+            }
+        } else {
+            // Verificar límite de usuarios solo al crear uno nuevo
+            $countUser = User::where('parent_id', $user->id)->count();
+            $limitUser = $user->studentCourses()->where('courses.type', 'package')->orderByDesc('courses.plan_type_id')->first();
+            
+            if (!$limitUser || $countUser >= (int) $limitUser->seats_max + 1) {
+                return redirect()->back()->with('error', 'Ya no puedes registrar más usuarios, solicita cambio de plan al administrador');
+            }
         }
 
         $validated = $request->validated();
-        $id        = $request->input('user_id');
-        $data      = array_merge($validated, [
-            'password'      => Hash::make('P4$$w0rd#.'),
-            'parent_id'     => auth()->id(),
-            'company_code'  => auth()->user()->company_code,
-            'expires_at'    => now()->addYear(),
+        
+        // Datos seguros a registrar/actualizar
+        $data = [
+            'dni'          => $validated['dni'],
+            'names'        => $validated['names'],
+            'email'        => $validated['email'],
+            'country_code' => $validated['country_code'],
+            'phone'        => $validated['phone'] ?? null,
+            'nationality'  => $validated['nationality'] ?? null,
+            'address'      => $validated['address'] ?? null,
+            'profession'   => $validated['profession'] ?? null,
+            'parent_id'    => $user->id,
+            'company_code' => $user->company_code,
+            'role'         => 'student', // Asegurar que siempre sea estudiante en la tabla users
+        ];
 
-        ]);
+        // Solo asignar contraseña si es un usuario nuevo
+        if (empty($id)) {
+            $data['password']   = Hash::make('P4$$w0rd#.');
+            $data['expires_at'] = now()->addYear();
+        }
 
         DB::beginTransaction();
         try {
             $result = User::updateOrCreate(['id' => $id], $data);
 
-            if ($request->has('role_id')) {
-                DB::table('model_has_roles')->where('model_id', $result->id)->delete();
-                DB::table('model_has_roles')->insert([
-                    'role_id'    => $request->input('role_id'),
-                    'model_type' => 'App\Models\User',
-                    'model_id'   => $result->id,
-                ]);
-            }
+            // Siempre asignar el rol "student" (ID 3) en Spatie para colaboradores
+            DB::table('model_has_roles')->where('model_id', $result->id)->delete();
+            DB::table('model_has_roles')->insert([
+                'role_id'    => 3, // 3 = student
+                'model_type' => 'App\Models\User',
+                'model_id'   => $result->id,
+            ]);
 
             DB::commit();
 
@@ -561,6 +584,10 @@ class BusinessManagementController extends Controller {
     }
 
     public function toggleStatus(User $user): JsonResponse {
+        if ($user->parent_id !== (int) Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
+        }
+
         $user->update([
             'is_active' => !$user->is_active
         ]);
@@ -573,6 +600,10 @@ class BusinessManagementController extends Controller {
     }
 
     public function updatePassword(PasswordValidate $request, User $user): JsonResponse {
+        if ($user->parent_id !== (int) Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
+        }
+
         $validated = $request->validated();
         $user->update(['password' => Hash::make($validated['password'])]);
         return response()->json([
@@ -582,6 +613,10 @@ class BusinessManagementController extends Controller {
     }
 
     public function destroy(User $user): JsonResponse {
+        if ($user->parent_id !== (int) Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
+        }
+
         if ($user->role === 'admin' && User::where('role', 'admin')->count() <= 1) {
             return response()->json([
                 'success' => false,

@@ -240,51 +240,157 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white">
-        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">{{ $enterprise->trade_name }}</h3>
-                    <p class="text-gray-300">Ofrecemos los mejores cursos especializados en Seguridad y Salud en el Trabajo, Medio Ambiente y Calidad para tu desarrollo y crecimiento profesional.</p>
+    <footer class="bg-slate-950 border-t border-slate-900 text-slate-400 font-sans">
+        <div class="max-w-7xl mx-auto pt-16 pb-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-slate-900">
+                <!-- Columna 1: Info e Imagen -->
+                <div class="md:col-span-4 space-y-6">
+                    @if($enterprise->logo_path)
+                        <img src="{{ $enterprise->logo_path }}" alt="{{ $enterprise->trade_name }}" class="h-10 w-auto filter brightness-100 drop-shadow-sm hover:scale-[1.02] transition-transform duration-300">
+                    @else
+                        <span class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                            <i class="fas fa-graduation-cap text-blue-500"></i> {{ $enterprise->trade_name }}
+                        </span>
+                    @endif
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
+                        Ofrecemos capacitación de alto nivel con cursos especializados en Seguridad y Salud en el Trabajo, Medio Ambiente y Calidad para potenciar tu crecimiento profesional.
+                    </p>
                 </div>
-                <div>
-                    <h4 class="text-md font-semibold mb-4">Enlaces Rápidos</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{{ url('/') }}" class="text-gray-300 hover:text-white">Inicio</a></li>
-                        <li><a href="{{ route('cursos') }}" class="text-gray-300 hover:text-white">Cursos</a></li>
-                        <li><a href="{{ route('paquetes') }}" class="text-gray-300 hover:text-white">Servicios para empresas</a></li>
-                        <li><a href="{{ route('nosotros') }}" class="text-gray-300 hover:text-white">Nosotros</a></li>
-                        <li><a href="{{ route('contacto') }}" class="text-gray-300 hover:text-white">Contacto</a></li>
+
+                <!-- Columna 2: Enlaces Rápidos -->
+                <div class="md:col-span-2">
+                    <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4">Enlaces Rápidos</h3>
+                    <ul class="space-y-3 text-xs sm:text-sm">
+                        <li>
+                            <a href="{{ url('/') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                                Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('cursos') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                                Cursos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('paquetes') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                                Servicios para empresas
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('nosotros') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                                Nosotros
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('contacto') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                                Contacto
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="text-md font-semibold mb-4">Contacto</h4>
-                    <ul class="space-y-2 text-gray-300">
-                        <li>Email: {{ $enterprise->email }}</li>
-                        <li>Teléfono: +51 {{ $enterprise->phone_number_1 }}</li>
-                        {{-- <li>Dirección: Lima, Perú</li> --}}
+
+                <!-- Columna 3: Contacto -->
+                <div class="md:col-span-3">
+                    <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4">Contacto</h3>
+                    <ul class="space-y-3.5 text-xs sm:text-sm">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-envelope text-blue-500 mt-1 flex-shrink-0"></i>
+                            <a href="mailto:{{ $enterprise->email }}" class="hover:text-white transition-colors duration-200 break-all">{{ $enterprise->email }}</a>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-phone-alt text-blue-500 mt-1 flex-shrink-0"></i>
+                            <span class="text-slate-300">+51 {{ $enterprise->phone_number_1 }}</span>
+                        </li>
+                        @if($enterprise->address)
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-map-marker-alt text-blue-500 mt-1 flex-shrink-0"></i>
+                                <span class="text-slate-300 leading-relaxed">{{ $enterprise->address }}, {{ $enterprise->city }}</span>
+                            </li>
+                        @endif
                     </ul>
                 </div>
-                <div>
-                    <h4 class="text-md font-semibold mb-4">Síguenos</h4>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-white">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">...</svg>
-                        </a>
-                    </div>
+
+                <!-- Columna 4: Redes Sociales -->
+                <div class="md:col-span-3 space-y-4">
+                    <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider">Síguenos</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Mantente conectado a nuestras novedades y noticias del sector educativo.</p>
+                    
+                    @php
+                        $hasSocials = !empty($enterprise->facebook_link) || 
+                                     !empty($enterprise->linkedin_link) || 
+                                     !empty($enterprise->twitter_link) || 
+                                     !empty($enterprise->instagram_link) || 
+                                     !empty($enterprise->whatsapp_link);
+                    @endphp
+
+                    @if($hasSocials)
+                        <div class="flex flex-wrap gap-2.5 pt-1">
+                            @if(!empty($enterprise->facebook_link))
+                                <a href="{{ $enterprise->facebook_link }}" target="_blank" rel="noopener noreferrer" 
+                                   title="Facebook" aria-label="Facebook"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#1877F2] hover:bg-[#1877F2]/10 hover:border-[#1877F2]/20 hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-facebook-f text-sm"></i>
+                                </a>
+                            @endif
+
+                            @if(!empty($enterprise->linkedin_link))
+                                <a href="{{ $enterprise->linkedin_link }}" target="_blank" rel="noopener noreferrer" 
+                                   title="LinkedIn" aria-label="LinkedIn"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#0A66C2] hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/20 hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-linkedin-in text-sm"></i>
+                                </a>
+                            @endif
+
+                            @if(!empty($enterprise->twitter_link))
+                                <a href="{{ $enterprise->twitter_link }}" target="_blank" rel="noopener noreferrer" 
+                                   title="Twitter" aria-label="Twitter"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-twitter text-sm"></i>
+                                </a>
+                            @endif
+
+                            @if(!empty($enterprise->instagram_link))
+                                <a href="{{ $enterprise->instagram_link }}" target="_blank" rel="noopener noreferrer" 
+                                   title="Instagram" aria-label="Instagram"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#E1306C] hover:bg-[#E1306C]/10 hover:border-[#E1306C]/20 hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-instagram text-sm"></i>
+                                </a>
+                            @endif
+
+                            @if(!empty($enterprise->whatsapp_link))
+                                <a href="{{ $enterprise->whatsapp_link }}" target="_blank" rel="noopener noreferrer" 
+                                   title="WhatsApp" aria-label="WhatsApp"
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/10 hover:border-[#25D366]/20 hover:scale-105 transition-all duration-200">
+                                    <i class="fab fa-whatsapp text-sm"></i>
+                                </a>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-xs text-slate-500 italic">No hay redes sociales configuradas.</p>
+                    @endif
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
-                <p>{{ $enterprise->trade_name }} &copy; 2024 Plataforma de Cursos. Todos los derechos reservados.</p>
+
+            <!-- Copyright y Políticas -->
+            <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; {{ date('Y') }} {{ $enterprise->trade_name }}. Todos los derechos reservados.</p>
+                <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
+                    <a href="{{ route('terminos-y-condiciones') }}" class="hover:text-slate-300 transition-colors duration-200">Términos de servicio</a>
+                    <a href="{{ route('politicas-de-uso') }}" class="hover:text-slate-300 transition-colors duration-200">Política de privacidad</a>
+                    <a href="{{ route('politicas-de-cookies') }}" class="hover:text-slate-300 transition-colors duration-200">Cookies</a>
+                    <a href="javascript:void(0)" onclick="CookieConsent.openModal()" class="hover:text-slate-300 transition-colors duration-200 flex items-center gap-1">
+                        <i class="fas fa-cookie-bite text-amber-500/80"></i> Preferencias de cookies
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
+
  
     {{-- Banner principal --}}
     <div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[9998] transform translate-y-full transition-transform duration-500 ease-in-out" role="dialog" aria-label="Aviso de cookies" aria-live="polite">

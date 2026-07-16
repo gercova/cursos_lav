@@ -17,36 +17,18 @@ use Illuminate\Support\Facades\Validator;
 class AppController extends Controller {
 
     public function home(Request $request): View {
-        $query = Course::with(['instructor'])
+        $query = Course::with(['instructor', 'category'])
             ->where('category_id', '<>', 4)
             ->where('type', 'course')
             ->where('is_active', true);
-        // Filtrar por categoría
-        if ($request->has('category') && $request->category) {
-            $query->where('category_id', $request->category);
-        }
 
-        $courses    = $query->orderByDesc('id')->paginate(12); 
-        $totalCourses = Course::where('is_active', true)->get();
-        $users      = User::where('is_active', true)->get();
-        $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
-        $enterprise = Enterprise::first();
-        return view('student.home', compact('courses', 'totalCourses', 'users', 'categories', 'enterprise'));
-    }
-
-    // public function courses(Request $request) {
-    public function courses(Request $request, $code = null) {
-        $query = Course::with(['category', 'instructor'])
-            ->where('category_id', '<>', 4)
-            ->where('type', 'course')
-            ->where('is_active', true);
-        // Filtro por búsqueda
-        if ($request->has('search') && $request->search) {
+        // Filtro por búsqueda de texto
+        if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
                 $q->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
                     ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
                     ->orWhereHas('category', function($q) use ($searchTerm) {
                         $q->where('name', 'like', '%' . $searchTerm . '%');
                     })
@@ -57,7 +39,73 @@ class AppController extends Controller {
         }
 
         // Filtrar por categoría
-        if ($request->has('category') && $request->category) {
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Ordenamiento
+        $sort = $request->get('sort', 'newest');
+        switch ($sort) {
+            case 'popular':
+                $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            default: // newest
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $courses      = $query->paginate(12)->withQueryString();
+        $totalCourses = Course::where('is_active', true)->get();
+        $users        = User::where('is_active', true)->get();
+        $categories   = Category::where('is_active', true)->where('id', '<>', 4)->get();
+        $enterprise   = Enterprise::first();
+        $currentSearch    = $request->get('search', '');
+        $currentCategory  = $request->get('category', '');
+        $currentSort      = $sort;
+        return view('student.home', compact(
+            'courses', 'totalCourses', 'users', 'categories', 'enterprise',
+            'currentSearch', 'currentCategory', 'currentSort'
+        ));
+    }
+
+    // public function courses(Request $request) {
+    public function courses(Request $request, $code = null) {
+        $query = Course::with(['category', 'instructor'])
+            ->where('category_id', '<>', 4)
+            ->where('type', 'course')
+            ->where('is_active', true);
+
+        // Filtro por búsqueda con sanitización y límites
+        if ($request->filled('search')) {
+            $searchTerm = substr(strip_tags(trim($request->search)), 0, 100);
+            if (!empty($searchTerm)) {
+                $query->where(function($q) use ($searchTerm) {
+                    $q->where('title', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+                        ->orWhereHas('category', function($q) use ($searchTerm) {
+                            $q->where('name', 'like', '%' . $searchTerm . '%');
+                        })
+                        ->orWhereHas('instructor', function($q) use ($searchTerm) {
+                            $q->where('names', 'like', '%' . $searchTerm . '%');
+                        });
+                });
+            }
+        }
+
+        // Filtrar por categoría
+        if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
 
@@ -71,7 +119,6 @@ class AppController extends Controller {
                 $query->withCount('enrollments')->orderBy('enrollments_count', 'desc');
                 break;
             case 'rating':
-                // Asumiendo que tienes un campo de rating o reviews
                 $query->orderBy('rating', 'desc');
                 break;
             case 'price_low':
@@ -90,7 +137,7 @@ class AppController extends Controller {
                 $query->orderBy('created_at', 'desc');
         }
 
-        $courses    = $query->paginate(12);
+        $courses    = $query->paginate(12)->withQueryString();
         $categories = Category::where('is_active', true)->where('id', '<>', 4)->get();
         $enterprise = Enterprise::first();
         // Validar al partner code

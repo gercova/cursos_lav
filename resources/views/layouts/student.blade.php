@@ -519,26 +519,54 @@
 
                 <div class="header-actions">
                     <!-- Notificaciones -->
-                    {{-- <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="action-button">
+                    <div class="relative">
+                        <button @click="openNotifications = !openNotifications" class="action-button">
                             <i class="far fa-bell text-lg"></i>
-                            <span id="notification-count" class="notification-badge">0</span>
+                            <span x-show="unreadCount > 0" x-text="unreadCount" class="notification-badge bg-red-500" x-cloak></span>
                         </button>
-                        <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50">
-                            <div class="p-3 border-b bg-gray-50 rounded-t-xl">
-                                <h3 class="font-semibold text-gray-700">Notificaciones</h3>
+                        <div x-show="openNotifications" @click.away="openNotifications = false" x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+                            <div class="p-3 border-b bg-gray-50 rounded-t-xl flex items-center justify-between">
+                                <h3 class="font-semibold text-xs text-gray-700">Notificaciones</h3>
+                                <button x-show="unreadCount > 0" @click.stop="markAllNotificationsAsRead()" class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold transition">
+                                    Marcar leídas
+                                </button>
                             </div>
-                            <div id="notifications-list" class="max-h-96 overflow-y-auto">
-                                <div class="p-4 text-center text-gray-500">
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-50">
+                                <!-- Loading State -->
+                                <div x-show="notificationsLoading" class="p-4 text-center text-gray-500">
                                     <div class="loading-spinner mx-auto mb-2"></div>
-                                    <p class="text-sm">Cargando...</p>
+                                    <p class="text-xs">Cargando...</p>
                                 </div>
+                                <!-- Empty State -->
+                                <div x-show="!notificationsLoading && notifications.length === 0" class="p-6 text-center text-gray-500">
+                                    <i class="far fa-bell text-gray-300 text-xl mb-1.5 block"></i>
+                                    <p class="text-xs font-medium">No tienes notificaciones</p>
+                                </div>
+                                <!-- Notifications List -->
+                                <template x-for="item in notifications" :key="item.id">
+                                    <div @click="handleNotificationClick(item)" 
+                                         class="p-3 hover:bg-gray-50 cursor-pointer transition-all duration-200 flex items-start gap-2.5"
+                                         :class="!item.read_at ? 'bg-blue-50/20' : ''">
+                                        <div class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[10px]"
+                                             :class="'bg-' + (item.color || 'blue') + '-50 text-' + (item.color || 'blue') + '-600'">
+                                            <i :class="'fas fa-' + (item.icon || 'bell')"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                <p class="text-xs font-semibold text-gray-900 truncate" x-text="item.title"></p>
+                                                <span x-show="!item.read_at" class="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                            </div>
+                                            <p class="text-[10px] text-gray-500 line-clamp-2 leading-snug" x-text="item.message"></p>
+                                            <p class="text-[8px] text-gray-400 mt-1" x-text="item.time"></p>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
-                            <a href="{{ route('student.notifications') }}" class="block p-3 text-center text-blue-600 hover:bg-gray-50 border-t font-medium text-sm">
-                                Ver todas
+                            <a href="{{ route('student.notifications') }}" class="block p-2.5 text-center text-blue-600 hover:bg-gray-50 border-t font-semibold text-xs">
+                                Ver todas las notificaciones
                             </a>
                         </div>
-                    </div> --}}
+                    </div>
 
                     <!-- Carrito -->
                     <a href="{{ route('cart') }}" class="action-button">
@@ -617,15 +645,28 @@
                 isDesktop: window.innerWidth >= 1024,
                 sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
 
+                openNotifications: false,
+                notifications: [],
+                unreadCount: 0,
+                notificationsLoading: false,
+
                 init() {
+                    // Configurar token CSRF para Axios
+                    if (window.axios) {
+                        const token = document.querySelector('meta[name="csrf-token"]');
+                        if (token) {
+                            window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.getAttribute('content');
+                        }
+                    }
+                    window.studentDashboard = this;
                     this.checkScreenSize();
                     window.addEventListener('resize', () => this.checkScreenSize());
                     this.loadDashboardData();
-                    // this.loadNotifications();
+                    this.loadNotifications();
                     this.updateCartCount();
                     setInterval(() => {
                         this.loadDashboardData();
-                        // this.loadNotifications();
+                        this.loadNotifications();
                         this.updateCartCount();
                     }, 30000);
                 },
@@ -683,17 +724,48 @@
                     }, 20);
                 },
 
-                // async loadNotifications() {
-                //     try {
-                //         const response = await axios.get('/api/student/notifications');
-                //         const badge = document.getElementById('notification-count');
-                //         if (badge) {
-                //             badge.textContent = response.data.unreadCount || 0;
-                //         }
-                //     } catch (error) {
-                //         console.error('Error loading notifications:', error);
-                //     }
-                // },
+                async loadNotifications() {
+                    this.notificationsLoading = true;
+                    try {
+                        const response = await axios.get('/api/student/notifications');
+                        if (response.data && response.data.success) {
+                            this.notifications = response.data.notifications.slice(0, 5);
+                            this.unreadCount = response.data.unreadCount || 0;
+                        }
+                    } catch (error) {
+                        console.error('Error loading notifications:', error);
+                    } finally {
+                        this.notificationsLoading = false;
+                    }
+                },
+
+                refreshNotifications() {
+                    this.loadNotifications();
+                },
+
+                async handleNotificationClick(item) {
+                    if (!item.read_at) {
+                        try {
+                            await axios.post(`/notifications/${item.id}/read`);
+                            this.loadNotifications();
+                        } catch (error) {
+                            console.error('Error marking notification as read:', error);
+                        }
+                    }
+                    if (item.link) {
+                        window.location.href = item.link;
+                    }
+                },
+
+                async markAllNotificationsAsRead() {
+                    try {
+                        await axios.post('/notifications/read-all');
+                        this.loadNotifications();
+                        window.dispatchEvent(new CustomEvent('notifications-read-all'));
+                    } catch (error) {
+                        console.error('Error marking all notifications as read:', error);
+                    }
+                },
 
                 async updateCartCount() {
                     try {

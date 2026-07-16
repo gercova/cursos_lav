@@ -20,6 +20,7 @@ class Enrollment extends Model {
         'completed_at',
         'progress',
         'status',
+        'source',
     ];
 
     protected $casts = [
@@ -27,7 +28,28 @@ class Enrollment extends Model {
         'enrolled_at'       => 'datetime',
         'completed_at'      => 'datetime',
         'progress'          => 'decimal:2',
+        'source'            => 'string',
     ];
+
+    // ── Scopes ───────────────────────────────────────────────────────────────
+
+    /**
+     * Solo inscripciones de origen directo (compra, admin, código).
+     * Estas son las que aparecen en /mis-cursos.
+     */
+    public function scopeDirect($query)
+    {
+        return $query->where('source', 'direct');
+    }
+
+    /**
+     * Solo inscripciones creadas automáticamente desde el cronograma de empresa.
+     * Estas se gestionan desde /cronograma.
+     */
+    public function scopeFromSchedule($query)
+    {
+        return $query->where('source', 'schedule');
+    }
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, 'user_id', 'id');

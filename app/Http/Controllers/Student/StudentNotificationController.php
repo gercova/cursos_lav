@@ -66,6 +66,17 @@ class StudentNotificationController extends Controller {
         ]);
     }
 
+    // Marcar notificación como no leída
+    public function markAsUnread($id): JsonResponse {
+        $notification = Auth::user()->notifications()->findOrFail($id);
+        $notification->markAsUnread();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notificación marcada como no leída',
+        ]);
+    }
+
     // Marcar todas como leídas
     public function markAllAsRead(): JsonResponse {
         Auth::user()->unreadNotifications()->update(['read_at' => now()]);

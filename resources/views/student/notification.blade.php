@@ -375,9 +375,57 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message, type = 'info') {
-        // Implementar toast según tu sistema existente
-        alert(message); // Temporal
+        const existing = document.querySelectorAll('.custom-notification');
+        existing.forEach(n => n.remove());
+
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            warning: 'bg-yellow-500',
+            info: 'bg-blue-500'
+        };
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification fixed top-4 right-4 ${colors[type] || colors.info} text-white px-6 py-4 rounded-xl shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+        notification.innerHTML = `
+            <span class="text-sm font-semibold">${message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-auto text-white/80 hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('animate-fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 });
 </script>
+<style>
+    @keyframes slide-in-right {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+    .animate-slide-in-right {
+        animation: slide-in-right 0.3s ease-out;
+    }
+    .animate-fade-out {
+        animation: fade-out 0.3s ease-out forwards;
+    }
+</style>
+
 @endsection

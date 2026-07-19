@@ -78,6 +78,7 @@ Route::get('/verify/{code}',                [CertificatesController::class, 'ver
 Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
     Route::get('/mis-cursos',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
+    Route::get('/mis-metas',                    [StudentProgressController::class, 'myGoals'])->name('student.goals');
     Route::get('/dashboard-stats',              [DashboardController::class, 'dashboardStats']);
     Route::get('/dashboard-exams',              [DashboardController::class, 'dashboardExams']);
     Route::get('/dashboard-certificates',       [DashboardController::class, 'dashboardCertificates']);

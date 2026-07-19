@@ -7,7 +7,9 @@ use App\Models\CompanySchedule;
 use App\Models\Course;
 use App\Models\Enrollment;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class CoursesController extends Controller {
 
@@ -15,7 +17,7 @@ class CoursesController extends Controller {
         $this->middleware(['auth:sanctum', 'student', 'prevent.back']);
     }
 
-    public function dashboard() {
+    public function dashboard(): View {
         $user = Auth::user();
         
         // Traemos las inscripciones junto con las relaciones que necesitamos para calcular
@@ -64,7 +66,7 @@ class CoursesController extends Controller {
         return view('student.my-courses', compact('enrollments', 'coursesData'));
     }
 
-    public function learn(Course $course) {
+    public function learn(Course $course): View|RedirectResponse {
         $user = Auth::user();
         
         // Registrar el acceso del usuario a este curso

@@ -161,6 +161,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::put('/password',                         [StudentProfileController::class, 'updatePassword'])->name('student.profile.update-password');
     Route::post('/photo',                           [StudentProfileController::class, 'updateProfilePhoto'])->name('student.profile.update-photo');
     Route::delete('/photo',                         [StudentProfileController::class, 'deleteProfilePhoto'])->name('student.profile.delete-photo');
+    Route::post('/profile/generate-code',           [StudentProfileController::class, 'generatePromoCode'])->name('student.profile.generate-code');
 
     // Estudiante afiliado
     Route::get('/affiliate/dashboard',              [AffiliateController::class, 'dashboard'])->name('student.affiliate.dashboard');

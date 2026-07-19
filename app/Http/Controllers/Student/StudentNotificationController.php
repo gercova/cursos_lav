@@ -33,6 +33,7 @@ class StudentNotificationController extends Controller {
                 return [
                     'id'            => $notification->id,
                     'title'         => $notification->title,
+                    'slug'          => $notification->slug,
                     'message'       => $notification->message,
                     'type'          => $notification->type,
                     'link'          => $notification->link,

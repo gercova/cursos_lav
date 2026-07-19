@@ -87,29 +87,6 @@ class CoursesAdminController extends Controller {
         return view('admin.courses.edit', compact('course', 'categories', 'instructors'));
     }
 
-    // public function students(Request $request, Course $course) {
-    //     $query = $course->enrollments()->with('user');
-
-    //     if ($request->filled('search')) {
-    //         $search = $request->search;
-    //         $query->whereHas('user', function ($q) use ($search) {
-    //             $q->where('names', 'like', "%{$search}%")
-    //             ->orWhere('email', 'like', "%{$search}%")
-    //             ->orWhere('dni', 'like', "%{$search}%");
-    //         });
-    //     }
-
-    //     $enrollments = $query->latest('enrolled_at')->paginate(10);
-
-    //     // ✅ Si es AJAX, retorna solo las filas (el partial)
-    //     if ($request->ajax()) {
-    //         return view('admin.courses.partials.students-table', compact('enrollments'));
-    //     }
-
-    //     // Carga normal de la página completa
-    //     return view('admin.courses.students', compact('course', 'enrollments'));
-    // }
-
     public function students(Request $request, Course $course) {
         $query = $course->enrollments()->with('user');
 

@@ -10,13 +10,11 @@
                 <p class="text-gray-600">Mantente al día con todas tus actividades</p>
             </div>
             <div class="flex items-center space-x-3">
-                <button id="mark-all-read-btn"
-                        class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm font-medium">
+                <button id="mark-all-read-btn" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors duration-200 text-sm font-medium">
                     <i class="fas fa-check-circle mr-2"></i>
                     Marcar todas como leídas
                 </button>
-                <button id="clear-all-btn"
-                        class="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors duration-200 text-sm font-medium">
+                <button id="clear-all-btn" class="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors duration-200 text-sm font-medium">
                     <i class="fas fa-trash-alt mr-2"></i>
                     Limpiar todas
                 </button>

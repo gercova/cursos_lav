@@ -16,6 +16,8 @@
         "laravel/ui": "^4.6",
         "maatwebsite/excel": "^3.1",
         "mercadopago/dx-php": "^3.8",
+        "mpdf/mpdf": "^8.3",
+        "mpdf/qrcode": "^1.2",
         "phpoffice/phpspreadsheet": "^1.30",
         "spatie/laravel-permission": "^6.23",
         "vimeo/laravel": "^5.10"

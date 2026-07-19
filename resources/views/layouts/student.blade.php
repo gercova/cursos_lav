@@ -522,12 +522,15 @@
                     <div class="relative">
                         <button @click="openNotifications = !openNotifications" class="action-button">
                             <i class="far fa-bell text-lg"></i>
-                            <span x-show="unreadCount > 0" x-text="unreadCount" class="notification-badge bg-red-500" x-cloak></span>
+                            <span x-show="unreadCount > 0" x-text="unreadCount" class="notification-badge bg-red-500"
+                                x-cloak></span>
                         </button>
-                        <div x-show="openNotifications" @click.away="openNotifications = false" x-cloak class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
+                        <div x-show="openNotifications" @click.away="openNotifications = false" x-cloak
+                            class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden">
                             <div class="p-3 border-b bg-gray-50 rounded-t-xl flex items-center justify-between">
                                 <h3 class="font-semibold text-xs text-gray-700">Notificaciones</h3>
-                                <button x-show="unreadCount > 0" @click.stop="markAllNotificationsAsRead()" class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold transition">
+                                <button x-show="unreadCount > 0" @click.stop="markAllNotificationsAsRead()"
+                                    class="text-[10px] text-blue-600 hover:text-blue-800 font-semibold transition">
                                     Marcar leídas
                                 </button>
                             </div>
@@ -538,31 +541,37 @@
                                     <p class="text-xs">Cargando...</p>
                                 </div>
                                 <!-- Empty State -->
-                                <div x-show="!notificationsLoading && notifications.length === 0" class="p-6 text-center text-gray-500">
+                                <div x-show="!notificationsLoading && notifications.length === 0"
+                                    class="p-6 text-center text-gray-500">
                                     <i class="far fa-bell text-gray-300 text-xl mb-1.5 block"></i>
                                     <p class="text-xs font-medium">No tienes notificaciones</p>
                                 </div>
                                 <!-- Notifications List -->
                                 <template x-for="item in notifications" :key="item.id">
-                                    <div @click="handleNotificationClick(item)" 
-                                         class="p-3 hover:bg-gray-50 cursor-pointer transition-all duration-200 flex items-start gap-2.5"
-                                         :class="!item.read_at ? 'bg-blue-50/20' : ''">
+                                    <div @click="handleNotificationClick(item)"
+                                        class="p-3 hover:bg-gray-50 cursor-pointer transition-all duration-200 flex items-start gap-2.5"
+                                        :class="!item.read_at ? 'bg-blue-50/20' : ''">
                                         <div class="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[10px]"
-                                             :class="'bg-' + (item.color || 'blue') + '-50 text-' + (item.color || 'blue') + '-600'">
+                                            :class="'bg-' + (item.color || 'blue') + '-50 text-' + (item.color || 'blue') +
+                                            '-600'">
                                             <i :class="'fas fa-' + (item.icon || 'bell')"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center justify-between gap-1 mb-0.5">
-                                                <p class="text-xs font-semibold text-gray-900 truncate" x-text="item.title"></p>
-                                                <span x-show="!item.read_at" class="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                                <p class="text-xs font-semibold text-gray-900 truncate"
+                                                    x-text="item.title"></p>
+                                                <span x-show="!item.read_at"
+                                                    class="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
                                             </div>
-                                            <p class="text-[10px] text-gray-500 line-clamp-2 leading-snug" x-text="item.message"></p>
+                                            <p class="text-[10px] text-gray-500 line-clamp-2 leading-snug"
+                                                x-text="item.message"></p>
                                             <p class="text-[8px] text-gray-400 mt-1" x-text="item.time"></p>
                                         </div>
                                     </div>
                                 </template>
                             </div>
-                            <a href="{{ route('student.notifications') }}" class="block p-2.5 text-center text-blue-600 hover:bg-gray-50 border-t font-semibold text-xs">
+                            <a href="{{ route('student.notifications') }}"
+                                class="block p-2.5 text-center text-blue-600 hover:bg-gray-50 border-t font-semibold text-xs">
                                 Ver todas las notificaciones
                             </a>
                         </div>
@@ -729,6 +738,7 @@
                     try {
                         const response = await axios.get('/api/student/notifications');
                         if (response.data && response.data.success) {
+                            console.log(response.data);
                             this.notifications = response.data.notifications.slice(0, 5);
                             this.unreadCount = response.data.unreadCount || 0;
                         }
@@ -781,7 +791,6 @@
             }
         }
     </script>
-
     <style>
         /* Loading spinner */
         .loading-spinner {

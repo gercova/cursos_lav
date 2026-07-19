@@ -91,4 +91,49 @@ class StudentProfileController extends Controller {
 
         return redirect()->route('student.profile')->with('error', 'No tienes una foto de perfil para eliminar.');
     }
+
+    public function generatePromoCode(): RedirectResponse {
+        $user = Auth::user();
+        if (!$user->code) {
+            $nickname = '';
+            $name = $user->names;
+            $count = mb_substr_count($name, ' ');
+            $p = explode(' ', $name);
+
+            if ($count == 1) {
+                $w = substr($p[0], 0, -3);
+                $nickname = $w . $p[1];
+            } elseif ($count == 2) {
+                $nickname = $p[0][0] . $p[1] . $p[2][0];
+            } elseif ($count == 3) {
+                $nickname = $p[0][0] . $p[1] . $p[2][0] . $p[3][0];
+            } elseif ($count == 4) {
+                $nickname = $p[0][0] . $p[1][0] . $p[2][0] . $p[3] . $p[4][0];
+            } else {
+                $nickname = strtoupper(str_replace(' ', '', $name));
+            }
+            $nickname = preg_replace('/[^a-zA-Z0-9]/', '', $nickname);
+            $nickname = strtoupper($nickname);
+            
+            if (empty($nickname)) {
+                $nickname = 'PROMO' . rand(100, 999);
+            }
+            
+            $baseNickname = $nickname;
+            $counter = 1;
+            while (User::where('code', $nickname)->exists()) {
+                $nickname = $baseNickname . $counter;
+                $counter++;
+            }
+
+            $user->update([
+                'code' => $nickname,
+                'promotion_price_is_active' => '1'
+            ]);
+
+            return redirect()->route('student.profile')->with('success', 'Tu código de promoción ha sido generado con éxito: ' . $nickname);
+        }
+
+        return redirect()->route('student.profile')->with('info', 'Ya tienes un código de promoción activo.');
+    }
 }

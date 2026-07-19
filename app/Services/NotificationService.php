@@ -71,7 +71,7 @@ class NotificationService {
             'Nuevo curso disponible',
             "El curso '{$course->title}' ya está disponible. ¡Inscríbete ahora!",
             ['course_id' => $course->id],
-            route('course.show', $course->id)
+            route('course.show', $course->slug)
         );
     }
 

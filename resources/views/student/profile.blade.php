@@ -1,7 +1,7 @@
 @extends('layouts.student')
 @section('title', 'Mi perfil')
 @section('content')
-<div class="max-w-7xl mx-auto" x-data="{ activeTab: 'info' }">
+<div class="max-w-7xl mx-auto" x-data="{ activeTab: '{{ (session('success') && str_contains(session('success'), 'código')) || (session('info') && str_contains(session('info'), 'código')) ? 'promo' : 'info' }}' }" x-init="if(activeTab === 'promo') { setTimeout(() => loadPromoQR(), 100); }; $watch('activeTab', val => { if(val === 'promo') { loadPromoQR(); } })">
     <!-- Header del perfil -->
     <div class="mb-8">
         <h1 class="text-2xl font-bold text-gray-900">Mi Perfil</h1>
@@ -157,6 +157,15 @@
                                 class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
                             <i class="fas fa-shield-alt mr-2"></i>
                             Privacidad
+                        </button>
+                        <button @click="activeTab = 'promo'"
+                                :class="{
+                                    'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border-b-2 border-blue-500': activeTab === 'promo',
+                                    'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'promo'
+                                }"
+                                class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
+                            <i class="fas fa-qrcode mr-2"></i>
+                            Código de Promoción
                         </button>
                     </nav>
                 </div>
@@ -482,6 +491,110 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tab 4: Código de Promoción -->
+                    <div x-show="activeTab === 'promo'" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform -translate-y-2"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        style="display: none;">
+                        
+                        @if(!$user->code)
+                            <!-- Estado: Sin código promocional -->
+                            <div class="text-center py-10 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                                <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl shadow-md">
+                                    <i class="fas fa-gift"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">¡Comienza a recomendar cursos!</h3>
+                                <p class="text-gray-600 max-w-md mx-auto mb-6 text-sm">
+                                    Genera tu código de promoción único para poder compartir enlaces de afiliados, promocionar nuestros cursos y generar comisiones por cada compra referida.
+                                </p>
+                                <form action="{{ route('student.profile.generate-code') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center mx-auto">
+                                        <i class="fas fa-wand-magic-sparkles mr-2"></i>
+                                        Generar mi Código Promo
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <!-- Estado: Con código promocional -->
+                            <div class="space-y-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Mi Código de Promoción</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Comparte tu enlace de afiliación y gana comisiones recomendando nuestros cursos.</p>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                                    <!-- Columna QR -->
+                                    <div class="flex flex-col items-center p-6 bg-gray-50 border border-gray-200 rounded-2xl">
+                                        <div id="promo-qrcode-container" class="bg-white p-4 rounded-xl border border-gray-300 shadow-sm transition-transform duration-300 hover:scale-105">
+                                            <div id="promo-qrcode" class="flex justify-center items-center" style="width: 200px; height: 200px;">
+                                                <!-- Cargando QR -->
+                                                <div class="text-gray-400 text-sm flex flex-col items-center">
+                                                    <i class="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"></i>
+                                                    <span>Cargando QR...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="w-full mt-6 grid grid-cols-2 gap-3">
+                                            <button type="button" id="btn-download-promo-qr" class="flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
+                                                <i class="fas fa-download mr-2 text-blue-600"></i>
+                                                Descargar
+                                            </button>
+                                            <button type="button" id="btn-share-promo-qr" class="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm text-sm">
+                                                <i class="fas fa-share-alt mr-2"></i>
+                                                Compartir
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Columna Información y Enlaces -->
+                                    <div class="space-y-6">
+                                        <!-- Caja Código -->
+                                        <div class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl">
+                                            <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider block mb-1">Mi código exclusivo</span>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-2xl font-black text-blue-900 font-mono tracking-wider">{{ $user->code }}</span>
+                                                <span class="px-2.5 py-1 text-xs font-semibold text-emerald-800 bg-emerald-100 rounded-full">Activo</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Campo Enlace -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Enlace de afiliado</label>
+                                            <div class="flex">
+                                                <input type="text" readonly id="promo-link-input" value="{{ url('/cursos/' . $user->code) }}" class="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-l-xl bg-gray-50 text-gray-600 text-sm focus:outline-none">
+                                                <button type="button" id="btn-copy-promo-link" class="px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-r-xl transition-all flex items-center justify-center text-sm shadow-sm">
+                                                    <i class="fas fa-copy mr-2"></i>
+                                                    Copiar
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Instrucciones -->
+                                        <div class="border-t border-gray-200 pt-4">
+                                            <h4 class="text-sm font-semibold text-gray-700 mb-2 font-bold">¿Cómo funciona?</h4>
+                                            <ul class="space-y-2.5 text-xs text-gray-600">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                    <span>Comparte el enlace de afiliación en tus redes sociales o directamente con tus amigos.</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                    <span>Cualquier persona que entre con tu enlace y realice una compra aplicará tu código promocional.</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                    <span>Podrás ver tus ventas y comisiones generadas en tu <a href="{{ route('student.affiliate.dashboard') }}" class="text-blue-600 hover:underline font-semibold">Panel de Afiliados</a>.</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -591,6 +704,137 @@
                 console.log('Imagen cargada:', e.target.result);
             }
             reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // ── Código QR de Afiliado ──────────────────────────────────
+    let promoQrLoaded = false;
+
+    function loadPromoQR() {
+        if (promoQrLoaded) return;
+        
+        const container = document.getElementById('promo-qrcode');
+        if (!container) return;
+
+        // Cargar biblioteca QRCode.js si no está presente
+        if (window.QRCode) {
+            renderPromoQR();
+        } else {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+            script.onload = renderPromoQR;
+            document.head.appendChild(script);
+        }
+    }
+
+    function renderPromoQR() {
+        const container = document.getElementById('promo-qrcode');
+        if (!container) return;
+
+        const promoLink = document.getElementById('promo-link-input')?.value || "{{ url('/cursos/' . ($user->code ?? '')) }}";
+        container.innerHTML = ''; // Limpiar cargando
+        
+        new QRCode(container, {
+            text: promoLink,
+            width: 200,
+            height: 200,
+            colorDark: "#1e293b",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+        
+        promoQrLoaded = true;
+    }
+
+    // Configurar listeners una vez cargada la página
+    document.addEventListener('DOMContentLoaded', function() {
+        // Descargar QR como imagen
+        const btnDownloadPromo = document.getElementById('btn-download-promo-qr');
+        if (btnDownloadPromo) {
+            btnDownloadPromo.addEventListener('click', () => {
+                const canvas = document.querySelector('#promo-qrcode canvas');
+                const img = document.querySelector('#promo-qrcode img');
+                let dataUrl = '';
+                
+                if (canvas) {
+                    dataUrl = canvas.toDataURL('image/png');
+                } else if (img) {
+                    dataUrl = img.src;
+                }
+
+                if (!dataUrl) {
+                    alert('Por favor, genera primero el código QR.');
+                    return;
+                }
+
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `mi-qr-promo-${Date.now()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        // Copiar Enlace al portapapeles
+        const btnCopyPromo = document.getElementById('btn-copy-promo-link');
+        if (btnCopyPromo) {
+            btnCopyPromo.addEventListener('click', () => {
+                const linkVal = document.getElementById('promo-link-input')?.value || '';
+                if (!linkVal) return;
+                navigator.clipboard.writeText(linkVal).then(() => {
+                    const originalHTML = btnCopyPromo.innerHTML;
+                    btnCopyPromo.innerHTML = '<i class="fas fa-check" style="color:#10b981;"></i> ¡Copiado!';
+                    setTimeout(() => {
+                        btnCopyPromo.innerHTML = originalHTML;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Error al copiar: ', err);
+                });
+            });
+        }
+
+        // Compartir QR usando Web Share API
+        const btnSharePromo = document.getElementById('btn-share-promo-qr');
+        if (btnSharePromo) {
+            btnSharePromo.addEventListener('click', () => {
+                const canvas = document.querySelector('#promo-qrcode canvas');
+                const code = "{{ $user->code ?? '' }}";
+                const promoLink = document.getElementById('promo-link-input')?.value || "{{ url('/cursos/' . ($user->code ?? '')) }}";
+
+                if (canvas && navigator.share && navigator.canShare && HTMLCanvasElement.prototype.toBlob) {
+                    canvas.toBlob(blob => {
+                        const file = new File([blob], 'mi-qr-promo.png', { type: 'image/png' });
+                        if (navigator.canShare({ files: [file] })) {
+                            navigator.share({
+                                files: [file],
+                                title: 'Mi Código de Promoción',
+                                text: `Usa mi código de promoción ${code} en IPF Educa y accede a increíbles descuentos.`
+                            }).catch(err => console.log('Share failed', err));
+                        } else {
+                            navigator.share({
+                                title: 'Mi Código de Promoción',
+                                text: `Usa mi código de promoción ${code} en IPF Educa y accede a increíbles descuentos. Accede aquí: ${promoLink}`,
+                                url: promoLink
+                            }).catch(err => console.log('Share text failed', err));
+                        }
+                    }, 'image/png');
+                } else if (navigator.share) {
+                    navigator.share({
+                        title: 'Mi Código de Promoción',
+                        text: `Usa mi código de promoción ${code} en IPF Educa y accede a increíbles descuentos. Accede aquí: ${promoLink}`,
+                        url: promoLink
+                    }).catch(err => console.log('Share failed', err));
+                } else {
+                    navigator.clipboard.writeText(promoLink).then(() => {
+                        const originalHTML = btnSharePromo.innerHTML;
+                        btnSharePromo.innerHTML = '<i class="fas fa-check" style="color:#10b981;"></i> ¡Copiado!';
+                        setTimeout(() => {
+                            btnSharePromo.innerHTML = originalHTML;
+                        }, 2000);
+                    });
+                }
+            });
         }
     });
 </script>

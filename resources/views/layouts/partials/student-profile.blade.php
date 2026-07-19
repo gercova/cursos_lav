@@ -5,110 +5,110 @@
     </div>
     @if(auth()->user()->role == 'student')
         <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-solid fa-gauge-high mr-2"></i> Mi Dashboard
+            <i class="bi bi-speedometer mr-2"></i> Mi Dashboard
         </a>
         @if (auth()->user()->company_code && auth()->user()->parent_id)
             <hr>
             <a href="{{ route('company.schedule') }}"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-calendar-alt mr-2 text-blue-500"></i> Mis capacitaciones
+                <i class="bi bi-calendar mr-2 text-blue-500"></i> Mis capacitaciones
             </a>
             <hr>
         @endif
         <a href="{{ route('student.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-user mr-2"></i> Mi Perfil
+            <i class="bi bi-person-fill mr-2"></i> Mi Perfil
         </a>
         <a href="{{ route('student.my-courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-book mr-2"></i> Mis Cursos
+            <i class="bi bi-book-fill mr-2"></i> Mis Cursos
         </a>
         <a href="{{ route('student.certificates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-certificate mr-2"></i> Certificados
+            <i class="bi bi-patch-check mr-2"></i> Certificados
         </a>
         <a href="{{ route('student.progress') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-chart-line mr-2"></i> Mi Progreso
+            <i class="bi bi-graph-up mr-2"></i> Mi Progreso
         </a>
         <div class="border-t border-gray-100"></div>
     @elseif (auth()->user()->role == 'admin' || auth()->user()->role == 'instructor')
         <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-solid fa-gauge-high mr-2"></i> Dashboard admin
+            <i class="bi bi-speedometer mr-2"></i> Dashboard admin
         </a>
 
         @role('admin')
             <a href="{{ route('admin.enterprise.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-building mr-2"></i> Empresa
+                <i class="bi bi-building-fill mr-2"></i> Empresa
             </a>
         @endrole
         
         @role('admin|instructor')
             <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-folder mr-2"></i> Categorías
+                <i class="bi bi-folder-fill mr-2"></i> Categorías
             </a>
         @endrole
         
         @role('admin|instructor')
             <a href="{{ route('admin.courses.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-book mr-2"></i> Cursos
+                <i class="bi bi-book mr-2"></i> Cursos
             </a>
         @endrole
             
         @role('admin')
             <a href="{{ route('admin.packages.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fa-solid fa-cubes mr-2"></i> Paquetes
+                <i class="bi bi-box-seam mr-2"></i> Paquetes
             </a>
         @endrole
         
         @role('admin|instructor')
             <a href="{{ route('admin.documents.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-file-alt mr-2"></i> Documentos
+                <i class="bi bi-file-earmark-text-fill mr-2"></i> Documentos
             </a>
         @endrole
         
         @role('admin|instructor')
             <a href="{{ route('admin.exams.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-clipboard-list mr-2"></i> Exámenes
+                <i class="bi bi-clipboard-check mr-2"></i> Exámenes
             </a>
         @endrole
         
         @role('admin')
             <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-solid fa-users mr-2"></i> Usuarios
+                <i class="bi bi-people mr-2"></i> Usuarios
             </a>
             
             <!-- Añadir este enlace en el sidebar -->
             <a href="{{ route('admin.roles.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-user-shield mr-2"></i> Permisos
+                <i class="bi bi-shield-lock-fill mr-2"></i> Permisos
             </a>
         @endrole
         
         @role('admin|instructor')
             <a href="{{ route('admin.enrollments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-solid fa-address-book mr-2"></i> Inscripciones
+                <i class="bi bi-people mr-2"></i> Inscripciones
             </a>
         @endrole
             
         @role('admin')
             <a href="{{ route('admin.payments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fas fa-solid fa-dollar-sign mr-2"></i> Pagos
+                <i class="bi bi-cash mr-2"></i> Pagos
             </a>
         @endrole
     @elseif (auth()->user()->role == 'business')
         @role('business')
             <a href="{{ route('company.list') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="fa-solid fa-gauge mr-2"></i> Mi panel de empresa
+                <i class="bi bi-speedometer mr-2"></i> Mi panel de empresa
             </a>
             <!-- Enlace corregido para inscribir usuarios -->
             <a href="{{ route('company.enroll.users') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <i class="bi bi-book-fill mr-2"></i> Inscribir usuarios
+                <i class="bi bi-people mr-2"></i> Inscribir usuarios
             </a>
             <a href="{{ route('company.profile', [auth()->user()->id]) }}" @click="close()" class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : '' }}">
-                <i class="fa-solid fa-building mr-2"></i> Actualizar mi datos
+                <i class="bi bi-building mr-2"></i> Actualizar mi datos
             </a>
         @endrole
     @endif
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors duration-200">
-            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+            <i class="bi bi-box-arrow-right mr-2"></i>Cerrar Sesión
         </button>
     </form>
 </div>

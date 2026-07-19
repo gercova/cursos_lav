@@ -5,7 +5,6 @@
     <meta name="keywords" content="capacitación SST Perú, certificación SST, cursos seguridad y salud en el trabajo, gestión de calidad, medio ambiente, ISO 9001, ISO 14001, ISO 45001, prevención de riesgos laborales, auditoría SST">
     <meta name="author" content="{{ $enterprise->trade_name }}">
     <meta name="robots" content="index, follow">
-
     <meta property="og:title" content="{{ $enterprise->trade_name }} - Expertos en Capacitación SST">
     <meta property="og:description" content="Impulsa tu carrera con nuestros cursos y certificaciones en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente en Perú.">
     <meta property="og:type" content="website">

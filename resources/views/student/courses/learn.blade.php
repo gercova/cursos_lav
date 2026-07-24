@@ -7,15 +7,15 @@
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">{{ $course->title }}</h1>
             <div class="flex items-center mt-2 space-x-4">
                 <span class="text-sm text-gray-600">
-                    <i class="fas fa-layer-group mr-1"></i>
+                    <i class="bi bi-layer-group mr-1"></i>
                     {{ $course->sections->count() }} módulos
                 </span>
                 <span class="text-sm text-gray-600">
-                    <i class="fas fa-chart-bar mr-1"></i>
+                    <i class="bi bi-chart-bar mr-1"></i>
                     {{ $course->level }}
                 </span>
                 <span class="text-sm text-gray-600">
-                    <i class="fas fa-clock mr-1"></i>
+                    <i class="bi bi-clock mr-1"></i>
                     {{ $course->duration ?? 'Flexible' }}
                 </span>
             </div>
@@ -60,7 +60,7 @@
                             <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" class="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex justify-between items-center text-left">
                                 <div class="flex items-center">
                                     <span class="text-blue-600 mr-3">
-                                        <i class="fas" :class="openSection === {{ $index }} ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
+                                        <i class="bi bi-chevron-down" :class="openSection === {{ $index }} ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
                                     </span>
                                     <div>
                                         <h3 class="font-semibold text-gray-800">{{ $section->title }}</h3>
@@ -119,14 +119,14 @@
                                                 <div class="flex items-center">
                                                     <div class="w-8 h-8 flex items-center justify-center mr-3">
                                                         <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                                                            <i class="fa-solid fa-eye"></i>
+                                                            <i class="bi bi-eye"></i>
                                                         </div>
                                                     </div>
                                                     <div>
                                                         <h4 class="font-medium text-gray-700">{{ $lesson->title }}</h4>
                                                         @if($lesson->duration)
                                                         <p class="text-xs text-gray-400 mt-1">
-                                                            <i class="far fa-clock mr-1"></i> {{ $lesson->duration }} min
+                                                            <i class="bi bi-clock mr-1"></i> {{ $lesson->duration }} min
                                                         </p>
                                                         @endif
                                                     </div>
@@ -137,14 +137,14 @@
                                                 <div class="flex items-center">
                                                     <div class="w-8 h-8 flex items-center justify-center mr-3">
                                                         <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
-                                                            <i class="fas fa-lock text-gray-500 text-xs"></i>
+                                                            <i class="bi bi-lock text-gray-500 text-xs"></i>
                                                         </div>
                                                     </div>
                                                     <div>
                                                         <h4 class="font-medium text-gray-500">{{ $lesson->title }}</h4>
                                                         @if($lesson->duration)
                                                         <p class="text-xs text-gray-400 mt-1">
-                                                            <i class="far fa-clock mr-1"></i> {{ $lesson->duration }} min
+                                                            <i class="bi bi-clock mr-1"></i> {{ $lesson->duration }} min
                                                         </p>
                                                         @endif
                                                     </div>
@@ -173,16 +173,16 @@
                                         @php
                                             $fileType = strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION));
                                             $icon = match($fileType) {
-                                                'pdf' => 'fa-file-pdf',
-                                                'doc', 'docx' => 'fa-file-word',
-                                                'xls', 'xlsx' => 'fa-file-excel',
-                                                'ppt', 'pptx' => 'fa-file-powerpoint',
-                                                'zip', 'rar' => 'fa-file-archive',
-                                                default => 'fa-file'
+                                                'pdf' => 'bi-file-earmark-pdf',
+                                                'doc', 'docx' => 'bi-file-earmark-word',
+                                                'xls', 'xlsx' => 'bi-file-earmark-excel',
+                                                'ppt', 'pptx' => 'bi-file-earmark-powerpoint',
+                                                'zip', 'rar' => 'bi-file-earmark-zip',
+                                                default => 'bi-file'
                                             };
                                         @endphp
                                         <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                                            <i class="fas {{ $icon }} text-blue-600 text-xl"></i>
+                                            <i class="bi {{ $icon }} text-blue-600 text-xl"></i>
                                         </div>
                                     </div>
                                     <div class="flex-1">
@@ -192,14 +192,14 @@
                                         @endif
                                         <div class="flex items-center justify-between mt-3">
                                             <span class="text-xs text-gray-500">
-                                                <i class="fas fa-file mr-1"></i>
+                                                <i class="bi bi-file mr-1"></i>
                                                 {{ strtoupper($fileType) }}
                                                 @if($document->file_size)
                                                     • {{ number_format($document->file_size / 1024, 1) }} KB
                                                 @endif
                                             </span>
                                             <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                <i class="fas fa-download mr-1"></i>
+                                                <i class="bi bi-download mr-1"></i>
                                                 Descargar
                                             </a>
                                         </div>
@@ -230,7 +230,7 @@
                             <p class="text-sm text-gray-600 mt-1">{{ $course->instructor->title ?? 'Instructor' }}</p>
                             <div class="flex items-center mt-2">
                                 <span class="text-yellow-400 mr-1">
-                                    <i class="fas fa-star"></i>
+                                    <i class="bi bi-star"></i>
                                 </span>
                                 <span class="text-sm text-gray-700">4.8</span>
                                 <span class="text-sm text-gray-500 ml-2">(128 estudiantes)</span>
@@ -250,7 +250,7 @@
                     <ul class="space-y-3">
                         @foreach($course->what_you_learn as $item)
                             <li class="flex items-start">
-                                <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
+                                <i class="bi bi-check text-green-500 mt-1 mr-3"></i>
                                 <span class="text-gray-700">{{ $item }}</span>
                             </li>
                         @endforeach
@@ -265,7 +265,7 @@
                     <ul class="space-y-2">
                         @foreach($course->requirements as $requirement)
                         <li class="flex items-start">
-                            <i class="fas fa-circle text-blue-500 text-xs mt-2 mr-3"></i>
+                            <i class="bi bi-circle text-blue-500 text-xs mt-2 mr-3"></i>
                             <span class="text-gray-700">{{ $requirement }}</span>
                         </li>
                         @endforeach

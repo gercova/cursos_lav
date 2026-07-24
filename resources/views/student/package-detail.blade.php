@@ -14,7 +14,7 @@
             <!-- Navegación y breadcrumb -->
             <div class="mb-6">
                 <a href="{{ route('paquetes') }}" class="text-indigo-200 hover:text-white inline-flex items-center gap-2 transition-colors duration-200">
-                    <i class="fas fa-arrow-left text-sm"></i>
+                    <i class="bi bi-arrow-left text-sm"></i>
                     <span>Volver a Paquetes</span>
                 </a>
             </div>
@@ -25,7 +25,7 @@
                     <!-- Badge de tipo -->
                     <div class="mb-4">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-500 bg-opacity-50 text-white border border-indigo-300">
-                            <i class="fas fa-box mr-1"></i>
+                            <i class="bi bi-box mr-1"></i>
                             Paquete de Cursos
                         </span>
                     </div>
@@ -35,7 +35,7 @@
                     <!-- Estadísticas rápidas -->
                     <div class="flex flex-wrap gap-4 mb-6">
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-book text-indigo-300"></i>
+                            <i class="bi bi-book text-indigo-300"></i>
                             <span class="text-indigo-200">
                                 @if($package->plan_type_id == 1 && $package->course_limit !== 0)
                                     {{ $package->course_limit }} cursos incluidos
@@ -47,11 +47,11 @@
                             </span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-users text-indigo-300"></i>
+                            <i class="bi bi-people text-indigo-300"></i>
                             <span class="text-indigo-200">Hasta {{ $package->seats_max ?? 0 }} estudiantes</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-clock text-indigo-300"></i>
+                            <i class="bi bi-clock text-indigo-300"></i>
                             <span class="text-indigo-200">{{ $package->duration ?? 'A tu propio ritmo' }}</span>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                                         </span>
                                     </div>
                                     <p class="text-indigo-200 text-sm">
-                                        <i class="fas fa-tag mr-1"></i>
+                                        <i class="bi bi-tag mr-1"></i>
                                         Ahorras S/ {{ number_format($package->price - $package->final_price, 2) }}
                                     </p>
                                 @else
@@ -90,19 +90,19 @@
                             <button onclick="addToCart({{ $package->id }})" class="group relative px-8 py-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 min-w-[200px]">
                                 <template x-if="!loading && !isInCart">
                                     <span class="flex items-center gap-2">
-                                        <i class="fas fa-cart-plus text-xl"></i>
+                                        <i class="bi bi-cart-plus text-xl"></i>
                                         <span>Añadir al Carrito</span>
                                     </span>
                                 </template>
                                 <template x-if="!loading && isInCart">
                                     <span class="flex items-center gap-2">
-                                        <i class="fas fa-check-circle text-xl"></i>
+                                        <i class="bi bi-check-circle text-xl"></i>
                                         <span>Ya está en el carrito</span>
                                     </span>
                                 </template>
                                 <template x-if="loading">
                                     <span class="flex items-center gap-2">
-                                        <i class="fas fa-spinner fa-spin text-xl"></i>
+                                        <i class="bi bi-spinner fa-spin text-xl"></i>
                                         <span>Añadiendo...</span>
                                     </span>
                                 </template>
@@ -115,7 +115,7 @@
                         <!-- Cupos disponibles -->
                         @if($package->seats)
                         <div class="mt-4 flex items-center gap-2 text-indigo-200 text-sm">
-                            <i class="fas fa-chair"></i>
+                            <i class="bi bi-chair"></i>
                             <span>{{ $package->seats }} cupos disponibles</span>
                             @if($package->seats <= 10)
                                 <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
@@ -134,7 +134,7 @@
                     @else
                         <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-500">
                             <div class="aspect-w-16 aspect-h-9 flex items-center justify-center">
-                                <i class="fas fa-box-open text-8xl text-white opacity-50"></i>
+                                <i class="bi bi-box-open text-8xl text-white opacity-50"></i>
                             </div>
                         </div>
                     @endif
@@ -161,11 +161,11 @@
                     <div class="border-b border-gray-200">
                         <nav class="flex -mb-px">
                             <button @click="activeTab = 'description'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'description' }" class="py-4 px-6 text-sm font-medium border-b-2 transition-colors duration-200">
-                                <i class="fas fa-info-circle mr-2" :class="{ 'text-indigo-500': activeTab === 'description' }"></i>
+                                <i class="bi bi-info-circle mr-2" :class="{ 'text-indigo-500': activeTab === 'description' }"></i>
                                 Descripción
                             </button>
                             <button @click="activeTab = 'includes'" :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'includes', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'includes' }" class="py-4 px-6 text-sm font-medium border-b-2 transition-colors duration-200">
-                                <i class="fas fa-gift mr-2" :class="{ 'text-indigo-500': activeTab === 'includes' }"></i>
+                                <i class="bi bi-gift mr-2" :class="{ 'text-indigo-500': activeTab === 'includes' }"></i>
                                 ¿Qué incluye?
                             </button>
                         </nav>
@@ -186,7 +186,7 @@
                                 <ul class="space-y-3">
                                     @foreach($package->which_includes as $include)
                                         <li class="flex items-start gap-3">
-                                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                            <i class="bi bi-check-circle text-green-500 mt-1"></i>
                                             <span class="text-gray-700">{{ $include }}</span>
                                         </li>
                                     @endforeach
@@ -201,7 +201,7 @@
                 <!-- Cursos incluidos en el paquete (basado en create.blade.php) -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                        <i class="fas fa-book text-indigo-600"></i>
+                        <i class="bi bi-book text-indigo-600"></i>
                         Cursos incluidos en este paquete
                         <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                             {{ $package->courses->count() }}
@@ -223,7 +223,7 @@
                                 
                                 @if($course->pivot && $course->pivot->quantity)
                                     <div class="flex items-center gap-2 text-sm text-gray-600">
-                                        <i class="fas fa-video"></i>
+                                        <i class="bi bi-video"></i>
                                         <span>{{ $course->pivot->quantity }} sesiones</span>
                                     </div>
                                 @endif
@@ -309,7 +309,7 @@
                 @if($package->categories->isNotEmpty())
                     <div class="bg-white rounded-xl shadow-lg p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <i class="fas fa-folder text-purple-600"></i>
+                            <i class="bi bi-folder text-purple-600"></i>
                             Categorías incluidas
                         </h2>
                         
@@ -324,7 +324,7 @@
                                             </p>
                                         @endif
                                     </div>
-                                    <i class="fas fa-check-circle text-purple-400"></i>
+                                    <i class="bi bi-check-circle text-purple-400"></i>
                                 </div>
                             @endforeach
                         </div>
@@ -351,7 +351,7 @@
                                     </span>
                                 </div>
                                 <p class="text-sm text-green-600">
-                                    <i class="fas fa-tag mr-1"></i>
+                                    <i class="bi bi-tag mr-1"></i>
                                     Ahorro de S/ {{ number_format($package->price - $package->final_price, 2) }}
                                 </p>
                             @else
@@ -365,19 +365,19 @@
                         <button onclick="addToCart({{ $package->id }})" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mb-4">
                             <template x-if="!loading && !isInCart">
                                 <span class="flex items-center gap-2">
-                                    <i class="fas fa-cart-plus"></i>
+                                    <i class="bi bi-cart-plus"></i>
                                     <span>Añadir al Carrito</span>
                                 </span>
                             </template>
                             <template x-if="!loading && isInCart">
                                 <span class="flex items-center gap-2">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="bi bi-check-circle"></i>
                                     <span>Ya está en el carrito</span>
                                 </span>
                             </template>
                             <template x-if="loading">
                                 <span class="flex items-center gap-2">
-                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <i class="bi bi-spinner fa-spin"></i>
                                     <span>Añadiendo...</span>
                                 </span>
                             </template>
@@ -386,20 +386,20 @@
                         <!-- Beneficios (from create.blade.php structure) -->
                         <div class="space-y-3 text-sm text-gray-600">
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-shield-alt text-green-500"></i>
+                                <i class="bi bi-shield-alt text-green-500"></i>
                                 <span>Acceso inmediato después de la compra</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-infinity text-green-500"></i>
+                                <i class="bi bi-infinity text-green-500"></i>
                                 <span>Acceso de por vida a los cursos</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-certificate text-green-500"></i>
+                                <i class="bi bi-certificate text-green-500"></i>
                                 <span>Certificados incluidos</span>
                             </div>
                             @if($package->seats)
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-users text-green-500"></i>
+                                <i class="bi bi-users text-green-500"></i>
                                 <span>{{ $package->seats }} cupos disponibles</span>
                             </div>
                             @endif
@@ -411,13 +411,13 @@
                         <h3 class="text-sm font-semibold text-gray-900 mb-3">Compartir este paquete</h3>
                         <div class="flex gap-2">
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-center transition duration-150">
-                                <i class="fab fa-facebook-f"></i>
+                                <i class="bi bi-facebook"></i>
                             </a>
                             <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($package->title) }}" target="_blank" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 px-3 rounded-lg text-center transition duration-150">
-                                <i class="fab fa-twitter"></i>
+                                <i class="bi bi-twitter"></i>
                             </a>
                             <a href="https://wa.me/?text={{ urlencode($package->title . ' - ' . request()->url()) }}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-center transition duration-150">
-                                <i class="fab fa-whatsapp"></i>
+                                <i class="bi bi-whatsapp"></i>
                             </a>
                         </div>
                     </div>
@@ -436,13 +436,13 @@
          x-transition:leave-start="opacity-100 transform translate-x-0"
          x-transition:leave-end="opacity-0 transform translate-x-full"
          class="fixed top-24 right-4 z-50 bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3">
-        <i class="fas fa-check-circle text-xl"></i>
+        <i class="bi bi-check-circle text-xl"></i>
         <div>
             <p class="font-bold" x-text="notification.title"></p>
             <p class="text-sm text-green-100" x-text="notification.message"></p>
         </div>
         <button @click="notification.show = false" class="ml-4 text-green-200 hover:text-white">
-            <i class="fas fa-times"></i>
+            <i class="bi bi-x"></i>
         </button>
     </div>
 </div>

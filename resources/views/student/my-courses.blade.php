@@ -150,7 +150,7 @@
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-                    <i class="fas fa-book text-lg"></i>
+                    <i class="bi bi-book text-lg"></i>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Cursos Inscritos</p>
@@ -162,7 +162,7 @@
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-                    <i class="fas fa-play-circle text-lg"></i>
+                    <i class="bi bi-play-circle text-lg"></i>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">En Progreso</p>
@@ -174,7 +174,7 @@
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
-                    <i class="fas fa-clock text-lg"></i>
+                    <i class="bi bi-clock text-lg"></i>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Horas Estudiadas</p>
@@ -186,7 +186,7 @@
         <div class="bg-white rounded-lg shadow p-4">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
-                    <i class="fas fa-trophy text-lg"></i>
+                    <i class="bi bi-trophy text-lg"></i>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Completados</p>
@@ -214,7 +214,7 @@
 
                 <div class="relative">
                     <input type="text" x-model="search" @input="debounceSearch()" placeholder="Buscar curso..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
             </div>
         </div>
@@ -228,12 +228,12 @@
                 <!-- Estado vacío -->
                 <div x-show="filteredCourses.length === 0" class="text-center py-12">
                     <div class="inline-block p-4 bg-gray-100 rounded-full mb-4">
-                        <i class="fas fa-book-open text-gray-400 text-3xl"></i>
+                        <i class="bi bi-book text-gray-400 text-3xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold text-gray-700 mb-2">No se encontraron cursos</h3>
                     <p class="text-gray-600 mb-6" x-text="search ? 'No hay resultados para tu búsqueda.' : 'No tienes cursos inscritos.'"></p>
                     <a href="{{ route('cursos') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
-                        <i class="fas fa-search mr-2"></i>
+                        <i class="bi bi-search mr-2"></i>
                         Explorar cursos
                     </a>
                 </div>
@@ -248,7 +248,7 @@
                                     <div class="h-48 md:h-full bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden">
                                         <img x-show="course.image" :src="course.image" :alt="course.title" class="w-full h-full object-cover">
                                         <div x-show="!course.image" class="absolute inset-0 flex items-center justify-center">
-                                            <i class="fas fa-book text-white text-5xl opacity-20"></i>
+                                            <i class="bi bi-book text-white text-5xl opacity-20"></i>
                                         </div>
                                         <div class="absolute top-3 left-3">
                                             <span class="px-2 py-1 text-xs font-semibold rounded-full" :class="course.status === 'completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'">
@@ -267,15 +267,15 @@
                                                     <h3 class="text-xl font-bold text-gray-800" x-text="course.title"></h3>
                                                     <div class="flex items-center mt-2 space-x-4">
                                                         <span class="text-sm text-gray-600">
-                                                            <i class="fas fa-layer-group mr-1"></i>
+                                                            <i class="bi bi-layer-group mr-1"></i>
                                                             <span x-text="course.modules"></span> módulos
                                                         </span>
                                                         <span class="text-sm text-gray-600">
-                                                            <i class="fas fa-video mr-1"></i>
+                                                            <i class="bi bi-video mr-1"></i>
                                                             <span x-text="course.lessons"></span> lecciones
                                                         </span>
                                                         <span class="text-sm text-gray-600">
-                                                            <i class="fas fa-clock mr-1"></i>
+                                                            <i class="bi bi-clock mr-1"></i>
                                                             <span x-text="course.duration"></span>
                                                         </span>
                                                     </div>
@@ -302,23 +302,23 @@
                                             <div class="flex justify-between items-center">
                                                 <div>
                                                     <div class="flex items-center text-sm text-gray-600">
-                                                        <i class="far fa-calendar mr-2"></i>
+                                                        <i class="bi bi-calendar mr-2"></i>
                                                         <span>Inscrito: </span>
                                                         <span class="font-medium ml-1" x-text="course.enrolled_date"></span>
                                                     </div>
                                                     <div class="flex items-center text-sm text-gray-600 mt-1">
-                                                        <i class="far fa-clock mr-2"></i>
+                                                        <i class="bi bi-clock mr-2"></i>
                                                         <span>Último acceso: </span>
                                                         <span class="font-medium ml-1" x-text="course.last_accessed || 'No accedido'"></span>
                                                     </div>
                                                 </div>
                                                 <div class="flex space-x-3">
                                                     <button @click="showCourseDetails(course.id)" class="px-4 py-2 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-lg text-sm font-medium transition-colors duration-200">
-                                                        <i class="fas fa-info-circle mr-2"></i>
+                                                        <i class="bi bi-info-circle mr-2"></i>
                                                         Detalles
                                                     </button>
                                                     <a :href="course.action_url" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors duration-200">
-                                                        <i class="fas" :class="course.action_icon"></i>
+                                                        <i class="bi bi-play-circle" :class="course.action_icon"></i>
                                                         <span class="ml-2" x-text="course.action_text"></span>
                                                     </a>
                                                 </div>
@@ -338,13 +338,13 @@
                     </div>
                     <div class="flex space-x-2">
                         <button @click="prevPage()" :disabled="currentPage === 1" :class="currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            <i class="fas fa-chevron-left"></i>
+                            <i class="bi bi-chevron-left"></i>
                         </button>
                         <template x-for="page in totalPages" :key="page">
                             <button @click="goToPage(page)" :class="page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-100'" class="px-3 py-2 rounded-lg text-sm" x-text="page"></button>
                         </template>
                         <button @click="nextPage()" :disabled="currentPage === totalPages" :class="currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            <i class="fas fa-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
                         </button>
                     </div>
                 </div>
@@ -362,7 +362,7 @@
                         <p class="text-gray-600 mt-2" x-text="selectedCourse?.category"></p>
                     </div>
                     <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
+                        <i class="bi bi-x-lg text-xl"></i>
                     </button>
                 </div>
 
@@ -396,21 +396,21 @@
                         <h4 class="font-semibold text-gray-700 mb-3">Información del curso</h4>
                         <div class="space-y-3">
                             <div class="flex items-center text-gray-600">
-                                <i class="far fa-calendar mr-3 text-blue-500"></i>
+                                <i class="bi bi-calendar mr-3 text-blue-500"></i>
                                 <div>
                                     <p class="text-sm">Fecha de inscripción</p>
                                     <p class="font-medium" x-text="selectedCourse?.enrolled_date"></p>
                                 </div>
                             </div>
                             <div class="flex items-center text-gray-600">
-                                <i class="far fa-clock mr-3 text-green-500"></i>
+                                <i class="bi bi-clock mr-3 text-green-500"></i>
                                 <div>
                                     <p class="text-sm">Último acceso</p>
                                     <p class="font-medium" x-text="selectedCourse?.last_accessed || 'No accedido'"></p>
                                 </div>
                             </div>
                             <div class="flex items-center text-gray-600">
-                                <i class="fas fa-trophy mr-3 text-yellow-500"></i>
+                                <i class="bi bi-trophy mr-3 text-yellow-500"></i>
                                 <div>
                                     <p class="text-sm">Estado</p>
                                     <p class="font-medium">

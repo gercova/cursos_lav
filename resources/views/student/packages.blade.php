@@ -38,7 +38,7 @@
                     <div class="text-blue-200 font-medium">Ahorro máximo</div>
                 </div>
                 <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 transform hover:-translate-y-1 transition-all duration-300">
-                    <div class="text-4xl font-extrabold text-white mb-1"><i class="fas fa-infinity text-3xl"></i></div>
+                    <div class="text-4xl font-extrabold text-white mb-1"><i class="bi bi-infinity text-3xl"></i></div>
                     <div class="text-blue-200 font-medium">Acceso ilimitado</div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     <form id="search-form" method="GET" action="{{ route('paquetes', ['code' => $code ?? null]) }}" class="flex gap-2">
                         <div class="relative flex-1">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-search text-gray-400"></i>
+                                <i class="bi bi-search text-gray-400"></i>
                             </div>
                             <input type="text" name="search" id="search-input" value="{{ request('search') }}" placeholder="Buscar paquetes..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
                         </div>
@@ -77,14 +77,14 @@
                             class="lg:hidden w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg text-gray-500 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                             :class="showSearchMobile ? 'text-blue-600 border-blue-500 bg-blue-50' : ''">
                         <span class="text-sm font-medium">
-                            <i class="fas fa-search mr-2"></i>
+                            <i class="bi bi-search mr-2"></i>
                             @if(request('search'))
                                 Búsqueda: "{{ request('search') }}"
                             @else
                                 Buscar paquetes...
                             @endif
                         </span>
-                        <i class="fas text-xs" :class="showSearchMobile ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        <i class="bi bi-chevron-down text-xs" :class="showSearchMobile ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                     </button>
 
                     <!-- Buscador para móviles (desplegable) -->
@@ -100,7 +100,7 @@
                         <form id="search-form-mobile" method="GET" action="{{ route('paquetes', ['code' => $code ?? null]) }}" class="flex gap-2">
                             <div class="relative flex-1">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
+                                    <i class="bi bi-search text-gray-400"></i>
                                 </div>
                                 <input type="text" name="search" id="search-input-mobile" value="{{ request('search') }}" placeholder="Buscar paquetes..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
                             </div>
@@ -145,20 +145,20 @@
 
                     <label class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg cursor-pointer transition-colors duration-200">
                         <input type="checkbox" name="on_promotion" value="1" {{ request('on_promotion') ? 'checked' : '' }} class="rounded text-red-600 focus:ring-red-500 border-gray-300 w-4 h-4 mr-2">
-                        <span class="text-sm font-semibold text-red-700"><i class="fas fa-tag mr-1"></i> Ofertas</span>
+                        <span class="text-sm font-semibold text-red-700"><i class="bi bi-tag mr-1"></i> Ofertas</span>
                     </label>
                 </div>
             </div>
             
             @if(request()->anyFilled(['search', 'category', 'min_price', 'max_price', 'date_range', 'on_promotion']))
             <div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-gray-100">
-                <span class="text-sm font-medium text-gray-500 mr-1"><i class="fas fa-filter mr-1"></i>Filtros activos:</span>
+                <span class="text-sm font-medium text-gray-500 mr-1"><i class="bi bi-filter mr-1"></i>Filtros activos:</span>
                 
                 @if(request('search'))
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     Búsqueda: "{{ request('search') }}"
                     <button onclick="removeFilter('search')" class="ml-1.5 text-blue-600 hover:text-blue-900 focus:outline-none">
-                        <i class="fas fa-times"></i>
+                        <i class="bi bi-x"></i>
                     </button>
                 </span>
                 @endif
@@ -167,7 +167,7 @@
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     Mín: S/ {{ request('min_price') }}
                     <button onclick="removeFilter('min_price')" class="ml-1.5 text-blue-600 hover:text-blue-900 focus:outline-none">
-                        <i class="fas fa-times"></i>
+                        <i class="bi bi-x"></i>
                     </button>
                 </span>
                 @endif
@@ -176,7 +176,7 @@
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     Máx: S/ {{ request('max_price') }}
                     <button onclick="removeFilter('max_price')" class="ml-1.5 text-blue-600 hover:text-blue-900 focus:outline-none">
-                        <i class="fas fa-times"></i>
+                        <i class="bi bi-x"></i>
                     </button>
                 </span>
                 @endif
@@ -185,7 +185,7 @@
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     Fecha: {{ ['today'=>'Hoy','week'=>'Últ. semana','month'=>'Últ. mes','year'=>'Últ. año'][request('date_range')] }}
                     <button onclick="removeFilter('date_range')" class="ml-1.5 text-blue-600 hover:text-blue-900 focus:outline-none">
-                        <i class="fas fa-times"></i>
+                        <i class="bi bi-x"></i>
                     </button>
                 </span>
                 @endif
@@ -194,7 +194,7 @@
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                     En promoción
                     <button onclick="removeFilter('on_promotion')" class="ml-1.5 text-red-600 hover:text-red-900 focus:outline-none">
-                        <i class="fas fa-times"></i>
+                        <i class="bi bi-x"></i>
                     </button>
                 </span>
                 @endif
@@ -218,13 +218,13 @@
         @if($packages->isEmpty())
             <div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
                 <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-box-open text-4xl text-gray-400"></i>
+                    <i class="bi bi-box-open text-4xl text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900">No se encontraron paquetes</h3>
                 <p class="mt-2 text-gray-500">Intenta ajustar los filtros de búsqueda para encontrar lo que necesitas.</p>
                 <div class="mt-6">
                     <button onclick="clearAllFilters()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                        <i class="fas fa-sync-alt mr-2"></i> Limpiar filtros
+                        <i class="bi bi-arrow-clockwise mr-2"></i> Limpiar filtros
                     </button>
                 </div>
             </div>
@@ -236,7 +236,7 @@
                             @if($package->has_promotion)
                                 <div class="absolute top-4 right-4 z-20">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white shadow-md animate-pulse">
-                                        <i class="fas fa-fire mr-1"></i> -{{ $package->discount_percentage }}%
+                                        <i class="bi bi-fire mr-1"></i> -{{ $package->discount_percentage }}%
                                     </span>
                                 </div>
                             @endif
@@ -248,7 +248,7 @@
                             
                             <div class="absolute bottom-4 left-4 z-20">
                                 <span class="inline-flex items-center space-x-1 text-white text-xs font-medium bg-blue-600/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow-sm border border-blue-500/30">
-                                    <i class="fas fa-layer-group"></i>
+                                    <i class="bi bi-layers"></i>
                                     <span>
                                         @if($package->plan_type_id == 1 && $package->course_limit !== 0)
                                             {{ $package->course_limit }} cursos incluidos
@@ -264,7 +264,7 @@
                             @if($package->seats_max)
                             <div class="absolute bottom-4 right-4 z-20">
                                 <span class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/90 backdrop-blur-sm text-gray-800 shadow-sm">
-                                    <i class="fas fa-users text-blue-600 mr-1.5"></i> 
+                                    <i class="bi bi-people text-blue-600 mr-1.5"></i> 
                                     {{ $package->seats_min }} - {{ $package->seats_max }}
                                 </span>
                             </div>
@@ -332,7 +332,7 @@
                                 
                                 <button onclick="addToCart({{ $package->id }}, 'package')" 
                                         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 shadow-sm flex items-center justify-center gap-2">
-                                    <i class="fas fa-shopping-cart"></i>
+                                    <i class="bi bi-cart-plus"></i>
                                     Agregar al carrito
                                 </button>
                             </div>

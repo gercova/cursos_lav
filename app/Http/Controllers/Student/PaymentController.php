@@ -197,11 +197,12 @@ class PaymentController extends Controller {
         }
 
         $enterprise = Enterprise::first();
-        return view('student.payments.failure', compact('enterprise', 'payment')); // Asegúrate que la ruta del archivo sea correcta
+        return view('student.payments.failure', compact('enterprise', 'payment'));
     }
 
     public function pending(Request $request) {
-        return view('student.payments.pending'); // Asegúrate que la ruta del archivo sea correcta
+        $enterprise = Enterprise::first();
+        return view('student.payments.pending', compact('enterprise'));
     }
 
     public function webhook(Request $request) {

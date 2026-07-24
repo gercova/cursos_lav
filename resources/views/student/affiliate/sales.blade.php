@@ -8,7 +8,7 @@
             <p class="text-gray-600 mt-2">Seguimiento detallado de todas las transacciones con tu código</p>
         </div>
         <a href="{{ route('student.affiliate.dashboard') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center">
-            <i class="fas fa-arrow-left mr-2"></i> Volver al Dashboard
+            <i class="bi bi-arrow-left mr-2"></i> Volver al Dashboard
         </a>
     </div>
 
@@ -21,7 +21,7 @@
                     <p class="text-xs text-emerald-100 mt-2">* Solo incluye ventas completadas</p>
                 </div>
                 <div class="bg-white/20 p-3 rounded-lg">
-                    <i class="fas fa-hand-holding-usd text-2xl"></i>
+                    <i class="bi bi-coin text-2xl"></i>
                 </div>
             </div>
             <div class="mt-4 pt-4 border-t border-white/20 grid grid-cols-3 gap-2 text-center text-sm">
@@ -42,7 +42,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">
-                <i class="fas fa-fire text-orange-500 mr-2"></i> Cursos Más Vendidos
+                <i class="bi bi-fire text-orange-500 mr-2"></i> Cursos Más Vendidos
             </h3>
             <div class="space-y-3">
                 @forelse($topCourses as $topCourse)
@@ -62,7 +62,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">
-                <i class="fas fa-users text-blue-500 mr-2"></i> Clientes Frecuentes
+                <i class="bi bi-people text-blue-500 mr-2"></i> Clientes Frecuentes
             </h3>
             <div class="space-y-3">
                 @forelse($topBuyers as $topBuyer)
@@ -122,15 +122,15 @@
                         <td class="px-6 py-4 text-center">
                             @if($sale->status == 'completed')
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i> Exitosa
+                                    <i class="bi bi-check-all mr-1"></i> Exitosa
                                 </span>
                             @elseif($sale->status == 'pending')
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-clock mr-1"></i> Pendiente
+                                    <i class="bi bi-clock mr-1"></i> Pendiente
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i> Fallida
+                                    <i class="bi bi-x-circle mr-1"></i> Fallida
                                 </span>
                             @endif
                         </td>
@@ -139,7 +139,7 @@
                     <tr>
                         <td colspan="6" class="px-6 py-12 text-center">
                             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-50 flex items-center justify-center">
-                                <i class="fas fa-receipt text-gray-300 text-2xl"></i>
+                                <i class="bi bi-receipt text-gray-300 text-2xl"></i>
                             </div>
                             <p class="text-gray-500 font-medium">Aún no hay transacciones registradas.</p>
                             <p class="text-sm text-gray-400 mt-1">Comparte tu código para empezar a generar ventas.</p>

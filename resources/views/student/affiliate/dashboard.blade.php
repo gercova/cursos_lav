@@ -1,223 +1,231 @@
 @extends('layouts.student')
 @section('title', 'Dashboard de Afiliado')
 @section('content')
-<div class="max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-gray-800">Dashboard de Afiliados</h1>
-        <p class="text-gray-600 mt-2">Gana comisiones promocionando nuestros cursos</p>
-    </div>
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Dashboard de Afiliados</h1>
+            <p class="text-gray-600 mt-2">Gana comisiones promocionando nuestros cursos</p>
+        </div>
 
-    <!-- Estadísticas -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-shopping-cart text-blue-600 text-lg"></i>
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-cart-check text-blue-600 text-lg"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Ventas</p>
+                        <p class="text-2xl font-bold text-gray-800" id="total-sales">{{ $stats['total_sales'] }}</p>
+                    </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Ventas</p>
-                    <p class="text-2xl font-bold text-gray-800" id="total-sales">{{ $stats['total_sales'] }}</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-cash-coin text-emerald-600 text-lg"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Comisiones Totales</p>
+                        <p class="text-2xl font-bold text-gray-800" id="total-commission">S/
+                            {{ number_format($stats['total_commission'], 2) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-hourglass-split text-amber-600 text-lg"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Ventas Pendientes</p>
+                        <p class="text-2xl font-bold text-gray-800" id="pending-sales">{{ $stats['pending_sales'] }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="bi bi-check-circle text-green-600 text-lg"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Ventas Completadas</p>
+                        <p class="text-2xl font-bold text-gray-800" id="completed-sales">{{ $stats['completed_sales'] }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Ventas Recientes -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800">Ventas Recientes</h2>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Comisiones Totales</p>
-                    <p class="text-2xl font-bold text-gray-800" id="total-commission">S/ {{ number_format($stats['total_commission'], 2) }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-clock text-amber-600 text-lg"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Ventas Pendientes</p>
-                    <p class="text-2xl font-bold text-gray-800" id="pending-sales">{{ $stats['pending_sales'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-circle text-green-600 text-lg"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Ventas Completadas</p>
-                    <p class="text-2xl font-bold text-gray-800" id="completed-sales">{{ $stats['completed_sales'] }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Ventas Recientes -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800">Ventas Recientes</h2>
-            </div>
-            <div class="divide-y divide-gray-100">
-                @forelse($recentSales as $sale)
-                <div class="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-gray-900">{{ $sale->course->title ?? 'Curso no disponible' }}</p>
-                            <div class="flex items-center mt-1 text-sm text-gray-600">
-                                <span class="flex items-center">
-                                    <i class="fas fa-user mr-1 text-xs"></i>
-                                    {{ $sale->buyer->names ?? 'Cliente' }}
-                                </span>
-                                <span class="mx-2">•</span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-calendar mr-1 text-xs"></i>
-                                    {{ $sale->sold_at->format('d/m/Y') }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-gray-900">S/ {{ number_format($sale->sale_amount, 2) }}</p>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                @if($sale->status == 'completed') bg-green-100 text-green-800
+                <div class="divide-y divide-gray-100">
+                    @forelse($recentSales as $sale)
+                        <div class="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ $sale->course->title ?? 'Curso no disponible' }}
+                                    </p>
+                                    <div class="flex items-center mt-1 text-sm text-gray-600">
+                                        <span class="flex items-center">
+                                            <i class="bi bi-person mr-1 text-xs"></i>
+                                            {{ $sale->buyer->names ?? 'Cliente' }}
+                                        </span>
+                                        <span class="mx-2">•</span>
+                                        <span class="flex items-center">
+                                            <i class="bi bi-calendar mr-1 text-xs"></i>
+                                            {{ $sale->sold_at->format('d/m/Y') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-gray-900">S/ {{ number_format($sale->sale_amount, 2) }}</p>
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                @if ($sale->status == 'completed') bg-green-100 text-green-800
                                 @elseif($sale->status == 'pending') bg-yellow-100 text-yellow-800
                                 @else bg-red-100 text-red-800 @endif">
-                                {{ ucfirst($sale->status) }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="px-6 py-8 text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                        <i class="fas fa-chart-line text-gray-400 text-xl"></i>
-                    </div>
-                    <p class="text-gray-600">Aún no tienes ventas registradas</p>
-                    <p class="text-sm text-gray-500 mt-1">Comparte tu enlace de afiliado para comenzar</p>
-                </div>
-                @endforelse
-            </div>
-            @if($recentSales->count() > 0)
-            <div class="px-6 py-3 border-t border-gray-100">
-                <a href="{{ route('student.affiliate.sales') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    Ver todas las ventas
-                    <i class="fas fa-arrow-right ml-1 text-xs"></i>
-                </a>
-            </div>
-            @endif
-        </div>
-
-        <!-- Cursos Más Vendidos -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h2 class="text-lg font-semibold text-gray-800">Cursos Más Vendidos</h2>
-            </div>
-            <div class="divide-y divide-gray-100">
-                @forelse($topCourses as $course)
-                <div class="px-6 py-4">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                            <i class="fas fa-book text-blue-600"></i>
-                        </div>
-                        <div class="ml-4 flex-1">
-                            <p class="font-medium text-gray-900 truncate">{{ $course->course->title ?? 'Curso no disponible' }}</p>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="text-sm text-gray-600">
-                                    <i class="fas fa-shopping-cart mr-1"></i>
-                                    {{ $course->sales_count }} {{ $course->sales_count > 1 ? 'ventas' : 'venta' }}
-                                </span>
-                                <span class="text-sm font-semibold text-emerald-600">
-                                    S/ {{ number_format($course->total_revenue, 2) }}
-                                </span>
+                                        {{ ucfirst($sale->status) }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
+                    @empty
+                        <div class="px-6 py-8 text-center">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="bi bi-chart-line text-gray-400 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600">Aún no tienes ventas registradas</p>
+                            <p class="text-sm text-gray-500 mt-1">Comparte tu enlace de afiliado para comenzar</p>
+                        </div>
+                    @endforelse
+                </div>
+                @if ($recentSales->count() > 0)
+                    <div class="px-6 py-3 border-t border-gray-100">
+                        <a href="{{ route('student.affiliate.sales') }}"
+                            class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            Ver todas las ventas
+                            <i class="bi bi-arrow-right-short ml-1 text-xs"></i>
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Cursos Más Vendidos -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800">Cursos Más Vendidos</h2>
+                </div>
+                <div class="divide-y divide-gray-100">
+                    @forelse($topCourses as $course)
+                        <div class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div
+                                    class="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+                                    <i class="bi bi-book text-blue-600"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <p class="font-medium text-gray-900 truncate">
+                                        {{ $course->course->title ?? 'Curso no disponible' }}</p>
+                                    <div class="flex items-center justify-between mt-2">
+                                        <span class="text-sm text-gray-600">
+                                            <i class="bi bi-cart-check mr-1"></i>
+                                            {{ $course->sales_count }} {{ $course->sales_count > 1 ? 'ventas' : 'venta' }}
+                                        </span>
+                                        <span class="text-sm font-semibold text-emerald-600">
+                                            S/ {{ number_format($course->total_revenue, 2) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="px-6 py-8 text-center">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="bi bi-trophy text-gray-400 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600">No hay datos de ventas por curso</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Enlace de Afiliado -->
+        <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Tu Enlace de Afiliado</h3>
+                    <p class="text-gray-600 mt-1">Comparte este enlace para promocionar todos los cursos</p>
+                    <div class="mt-4 flex items-center space-x-4">
+                        <div class="bg-white rounded-lg border border-gray-200 px-4 py-3 flex-1">
+                            <code id="affiliate-url" class="text-sm text-gray-800 break-all">
+                                {{ $user->affiliate_url }}
+                            </code>
+                        </div>
+                        <button onclick="copyAffiliateLink(this)"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200">
+                            <i class="bi bi-copy mr-2"></i>
+                            Copiar
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-3">
+                        <i class="bi bi-info-circle mr-1"></i>
+                        Recibirás una comisión por cada venta realizada a través de tu enlace
+                    </p>
+                </div>
+                <div class="hidden lg:block">
+                    <div
+                        class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                        <i class="bi bi-link-45deg text-blue-600 text-3xl"></i>
                     </div>
                 </div>
-                @empty
-                <div class="px-6 py-8 text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                        <i class="fas fa-trophy text-gray-400 text-xl"></i>
-                    </div>
-                    <p class="text-gray-600">No hay datos de ventas por curso</p>
-                </div>
-                @endforelse
             </div>
         </div>
     </div>
 
-    <!-- Enlace de Afiliado -->
-    <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800">Tu Enlace de Afiliado</h3>
-                <p class="text-gray-600 mt-1">Comparte este enlace para promocionar todos los cursos</p>
-                <div class="mt-4 flex items-center space-x-4">
-                    <div class="bg-white rounded-lg border border-gray-200 px-4 py-3 flex-1">
-                        <code id="affiliate-url" class="text-sm text-gray-800 break-all">
-                            {{ $user->affiliate_url }}
-                        </code>
-                    </div>
-                    <button onclick="copyAffiliateLink(this)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200">
-                        <i class="fas fa-copy mr-2"></i>
-                        Copiar
-                    </button>
-                </div>
-                <p class="text-sm text-gray-500 mt-3">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Recibirás una comisión por cada venta realizada a través de tu enlace
-                </p>
-            </div>
-            <div class="hidden lg:block">
-                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
-                    <i class="fas fa-link text-blue-600 text-3xl"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        function copyAffiliateLink(buttonElement) {
+            // Limpiamos los espacios en blanco alrededor de la URL
+            const url = document.getElementById('affiliate-url').textContent.trim();
 
-<script>
-    function copyAffiliateLink(buttonElement) {
-        // Limpiamos los espacios en blanco alrededor de la URL
-        const url = document.getElementById('affiliate-url').textContent.trim();
-        
-        navigator.clipboard.writeText(url).then(() => {
-            // Guardamos el contenido original del botón
-            const originalText = buttonElement.innerHTML;
-            
-            // Cambiamos el estado a "Copiado"
-            buttonElement.innerHTML = '<i class="fas fa-check mr-2"></i>Copiado!';
-            buttonElement.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-            buttonElement.classList.add('bg-green-600', 'hover:bg-green-700');
-            
-            // Regresamos al estado original después de 2 segundos
-            setTimeout(() => {
-                buttonElement.innerHTML = originalText;
-                buttonElement.classList.remove('bg-green-600', 'hover:bg-green-700');
-                buttonElement.classList.add('bg-blue-600', 'hover:bg-blue-700');
-            }, 2000);
-        }).catch(err => {
-            console.error('Error al copiar: ', err);
-            alert('No se pudo copiar el enlace. Por favor, selecciónalo y presiona Ctrl+C.');
-        });
-    }
+            navigator.clipboard.writeText(url).then(() => {
+                // Guardamos el contenido original del botón
+                const originalText = buttonElement.innerHTML;
 
-    // Actualizar estadísticas cada 30 segundos
-    setInterval(() => {
-        fetch('/api/student/affiliate/stats')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('total-sales').textContent = data.total_sales;
-                document.getElementById('total-commission').textContent = 'S/ ' + data.total_commission;
-                document.getElementById('pending-sales').textContent = data.pending_sales;
+                // Cambiamos el estado a "Copiado"
+                buttonElement.innerHTML = '<i class="bi bi-check-all mr-2"></i>Copiado!';
+                buttonElement.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                buttonElement.classList.add('bg-green-600', 'hover:bg-green-700');
+
+                // Regresamos al estado original después de 2 segundos
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    buttonElement.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+                alert('No se pudo copiar el enlace. Por favor, selecciónalo y presiona Ctrl+C.');
             });
-    }, 30000);
-</script>
+        }
+
+        // Actualizar estadísticas cada 30 segundos
+        setInterval(() => {
+            fetch('/api/student/affiliate/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total-sales').textContent = data.total_sales;
+                    document.getElementById('total-commission').textContent = 'S/ ' + data.total_commission;
+                    document.getElementById('pending-sales').textContent = data.pending_sales;
+                });
+        }, 30000);
+    </script>
 @endsection

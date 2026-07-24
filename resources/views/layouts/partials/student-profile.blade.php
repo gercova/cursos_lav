@@ -7,6 +7,7 @@
         <a href="{{ route('student.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
             <i class="bi bi-speedometer mr-2"></i> Mi Dashboard
         </a>
+        
         @if (auth()->user()->company_code && auth()->user()->parent_id)
             <hr>
             <a href="{{ route('company.schedule') }}"

@@ -12,7 +12,7 @@
         <div class="flex items-start justify-between">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                    <i class="fas fa-link mr-2 text-blue-600"></i>
+                    <i class="bi bi-link-45deg mr-2 text-blue-600"></i>
                     Enlace General de Afiliado
                 </h3>
                 <p class="text-gray-600 mb-4">Este enlace funciona para todos los cursos con descuento</p>
@@ -24,17 +24,17 @@
                     </div>
                     <button onclick="copyGeneralLink()" 
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-medium transition-colors duration-200">
-                        <i class="fas fa-copy mr-2"></i>
+                        <i class="bi bi-copy mr-2"></i>
                         Copiar
                     </button>
                 </div>
                 <div class="mt-4 flex flex-wrap gap-2">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <i class="fas fa-share-alt mr-1"></i>
+                        <i class="bi bi-share-fill mr-1"></i>
                         Comparte en redes sociales
                     </span>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <i class="fas fa-qrcode mr-1"></i>
+                        <i class="bi bi-qr-code mr-1"></i>
                         Genera código QR
                     </span>
                 </div>
@@ -55,13 +55,13 @@
             <div class="p-6">
                 <div class="flex items-start">
                     <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
-                        <i class="fas fa-book text-blue-600 text-xl"></i>
+                        <i class="bi bi-book text-blue-600 text-xl"></i>
                     </div>
                     <div class="ml-4 flex-1">
                         <h3 class="font-semibold text-gray-900">{{ $link['course']->title }}</h3>
                         <div class="mt-2 flex items-center space-x-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                <i class="fas fa-tag mr-1"></i>
+                                <i class="bi bi-tag mr-1"></i>
                                 {{ $link['discount_percentage'] }}% de descuento
                             </span>
                             <span class="text-sm text-gray-600">
@@ -77,11 +77,11 @@
                                     id="link-{{ $loop->index }}">
                                 <button onclick="copyCourseLink({{ $loop->index }})" 
                                     class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
-                                    <i class="fas fa-copy"></i>
+                                    <i class="bi bi-copy"></i>
                                 </button>
                                 <a href="{{ $link['link'] }}" target="_blank" 
                                     class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
-                                    <i class="fas fa-external-link-alt"></i>
+                                    <i class="bi bi-box-arrow-up-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -116,12 +116,12 @@
     @else
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
         <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
-            <i class="fas fa-link text-gray-400 text-2xl"></i>
+            <i class="bi bi-link text-gray-400 text-2xl"></i>
         </div>
         <h3 class="text-lg font-semibold text-gray-800 mb-2">No tienes cursos promocionales activos</h3>
         <p class="text-gray-600 mb-6">Contacta con administración para activar códigos promocionales en cursos</p>
         <a href="{{ route('cursos') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
-            <i class="fas fa-external-link-alt mr-2"></i>
+            <i class="bi bi-box-arrow-up-right mr-2"></i>
             Explorar cursos disponibles
         </a>
     </div>
@@ -134,7 +134,7 @@
             <div class="bg-white rounded-lg border border-gray-200 p-4">
                 <div class="flex items-center mb-3">
                     <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-qrcode text-blue-600"></i>
+                        <i class="bi bi-qr-code text-blue-600"></i>
                     </div>
                     <h4 class="font-medium text-gray-900">Código QR</h4>
                 </div>
@@ -147,7 +147,7 @@
             <div class="bg-white rounded-lg border border-gray-200 p-4">
                 <div class="flex items-center mb-3">
                     <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-chart-pie text-green-600"></i>
+                        <i class="bi bi-bar-chart text-green-600"></i>
                     </div>
                     <h4 class="font-medium text-gray-900">Widget de Seguimiento</h4>
                 </div>
@@ -160,7 +160,7 @@
             <div class="bg-white rounded-lg border border-gray-200 p-4">
                 <div class="flex items-center mb-3">
                     <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-file-alt text-purple-600"></i>
+                        <i class="bi bi-file-earmark-text text-purple-600"></i>
                     </div>
                     <h4 class="font-medium text-gray-900">Material Promocional</h4>
                 </div>

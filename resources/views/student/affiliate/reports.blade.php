@@ -22,13 +22,13 @@
             </div>
             <div class="flex items-end">
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors duration-200">
-                    <i class="fas fa-chart-bar mr-2"></i>
+                    <i class="bi bi-bar-chart mr-2"></i>
                     Generar Reporte
                 </button>
             </div>
             <div class="flex items-end">
                 <button type="button" onclick="exportReport()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors duration-200">
-                    <i class="fas fa-file-export mr-2"></i>
+                    <i class="bi bi-file-earmark-excel mr-2"></i>
                     Exportar Excel
                 </button>
             </div>
@@ -44,7 +44,7 @@
                     <p class="text-2xl font-bold text-gray-800">{{ $periodStats['total_sales'] }}</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-shopping-cart text-blue-600 text-lg"></i>
+                    <i class="bi bi-cart-check text-blue-600 text-lg"></i>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
                     <p class="text-2xl font-bold text-gray-800">S/ {{ number_format($periodStats['total_revenue'], 2) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-money-bill-wave text-emerald-600 text-lg"></i>
+                    <i class="bi bi-coin text-emerald-600 text-lg"></i>
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
                     <p class="text-2xl font-bold text-gray-800">S/ {{ number_format($periodStats['total_commission'], 2) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-hand-holding-usd text-amber-600 text-lg"></i>
+                    <i class="bi bi-coin text-amber-600 text-lg"></i>
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@
                     </p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-chart-line text-green-600 text-lg"></i>
+                    <i class="bi bi-graph-up text-green-600 text-lg"></i>
                 </div>
             </div>
         </div>

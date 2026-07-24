@@ -17,7 +17,7 @@
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col sm:flex-row gap-4">
         <div class="relative flex-1">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             <input type="text" x-model.debounce.500ms="search" placeholder="Buscar cursos por nombre..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
         </div>
         <div class="sm:w-64">
@@ -40,7 +40,7 @@
                 <div class="card cursor-pointer relative overflow-hidden group" @click="toggleCourse(course.id)" :class="selected.includes(course.id) ? 'ring-2 ring-blue-500 shadow-md' : ''">
                     
                     <div x-show="selected.includes(course.id)" x-transition class="absolute top-2 right-2 bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full z-10 shadow-lg">
-                        <i class="fas fa-check"></i>
+                        <i class="bi bi-check"></i>
                     </div>
 
                     <div class="h-48 w-full bg-gray-200 overflow-hidden">
@@ -63,7 +63,7 @@
         </div>
 
         <div x-show="!loading && courses.length === 0" class="text-center py-12">
-            <i class="fas fa-folder-open text-gray-300 text-5xl mb-3"></i>
+            <i class="bi bi-folder-open text-gray-300 text-5xl mb-3"></i>
             <p class="text-gray-500">No se encontraron cursos con esos filtros.</p>
         </div>
     </div>
@@ -84,11 +84,11 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center px-4">
             <p class="text-gray-600 hidden sm:block">
                 <span x-show="selected.length < limit">Te faltan <b x-text="limit - selected.length"></b> cursos por elegir.</span>
-                <span x-show="selected.length === limit" class="text-green-600 font-medium"><i class="fas fa-check-circle mr-1"></i>¡Paquete completo!</span>
+                <span x-show="selected.length === limit" class="text-green-600 font-medium"><i class="bi bi-check-circle mr-1"></i>¡Paquete completo!</span>
             </p>
             <button @click="saveSelection()" :disabled="selected.length === 0 || saving" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-8 rounded-lg transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ml-auto">
-                <span x-show="!saving"><i class="fas fa-save"></i> Guardar mi paquete</span>
-                <span x-show="saving"><i class="fas fa-circle-notch fa-spin"></i> Guardando...</span>
+                <span x-show="!saving"><i class="bi bi-save"></i> Guardar mi paquete</span>
+                <span x-show="saving"><i class="bi bi-circle-notch fa-spin"></i> Guardando...</span>
             </button>
         </div>
     </div>

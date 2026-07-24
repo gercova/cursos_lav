@@ -8,7 +8,7 @@
             <div class="relative mx-auto w-20 h-20 mb-6">
                 <div class="absolute inset-0 bg-blue-100 rounded-2xl rotate-6 animate-pulse"></div>
                 <div class="relative flex items-center justify-center w-20 h-20 bg-white border-2 border-blue-500 rounded-2xl shadow-sm">
-                    <i class="fas fa-lock text-3xl text-blue-600"></i>
+                    <i class="bi bi-lock text-3xl text-blue-600"></i>
                 </div>
             </div>
 
@@ -36,11 +36,11 @@
                 <div class="flex gap-2">
                     <button @click="activeSlide = activeSlide > 0 ? activeSlide - 1 : slidesCount - 1" 
                             class="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-                        <i class="fas fa-chevron-left text-gray-600"></i>
+                        <i class="bi bi-chevron-left text-gray-600"></i>
                     </button>
                     <button @click="activeSlide = activeSlide < slidesCount - 1 ? activeSlide + 1 : 0" 
                             class="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-                        <i class="fas fa-chevron-right text-gray-600"></i>
+                        <i class="bi bi-chevron-right text-gray-600"></i>
                     </button>
                 </div>
             </div>
@@ -73,11 +73,11 @@
                                     
                                     <div class="space-y-3 mb-6">
                                         <div class="flex items-center text-sm text-gray-500">
-                                            <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                            <i class="bi bi-check-circle text-emerald-500 mr-2"></i>
                                             Inscripción masiva habilitada
                                         </div>
                                         <div class="flex items-center text-sm text-gray-500">
-                                            <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                            <i class="bi bi-check-circle text-emerald-500 mr-2"></i>
                                             {{ $package->course_limit ?: 'Cursos ilimitados' }}
                                         </div>
                                     </div>

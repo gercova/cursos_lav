@@ -17,7 +17,7 @@
                     'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'superBulk'
                 }"
                 class="py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 font-medium text-xs sm:text-sm focus:outline-none transition-all duration-200">
-                <i class="fas fa-rocket mr-1 sm:mr-2"></i>
+                <i class="bi bi-rocket mr-1 sm:mr-2"></i>
                 <span class="hidden xs:inline">Matrícula</span> Express
             </button>
         </nav>
@@ -34,7 +34,7 @@
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-6 sm:mb-8">
                     <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white mb-3 sm:mb-4">
-                        <i class="fas fa-rocket text-xl sm:text-3xl"></i>
+                        <i class="bi bi-rocket text-xl sm:text-3xl"></i>
                     </div>
                     <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Matrícula Express</h3>
                     <p class="text-sm sm:text-base text-gray-600 px-4">
@@ -47,22 +47,22 @@
                     <div class="flex flex-col sm:flex-row items-start gap-4">
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                                <i class="fas fa-crown text-amber-600 text-lg sm:text-xl"></i>
+                                <i class="bi bi-crown text-amber-600 text-lg sm:text-xl"></i>
                             </div>
                         </div>
                         <div class="flex-1">
                             <h4 class="font-bold text-amber-800 text-base sm:text-lg mb-2">Resumen de la operación</h4>
                             <ul class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-amber-700">
                                 <li class="flex items-center gap-2">
-                                    <i class="fas fa-check-circle text-xs"></i>
+                                    <i class="bi bi-check-circle text-xs"></i>
                                     <span><span class="font-bold">{{ $collaborators->count() }}</span> usuarios</span>
                                 </li>
                                 <li class="flex items-center gap-2">
-                                    <i class="fas fa-check-circle text-xs"></i>
+                                    <i class="bi bi-check-circle text-xs"></i>
                                     <span><span class="font-bold">{{ $courses->count() }}</span> cursos en promoción</span>
                                 </li>
                                 <li class="flex items-center gap-2">
-                                    <i class="fas fa-calculator text-xs"></i>
+                                    <i class="bi bi-calculator text-xs"></i>
                                     <span><span class="font-bold">{{ $collaborators->count() * $courses->count() }}</span> matrículas a realizar</span>
                                 </li>
                             </ul>
@@ -115,7 +115,7 @@
                             @forelse($courses->take(5) as $course)
                                 <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
                                     <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                                        <i class="fas fa-book text-xs"></i>
+                                        <i class="bi bi-book text-xs"></i>
                                     </div>
                                     <div class="flex-1 truncate">
                                         {{-- $course YA ES un Course directamente --}}
@@ -145,7 +145,7 @@
                         @click="confirmSuperBulkEnroll()"
                         :disabled="superBulkLoading || {{ $collaborators->count() }} === 0 || {{ $courses->count() }} === 0"
                         class="w-full sm:w-auto flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-10 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base">
-                        <i class="fas fa-rocket" x-show="!superBulkLoading"></i>
+                        <i class="bi bi-rocket" x-show="!superBulkLoading"></i>
                         <svg x-show="superBulkLoading" class="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -153,7 +153,7 @@
                         <span x-text="superBulkLoading ? 'Procesando...' : 'EJECUTAR MATRÍCULA EXPRESS'"></span>
                     </button>
                     <p class="text-xs text-gray-500 text-center mt-4 max-w-md">
-                        <i class="fas fa-info-circle"></i>
+                        <i class="bi bi-info-circle"></i>
                         Matriculará a TODOS los usuarios en TODOS los cursos. Los ya matriculados serán omitidos.
                     </p>
                 </div>

@@ -46,7 +46,7 @@
             <div>
                 <div class="flex items-center text-sm text-gray-600 mb-2">
                     <a href="{{ route('student.my-courses') }}" class="text-blue-600 hover:text-blue-800">
-                        <i class="fas fa-arrow-left mr-2"></i>
+                        <i class="bi bi-arrow-left mr-2"></i>
                         Volver a mis cursos
                     </a>
                     <span class="mx-2">•</span>
@@ -62,12 +62,12 @@
                 <div class="hidden md:block">
                     @if($isCompleted)
                     <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        <i class="fas fa-check-circle mr-1"></i>
+                        <i class="bi bi-check-circle mr-1"></i>
                         Completada
                     </span>
                     @else
                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                        <i class="fas fa-play-circle mr-1"></i>
+                        <i class="bi bi-play-circle mr-1"></i>
                         En progreso
                     </span>
                     @endif
@@ -97,7 +97,7 @@
                         @else
                             <div class="w-full h-[500px] flex items-center justify-center bg-gray-900">
                                 <div class="text-center">
-                                    <i class="fas fa-video text-gray-600 text-5xl mb-4"></i>
+                                    <i class="bi bi-video text-gray-600 text-5xl mb-4"></i>
                                     <p class="text-gray-400">Video no disponible</p>
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                     <!-- Overlay de carga -->
                     <div x-show="!isVideoLoaded" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div class="text-white text-center">
-                            <i class="fas fa-spinner fa-spin text-3xl mb-2"></i>
+                            <i class="bi bi-spinner text-3xl mb-2"></i>
                             <p>Cargando video...</p>
                         </div>
                     </div>
@@ -120,11 +120,11 @@
                             <h2 class="text-xl font-bold text-gray-800">{{ $lesson->title }}</h2>
                             <div class="flex items-center mt-2 space-x-4">
                                 <span class="text-sm text-gray-600">
-                                    <i class="far fa-clock mr-1"></i>
+                                    <i class="bi bi-clock mr-1"></i>
                                     <span x-text="formatTime(duration)"></span>
                                 </span>
                                 <span class="text-sm text-gray-600">
-                                    <i class="fas fa-play-circle mr-1"></i>
+                                    <i class="bi bi-play-circle mr-1"></i>
                                     <span x-text="watchedPercent.toFixed(1) + '% visto'"></span>
                                     @if($watchedPercent > 0)
                                         <span class="text-xs text-gray-500">({{ $watchedPercent }}% visto previamente)</span>
@@ -135,7 +135,7 @@
 
                         @if($isCompleted)
                         <div class="flex items-center text-green-600">
-                            <i class="fas fa-check-circle text-xl mr-2"></i>
+                            <i class="bi bi-check-circle text-xl mr-2"></i>
                             <span class="font-medium">Completado</span>
                         </div>
                         @endif
@@ -156,7 +156,7 @@
                                     <p class="text-sm text-gray-600 mb-1">Anterior</p>
                                     <a href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $previousLesson->id]) }}"
                                     class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                        <i class="fas fa-arrow-left mr-2"></i>
+                                        <i class="bi bi-arrow-left mr-2"></i>
                                         {{ Str::limit($previousLesson->title, 50) }}
                                     </a>
                                 @endif
@@ -167,20 +167,20 @@
                                     <a x-show="isCompleted" href="{{ route('lesson.show', ['course' => $course->slug, 'lesson' => $nextLesson->id]) }}"
                                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
                                         <span>Siguiente</span>
-                                        <i class="fas fa-arrow-right ml-2"></i>
+                                        <i class="bi bi-arrow-right ml-2"></i>
                                     </a>
                                     <button x-show="!isCompleted" disabled
                                     class="px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed font-medium opacity-70">
-                                        <i class="fas fa-lock mr-2"></i>Siguiente bloqueado
+                                        <i class="bi bi-lock mr-2"></i>Siguiente bloqueado
                                     </button>
                                 @else
                                     <a x-show="isCompleted" href="{{ route('student.exams.show', $exam->id) }}" 
                                     class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors duration-200 font-medium">
-                                        <i class="fas fa-pencil-alt mr-2"></i>Ir al examen final
+                                        <i class="bi bi-pencil-alt mr-2"></i>Ir al examen final
                                     </a>
                                     <button x-show="!isCompleted" disabled 
                                     class="px-6 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed font-medium opacity-70">
-                                        <i class="fas fa-lock mr-2"></i>Examen bloqueado
+                                        <i class="bi bi-lock mr-2"></i>Examen bloqueado
                                     </button>
                                 @endif
                             </div>
@@ -190,13 +190,13 @@
                                 <p class="text-sm text-gray-600 mb-1">Siguiente</p>
                                 <span class="text-blue-600 font-medium flex items-center justify-end">
                                     {{ Str::limit($nextLesson->title, 50) }}
-                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    <i class="bi bi-arrow-right ml-2"></i>
                                 </span>
                                 @else
                                 <p class="text-sm text-gray-600 mb-1">Final del curso</p>
                                 <span class="text-purple-600 font-medium flex items-center justify-end">
                                     Examen final
-                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    <i class="bi bi-arrow-right ml-2"></i>
                                 </span>
                                 @endif
                             </div>
@@ -206,7 +206,7 @@
                         <div x-show="!isCompleted && watchedPercent < minWatchPercent && watchedPercent > 0"
                             class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <div class="flex items-center">
-                                <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
+                                <i class="bi bi-exclamation-circle text-yellow-500 mr-2"></i>
                                 <p class="text-sm text-yellow-700">
                                     Debes ver al menos el 99% de esta lección para poder marcarla como completada.
                                     <span class="font-medium">Has visto el <span x-text="watchedPercent.toFixed(1)"></span>%</span>
@@ -218,7 +218,7 @@
                         <div x-show="isCompleted" 
                             class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                             <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <i class="bi bi-check-circle text-green-500 mr-2"></i>
                                 <p class="text-sm text-green-700">
                                     ¡Lección completada! Puedes continuar con la siguiente lección.
                                 </p>
@@ -282,7 +282,7 @@
                                             class="flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors duration-200 {{ $lessonItem->id == $lesson->id ? 'bg-blue-50 border border-blue-100' : '' }}">
                                                 <div class="flex items-center">
                                                     <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                                        <i class="fa-solid fa-eye"></i>
+                                                        <i class="bi bi-eye"></i>
                                                     </div>
                                                     <span class="text-sm text-gray-700">{{ Str::limit($lessonItem->title, 40) }}</span>
                                                 </div>
@@ -294,7 +294,7 @@
                                             <div class="flex items-center justify-between p-2 rounded bg-gray-50 opacity-60 cursor-not-allowed">
                                                 <div class="flex items-center">
                                                     <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                                        <i class="fas fa-lock text-gray-400 text-sm"></i>
+                                                        <i class="bi bi-lock text-gray-400 text-sm"></i>
                                                     </div>
                                                     <span class="text-sm text-gray-500">{{ Str::limit($lessonItem->title, 40) }}</span>
                                                 </div>
@@ -337,15 +337,15 @@
                                         <a href="{{ Storage::url($document->file_path) }}" target="_blank" class="flex items-center p-2 rounded border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors duration-200">
                                             @php
                                                 $icon = match(strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION))) {
-                                                    'pdf' => 'fa-file-pdf text-red-500',
-                                                    'doc', 'docx' => 'fa-file-word text-blue-500',
-                                                    'xls', 'xlsx' => 'fa-file-excel text-green-500',
-                                                    default => 'fa-file text-gray-500'
+                                                    'pdf' => 'bi bi-file-pdf text-red-500',
+                                                    'doc', 'docx' => 'bi bi-file-word text-blue-500',
+                                                    'xls', 'xlsx' => 'bi bi-file-excel text-green-500',
+                                                    default => 'bi bi-file text-gray-500'
                                                 };
                                             @endphp
-                                            <i class="fas {{ $icon }} mr-2"></i>
+                                            <i class="bi {{ $icon }} mr-2"></i>
                                             <span class="text-sm text-gray-700 flex-1">{{ Str::limit($document->title, 30) }}</span>
-                                            <i class="fas fa-external-link-alt text-gray-400 text-xs"></i>
+                                            <i class="bi bi-box-arrow-up-right text-gray-400 text-xs"></i>
                                         </a>
                                     @endforeach
                                 </div>

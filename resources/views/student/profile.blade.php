@@ -14,11 +14,11 @@
             <div
                 class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center justify-between animate-slide-in">
                 <div class="flex items-center">
-                    <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                    <i class="bi bi-check-circle mr-3 text-green-500"></i>
                     <span>{{ session('success') }}</span>
                 </div>
                 <button type="button" onclick="this.parentElement.remove()" class="text-green-700 hover:text-green-900">
-                    <i class="fas fa-times"></i>
+                    <i class="bi bi-times"></i>
                 </button>
             </div>
         @endif
@@ -27,11 +27,11 @@
             <div
                 class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between animate-slide-in">
                 <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
+                    <i class="bi bi-exclamation-circle mr-3 text-red-500"></i>
                     <span>{{ session('error') }}</span>
                 </div>
                 <button type="button" onclick="this.parentElement.remove()" class="text-red-700 hover:text-red-900">
-                    <i class="fas fa-times"></i>
+                    <i class="bi bi-times"></i>
                 </button>
             </div>
         @endif
@@ -69,14 +69,14 @@
 
                                     <button type="button" onclick="document.getElementById('profile-photo-input').click()"
                                         class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center">
-                                        <i class="fas fa-camera mr-2"></i>
+                                        <i class="bi bi-camera mr-2"></i>
                                         Cambiar Foto
                                     </button>
 
                                     @if ($user->profile_photo)
                                         <button type="button" onclick="deleteProfilePhoto()"
                                             class="px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all duration-200">
-                                            <i class="fas fa-trash mr-1"></i>
+                                            <i class="bi bi-trash mr-1"></i>
                                             Eliminar Foto
                                         </button>
                                     @endif
@@ -97,21 +97,21 @@
                             <div class="space-y-2">
                                 @if ($user->phone)
                                     <div class="flex items-center text-sm text-gray-600">
-                                        <i class="fas fa-phone mr-2 text-blue-500 w-5"></i>
+                                        <i class="bi bi-telephone mr-2 text-blue-500 w-5"></i>
                                         <span>{{ $user->country_code }} {{ $user->phone }}</span>
                                     </div>
                                 @endif
 
                                 @if ($user->address)
                                     <div class="flex items-start text-sm text-gray-600">
-                                        <i class="fas fa-map-marker-alt mr-2 text-blue-500 w-5 mt-0.5"></i>
+                                        <i class="bi bi-geo-alt mr-2 text-blue-500 w-5 mt-0.5"></i>
                                         <span class="flex-1">{{ $user->address }}</span>
                                     </div>
                                 @endif
 
                                 @if ($user->profession)
                                     <div class="flex items-center text-sm text-gray-600">
-                                        <i class="fas fa-briefcase mr-2 text-blue-500 w-5"></i>
+                                        <i class="bi bi-briefcase mr-2 text-blue-500 w-5"></i>
                                         <span>{{ $user->profession }}</span>
                                     </div>
                                 @endif
@@ -147,7 +147,7 @@
                                     'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'info'
                                 }"
                                 class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
-                                <i class="fas fa-user mr-2"></i>
+                                <i class="bi bi-person mr-2"></i>
                                 Información Personal
                             </button>
                             <button @click="activeTab = 'password'"
@@ -156,7 +156,7 @@
                                     'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'password'
                                 }"
                                 class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
-                                <i class="fas fa-lock mr-2"></i>
+                                <i class="bi bi-lock mr-2"></i>
                                 Cambiar Contraseña
                             </button>
                             <button @click="activeTab = 'privacy'"
@@ -165,7 +165,7 @@
                                     'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'privacy'
                                 }"
                                 class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
-                                <i class="fas fa-shield-alt mr-2"></i>
+                                <i class="bi bi-shield mr-2"></i>
                                 Privacidad
                             </button>
                             <button @click="activeTab = 'promo'"
@@ -174,7 +174,7 @@
                                     'text-gray-600 hover:text-gray-900 hover:bg-gray-50': activeTab !== 'promo'
                                 }"
                                 class="px-6 py-4 text-sm font-medium transition-all duration-200 flex items-center">
-                                <i class="fas fa-qrcode mr-2"></i>
+                                <i class="bi bi-gift mr-2"></i>
                                 Código de Promoción
                             </button>
                         </nav>
@@ -337,7 +337,7 @@
                                     </button>
                                     <button type="submit"
                                         class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
-                                        <i class="fas fa-save mr-2"></i>
+                                        <i class="bi bi-save mr-2"></i>
                                         Guardar Cambios
                                     </button>
                                 </div>
@@ -368,7 +368,7 @@
                                             placeholder="Ingresa tu contraseña actual">
                                         <button type="button" onclick="togglePasswordVisibility('current_password')"
                                             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
                                     @error('current_password')
@@ -387,12 +387,12 @@
                                             placeholder="Ingresa la nueva contraseña">
                                         <button type="button" onclick="togglePasswordVisibility('password')"
                                             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
                                     <div class="mt-2 space-y-1">
                                         <div class="flex items-center text-xs text-gray-500">
-                                            <i class="fas fa-info-circle mr-1"></i>
+                                            <i class="bi bi-info-circle mr-1"></i>
                                             <span>La contraseña debe tener al menos 8 caracteres</span>
                                         </div>
                                     </div>
@@ -414,7 +414,7 @@
                                             placeholder="Confirma la nueva contraseña">
                                         <button type="button" onclick="togglePasswordVisibility('password_confirmation')"
                                             class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="bi bi-eye"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -424,19 +424,19 @@
                                     <h4 class="text-sm font-semibold text-gray-700 mb-2">Requisitos de seguridad:</h4>
                                     <ul class="space-y-1 text-xs text-gray-600">
                                         <li class="flex items-center" id="length-check">
-                                            <i class="fas fa-circle text-gray-300 mr-2 text-xs"></i>
+                                            <i class="bi bi-circle text-gray-300 mr-2 text-xs"></i>
                                             <span>Al menos 8 caracteres</span>
                                         </li>
                                         <li class="flex items-center" id="uppercase-check">
-                                            <i class="fas fa-circle text-gray-300 mr-2 text-xs"></i>
+                                            <i class="bi bi-circle text-gray-300 mr-2 text-xs"></i>
                                             <span>Al menos una letra mayúscula</span>
                                         </li>
                                         <li class="flex items-center" id="lowercase-check">
-                                            <i class="fas fa-circle text-gray-300 mr-2 text-xs"></i>
+                                            <i class="bi bi-circle text-gray-300 mr-2 text-xs"></i>
                                             <span>Al menos una letra minúscula</span>
                                         </li>
                                         <li class="flex items-center" id="number-check">
-                                            <i class="fas fa-circle text-gray-300 mr-2 text-xs"></i>
+                                            <i class="bi bi-circle text-gray-300 mr-2 text-xs"></i>
                                             <span>Al menos un número</span>
                                         </li>
                                     </ul>
@@ -450,7 +450,7 @@
                                     </button>
                                     <button type="submit"
                                         class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
-                                        <i class="fas fa-key mr-2"></i>
+                                        <i class="bi bi-key mr-2"></i>
                                         Cambiar Contraseña
                                     </button>
                                 </div>
@@ -518,7 +518,7 @@
                                 <div class="flex justify-end pt-6 border-t border-gray-200">
                                     <button type="button"
                                         class="px-6 py-2.5 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-200 shadow-sm hover:shadow-md flex items-center">
-                                        <i class="fas fa-save mr-2"></i>
+                                        <i class="bi bi-save mr-2"></i>
                                         Guardar Configuración
                                     </button>
                                 </div>
@@ -536,7 +536,7 @@
                                     class="text-center py-10 px-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
                                     <div
                                         class="w-20 h-20 mx-auto mb-6 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl shadow-md">
-                                        <i class="fas fa-gift"></i>
+                                        <i class="bi bi-gift"></i>
                                     </div>
                                     <h3 class="text-xl font-bold text-gray-900 mb-2">¡Comienza a recomendar cursos!</h3>
                                     <p class="text-gray-600 max-w-md mx-auto mb-6 text-sm">
@@ -547,7 +547,7 @@
                                         @csrf
                                         <button type="submit"
                                             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center mx-auto">
-                                            <i class="fas fa-wand-magic-sparkles mr-2"></i>
+                                            <i class="bi bi-wand-magic-sparkles mr-2"></i>
                                             Generar mi Código Promo
                                         </button>
                                     </form>
@@ -571,7 +571,7 @@
                                                     style="width: 200px; height: 200px;">
                                                     <!-- Cargando QR -->
                                                     <div class="text-gray-400 text-sm flex flex-col items-center">
-                                                        <i class="fas fa-spinner fa-spin text-2xl mb-2 text-blue-500"></i>
+                                                        <i class="bi bi-spinner fa-spin text-2xl mb-2 text-blue-500"></i>
                                                         <span>Cargando QR...</span>
                                                     </div>
                                                 </div>
@@ -580,12 +580,12 @@
                                             <div class="w-full mt-6 grid grid-cols-2 gap-3">
                                                 <button type="button" id="btn-download-promo-qr"
                                                     class="flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm">
-                                                    <i class="fas fa-download mr-2 text-blue-600"></i>
+                                                    <i class="bi bi-download mr-2 text-blue-600"></i>
                                                     Descargar
                                                 </button>
                                                 <button type="button" id="btn-share-promo-qr"
                                                     class="flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm text-sm">
-                                                    <i class="fas fa-share-alt mr-2"></i>
+                                                    <i class="bi bi-share-alt mr-2"></i>
                                                     Compartir
                                                 </button>
                                             </div>
@@ -617,7 +617,7 @@
                                                         class="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 rounded-l-xl bg-gray-50 text-gray-600 text-sm focus:outline-none">
                                                     <button type="button" id="btn-copy-promo-link"
                                                         class="px-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-r-xl transition-all flex items-center justify-center text-sm shadow-sm">
-                                                        <i class="fas fa-copy mr-2"></i>
+                                                        <i class="bi bi-copy mr-2"></i>
                                                         Copiar
                                                     </button>
                                                 </div>
@@ -629,17 +629,17 @@
                                                     funciona?</h4>
                                                 <ul class="space-y-2.5 text-xs text-gray-600">
                                                     <li class="flex items-start">
-                                                        <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                        <i class="bi bi-check text-emerald-500 mr-2 mt-0.5"></i>
                                                         <span>Comparte el enlace de afiliación en tus redes sociales o
                                                             directamente con tus amigos.</span>
                                                     </li>
                                                     <li class="flex items-start">
-                                                        <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                        <i class="bi bi-check text-emerald-500 mr-2 mt-0.5"></i>
                                                         <span>Cualquier persona que entre con tu enlace y realice una compra
                                                             aplicará tu código promocional.</span>
                                                     </li>
                                                     <li class="flex items-start">
-                                                        <i class="fas fa-check text-emerald-500 mr-2 mt-0.5"></i>
+                                                        <i class="bi bi-check text-emerald-500 mr-2 mt-0.5"></i>
                                                         <span>Podrás ver tus ventas y comisiones generadas en tu <a
                                                                 href="{{ route('student.affiliate.dashboard') }}"
                                                                 class="text-blue-600 hover:underline font-semibold">Panel
@@ -665,7 +665,7 @@
                                     class="flex items-center p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                                     <div
                                         class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-book text-blue-600"></i>
+                                        <i class="bi bi-book text-blue-600"></i>
                                     </div>
                                     <div class="ml-4 flex-1">
                                         <p class="text-sm font-medium text-gray-900">
@@ -685,7 +685,7 @@
                             <div class="text-center py-8">
                                 <div
                                     class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                                    <i class="fas fa-book-open text-gray-400 text-2xl"></i>
+                                    <i class="bi bi-book text-gray-400 text-2xl"></i>
                                 </div>
                                 <p class="text-gray-600">No tienes cursos activos</p>
                                 <a href="{{ route('cursos') }}"
@@ -850,7 +850,7 @@
                     navigator.clipboard.writeText(linkVal).then(() => {
                         const originalHTML = btnCopyPromo.innerHTML;
                         btnCopyPromo.innerHTML =
-                            '<i class="fas fa-check" style="color:#10b981;"></i> ¡Copiado!';
+                            '<i class="bi bi-check" style="color:#10b981;"></i> ¡Copiado!';
                         setTimeout(() => {
                             btnCopyPromo.innerHTML = originalHTML;
                         }, 2000);
@@ -901,7 +901,7 @@
                         navigator.clipboard.writeText(promoLink).then(() => {
                             const originalHTML = btnSharePromo.innerHTML;
                             btnSharePromo.innerHTML =
-                                '<i class="fas fa-check" style="color:#10b981;"></i> ¡Copiado!';
+                                '<i class="bi bi-check" style="color:#10b981;"></i> ¡Copiado!';
                             setTimeout(() => {
                                 btnSharePromo.innerHTML = originalHTML;
                             }, 2000);

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $enterprise->favicon_path }}">
     <title>Verificar Certificado - IPF CONSULTORES SAC</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="{{ asset('css/bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -21,7 +21,11 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
-                            <i class="fas {{ $valid ? 'fa-solid fa-check' : 'fa-solid fa-xmark' }} text-2xl"></i>
+                            @if($valid)
+                                <i class="bi bi-check-circle text-2xl"></i>
+                            @else
+                                <i class="bi bi-x-circle text-2xl"></i>
+                            @endif
                         </div>
                         <div>
                             <h2 class="text-xl font-bold">
@@ -95,17 +99,17 @@
                 <div class="mt-8 flex flex-wrap gap-4 justify-center">
                     <a href="javascript:window.print()"
                        class="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors duration-200 flex items-center">
-                        <i class="fas fa-print mr-2"></i>
+                        <i class="bi bi-printer mr-2"></i>
                         Imprimir Verificación
                     </a>
                     <a href="{{ route('student.certificates.download-exact', $certificate->id) }}"
                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center">
-                        <i class="fas fa-download mr-2"></i>
+                        <i class="bi bi-download mr-2"></i>
                         Descargar Certificado PDF
                     </a>
                     <button onclick="copyVerificationLink()"
                             class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center">
-                        <i class="fas fa-link mr-2"></i>
+                        <i class="bi bi-link mr-2"></i>
                         Copiar Enlace de Verificación
                     </button>
                 </div>
@@ -114,7 +118,7 @@
             <!-- Mensaje de certificado inválido -->
             <div class="p-12 text-center">
                 <div class="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+                    <i class="bi bi-exclamation-triangle text-red-500 text-3xl"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">{{ $message }}</h3>
                 <p class="text-gray-600 mb-8 max-w-md mx-auto">
@@ -135,7 +139,7 @@
             <div class="px-8 py-6 bg-gray-50 border-t border-gray-200">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div class="text-sm text-gray-600 mb-4 md:mb-0">
-                        <i class="fas fa-shield-alt mr-1"></i>
+                        <i class="bi bi-shield-alt mr-1"></i>
                         Sistema seguro de verificación - IPF CONSULTORES SAC
                     </div>
                     <div class="text-xs text-gray-500">

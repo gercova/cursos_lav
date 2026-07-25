@@ -5,7 +5,7 @@
     <!-- Botón de regreso -->
     <div class="mb-4">
         <a href="{{ route('admin.enrollments.index') }}" class="text-blue-600 hover:text-blue-800">
-            <i class="fas fa-arrow-left mr-2"></i> Volver a Inscripciones
+            <i class="bi bi-arrow-left mr-2"></i> Volver a Inscripciones
         </a>
     </div>
 
@@ -21,7 +21,7 @@
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-2xl text-blue-600"></i>
+                                <i class="bi bi-person text-2xl text-blue-600"></i>
                             </div>
                         </div>
                         <div class="ml-6">
@@ -58,7 +58,7 @@
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-book text-2xl text-purple-600"></i>
+                                <i class="bi bi-book text-2xl text-purple-600"></i>
                             </div>
                         </div>
                         <div class="ml-6 flex-1">
@@ -219,22 +219,22 @@
                     <div class="space-y-3">
                         <a href="{{ route('admin.users.show', $enrollment->user) }}"
                            class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md">
-                            <i class="fas fa-user mr-2"></i>Ver Perfil del Estudiante
+                            <i class="bi bi-person mr-2"></i>Ver Perfil del Estudiante
                         </a>
 
                         <a href="{{ route('admin.courses.edit', $enrollment->course) }}"
                            class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-md">
-                            <i class="fas fa-edit mr-2"></i>Editar Curso
+                            <i class="bi bi-edit mr-2"></i>Editar Curso
                         </a>
 
                         <button onclick="generateCertificate()"
                                 class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
-                            <i class="fas fa-certificate mr-2"></i>Generar Certificado
+                            <i class="bi bi-certificate mr-2"></i>Generar Certificado
                         </button>
 
                         <button onclick="sendReminder()"
                                 class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md">
-                            <i class="fas fa-envelope mr-2"></i>Enviar Recordatorio
+                            <i class="bi bi-envelope mr-2"></i>Enviar Recordatorio
                         </button>
                     </div>
                 </div>

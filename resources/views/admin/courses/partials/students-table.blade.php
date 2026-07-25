@@ -46,18 +46,10 @@
     <tr>
         <td colspan="5" class="px-6 py-10 text-center">
             <div class="flex flex-col items-center justify-center text-gray-500">
-                <i class="fas fa-user-graduate text-4xl mb-3 text-gray-300"></i>
+                <i class="bi bi-person-check text-4xl mb-3 text-gray-300"></i>
                 <p class="text-lg font-medium">No se encontraron estudiantes</p>
                 <p class="text-sm">Tu búsqueda no dio resultados.</p>
             </div>
         </td>
     </tr>
 @endforelse
-
-{{-- <div id="totalStudents" style="display:none">{{ $enrollments->total() }}</div> --}}
-
-{{-- <div id="paginationData" style="display:none">
-    @if($enrollments->hasPages())
-        {{ $enrollments->appends(['search' => request('search')])->links() }}
-    @endif
-</div> --}}

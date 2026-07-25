@@ -18,11 +18,11 @@
             <div class="flex space-x-3">
                 <a href="{{ route('admin.documents.create', $course) }}" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    <i class="fas fa-plus mr-2"></i> Subir Documento
+                    <i class="bi bi-plus-lg mr-2"></i> Subir Documento
                 </a>
                 <a href="{{ route('admin.courses.edit', $course) }}" 
                    class="inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    <i class="fas fa-arrow-left mr-2"></i> Volver al Curso
+                    <i class="bi bi-arrow-left mr-2"></i> Volver al Curso
                 </a>
             </div>
         </div>
@@ -34,7 +34,7 @@
             <div class="flex flex-wrap gap-4">
                 <div class="relative">
                     <input type="text" id="searchInput" placeholder="Buscar documentos..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
                 </div>
                 
                 <select id="typeFilter" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -86,15 +86,15 @@
                                 <div class="file-icon {{ $document->file_type }} mr-3">
                                     @php
                                         $iconClass = match($document->file_type) {
-                                            'pdf' => 'fa-file-pdf',
-                                            'doc', 'docx' => 'fa-file-word',
-                                            'xls', 'xlsx' => 'fa-file-excel',
-                                            'ppt', 'pptx' => 'fa-file-powerpoint',
-                                            'jpg', 'jpeg', 'png', 'gif' => 'fa-file-image',
-                                            default => 'fa-file'
+                                            'pdf' => 'bi-file-earmark-pdf',
+                                            'doc', 'docx' => 'bi-file-earmark-word',
+                                            'xls', 'xlsx' => 'bi-file-earmark-excel',
+                                            'ppt', 'pptx' => 'bi-file-earmark-powerpoint',
+                                            'jpg', 'jpeg', 'png', 'gif' => 'bi-file-image',
+                                            default => 'bi-file-earmark'
                                         };
                                     @endphp
-                                    <i class="fas {{ $iconClass }}"></i>
+                                    <i class="bi {{ $iconClass }}"></i>
                                 </div>
                                 <div class="text-sm font-medium text-gray-900">
                                     {{ $document->title }}
@@ -135,19 +135,19 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
                                 <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-900" title="Ver archivo">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="bi bi-eye"></i>
                                 </a>
                                 <button type="button" data-id="{{ $document->id }}" class="duplicate-document-btn text-purple-600 hover:text-purple-900" title="Duplicar">
-                                    <i class="fas fa-copy"></i>
+                                    <i class="bi bi-copy"></i>
                                 </button>
                                 <a href="{{ route('admin.documents.edit', $document) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="bi bi-pencil"></i>
                                 </a>
                                 <button type="button" 
-                                        data-id="{{ $document->id }}" 
-                                        data-title="{{ $document->title }}" 
-                                        class="delete-document-btn text-red-600 hover:text-red-900" title="Eliminar">
-                                    <i class="fas fa-trash"></i>
+                                    data-id="{{ $document->id }}" 
+                                    data-title="{{ $document->title }}" 
+                                    class="delete-document-btn text-red-600 hover:text-red-900" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </td>

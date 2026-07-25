@@ -173,7 +173,7 @@
                         <p class="text-gray-500 mb-6">Comienza organizando tus cursos creando tu primera categoría.</p>
                         <button onclick="openModal('createCategoryModal')"
                             class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-plus mr-2"></i> Crear Primera Categoría
+                            <i class="bi bi-plus mr-2"></i> Crear Primera Categoría
                         </button>
                     </div>
                 @else

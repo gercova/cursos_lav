@@ -5,7 +5,7 @@
     <!-- Header -->
     <div class="mb-6">
         <a href="{{ route('admin.packages.index') }}" class="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center gap-2">
-            <i class="fas fa-arrow-left"></i>
+            <i class="bi bi-arrow-left"></i>
             <span>Volver a la lista</span>
         </a>
         <h1 class="text-2xl font-bold text-gray-900 mt-2">Crear Nuevo Paquete</h1>
@@ -169,7 +169,7 @@
                     <div class="mt-1 flex items-center">
                         <div class="flex-shrink-0 h-32 w-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200" x-show="!imagePreview">
                             <div class="h-full w-full flex items-center justify-center text-gray-400">
-                                <i class="fas fa-image text-4xl"></i>
+                                <i class="bi bi-image text-4xl"></i>
                             </div>
                         </div>
                         <div class="flex-shrink-0 h-32 w-48 rounded-lg overflow-hidden border border-gray-200" x-show="imagePreview">
@@ -198,12 +198,12 @@
             <div class="mt-8 border-t pt-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-book text-blue-600"></i>
+                        <i class="bi bi-book text-blue-600"></i>
                         Cursos Específicos Incluidos
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.courses.length > 0" x-text="form.courses.length"></span>
                     </h2>
                     <button type="button" @click="openCourseModal" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="bi bi-plus-circle"></i>
                         <span>Agregar Cursos</span>
                     </button>
                 </div>
@@ -224,14 +224,14 @@
                             <template x-for="(course, index) in form.courses" :key="index">
                                 <div class="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition duration-150">
                                     <div class="flex-1 flex items-center gap-3">
-                                        <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
+                                        <i class="bi bi-grip-vertical text-gray-400 cursor-move"></i>
                                         <div class="flex-1 min-w-0">
                                             <p class="font-medium text-gray-900 truncate" x-text="getCourseName(course.id)" :title="getCourseName(course.id)"></p>
                                             <p class="text-xs text-gray-500">ID: <span x-text="course.id"></span></p>
                                         </div>
                                     </div>
                                     <button type="button" @click="removeCourse(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </template>
@@ -248,7 +248,7 @@
                 <!-- Estado vacío -->
                 <div x-show="form.courses.length === 0" 
                     class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <i class="fas fa-book-open text-4xl text-gray-400 mb-3"></i>
+                    <i class="bi bi-book text-4xl text-gray-400 mb-3"></i>
                     <p class="text-gray-500 mb-2">No hay cursos seleccionados</p>
                     <button type="button" @click="openCourseModal" class="text-blue-600 hover:text-blue-800 font-medium">
                         + Agregar cursos al paquete
@@ -260,12 +260,12 @@
             <div class="mt-8 border-t pt-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-folder text-purple-600"></i>
+                        <i class="bi bi-folder text-purple-600"></i>
                         Categorías Incluidas
                         <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full" x-show="form.categories.length > 0" x-text="form.categories.length"></span>
                     </h2>
                     <button type="button" @click="addCategory" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition duration-150">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="bi bi-plus-circle"></i>
                         <span>Agregar Categoría</span>
                     </button>
                 </div>
@@ -294,11 +294,8 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    {{-- <div class="sm:w-48">
-                                        <input type="number" x-model="category.max_courses_per_category" placeholder="Máx. cursos" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-                                    </div> --}}
                                     <button type="button" @click="removeCategory(index)" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition duration-150 self-end sm:self-center">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
                             </template>
@@ -324,8 +321,8 @@
                 Cancelar
             </a>
             <button type="submit" :disabled="loading" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition duration-150">
-                <i x-show="!loading" class="fas fa-save"></i>
-                <i x-show="loading" class="fas fa-spinner fa-spin"></i>
+                <i x-show="!loading" class="bi bi-save"></i>
+                <i x-show="loading" class="bi bi-spinner fa-spin"></i>
                 <span x-text="loading ? 'Guardando...' : 'Guardar Paquete'"></span>
             </button>
         </div>
@@ -342,11 +339,11 @@
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <div class="flex justify-between items-center">
                         <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <i class="fas fa-book text-blue-600"></i>
+                            <i class="bi bi-book text-blue-600"></i>
                             Seleccionar Cursos
                         </h3>
                         <button @click="showCourseModal = false" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times text-xl"></i>
+                            <i class="bi bi-x text-xl"></i>
                         </button>
                     </div>
                 </div>
@@ -372,12 +369,12 @@
                 <div class="px-6 py-3 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <button type="button" @click="selectAllFiltered" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                            <i class="fas fa-solid fa-check"></i>
+                            <i class="bi bi-check"></i>
                             <span>Seleccionar todos</span>
                         </button>
                         <span class="text-gray-300">|</span>
                         <button type="button" @click="deselectAll" class="text-sm text-gray-600 hover:text-gray-800 font-medium flex items-center gap-1">
-                            <i class="fas fa-times"></i>
+                            <i class="bi bi-x"></i>
                             <span>Deseleccionar todos</span>
                         </button>
                     </div>
@@ -399,7 +396,7 @@
                                     <p class="text-sm text-gray-500" x-text="course.category ? course.category.name : 'Sin categoría'"></p>
                                     <p class="text-xs text-gray-400 mt-1">
                                         <span class="inline-flex items-center gap-1">
-                                            <i class="fas fa-users"></i>
+                                            <i class="bi bi-people"></i>
                                             <span x-text="course.students_count || 0"></span>
                                         </span>
                                         <span class="mx-2">•</span>
@@ -411,7 +408,7 @@
                         
                         <!-- Mensaje cuando no hay cursos -->
                         <div x-show="filteredCourses.length === 0" class="col-span-2 text-center py-12">
-                            <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+                            <i class="bi bi-search text-4xl text-gray-300 mb-3"></i>
                             <p class="text-gray-500">No se encontraron cursos</p>
                         </div>
                     </div>
@@ -431,7 +428,7 @@
                                 Cancelar
                             </button>
                             <button type="button" @click="addSelectedCourses" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 flex items-center gap-2">
-                                <i class="fas fa-check"></i>
+                                <i class="bi bi-check"></i>
                                 <span>Agregar (<span x-text="selectedCourses.length"></span>)</span>
                             </button>
                         </div>
@@ -444,7 +441,7 @@
     <!-- Alertas -->
     <div x-show="alert.show" x-cloak x-transition :class="alert.type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'" class="fixed top-4 right-4 border px-4 py-3 rounded-lg shadow-lg z-50">
         <div class="flex items-center gap-2">
-            <i :class="alert.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+            <i :class="alert.type === 'success' ? 'bi bi-check-circle' : 'bi bi-exclamation-circle'"></i>
             <span x-text="alert.message"></span>
         </div>
     </div>

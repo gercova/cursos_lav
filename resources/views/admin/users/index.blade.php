@@ -414,7 +414,7 @@
                                                     <button onclick="copyPromoLink('{{ $user->code }}', this)"
                                                         class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
                                                         title="Copiar enlace de promoción">
-                                                        <i class="fas fa-link"></i> Copiar enlace
+                                                        <i class="bi bi-link"></i> Copiar enlace
                                                     </button>
                                                 @endif
 
@@ -1383,7 +1383,7 @@
                 if (successful) {
                     // Feedback visual
                     const originalContent = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check text-green-600"></i>';
+                    button.innerHTML = '<i class="bi bi-check text-green-600"></i>';
                     button.classList.remove('text-gray-600', 'bg-gray-100', 'border-gray-300');
                     button.classList.add('text-green-600', 'bg-green-100', 'border-green-300');
 

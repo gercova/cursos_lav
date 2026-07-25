@@ -10,7 +10,7 @@
 --}}
 
 @php
-    $icon     = $icon     ?? 'fa-inbox';
+    $icon     = $icon     ?? 'bi-inbox';
     $message  = $message  ?? 'Sin resultados';
     $subtitle = $subtitle ?? null;
     $color    = $color    ?? 'gray';
@@ -30,7 +30,7 @@
 <div class="flex flex-col items-center justify-center py-14 text-center">
     {{-- Icono --}}
     <div class="w-16 h-16 rounded-2xl {{ $colors['bg'] }} ring-4 {{ $colors['ring'] }} flex items-center justify-center mb-4">
-        <i class="fas {{ $icon }} text-2xl {{ $colors['icon'] }}"></i>
+        <i class="bi {{ $icon }} text-2xl {{ $colors['icon'] }}"></i>
     </div>
 
     {{-- Mensaje principal --}}

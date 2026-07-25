@@ -11,18 +11,18 @@
         <div class="flex space-x-3 mt-4 md:mt-0">
             <a href="{{ route('admin.permissions.index') }}" 
                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-arrow-left mr-2"></i> Volver a Permisos
+                <i class="bi bi-arrow-left mr-2"></i> Volver a Permisos
             </a>
             @can('edit_permissions')
             <button onclick="openEditPermissionModal({{ $permission->id }})" 
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-edit mr-2"></i> Editar
+                <i class="bi bi-pencil-square mr-2"></i> Editar
             </button>
             @endcan
             @can('delete_permissions')
             <button onclick="confirmDeletePermission({{ $permission->id }})" 
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-trash mr-2"></i> Eliminar
+                <i class="bi bi-trash mr-2"></i> Eliminar
             </button>
             @endcan
         </div>
@@ -33,7 +33,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                    <i class="fas fa-key text-xl"></i>
+                    <i class="bi bi-key text-xl"></i>
                 </div>
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-gray-800">Información del Permiso</h3>
@@ -50,7 +50,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 text-green-600">
-                    <i class="fas fa-user-shield text-xl"></i>
+                    <i class="bi bi-shield text-xl"></i>
                 </div>
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-gray-800">Roles con este Permiso</h3>
@@ -63,7 +63,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <i class="fas fa-users text-xl"></i>
+                    <i class="bi bi-people text-xl"></i>
                 </div>
                 <div class="ml-4">
                     <h3 class="text-lg font-semibold text-gray-800">Usuarios con este Permiso</h3>
@@ -154,7 +154,7 @@
                                 @elseif($role->name == 'instructor') bg-blue-100 text-blue-600
                                 @elseif($role->name == 'student') bg-green-100 text-green-600
                                 @else bg-gray-100 text-gray-600 @endif">
-                                <i class="fas fa-user-shield"></i>
+                                <i class="bi bi-shield"></i>
                             </div>
                             <div class="ml-4">
                                 <h4 class="font-medium text-gray-900 capitalize">{{ $role->name }}</h4>
@@ -170,7 +170,7 @@
                 </div>
                 @else
                 <div class="text-center py-8">
-                    <i class="fas fa-user-shield text-4xl text-gray-300 mb-4"></i>
+                    <i class="bi bi-shield text-4xl text-gray-300 mb-4"></i>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">No hay roles asignados</h3>
                     <p class="text-gray-600">Este permiso no está asignado a ningún rol.</p>
                 </div>
@@ -214,7 +214,7 @@
                                              class="h-10 w-10 rounded-full">
                                         @else
                                         <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <i class="fas fa-user text-blue-600"></i>
+                                            <i class="bi bi-person text-blue-600"></i>
                                         </div>
                                         @endif
                                     </div>
@@ -238,7 +238,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <a href="{{ route('admin.users.show', $user) }}" 
                                    class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-eye"></i> Ver
+                                    <i class="bi bi-eye"></i> Ver
                                 </a>
                             </td>
                         </tr>
@@ -248,7 +248,7 @@
             </div>
             @else
             <div class="text-center py-8">
-                <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
+                <i class="bi bi-people text-4xl text-gray-300 mb-4"></i>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">No hay usuarios directos</h3>
                 <p class="text-gray-600">Ningún usuario tiene este permiso asignado directamente.</p>
             </div>
@@ -270,7 +270,7 @@
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fas fa-edit text-blue-600"></i>
+                            <i class="bi bi-pencil-square text-blue-600"></i>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">Editar Permiso</h3>
@@ -295,7 +295,7 @@
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button type="submit" 
                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        <i class="fas fa-save mr-2"></i> Actualizar
+                        <i class="bi bi-save mr-2"></i> Actualizar
                     </button>
                     <button type="button" 
                             onclick="closeEditPermissionModal()"
@@ -318,7 +318,7 @@
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        <i class="bi bi-exclamation-triangle text-red-600"></i>
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">Confirmar eliminación</h3>

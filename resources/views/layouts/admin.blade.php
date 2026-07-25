@@ -137,7 +137,7 @@
                 @role('admin|instructor')
                     <a href="{{ route('admin.exams.index') }}" @click="close()"
                         class="block py-2 px-4 hover:bg-blue-700 {{ request()->routeIs('admin.exams.*') ? 'bg-blue-700' : '' }}">
-                        <i class="bi bi-clipboard-list mr-2"></i> Gestión de Exámenes
+                        <i class="bi bi-clipboard mr-2"></i> Gestión de Exámenes
                     </a>
                 @endrole
 
@@ -178,7 +178,7 @@
                     <div class="flex items-center">
                         <!-- Botón Hamburguesa -->
                         <button @click="toggle()" class="mr-4 text-gray-700 hover:text-blue-600 md:hidden">
-                            <i class="fas fa-bars text-xl"></i>
+                            <i class="bi bi-bar-chart text-xl"></i>
                         </button>
                         <div>
                             <h2 class="text-lg font-semibold text-gray-900">@yield('title')</h2>
@@ -189,7 +189,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="text-gray-500 hover:text-gray-700 flex items-center">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                                <i class="bi bi-box-arrow-right mr-2"></i>Cerrar Sesión
                             </button>
                         </form>
                     </div>
@@ -199,13 +199,13 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
                 @if (session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+                        <i class="bi bi-check-circle mr-2"></i>{{ session('success') }}
                     </div>
                 @endif
 
                 @if (session('error'))
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+                        <i class="bi bi-exclamation-circle mr-2"></i>{{ session('error') }}
                     </div>
                 @endif
                 @yield('content')

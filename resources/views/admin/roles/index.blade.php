@@ -8,7 +8,7 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Gestión de Roles y Permisos</h2>
             <button onclick="openCreateModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-plus mr-2"></i> Nuevo Rol
+                <i class="bi bi-plus mr-2"></i> Nuevo Rol
             </button>
         </div>
 
@@ -23,13 +23,13 @@
                         @if(!in_array($role->name, ['admin', 'instructor', 'student']))
                         <div class="flex space-x-2">
                             <button onclick="openEditModal({{ json_encode($role) }})" class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-edit"></i>
+                                <i class="bi bi-pencil-square"></i>
                             </button>
                             <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('¿Estás seguro?')">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </form>
                         </div>
@@ -84,7 +84,7 @@
         <div class="flex justify-between items-center mb-4">
             <h3 id="modalTitle" class="text-xl font-bold"></h3>
             <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
+                <i class="bi bi-x"></i>
             </button>
         </div>
         

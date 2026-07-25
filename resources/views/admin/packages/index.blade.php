@@ -1,158 +1,186 @@
 @extends('layouts.admin')
 @section('title', 'Gestión de Paquetes')
 @section('content')
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="packagesManager()">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 class="text-2xl font-bold text-gray-900">Paquetes de Cursos</h1>
-        <a href="{{ route('admin.packages.create') }}" 
-           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-150">
-            <i class="fas fa-plus"></i>
-            <span>Nuevo Paquete</span>
-        </a>
-    </div>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="packagesManager()">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <h1 class="text-2xl font-bold text-gray-900">Paquetes de Cursos</h1>
+            <a href="{{ route('admin.packages.create') }}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-150">
+                <i class="bi bi-plus"></i>
+                <span>Nuevo Paquete</span>
+            </a>
+        </div>
 
-    <!-- Filtros y Búsqueda -->
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex-1">
-                <div class="relative">
-                    <svg x-show="!searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <svg x-show="searching" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    <input type="text" x-model="search" @input.debounce.400ms="filterPackages()" placeholder="Buscar paquetes..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+        <!-- Filtros y Búsqueda -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <svg x-show="!searching"
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <svg x-show="searching"
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-500 animate-spin"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z">
+                            </path>
+                        </svg>
+                        <input type="text" x-model="search" @input.debounce.400ms="filterPackages()"
+                            placeholder="Buscar paquetes..."
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <select x-model="statusFilter" @change="filterPackages"
+                        class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                        <option value="all">Todos los estados</option>
+                        <option value="active">Activos</option>
+                        <option value="inactive">Inactivos</option>
+                    </select>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <select x-model="statusFilter" @change="filterPackages" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-                    <option value="all">Todos los estados</option>
-                    <option value="active">Activos</option>
-                    <option value="inactive">Inactivos</option>
-                </select>
+        </div>
+
+        <!-- Tabla de Paquetes -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden" id="packages-table-container">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Precio</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cupos
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cursos</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Categorías</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Estado</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @forelse($packages as $package)
+                            <tr class="hover:bg-gray-50 transition duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ $package->title }}</div>
+                                    <div class="text-sm text-gray-500">Creado: {{ $package->created_at->format('d/m/Y') }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        @if ($package->promotion_price)
+                                            <span class="line-through text-gray-400 text-xs">S/
+                                                {{ number_format($package->price, 2) }}</span>
+                                            <br>
+                                            <span class="text-green-600 font-semibold">S/
+                                                {{ number_format($package->promotion_price, 2) }}</span>
+                                        @else
+                                            S/ {{ number_format($package->price, 2) }}
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-gray-500">S/ {{ number_format($package->price_per_person, 2) }}
+                                        x persona</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ $package->seats_min . '-' . $package->seats_max }} personas
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach ($package->courses->take(2) as $course)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                                                {{ Str::limit($course->title, 15) }}
+                                            </span>
+                                        @endforeach
+                                        @if ($package->courses->count() > 2)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
+                                                +{{ $package->courses->count() - 2 }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach ($package->categories->take(2) as $category)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                                                {{ $category->name }}
+                                            </span>
+                                        @endforeach
+                                        @if ($package->categories->count() > 2)
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
+                                                +{{ $package->categories->count() - 2 }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button @click="toggleStatus({{ $package->id }})"
+                                        class="relative inline-flex items-center">
+                                        <span
+                                            :class="{
+                                                'bg-green-500': {{ $package->is_active ? 'true' : 'false' }},
+                                                'bg-gray-300': {{ !$package->is_active ? 'true' : 'false' }}
+                                            }"
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white transition duration-150">
+                                            {{ $package->is_active ? 'Activo' : 'Inactivo' }}
+                                        </span>
+                                    </button>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end gap-2">
+                                        <a href="{{ route('admin.packages.edit', $package) }}"
+                                            class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-full transition duration-150"
+                                            title="Editar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        {{-- <button @click="confirmDelete({{ $package->id }}, '{{ $package->name }}')" class="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-full transition duration-150" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button> --}}
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                    <div class="flex flex-col items-center">
+                                        <i class="bi bi-box2 text-4xl mb-3 text-gray-400"></i>
+                                        <p class="text-lg mb-2">No hay paquetes creados</p>
+                                        <p class="text-sm mb-4">Comienza creando tu primer paquete de cursos</p>
+                                        <a href="{{ route('admin.packages.create') }}"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2">
+                                            <i class="bi bi-plus"></i>
+                                            <span>Crear Paquete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div id="packages-pagination" class="px-6 py-4 border-t border-gray-200">
+                {{ $packages->links() }}
             </div>
         </div>
-    </div>
 
-    <!-- Tabla de Paquetes -->
-    <div class="bg-white rounded-lg shadow-sm overflow-hidden" id="packages-table-container">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cupos</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cursos</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categorías</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($packages as $package)
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ $package->title }}</div>
-                            <div class="text-sm text-gray-500">Creado: {{ $package->created_at->format('d/m/Y') }}</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">
-                                @if($package->promotion_price)
-                                    <span class="line-through text-gray-400 text-xs">S/ {{ number_format($package->price, 2) }}</span>
-                                    <br>
-                                    <span class="text-green-600 font-semibold">S/ {{ number_format($package->promotion_price, 2) }}</span>
-                                @else
-                                    S/ {{ number_format($package->price, 2) }}
-                                @endif
-                            </div>
-                            <div class="text-xs text-gray-500">S/ {{ number_format($package->price_per_person, 2) }} x persona</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {{ $package->seats_min.'-'.$package->seats_max }} personas
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @foreach($package->courses->take(2) as $course)
-                                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                                        {{ Str::limit($course->title, 15) }}
-                                    </span>
-                                @endforeach
-                                @if($package->courses->count() > 2)
-                                    <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
-                                        +{{ $package->courses->count() - 2 }}
-                                    </span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @foreach($package->categories->take(2) as $category)
-                                    <span class="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                                        {{ $category->name }}
-                                    </span>
-                                @endforeach
-                                @if($package->categories->count() > 2)
-                                    <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
-                                        +{{ $package->categories->count() - 2 }}
-                                    </span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <button @click="toggleStatus({{ $package->id }})" 
-                                    class="relative inline-flex items-center">
-                                <span :class="{
-                                    'bg-green-500': {{ $package->is_active ? 'true' : 'false' }},
-                                    'bg-gray-300': {{ !$package->is_active ? 'true' : 'false' }}
-                                }" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white transition duration-150">
-                                    {{ $package->is_active ? 'Activo' : 'Inactivo' }}
-                                </span>
-                            </button>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex justify-end gap-2">
-                                <a href="{{ route('admin.packages.edit', $package) }}" 
-                                   class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-full transition duration-150"
-                                   title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                {{-- <button @click="confirmDelete({{ $package->id }}, '{{ $package->name }}')" class="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-full transition duration-150" title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button> --}}
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                            <div class="flex flex-col items-center">
-                                <i class="fas fa-cubes text-4xl mb-3 text-gray-400"></i>
-                                <p class="text-lg mb-2">No hay paquetes creados</p>
-                                <p class="text-sm mb-4">Comienza creando tu primer paquete de cursos</p>
-                                <a href="{{ route('admin.packages.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center gap-2">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Crear Paquete</span>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Paginación -->
-        <div id="packages-pagination" class="px-6 py-4 border-t border-gray-200">
-            {{ $packages->links() }}
-        </div>
-    </div>
-
-    <!-- Modal de Confirmación de Eliminación -->
-    {{-- <div x-show="showDeleteModal" 
+        <!-- Modal de Confirmación de Eliminación -->
+        {{-- <div x-show="showDeleteModal" 
          x-cloak
          class="fixed inset-0 z-50 overflow-y-auto"
          x-transition:enter="transition ease-out duration-300"
@@ -167,7 +195,7 @@
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            <i class="bi bi-exclamation-triangle text-red-600"></i>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -196,86 +224,99 @@
             </div>
         </div>
     </div> --}}
-</div>
+    </div>
 @endsection
 
 @section('scripts')
-<script>
-function packagesManager() {
-    return {
-        search: '{{ request('search') }}',
-        statusFilter: '{{ request('status', 'all') }}',
-        searching: false,
-        showDeleteModal: false,
-        packageToDelete: { id: null, name: '' },
-        
-        async filterPackages() {
-            this.searching = true;
+    <script>
+        function packagesManager() {
+            return {
+                search: '{{ request('search') }}',
+                statusFilter: '{{ request('status', 'all') }}',
+                searching: false,
+                showDeleteModal: false,
+                packageToDelete: {
+                    id: null,
+                    name: ''
+                },
 
-            const params = new URLSearchParams();
-            if (this.search) params.append('search', this.search);
-            if (this.statusFilter && this.statusFilter !== 'all') params.append('status', this.statusFilter);
-            params.append('ajax', '1');
+                async filterPackages() {
+                    this.searching = true;
 
-            const url = `{{ route('admin.packages.index') }}?${params.toString()}`;
-            const displayUrl = `{{ route('admin.packages.index') }}?${params.toString().replace('&ajax=1','').replace('ajax=1&','').replace('ajax=1','')}`;
-            window.history.replaceState(null, '', displayUrl || '{{ route('admin.packages.index') }}');
+                    const params = new URLSearchParams();
+                    if (this.search) params.append('search', this.search);
+                    if (this.statusFilter && this.statusFilter !== 'all') params.append('status', this.statusFilter);
+                    params.append('ajax', '1');
 
-            try {
-                const res  = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                const html = await res.text();
-                const parser = new DOMParser();
-                const doc    = parser.parseFromString(html, 'text/html');
+                    const url = `{{ route('admin.packages.index') }}?${params.toString()}`;
+                    const displayUrl =
+                        `{{ route('admin.packages.index') }}?${params.toString().replace('&ajax=1','').replace('ajax=1&','').replace('ajax=1','')}`;
+                    window.history.replaceState(null, '', displayUrl || '{{ route('admin.packages.index') }}');
 
-                const newTable = doc.getElementById('packages-table-container');
-                if (newTable) document.getElementById('packages-table-container').innerHTML = newTable.innerHTML;
+                    try {
+                        const res = await fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        const html = await res.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
 
-                const newPag = doc.getElementById('packages-pagination');
-                const curPag = document.getElementById('packages-pagination');
-                if (newPag && curPag) curPag.innerHTML = newPag.innerHTML;
-            } catch (err) {
-                console.error('Error en búsqueda:', err);
-            } finally {
-                this.searching = false;
+                        const newTable = doc.getElementById('packages-table-container');
+                        if (newTable) document.getElementById('packages-table-container').innerHTML = newTable
+                            .innerHTML;
+
+                        const newPag = doc.getElementById('packages-pagination');
+                        const curPag = document.getElementById('packages-pagination');
+                        if (newPag && curPag) curPag.innerHTML = newPag.innerHTML;
+                    } catch (err) {
+                        console.error('Error en búsqueda:', err);
+                    } finally {
+                        this.searching = false;
+                    }
+                },
+
+                toggleStatus(packageId) {
+                    if (!confirm('¿Estás seguro de cambiar el estado del paquete?')) return;
+
+                    axios.post(`/admin/packages/${packageId}/toggle-status`)
+                        .then(response => {
+                            if (response.data.success) {
+                                // Recargar para mostrar el cambio
+                                window.location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error al cambiar el estado: ' + (error.response?.data?.message ||
+                                'Error desconocido'));
+                        });
+                },
+
+                confirmDelete(id, name) {
+                    this.packageToDelete = {
+                        id,
+                        name
+                    };
+                    this.showDeleteModal = true;
+                },
+
+                deletePackage() {
+                    axios.delete(`/admin/packages/${this.packageToDelete.id}`)
+                        .then(response => {
+                            if (response.data.success) {
+                                window.location.reload();
+                            } else {
+                                alert(response.data.message);
+                                this.showDeleteModal = false;
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error al eliminar: ' + (error.response?.data?.message || 'Error desconocido'));
+                            this.showDeleteModal = false;
+                        });
+                }
             }
-        },
-        
-        toggleStatus(packageId) {
-            if (!confirm('¿Estás seguro de cambiar el estado del paquete?')) return;
-            
-            axios.post(`/admin/packages/${packageId}/toggle-status`)
-                .then(response => {
-                    if (response.data.success) {
-                        // Recargar para mostrar el cambio
-                        window.location.reload();
-                    }
-                })
-                .catch(error => {
-                    alert('Error al cambiar el estado: ' + (error.response?.data?.message || 'Error desconocido'));
-                });
-        },
-        
-        confirmDelete(id, name) {
-            this.packageToDelete = { id, name };
-            this.showDeleteModal = true;
-        },
-        
-        deletePackage() {
-            axios.delete(`/admin/packages/${this.packageToDelete.id}`)
-                .then(response => {
-                    if (response.data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(response.data.message);
-                        this.showDeleteModal = false;
-                    }
-                })
-                .catch(error => {
-                    alert('Error al eliminar: ' + (error.response?.data?.message || 'Error desconocido'));
-                    this.showDeleteModal = false;
-                });
         }
-    }
-}
-</script>
+    </script>
 @endsection

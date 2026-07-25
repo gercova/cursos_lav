@@ -94,7 +94,6 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
 
     // si usuario tiene compro un paquete
-    // Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin')->middleware('company.plan');
     Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
     Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
     Route::put('/mi-colaborador/{user}/password', [BusinessManagementController::class, 'updatePassword'])->name('company.password');
@@ -119,8 +118,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     Route::get('/package/{packageId}/select-courses',   [PackageSelectionController::class, 'showSelectionForm'])->name('student.package.select');
     Route::post('/package/{packageId}/save-courses',    [PackageSelectionController::class, 'storeSelection'])->name('student.package.save');
-
-    // Esta puede ir en api.php o web.php (dependiendo de cómo manejes tus rutas AJAX)
     Route::get('/api/student/package/courses',          [PackageSelectionController::class, 'getCourses']);
 
     // Listar exámenes
@@ -184,8 +181,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
-    // Notificaciones
-    // Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
 
     // Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
     // Rutas de retorno de Mercado Pago

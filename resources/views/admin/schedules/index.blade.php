@@ -254,7 +254,7 @@
             $releasedCount = $byMonth->flatten()->filter(fn($i) => $i->is_released)->count();
             $upcomingCount = $totalItems - $releasedCount;
         @endphp
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <i class="bi bi-calendar-check text-blue-600"></i>

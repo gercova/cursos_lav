@@ -6,7 +6,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
-                    <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
+                    <i class="bi bi-calendar-alt text-blue-600 mr-2"></i>
                     Cronograma de Capacitaciones
                 </h1>
                 <p class="text-gray-500 mt-1 text-sm">
@@ -16,11 +16,11 @@
             <div class="flex items-center gap-2">
                 <button @click="openAddModal()"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors duration-200 shadow-sm">
-                    <i class="fas fa-plus"></i> Agregar al Cronograma
+                    <i class="bi bi-plus-circle"></i> Agregar al Cronograma
                 </button>
                 <button @click="confirmCopyYear()"
                     class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors duration-200 shadow-sm">
-                    <i class="fas fa-copy"></i> Copiar al {{ $year + 1 }}
+                    <i class="bi bi-copy"></i> Copiar al {{ $year + 1 }}
                 </button>
             </div>
         </div>
@@ -33,12 +33,12 @@
                 <div class="flex items-center gap-1">
                     <a href="{{ request()->fullUrlWithQuery(['year' => $year - 1]) }}"
                         class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
-                        <i class="fas fa-chevron-left text-xs"></i>
+                        <i class="bi bi-chevron-left text-xs"></i>
                     </a>
                     <span class="text-lg font-bold text-blue-700 px-3">{{ $year }}</span>
                     <a href="{{ request()->fullUrlWithQuery(['year' => $year + 1]) }}"
                         class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors">
-                        <i class="fas fa-chevron-right text-xs"></i>
+                        <i class="bi bi-chevron-right text-xs"></i>
                     </a>
                 </div>
             </div>
@@ -63,7 +63,7 @@
             {{-- Categoría (filtro client-side) --}}
             <div class="flex items-center gap-2">
                 <label class="text-sm font-semibold text-gray-600">
-                    <i class="fas fa-layer-group text-purple-500 mr-1"></i>Categoría:
+                    <i class="bi bi-layer-group text-purple-500 mr-1"></i>Categoría:
                 </label>
                 <select x-model="filterCategoryId"
                     class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white transition-colors"
@@ -76,7 +76,7 @@
                 <button x-show="filterCategoryId" @click="filterCategoryId = ''"
                     class="text-xs text-purple-500 hover:text-purple-700 transition-colors flex items-center gap-1"
                     title="Limpiar filtro de categoría">
-                    <i class="fas fa-times-circle"></i>
+                    <i class="bi bi-x"></i>
                 </button>
             </div>
 
@@ -159,7 +159,7 @@
                                                     class="flex-shrink-0 hover:scale-110 transition-transform focus:outline-none"
                                                     title="{{ $item->is_active ? 'Desactivar (Ocultar por falta de pago)' : 'Activar (Mostrar)' }}">
                                                     <i
-                                                        class="fas {{ $item->is_active ? 'fa-toggle-on text-emerald-500 text-lg' : 'fa-toggle-off text-gray-400 text-lg' }}"></i>
+                                                        class="bi {{ $item->is_active ? 'bi-toggle-on text-emerald-500 text-lg' : 'bi-toggle-off text-gray-400 text-lg' }}"></i>
                                                 </button>
 
                                                 <div
@@ -205,7 +205,7 @@
                                                  })"
                                                         class="w-6 h-6 flex items-center justify-center rounded bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors flex-shrink-0"
                                                         title="Editar programacion">
-                                                        <i class="fas fa-pencil-alt text-xs"></i>
+                                                        <i class="bi bi-pencil-square text-xs"></i>
                                                     </button>
 
                                                     {{-- Botón eliminar --}}
@@ -213,7 +213,7 @@
                                                         @click="deleteItem({{ $item->id }}, '{{ addslashes($item->course?->title ?? '') }}')"
                                                         class="w-6 h-6 flex items-center justify-center rounded bg-red-100 text-red-500 hover:bg-red-600 hover:text-white transition-colors flex-shrink-0"
                                                         title="Eliminar del cronograma">
-                                                        <i class="fas fa-trash text-xs"></i>
+                                                        <i class="bi bi-trash text-xs"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -226,7 +226,7 @@
                                             <span
                                                 x-show="filterCategoryId && $el.parentElement.querySelectorAll('[data-category-id]:not([style*=\'display: none\'])').length === 0"
                                                 class="text-xs text-purple-400 italic flex items-center gap-1">
-                                                <i class="fas fa-filter text-[10px]"></i>
+                                                <i class="bi bi-filter text-[10px]"></i>
                                                 Sin cursos en esta categoría
                                             </span>
                                         @endif
@@ -238,7 +238,7 @@
                                     <button @click="openAddModal({{ $num }}, {{ $year }})"
                                         class="text-blue-600 hover:text-blue-700 opacity-0 group-hover:opacity-100 transition-opacity text-sm"
                                         title="Agregar curso a {{ $name }}">
-                                        <i class="fas fa-plus-circle text-lg"></i>
+                                        <i class="bi bi-plus-circle text-lg"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -257,7 +257,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
                 <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-calendar-check text-blue-600"></i>
+                    <i class="bi bi-calendar-check text-blue-600"></i>
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Total programado</p>
@@ -266,7 +266,7 @@
             </div>
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
                 <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-check-circle text-emerald-600"></i>
+                    <i class="bi bi-check-circle text-emerald-600"></i>
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Ya liberados</p>
@@ -275,7 +275,7 @@
             </div>
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-3">
                 <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-clock text-amber-600"></i>
+                    <i class="bi bi-clock text-amber-600"></i>
                 </div>
                 <div>
                     <p class="text-xs text-gray-500">Próximos</p>
@@ -295,12 +295,12 @@
                 x-transition:enter-end="opacity-100 scale-100">
                 <div class="flex items-center justify-between p-5 border-b border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900">
-                        <i class="fas text-blue-600 mr-2"
-                            :class="isEditMode ? 'fa-calendar-check text-emerald-600' : 'fa-calendar-plus text-blue-600'"></i>
+                        <i class="bi text-blue-600 mr-2"
+                            :class="isEditMode ? 'bi-calendar-check text-emerald-600' : 'bi-calendar-plus text-blue-600'"></i>
                         <span x-text="isEditMode ? 'Editar Curso Programado' : 'Agregar Curso al Cronograma'"></span>
                     </h3>
                     <button @click="showAddModal = false" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <i class="fas fa-times text-lg"></i>
+                        <i class="bi bi-x text-lg"></i>
                     </button>
                 </div>
 
@@ -333,8 +333,8 @@
                                         'border-gray-200 hover:border-gray-300')">
                                 <span :class="form.course_id ? 'text-gray-800' : 'text-gray-400'"
                                     x-text="getCourseLabel()"></span>
-                                <i class="fas text-gray-400 text-xs transition-transform duration-200"
-                                    :class="courseDropdownOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                <i class="bi bi-chevron-down text-gray-400 text-xs transition-transform duration-200"
+                                    :class="courseDropdownOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                             </button>
 
                             {{-- Panel desplegable --}}
@@ -351,7 +351,7 @@
                                 <div class="p-2 border-b border-gray-100 bg-gray-50">
                                     <div class="relative">
                                         <i
-                                            class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                                            class="bi bi-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                                         <input type="text" x-model="courseSearch" @input="filterCourses()"
                                             placeholder="Buscar curso…" x-ref="courseSearchInput"
                                             class="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
@@ -371,7 +371,7 @@
                                                 'hover:bg-gray-50'">
                                             <div class="flex items-start gap-2">
                                                 {{-- Checkmark cuando está seleccionado --}}
-                                                <i class="fas fa-check text-blue-500 text-xs mt-1 flex-shrink-0"
+                                                <i class="bi bi-check text-blue-500 text-xs mt-1 flex-shrink-0"
                                                     x-show="form.course_id == course.id"></i>
                                                 <div class="flex-1 min-w-0 flex items-center gap-2">
                                                     {{-- Título --}}
@@ -383,18 +383,18 @@
                                                         {{-- Badge Categoría --}}
                                                         <span x-show="course.category_name"
                                                             class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
-                                                            <i class="fas fa-layer-group text-[8px]"></i>
+                                                            <i class="bi bi-layer-group text-[8px]"></i>
                                                             <span x-text="course.category_name"></span>
                                                         </span>
                                                         {{-- Badge Tipo: Normal / Capacitación --}}
                                                         <span x-show="course.is_training"
                                                             class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
-                                                            <i class="fas fa-building text-[8px]"></i>
+                                                            <i class="bi bi-building text-[8px]"></i>
                                                             Capacitación
                                                         </span>
                                                         <span x-show="!course.is_training"
                                                             class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
-                                                            <i class="fas fa-graduation-cap text-[8px]"></i>
+                                                            <i class="bi bi-graduation-cap text-[8px]"></i>
                                                             Curso
                                                         </span>
                                                     </div>
@@ -412,7 +412,7 @@
                             x-transition:enter-start="opacity-0 -translate-y-1"
                             x-transition:enter-end="opacity-100 translate-y-0"
                             class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-                            <i class="fas fa-exclamation-circle text-[10px]"></i>
+                            <i class="bi bi-exclamation-circle text-[10px]"></i>
                             <span x-text="errors.course"></span>
                         </p>
                     </div>
@@ -438,7 +438,7 @@
                                 x-transition:enter-start="opacity-0 -translate-y-1"
                                 x-transition:enter-end="opacity-100 translate-y-0"
                                 class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                <i class="bi bi-exclamation-circle text-[10px]"></i>
                                 <span x-text="errors.month"></span>
                             </p>
                         </div>
@@ -457,7 +457,7 @@
                                 x-transition:enter-start="opacity-0 -translate-y-1"
                                 x-transition:enter-end="opacity-100 translate-y-0"
                                 class="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                <i class="bi bi-exclamation-circle text-[10px]"></i>
                                 <span x-text="errors.year"></span>
                             </p>
                         </div>
@@ -533,7 +533,7 @@
                         x-transition:enter-start="opacity-0 translate-y-1"
                         x-transition:enter-end="opacity-100 translate-y-0"
                         class="flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2.5 rounded-lg">
-                        <i class="fas fa-circle-exclamation mt-0.5 flex-shrink-0"></i>
+                        <i class="bi bi-circle-exclamation mt-0.5 flex-shrink-0"></i>
                         <span x-text="errors.server"></span>
                     </div>
 
@@ -545,8 +545,8 @@
                         </button>
                         <button type="submit" :disabled="saving"
                             class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                            <i class="fas fa-spinner fa-spin" x-show="saving"></i>
-                            <i class="fas fa-save" x-show="!saving"></i>
+                            <i class="bi bi-spinner fa-spin" x-show="saving"></i>
+                            <i class="bi bi-save" x-show="!saving"></i>
                             <span x-text="saving ? 'Guardando…' : 'Guardar'"></span>
                         </button>
                     </div>
@@ -560,7 +560,7 @@
             <div class="absolute inset-0 bg-black/50" @click="showDeleteModal = false"></div>
             <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
                 <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-trash text-red-500 text-xl"></i>
+                    <i class="bi bi-trash text-red-500 text-xl"></i>
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">¿Eliminar del cronograma?</h3>
                 <p class="text-sm text-gray-500 mb-6">
@@ -574,7 +574,7 @@
                     </button>
                     <button @click="confirmDelete()" :disabled="saving"
                         class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
-                        <i class="fas fa-spinner fa-spin" x-show="saving"></i>
+                        <i class="bi bi-spinner fa-spin" x-show="saving"></i>
                         Eliminar
                     </button>
                 </div>

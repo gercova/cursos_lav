@@ -27,6 +27,7 @@ class UserValidate extends FormRequest {
             'profile_photo'     => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'signature_photo'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'remove_photo'      => 'nullable|in:0,1',
+            'remove_signature'  => 'nullable|in:0,1',
         ];
     }
 

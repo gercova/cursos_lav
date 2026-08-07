@@ -84,6 +84,7 @@ class UserAdminController extends Controller {
     }
 
     public function edit(User $user): View {
+        $user->load('signature');
         $roles      = Role::get();
         $originalArray = [
             ['code' => '+51', 'country' => '+51 - Perú'],
@@ -122,24 +123,58 @@ class UserAdminController extends Controller {
             $user = User::updateOrCreate(['id' => $request->input('id')], $data);
 
             if ($request->hasFile('signature_photo')) {
-
                 $path_signature = $request->file('signature_photo')->store('signature-photos', 'public');
 
-                UserSignature::updateOrCreate(['id' => $request->input('signature_id')] ,[
-                    'user_id'   => $user->id,
-                    'signature' => $path_signature,
-                ]);
+                UserSignature::updateOrCreate(
+                    ['user_id' => $user->id],
+                    ['signature' => $path_signature]
+                );
             }
         } else {
             // Actualización - usar ID del request
             $user = User::where('id', $request->id)->first();
             
-            // Si hay nueva foto, eliminar la anterior (opcional)
+            // Eliminar foto de perfil si el usuario lo solicitó
+            if ($request->input('remove_photo') == '1') {
+                if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+                    Storage::disk('public')->delete($user->profile_photo);
+                }
+                $validated['profile_photo'] = null;
+            }
+            
+            // Si hay nueva foto, eliminar la anterior
             if ($request->hasFile('profile_photo') && $user->profile_photo) {
-                Storage::disk('public')->delete($user->profile_photo);
+                if (Storage::disk('public')->exists($user->profile_photo)) {
+                    Storage::disk('public')->delete($user->profile_photo);
+                }
             }
             
             $user->update($validated);
+
+            // Manejar subida o eliminación de firma en actualización
+            if ($request->hasFile('signature_photo')) {
+                if ($user->signature) {
+                    $oldSignature = $user->signature->getRawOriginal('signature');
+                    if ($oldSignature && Storage::disk('public')->exists($oldSignature)) {
+                        Storage::disk('public')->delete($oldSignature);
+                    }
+                }
+
+                $path_signature = $request->file('signature_photo')->store('signature-photos', 'public');
+
+                UserSignature::updateOrCreate(
+                    ['user_id' => $user->id],
+                    ['signature' => $path_signature]
+                );
+            } elseif ($request->input('remove_signature') == '1') {
+                if ($user->signature) {
+                    $oldSignature = $user->signature->getRawOriginal('signature');
+                    if ($oldSignature && Storage::disk('public')->exists($oldSignature)) {
+                        Storage::disk('public')->delete($oldSignature);
+                    }
+                    $user->signature->delete();
+                }
+            }
         }
 
         if ($request->has('role')) {

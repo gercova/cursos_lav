@@ -165,31 +165,35 @@
                         @if($user->role == 'instructor')
                             <!-- Foto de Firma -->
                             <div class="md:col-span-2">
-                                <label for="profile_photo" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="signature_photo" class="block text-sm font-medium text-gray-700 mb-2">
                                     Foto o Imagen de la firma
                                 </label>
                                 <div class="flex items-center gap-6">
                                     <div class="flex-shrink-0">
                                         @if($user->signature?->signature)
-                                            <img src="{{ $user->signature?->signature }}" alt="{{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-photo">
+                                            <img src="{{ $user->signature?->signature }}" alt="Firma de {{ $user->names }}" class="w-20 h-20 rounded-xl object-cover border-2 border-blue-300 current-signature">
+                                        @else
+                                            <div id="default-signature-placeholder" class="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-300 current-signature">
+                                                <i class="bi bi-vector-pen text-2xl text-gray-400"></i>
+                                            </div>
                                         @endif
-                                        <div id="preview-container" class="{{ $user->signature?->signature ? 'mt-2' : '' }} hidden">
-                                            <p class="text-xs text-gray-500 mb-1">Nueva foto:</p>
-                                            <img id="photo-preview" src="" alt="Vista previa" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
+                                        <div id="preview-signature-container" class="{{ $user->signature?->signature ? 'mt-2' : '' }} hidden">
+                                            <p class="text-xs text-gray-500 mb-1">Nueva firma:</p>
+                                            <img id="signature-photo-preview" src="" alt="Vista previa de firma" class="w-20 h-20 rounded-xl object-cover border-2 border-green-300">
                                         </div>
                                     </div>
                                     <div class="flex-1">
-                                        <input type="file" name="profile_photo" id="profile_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                        <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva foto, se mantendrá la actual.</p>
+                                        <input type="file" name="signature_photo" id="signature_photo" accept="image/*" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                        <p class="text-xs text-gray-500 mt-2">Formatos permitidos: JPG, PNG, GIF. Máximo 2MB. Si no seleccionas una nueva firma, se mantendrá la actual.</p>
                                         @if($user->signature?->signature)
-                                            <button type="button" onclick="removeCurrentPhoto()" class="mt-2 text-sm text-red-600 hover:text-red-800">
-                                                <i class="bi bi-trash"></i> Eliminar foto actual
+                                            <button type="button" onclick="removeCurrentSignature()" class="mt-2 text-sm text-red-600 hover:text-red-800">
+                                                <i class="bi bi-trash"></i> Eliminar firma actual
                                             </button>
-                                            <input type="hidden" name="remove_photo" id="remove_photo" value="0">
+                                            <input type="hidden" name="remove_signature" id="remove_signature" value="0">
                                         @endif
                                     </div>
                                 </div>
-                                @error('profile_photo')
+                                @error('signature_photo')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -388,52 +392,79 @@
 
 @section('scripts')
 <script>
-    // Vista previa de la nueva imagen
-    document.getElementById('profile_photo').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('photo-preview');
-                const previewContainer = document.getElementById('preview-container');
-                
-                preview.src = e.target.result;
-                previewContainer.classList.remove('hidden');
-                
-                // Si hay foto actual, ocultarla visualmente (opcional)
-                const currentPhoto = document.querySelector('.current-photo');
-                if (currentPhoto) {
-                    currentPhoto.style.opacity = '0.5';
+    // Vista previa de la nueva foto de perfil
+    const profilePhotoInput = document.getElementById('profile_photo');
+    if (profilePhotoInput) {
+        profilePhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('photo-preview');
+                    const previewContainer = document.getElementById('preview-container');
+                    
+                    if (preview) preview.src = e.target.result;
+                    if (previewContainer) previewContainer.classList.remove('hidden');
+                    
+                    const currentPhoto = document.querySelector('.current-photo');
+                    if (currentPhoto) {
+                        currentPhoto.style.opacity = '0.5';
+                    }
                 }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-        }
-    });
+        });
+    }
 
-    // Función para eliminar la foto actual
+    // Función para eliminar la foto de perfil actual
     function removeCurrentPhoto() {
         if (confirm('¿Estás seguro de eliminar la foto de perfil actual?')) {
-            document.getElementById('remove_photo').value = '1';
+            const removePhotoInput = document.getElementById('remove_photo');
+            if (removePhotoInput) removePhotoInput.value = '1';
             const currentPhoto = document.querySelector('.current-photo');
             if (currentPhoto) {
                 currentPhoto.remove();
             }
-            // Resetear el input file
-            document.getElementById('profile_photo').value = '';
-            document.getElementById('preview-container').classList.add('hidden');
+            if (document.getElementById('profile_photo')) document.getElementById('profile_photo').value = '';
+            if (document.getElementById('preview-container')) document.getElementById('preview-container').classList.add('hidden');
         }
     }
 
-    // Resto de tus funciones existentes...
-    function resetForm() {
-        if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los cambios no guardados.')) {
-            document.getElementById('userForm').reset();
-            // Resetear la vista previa
-            document.getElementById('preview-container').classList.add('hidden');
-            const currentPhoto = document.querySelector('.current-photo');
-            if (currentPhoto) {
-                currentPhoto.style.opacity = '1';
+    // Vista previa de la nueva foto de firma
+    const signaturePhotoInput = document.getElementById('signature_photo');
+    if (signaturePhotoInput) {
+        signaturePhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('signature-photo-preview');
+                    const previewContainer = document.getElementById('preview-signature-container');
+                    
+                    if (preview) preview.src = e.target.result;
+                    if (previewContainer) previewContainer.classList.remove('hidden');
+                    
+                    const currentSignature = document.querySelector('.current-signature');
+                    if (currentSignature) {
+                        currentSignature.style.opacity = '0.5';
+                    }
+                }
+                reader.readAsDataURL(file);
             }
+        });
+    }
+
+    // Función para eliminar la firma actual
+    function removeCurrentSignature() {
+        if (confirm('¿Estás seguro de eliminar la firma actual?')) {
+            const removeSignatureInput = document.getElementById('remove_signature');
+            if (removeSignatureInput) removeSignatureInput.value = '1';
+            const currentSignature = document.querySelector('.current-signature');
+            if (currentSignature) {
+                currentSignature.remove();
+            }
+            if (document.getElementById('signature_photo')) document.getElementById('signature_photo').value = '';
+            if (document.getElementById('preview-signature-container')) document.getElementById('preview-signature-container').classList.add('hidden');
         }
     }
 
@@ -441,6 +472,16 @@
     function resetForm() {
         if (confirm('¿Estás seguro de reiniciar el formulario? Se perderán todos los cambios no guardados.')) {
             document.getElementById('userForm').reset();
+            if (document.getElementById('preview-container')) document.getElementById('preview-container').classList.add('hidden');
+            if (document.getElementById('preview-signature-container')) document.getElementById('preview-signature-container').classList.add('hidden');
+            const currentPhoto = document.querySelector('.current-photo');
+            if (currentPhoto) {
+                currentPhoto.style.opacity = '1';
+            }
+            const currentSignature = document.querySelector('.current-signature');
+            if (currentSignature) {
+                currentSignature.style.opacity = '1';
+            }
         }
     }
 

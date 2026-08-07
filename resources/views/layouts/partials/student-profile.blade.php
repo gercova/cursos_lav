@@ -22,6 +22,9 @@
         <a href="{{ route('student.my-courses') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
             <i class="bi bi-book-fill mr-2"></i> Mis Cursos
         </a>
+        <a href="{{ route('student.wishlist') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+            <i class="bi bi-heart-fill mr-2 text-red-500"></i> Mi Lista de Deseos
+        </a>
         <a href="{{ route('student.certificates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
             <i class="bi bi-patch-check mr-2"></i> Certificados
         </a>

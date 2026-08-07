@@ -19,14 +19,51 @@ class RoleController extends Controller
         $this->middleware('permission:assign_permissions')->only('assignPermissions', 'updatePermissions');
     }
 
-    public function index(): View {
-        $roles          = Role::with('permissions')->get();
-        $permissions    = Permission::all()->groupBy(function ($permission) {
-            $parts      = explode('_', $permission->name);
-            return $parts[1] ?? 'other';
+    public function index(Request $request): View {
+        $roles = Role::with('permissions')->get();
+
+        $query = User::with(['roles', 'permissions'])->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('names', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('dni', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $roleFilter = $request->role;
+            $query->where(function ($q) use ($roleFilter) {
+                $q->where('role', $roleFilter)
+                  ->orWhereHas('roles', function ($r) use ($roleFilter) {
+                      $r->where('name', $roleFilter);
+                  });
+            });
+        }
+
+        $users = $query->paginate(15)->appends($request->query());
+
+        // Adjuntar permisos efectivos a cada usuario de la página actual
+        $users->getCollection()->transform(function ($user) {
+            $user->effective_permissions = $user->getAllPermissions()->pluck('name')->toArray();
+            return $user;
         });
-        
-        return view('admin.roles.index', compact('roles', 'permissions'));
+
+        $permissions = Permission::all()->groupBy(function ($permission) {
+            $parts = explode('_', $permission->name, 2);
+            return count($parts) > 1 ? $parts[1] : 'general';
+        });
+
+        $stats = [
+            'total_users' => User::count(),
+            'admins'      => User::where('role', 'admin')->orWhereHas('roles', fn($r) => $r->where('name', 'admin'))->count(),
+            'instructors' => User::where('role', 'instructor')->orWhereHas('roles', fn($r) => $r->where('name', 'instructor'))->count(),
+            'students'    => User::where('role', 'student')->orWhereHas('roles', fn($r) => $r->where('name', 'student'))->count(),
+        ];
+
+        return view('admin.roles.index', compact('roles', 'permissions', 'users', 'stats'));
     }
 
     public function store(Request $request) {
@@ -87,18 +124,36 @@ class RoleController extends Controller
     }
 
     public function updatePermissions(Request $request, User $user) {
-        // Solo administradores e instructores
-        if ($user->isStudent()) {
-            return redirect()->route('admin.users.index')->with('error', 'No se pueden asignar permisos a estudiantes.');
-        }
-
-        $request->validate([
-            'permissions' => 'array',
+        $validated = $request->validate([
+            'role'        => ['nullable', 'string', Rule::in(['admin', 'instructor', 'student'])],
+            'permissions' => ['nullable', 'array'],
         ]);
 
-        // Sincronizar permisos directos (sin pasar por roles)
-        $user->syncPermissions($request->permissions ?? []);
+        // Actualizar rol del usuario en BD y Spatie si se especifica
+        if (!empty($validated['role'])) {
+            $newRole = $validated['role'];
+            $user->role = $newRole;
+            $user->save();
+            $user->syncRoles([$newRole]);
+        }
 
-        return redirect()->route('admin.users.index')->with('success', 'Permisos actualizados exitosamente.');
+        $currentRole = $user->role;
+
+        if ($currentRole === 'student') {
+            // Estudiantes no tienen permisos directos asignados
+            $user->syncPermissions([]);
+        } else {
+            // Sincronizar permisos directos para admin / instructor
+            $user->syncPermissions($request->permissions ?? []);
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Rol y permisos del usuario actualizados exitosamente.'
+            ]);
+        }
+
+        return redirect()->route('admin.roles.index')->with('success', 'Rol y permisos actualizados exitosamente.');
     }
 }

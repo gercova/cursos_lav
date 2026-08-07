@@ -85,6 +85,13 @@
 
                     {{-- Acciones --}}
                     <div class="flex flex-wrap items-center gap-2 lg:mt-0">
+                        {{-- Inscribir en Curso --}}
+                        <button @click="openEnrollModal()"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium text-sm transition-all duration-200 shadow-sm">
+                            <i class="bi bi-journal-plus text-xs"></i>
+                            Inscribir en Curso
+                        </button>
+
                         {{-- Cambiar Contraseña --}}
                         <button @click="openPasswordModal()"
                             class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm">
@@ -312,9 +319,16 @@
                                     <span class="w-1 h-5 bg-blue-600 rounded-full inline-block"></span>
                                     Inscripciones a Cursos
                                 </h3>
-                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                                    {{ $user->enrollments_count ?? 0 }} cursos
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    <button @click="openEnrollModal()"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-all duration-200 shadow-sm">
+                                        <i class="bi bi-journal-plus text-xs"></i>
+                                        Inscribir en Curso
+                                    </button>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                                        {{ $user->enrollments_count ?? 0 }} cursos
+                                    </span>
+                                </div>
                             </div>
 
                             @if ($user->enrollments->isNotEmpty())
@@ -1424,6 +1438,105 @@
                 </div>
             </div>
         </div>
+
+        {{-- ===== MODAL: Inscribir en Curso ===== --}}
+        <div x-show="showEnrollModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="fixed inset-0 z-[1040] flex items-center justify-center p-4"
+            style="display: none;"
+            @keydown.window.escape.prevent="">
+
+            {{-- Backdrop estático (no cierra el modal) --}}
+            <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"></div>
+
+            {{-- Modal md: max-w-[600px] --}}
+            <div class="enroll-modal-dialog relative bg-white rounded-2xl shadow-2xl w-full z-10 overflow-visible"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50 rounded-t-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                            <i class="bi bi-journal-plus text-emerald-600 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Inscribir en Curso</h3>
+                            <p class="text-xs text-gray-500">{{ $user->names }}</p>
+                        </div>
+                    </div>
+                    <button @click="closeEnrollModal()"
+                        class="w-8 h-8 rounded-lg hover:bg-gray-200/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="bi bi-x text-lg"></i>
+                    </button>
+                </div>
+
+                {{-- Body --}}
+                <div class="p-6 space-y-4">
+                    {{-- Mensaje de Éxito --}}
+                    <div x-show="enrollSuccess"
+                        class="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm">
+                        <i class="bi bi-check-circle-fill text-emerald-500 text-base mt-0.5 flex-shrink-0"></i>
+                        <span x-html="enrollMessage"></span>
+                    </div>
+
+                    {{-- Mensaje de Advertencia (Ya matriculado) --}}
+                    <div x-show="enrollWarning"
+                        class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-sm">
+                        <i class="bi bi-exclamation-triangle-fill text-amber-500 text-base mt-0.5 flex-shrink-0"></i>
+                        <span x-html="enrollWarning"></span>
+                    </div>
+
+                    {{-- Mensaje de Error --}}
+                    <div x-show="enrollError"
+                        class="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm">
+                        <i class="bi bi-x-circle-fill text-red-500 text-base mt-0.5 flex-shrink-0"></i>
+                        <span x-html="enrollError"></span>
+                    </div>
+
+                    <div x-show="!enrollSuccess" class="space-y-3">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Buscar y Seleccionar Curso <span class="text-red-500">*</span>
+                        </label>
+
+                        {{-- SearchSelect: el JS instanciará sobre este select oculto --}}
+                        <div id="search-select-wrapper">
+                            <select id="course-select" name="course_id" style="display:none;"></select>
+                        </div>
+
+                        {{-- Badge de curso seleccionado (controlado por Alpine vía callback) --}}
+                        <div x-show="selectedCourse"
+                            class="text-xs text-emerald-700 font-medium flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl">
+                            <i class="bi bi-check-circle-fill text-emerald-500 text-sm"></i>
+                            <span>Curso seleccionado: <strong x-text="selectedCourse ? selectedCourse.title : ''"></strong></span>
+                        </div>
+
+                        <p class="text-xs text-gray-500 flex items-center gap-1">
+                            <i class="bi bi-info-circle"></i> El estudiante tendrá acceso directo e inmediato al curso seleccionado.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50/30 rounded-b-2xl">
+                    <button @click="closeEnrollModal()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button @click="enrollUserInCourse({{ $user->id }})"
+                        :disabled="enrollingCourse || !selectedCourseId"
+                        class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                        <i class="bi" :class="enrollingCourse ? 'bi-spinner bi-spin' : 'bi-check-lg'"></i>
+                        <span x-text="enrollingCourse ? 'Inscribiendo...' : 'Confirmar Inscripción'"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -1443,6 +1556,90 @@
                 passwordError: '',
                 togglingStatus: false,
                 chartsInitialized: false,
+
+                // ── Inscribir Curso ─────────────────────────────────
+                showEnrollModal: false,
+                selectedCourseId: '',
+                selectedCourse: null,
+                enrollingCourse: false,
+                enrollSuccess: false,
+                enrollMessage: '',
+                enrollError: '',
+                enrollWarning: '',
+
+                openEnrollModal() {
+                    this.selectedCourseId = '';
+                    this.selectedCourse = null;
+                    this.enrollSuccess = false;
+                    this.enrollMessage = '';
+                    this.enrollError = '';
+                    this.enrollWarning = '';
+                    this.showEnrollModal = true;
+
+                    // Inicializar SearchSelect cuando el modal está visible
+                    this.$nextTick(() => {
+                        const selectEl = document.getElementById('course-select');
+                        if (selectEl) {
+                            if (window._courseSearchSelect) {
+                                window._courseSearchSelect.reset();
+                            } else {
+                                const self = this;
+                                window._courseSearchSelect = new SearchSelect(
+                                    selectEl,
+                                    '/admin/users/courses/search',
+                                    function(item) {
+                                        self.selectedCourseId = item.id;
+                                        self.selectedCourse   = item;
+                                    }
+                                );
+                                window._courseSearchSelect.init();
+                            }
+                        }
+                    });
+                },
+
+                closeEnrollModal() {
+                    if (window._courseSearchSelect) {
+                        window._courseSearchSelect.close();
+                    }
+                    this.showEnrollModal = false;
+                },
+
+                async enrollUserInCourse(userId) {
+                    if (!this.selectedCourseId) return;
+                    this.enrollingCourse = true;
+                    this.enrollSuccess = false;
+                    this.enrollMessage = '';
+                    this.enrollError = '';
+                    this.enrollWarning = '';
+
+                    try {
+                        const response = await axios.post(`/admin/users/${userId}/enroll`, {
+                            course_id: this.selectedCourseId
+                        }, {
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        if (response.data.success) {
+                            this.enrollSuccess = true;
+                            this.enrollMessage = response.data.message;
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    } catch (e) {
+                        const data = e.response?.data;
+                        if (data?.warning) {
+                            this.enrollWarning = data.message;
+                        } else {
+                            this.enrollError = data?.message || 'Error al inscribir en el curso. Intenta de nuevo.';
+                        }
+                    } finally {
+                        this.enrollingCourse = false;
+                    }
+                },
 
                 // ── Ventas ──────────────────────────────────────────
                 sales: [],
@@ -1815,5 +2012,552 @@
                 }
             }
         }
+    </script>
+
+    {{-- ===== SearchSelect: Vanilla JS ES6 — sin librerías externas ===== --}}
+    <style>
+        /* Modal md size */
+        .enroll-modal-dialog { max-width: 600px; }
+
+        /* SearchSelect wrapper injected by JS */
+        .search-select-container {
+            position: relative;
+            width: 100%;
+        }
+        .search-select-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-select-input {
+            width: 100%;
+            padding: 0.72rem 2.6rem 0.72rem 2.5rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            background: #fff;
+            color: #111827;
+        }
+        .search-select-input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+        }
+        .search-select-input.has-value {
+            border-color: #10b981;
+            background: rgba(16,185,129,.04);
+            font-weight: 500;
+        }
+        .search-select-icon-left {
+            position: absolute;
+            left: 0.75rem;
+            color: #9ca3af;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+        .search-select-icon-right {
+            position: absolute;
+            right: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .search-select-clear-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            transition: color .15s;
+        }
+        .search-select-clear-btn:hover { color: #ef4444; }
+
+        /* Dropdown appended to body */
+        .search-select-dropdown {
+            position: fixed;
+            z-index: 9999;
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 0.875rem;
+            box-shadow: 0 10px 40px -8px rgba(0,0,0,.22), 0 4px 16px -4px rgba(0,0,0,.1);
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        .search-select-dropdown.is-open { display: block; }
+
+        .search-select-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.45rem 0.85rem;
+            background: #f9fafb;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            border-bottom: 1px solid #f3f4f6;
+            border-radius: 0.875rem 0.875rem 0 0;
+            position: sticky;
+            top: 0;
+        }
+        .search-select-header-count { color: #10b981; font-weight: 700; }
+
+        .search-select-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.65rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #374151;
+            border-bottom: 1px solid #f9fafb;
+            transition: background .13s;
+        }
+        .search-select-item:last-child { border-bottom: none; }
+        .search-select-item:hover,
+        .search-select-item.is-active  { background: rgba(16,185,129,.07); color: #064e3b; }
+        .search-select-item.is-selected { background: rgba(16,185,129,.12); font-weight: 600; color: #065f46; }
+
+        .search-select-item-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.5rem;
+            background: #d1fae5;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+        .search-select-item-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-select-item-check { color: #10b981; font-size: 0.85rem; flex-shrink: 0; }
+
+        .search-select-status {
+            padding: 0.9rem 1rem;
+            text-align: center;
+            font-size: 0.78rem;
+            color: #6b7280;
+        }
+        .search-select-status.is-loading { color: #10b981; }
+        .search-select-status.is-error   { color: #ef4444; }
+
+        /* Spinner keyframe (Bootstrap-compat) */
+        @keyframes ss-spin { to { transform: rotate(360deg); } }
+        .ss-spin { display: inline-block; animation: ss-spin .7s linear infinite; }
+    </style>
+
+    <script>
+    /* ================================================================
+       SearchSelect  —  Vanilla JS ES6+, sin librerías externas
+       Autor: generado por Antigravity AI
+       URL base: /admin/users/courses/search
+         · ?latest=5          → primeros 5 al abrir
+         · ?search=term&limit=10 → búsqueda dinámica
+    ================================================================ */
+    class SearchSelect {
+        /**
+         * @param {HTMLSelectElement} selectEl   - El <select> original (se oculta)
+         * @param {string}           searchBaseUrl - URL base de la API de búsqueda
+         * @param {function}         onSelectCallback - fn(item:{id,title}) llamada al elegir
+         */
+        constructor(selectEl, searchBaseUrl, onSelectCallback) {
+            this.select        = selectEl;
+            this.baseUrl       = searchBaseUrl;
+            this.onSelect      = onSelectCallback;
+            this.activeIndex   = -1;
+            this.items         = [];
+            this.selectedItem  = null;
+            this._debounceTimer= null;
+            this._abortCtrl    = null;
+
+            // Elementos DOM que se crearán en init()
+            this.container  = null;
+            this.inputWrap  = null;
+            this.input      = null;
+            this.iconLeft   = null;
+            this.iconRight  = null;
+            this.clearBtn   = null;
+            this.dropdown   = null;
+
+            // Bind de handlers para poder remover listeners
+            this._onDocClick   = this._onDocClick.bind(this);
+            this._onKeydown    = this._onKeydown.bind(this);
+            this._onScrollRepos= this._onScrollRepos.bind(this);
+        }
+
+        /* ── Construcción del DOM ─────────────────────────────────── */
+        init() {
+            this.select.style.display = 'none';
+            const wrapper = this.select.parentElement; // #search-select-wrapper
+
+            // Contenedor principal
+            this.container = document.createElement('div');
+            this.container.className = 'search-select-container';
+
+            // Input wrap
+            this.inputWrap = document.createElement('div');
+            this.inputWrap.className = 'search-select-input-wrap';
+
+            // Icono izquierdo (lupa)
+            this.iconLeft = document.createElement('span');
+            this.iconLeft.className = 'search-select-icon-left';
+            this.iconLeft.innerHTML = '<i class="bi bi-search" style="font-size:.9rem;"></i>';
+
+            // Input texto
+            this.input = document.createElement('input');
+            this.input.type = 'text';
+            this.input.className = 'search-select-input';
+            this.input.placeholder = 'Escribe el nombre del curso...';
+            this.input.autocomplete = 'off';
+            this.input.setAttribute('aria-label', 'Buscar curso');
+            this.input.setAttribute('role', 'combobox');
+            this.input.setAttribute('aria-expanded', 'false');
+            this.input.setAttribute('aria-autocomplete', 'list');
+
+            // Iconos derechos (spinner / clear)
+            this.iconRight = document.createElement('div');
+            this.iconRight.className = 'search-select-icon-right';
+
+            this.spinnerEl = document.createElement('span');
+            this.spinnerEl.innerHTML = '<i class="bi bi-arrow-repeat ss-spin" style="font-size:.9rem;color:#10b981;"></i>';
+            this.spinnerEl.style.display = 'none';
+
+            this.clearBtn = document.createElement('button');
+            this.clearBtn.type = 'button';
+            this.clearBtn.className = 'search-select-clear-btn';
+            this.clearBtn.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+            this.clearBtn.title = 'Limpiar selección';
+            this.clearBtn.style.display = 'none';
+            this.clearBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.clearSelection();
+            });
+
+            this.iconRight.appendChild(this.spinnerEl);
+            this.iconRight.appendChild(this.clearBtn);
+
+            this.inputWrap.appendChild(this.iconLeft);
+            this.inputWrap.appendChild(this.input);
+            this.inputWrap.appendChild(this.iconRight);
+            this.container.appendChild(this.inputWrap);
+
+            // Dropdown appended to body
+            this.dropdown = document.createElement('ul');
+            this.dropdown.className = 'search-select-dropdown';
+            this.dropdown.setAttribute('role', 'listbox');
+            document.body.appendChild(this.dropdown);
+
+            // Insertar container antes del select oculto
+            wrapper.insertBefore(this.container, this.select);
+
+            // Eventos
+            this.input.addEventListener('focus', () => {
+                this.fetchInitial();
+            });
+            this.input.addEventListener('input', () => {
+                this._debounce(() => this.fetchResults(this.input.value.trim()), 300);
+            });
+
+            document.addEventListener('click',    this._onDocClick);
+            document.addEventListener('keydown',  this._onKeydown);
+            window.addEventListener('scroll',     this._onScrollRepos, { passive: true });
+            window.addEventListener('resize',     this._onScrollRepos, { passive: true });
+        }
+
+        /* ── API calls ────────────────────────────────────────────── */
+        async fetchInitial() {
+            this._openDropdown();
+            this._showLoading();
+            try {
+                const url   = `${this.baseUrl}?latest=5`;
+                const data  = await this._apiFetch(url);
+                this.items  = data;
+                this._renderItems(data, '');
+            } catch (err) {
+                if (err.name !== 'AbortError') this._showError();
+            }
+        }
+
+        async fetchResults(query) {
+            if (!query) { return this.fetchInitial(); }
+            this._openDropdown();
+            this._showLoading();
+            try {
+                const url  = `${this.baseUrl}?search=${encodeURIComponent(query)}&limit=10`;
+                const data = await this._apiFetch(url);
+                this.items = data;
+                this._renderItems(data, query);
+            } catch (err) {
+                if (err.name !== 'AbortError') this._showError();
+            }
+        }
+
+        async _apiFetch(url) {
+            if (this._abortCtrl) this._abortCtrl.abort();
+            this._abortCtrl = new AbortController();
+            const resp = await fetch(url, {
+                signal: this._abortCtrl.signal,
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const json = await resp.json();
+            if (!json.success) throw new Error('API error');
+            return json.data ?? [];
+        }
+
+        /* ── Render ───────────────────────────────────────────────── */
+        _renderItems(items, query) {
+            this.activeIndex = -1;
+            this.dropdown.innerHTML = '';
+
+            // Cabecera sticky
+            const hdr = document.createElement('li');
+            hdr.className = 'search-select-header';
+            const hdrLabel = query
+                ? `Resultados (máx 10)`
+                : `Últimos 5 cursos agregados`;
+            hdr.innerHTML = `<span>${hdrLabel}</span>` +
+                (items.length ? `<span class="search-select-header-count">${items.length} curso(s)</span>` : '');
+            this.dropdown.appendChild(hdr);
+
+            if (!items.length) {
+                const empty = document.createElement('li');
+                empty.className = 'search-select-status';
+                empty.textContent = query
+                    ? `Sin resultados para "${query}"`
+                    : 'No hay cursos activos disponibles.';
+                this.dropdown.appendChild(empty);
+                this._reposition();
+                return;
+            }
+
+            items.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.className = 'search-select-item';
+                li.setAttribute('role', 'option');
+                li.dataset.idx = idx;
+
+                if (this.selectedItem && this.selectedItem.id === item.id) {
+                    li.classList.add('is-selected');
+                }
+
+                // Resaltar término en el título
+                const title = query
+                    ? this._highlight(item.title, query)
+                    : this._esc(item.title);
+
+                li.innerHTML =
+                    `<span class="search-select-item-icon"><i class="bi bi-journal-text"></i></span>` +
+                    `<span class="search-select-item-title">${title}</span>` +
+                    (this.selectedItem && this.selectedItem.id === item.id
+                        ? `<span class="search-select-item-check"><i class="bi bi-check-circle-fill"></i></span>`
+                        : '');
+
+                li.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); // No blur el input
+                    this._selectItem(item);
+                });
+                li.addEventListener('mousemove', () => {
+                    this.activeIndex = idx;
+                    this._updateActiveStyle();
+                });
+
+                this.dropdown.appendChild(li);
+            });
+
+            this._reposition();
+        }
+
+        _showLoading() {
+            this.dropdown.innerHTML = '';
+            const li = document.createElement('li');
+            li.className = 'search-select-status is-loading';
+            li.innerHTML = '<i class="bi bi-arrow-repeat ss-spin" style="margin-right:.4rem;font-size:.85rem;"></i> Cargando...';
+            this.dropdown.appendChild(li);
+            this._reposition();
+        }
+
+        _showError() {
+            this.dropdown.innerHTML = '';
+            const li = document.createElement('li');
+            li.className = 'search-select-status is-error';
+            li.innerHTML = '<i class="bi bi-exclamation-circle" style="margin-right:.35rem;"></i> Error al cargar cursos. Intente de nuevo.';
+            this.dropdown.appendChild(li);
+            this._reposition();
+        }
+
+        /* ── Selección & limpieza ────────────────────────────────── */
+        _selectItem(item) {
+            this.selectedItem = item;
+            this.input.value  = item.title;
+            this.input.classList.add('has-value');
+            this.clearBtn.style.display   = 'flex';
+            this.spinnerEl.style.display  = 'none';
+            this.close();
+
+            // Sincronizar con el <select> oculto (si se usara en form clásico)
+            this._syncSelect(item.id, item.title);
+
+            // Notificar Alpine
+            if (typeof this.onSelect === 'function') {
+                this.onSelect(item);
+            }
+        }
+
+        clearSelection() {
+            this.selectedItem = null;
+            this.input.value  = '';
+            this.input.classList.remove('has-value');
+            this.clearBtn.style.display = 'none';
+            this._syncSelect('', '');
+            if (typeof this.onSelect === 'function') {
+                this.onSelect({ id: '', title: '' });
+            }
+            this.input.focus();
+        }
+
+        reset() {
+            this.clearSelection();
+            this.activeIndex = -1;
+            this.close();
+        }
+
+        _syncSelect(id, title) {
+            this.select.innerHTML = '';
+            if (id) {
+                const opt = document.createElement('option');
+                opt.value    = id;
+                opt.text     = title;
+                opt.selected = true;
+                this.select.appendChild(opt);
+            }
+        }
+
+        /* ── Dropdown visibilidad y posición ────────────────────── */
+        _openDropdown() {
+            this.spinnerEl.style.display = 'flex';
+            this.dropdown.classList.add('is-open');
+            this.input.setAttribute('aria-expanded', 'true');
+            this._reposition();
+        }
+
+        close() {
+            this.dropdown.classList.remove('is-open');
+            this.spinnerEl.style.display = 'none';
+            this.input.setAttribute('aria-expanded', 'false');
+            this.activeIndex = -1;
+        }
+
+        _reposition() {
+            const rect = this.input.getBoundingClientRect();
+            const dropH = Math.min(this.dropdown.scrollHeight, 200);
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const openUpward = spaceBelow < dropH + 8 && rect.top > dropH + 8;
+
+            this.dropdown.style.left  = rect.left  + 'px';
+            this.dropdown.style.width = rect.width + 'px';
+
+            if (openUpward) {
+                this.dropdown.style.top    = '';
+                this.dropdown.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+            } else {
+                this.dropdown.style.top    = (rect.bottom + 4) + 'px';
+                this.dropdown.style.bottom = '';
+            }
+        }
+
+        /* ── Teclado (ArrowUp/Down, Enter, Escape solo cierra lista) */
+        _onKeydown(e) {
+            if (!this.dropdown.classList.contains('is-open')) return;
+
+            const items = Array.from(this.dropdown.querySelectorAll('.search-select-item'));
+            if (!items.length) return;
+
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    this.activeIndex = Math.min(this.activeIndex + 1, items.length - 1);
+                    this._updateActiveStyle();
+                    items[this.activeIndex]?.scrollIntoView({ block: 'nearest' });
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    this.activeIndex = Math.max(this.activeIndex - 1, 0);
+                    this._updateActiveStyle();
+                    items[this.activeIndex]?.scrollIntoView({ block: 'nearest' });
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (this.activeIndex >= 0 && this.items[this.activeIndex]) {
+                        this._selectItem(this.items[this.activeIndex]);
+                    }
+                    break;
+                case 'Escape':
+                    // Solo cierra el dropdown, NO el modal
+                    e.stopPropagation();
+                    this.close();
+                    break;
+            }
+        }
+
+        _updateActiveStyle() {
+            const items = Array.from(this.dropdown.querySelectorAll('.search-select-item'));
+            items.forEach((el, idx) => {
+                el.classList.toggle('is-active', idx === this.activeIndex);
+            });
+        }
+
+        /* ── Click fuera del componente cierra solo el dropdown ─── */
+        _onDocClick(e) {
+            if (!this.container.contains(e.target) && !this.dropdown.contains(e.target)) {
+                this.close();
+            }
+        }
+
+        _onScrollRepos() {
+            if (this.dropdown.classList.contains('is-open')) {
+                this._reposition();
+            }
+        }
+
+        /* ── Helpers ─────────────────────────────────────────────── */
+        _debounce(fn, delay) {
+            clearTimeout(this._debounceTimer);
+            this._debounceTimer = setTimeout(fn, delay);
+        }
+
+        _esc(str) {
+            return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        _highlight(text, query) {
+            const safe  = this._esc(text);
+            const safeQ = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return safe.replace(new RegExp(`(${safeQ})`, 'gi'),
+                '<mark style="background:rgba(16,185,129,.25);border-radius:2px;padding:0 2px;">$1</mark>');
+        }
+
+        /* ── Destructor ──────────────────────────────────────────── */
+        destroy() {
+            document.removeEventListener('click',   this._onDocClick);
+            document.removeEventListener('keydown', this._onKeydown);
+            window.removeEventListener('scroll',    this._onScrollRepos);
+            window.removeEventListener('resize',    this._onScrollRepos);
+            this.dropdown.remove();
+            this.container.remove();
+        }
+    }
     </script>
 @endsection

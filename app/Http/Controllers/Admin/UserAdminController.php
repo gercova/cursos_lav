@@ -11,6 +11,7 @@ use App\Models\CompanyPolicy;
 use App\Models\Course;
 use App\Models\CoursePromotionCode;
 use App\Models\CourseSale;
+use App\Models\Enrollment;
 use App\Models\User;
 use App\Models\UserActivity;
 use App\Models\UserSignature;
@@ -389,6 +390,73 @@ class UserAdminController extends Controller {
             'success' => true,
             'message' => 'Fecha de expiración actualizada exitosamente.',
         ], 200);
+    }
+
+    public function searchCourses(Request $request): JsonResponse {
+        $query = Course::where('is_active', true);
+
+        // Support both ?search=term&limit=N (new spec) and ?q=term (legacy)
+        $searchTerm = $request->filled('search') ? $request->search : ($request->filled('q') ? $request->q : null);
+        $limit      = (int) ($request->input('limit', 5));
+        $limit      = max(1, min($limit, 20)); // clamp between 1 and 20
+
+        if ($searchTerm) {
+            $query->where('title', 'like', "%{$searchTerm}%");
+        }
+
+        $courses = $query->latest()->limit($limit)->get(['id', 'title']);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $courses
+        ]);
+    }
+
+    public function enrollCourse(Request $request, User $user): JsonResponse {
+        $validated = $request->validate([
+            'course_id' => 'required|exists:courses,id',
+        ], [
+            'course_id.required' => 'Debe seleccionar un curso.',
+            'course_id.exists'   => 'El curso seleccionado no existe.',
+        ]);
+
+        $course = Course::findOrFail($validated['course_id']);
+
+        // Validar si el usuario ya está inscrito en el curso
+        $existingEnrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+
+        if ($existingEnrollment) {
+            return response()->json([
+                'success' => false,
+                'warning' => true,
+                'message' => "El estudiante <b>{$user->names}</b> ya se encuentra inscrito en el curso <b>{$course->title}</b>.",
+            ], 422);
+        }
+
+        try {
+            $enrollment = Enrollment::create([
+                'user_id'     => $user->id,
+                'course_id'   => $course->id,
+                'enrolled_at' => now(),
+                'progress'    => 0,
+                'status'      => 'active',
+                'source'      => 'direct',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Estudiante <b>{$user->names}</b> inscrito exitosamente en el curso <b>{$course->title}</b>.",
+                'data'    => $enrollment,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'warning' => true,
+                'message' => 'El estudiante ya se encuentra inscrito en este curso.',
+            ], 422);
+        }
     }
 
     public function destroy(User $user): JsonResponse {

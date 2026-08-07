@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Enrollment;
+use App\Models\Wishlist;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,9 @@ class CartsController extends Controller {
         // Obtener items del carrito usando el modelo
         $cartItems = Cart::getItems($userId);
 
+        // Obtener los IDs de cursos en la lista de deseos del usuario
+        $wishlistCourseIds = Wishlist::where('user_id', $userId)->pluck('course_id')->toArray();
+
         // Calcular totales
         $subtotal   = Cart::getTotal($userId);
         $tax        = $subtotal * 0.0; // 18% de impuesto (ajusta según tu país)
@@ -32,6 +36,7 @@ class CartsController extends Controller {
 
         return view('student.card', compact(
             'cartItems',
+            'wishlistCourseIds',
             'subtotal',
             'tax',
             'total',

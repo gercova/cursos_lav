@@ -110,6 +110,14 @@
                                 <!-- Efecto hover -->
                                 <div class="absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                             </button>
+
+                            @php
+                                $inWishlistPackage = auth()->check() ? \App\Models\Wishlist::isInWishlist(auth()->id(), $package->id) : false;
+                            @endphp
+                            <button onclick="toggleWishlist({{ $package->id }})" class="group relative px-6 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border border-white/20 flex items-center justify-center gap-2" id="wishlist-btn-{{ $package->id }}" title="Lista de Deseos">
+                                <i class="bi {{ $inWishlistPackage ? 'bi-heart-fill text-red-400' : 'bi-heart' }} text-xl" id="wishlist-icon-{{ $package->id }}"></i>
+                                <span id="wishlist-text-{{ $package->id }}">{{ $inWishlistPackage ? 'Eliminar de Favoritos' : 'Agregar a Favoritos' }}</span>
+                            </button>
                         </div>
                         
                         <!-- Cupos disponibles -->
@@ -526,6 +534,57 @@
                 btn.disabled = false;
                 btn.innerHTML = 'Agregar';
             }
+        }
+    }
+
+    async function toggleWishlist(courseId) {
+        const btn = document.getElementById(`wishlist-btn-${courseId}`);
+        const icon = document.getElementById(`wishlist-icon-${courseId}`);
+        const text = document.getElementById(`wishlist-text-${courseId}`);
+
+        if (btn) btn.disabled = true;
+
+        try {
+            const response = await fetch('/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ course_id: courseId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.action === 'added') {
+                    if (icon) icon.className = 'bi bi-heart-fill text-red-400 text-xl';
+                    if (text) text.textContent = 'Eliminar de Favoritos';
+                    showNotification('Agregado a tu lista de deseos', 'success');
+                } else {
+                    if (icon) icon.className = 'bi bi-heart text-xl';
+                    if (text) text.textContent = 'Agregar a Favoritos';
+                    showNotification('Eliminado de tu lista de deseos', 'info');
+                }
+
+                // Disparar evento global para actualizar contadores en el header
+                window.dispatchEvent(new CustomEvent('wishlist-updated'));
+            } else {
+                showNotification(data.message || 'Error al actualizar favoritos', 'error');
+            }
+        } catch (error) {
+            console.error('Error toggling wishlist:', error);
+            if (error.message && (error.message.includes('401') || error.message.includes('Unauthenticated'))) {
+                showNotification('Debes iniciar sesión para usar la lista de deseos', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+            } else {
+                showNotification('Error al actualizar la lista de deseos', 'error');
+            }
+        } finally {
+            if (btn) btn.disabled = false;
         }
     }
 

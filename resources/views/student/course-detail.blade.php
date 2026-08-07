@@ -113,9 +113,9 @@
                                     $inWishlist = auth()->check() ? \App\Models\Wishlist::isInWishlist(auth()->id(), $course->id) : false;
                                 @endphp
 
-                                <button onclick="toggleWishlist({{ $course->id }})" class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mb-4 flex items-center justify-center" id="wishlist-btn-{{ $course->id }}">
-                                    <i class="{{ $inWishlist ? 'fas fa-heart text-red-500' : 'far fa-heart' }} mr-2"></i>
-                                    {{ $inWishlist ? 'Eliminar de Favoritos' : 'Agregar a Favoritos' }}
+                                <button onclick="toggleWishlist({{ $course->id }})" class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mb-4 flex items-center justify-center gap-2" id="wishlist-btn-{{ $course->id }}">
+                                    <i class="bi {{ $inWishlist ? 'bi-heart-fill text-red-500' : 'bi-heart' }} text-lg mr-2" id="wishlist-icon-{{ $course->id }}"></i>
+                                    <span id="wishlist-text-{{ $course->id }}">{{ $inWishlist ? 'Eliminar de Favoritos' : 'Agregar a Favoritos' }}</span>
                                 </button>
                             </div>
 
@@ -415,6 +415,57 @@
                 btn.disabled = false;
                 btn.innerHTML = 'Agregar al carrito';
             }
+        }
+    }
+
+    async function toggleWishlist(courseId) {
+        const btn = document.getElementById(`wishlist-btn-${courseId}`);
+        const icon = document.getElementById(`wishlist-icon-${courseId}`);
+        const text = document.getElementById(`wishlist-text-${courseId}`);
+
+        if (btn) btn.disabled = true;
+
+        try {
+            const response = await fetch('/wishlist/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ course_id: courseId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                if (data.action === 'added') {
+                    if (icon) icon.className = 'bi bi-heart-fill text-red-500 text-lg mr-2';
+                    if (text) text.textContent = 'Eliminar de Favoritos';
+                    showNotification('Curso agregado a tu lista de deseos', 'success');
+                } else {
+                    if (icon) icon.className = 'bi bi-heart text-lg mr-2';
+                    if (text) text.textContent = 'Agregar a Favoritos';
+                    showNotification('Curso eliminado de tu lista de deseos', 'info');
+                }
+
+                // Disparar evento global para actualizar contadores en el header
+                window.dispatchEvent(new CustomEvent('wishlist-updated'));
+            } else {
+                showNotification(data.message || 'Error al actualizar favoritos', 'error');
+            }
+        } catch (error) {
+            console.error('Error toggling wishlist:', error);
+            if (error.message && (error.message.includes('401') || error.message.includes('Unauthenticated'))) {
+                showNotification('Debes iniciar sesión para usar la lista de deseos', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+            } else {
+                showNotification('Error al actualizar la lista de deseos', 'error');
+            }
+        } finally {
+            if (btn) btn.disabled = false;
         }
     }
 

@@ -41,26 +41,35 @@ class Wishlist extends Model
             ->get()
             ->map(function ($item) {
                 $course = $item->course;
+                if (!$course) return null;
+
+                $isPackage = (bool)($course->is_training || $course->type === 'package');
+
                 return [
-                    'id' => $item->id,
-                    'course_id' => $course->id,
-                    'title' => $course->title,
+                    'id'                => $item->id,
+                    'course_id'         => $course->id,
+                    'title'             => $course->title,
+                    'slug'              => $course->slug ?? $course->id,
                     'short_description' => $course->short_description,
-                    'description' => $course->description,
-                    'image_url' => $course->image_url,
-                    'price' => $course->price,
-                    'promotion_price' => $course->promotion_price,
-                    'is_on_promotion' => $course->is_on_promotion,
-                    'category_name' => $course->category->name ?? 'Sin categoría',
-                    'instructor_name' => $course->instructor->names ?? 'Instructor',
-                    'rating' => 4.8, // Puedes agregar ratings reales
-                    'students_count' => $course->students_count ?? 125,
-                    'duration' => $course->duration ?? '10',
-                    'level' => $course->level ?? 'Intermedio',
-                    'added_date' => $item->added_at->format('d/m/Y'),
-                    'added_at' => $item->added_at
+                    'description'       => $course->description,
+                    'image_url'         => $course->image_url ? (str_starts_with($course->image_url, 'http') ? $course->image_url : \Illuminate\Support\Facades\Storage::url($course->image_url)) : null,
+                    'price'             => (float)$course->price,
+                    'promotion_price'   => $course->promotion_price ? (float)$course->promotion_price : null,
+                    'is_on_promotion'   => $course->is_on_promotion,
+                    'is_package'        => $isPackage,
+                    'item_type'         => $isPackage ? 'package' : 'course',
+                    'category_name'     => $course->category->name ?? ($isPackage ? 'Paquete Especial' : 'General'),
+                    'instructor_name'   => $course->instructor->names ?? 'Instructor Especializado',
+                    'rating'            => 4.8,
+                    'students_count'    => $course->students_count ?? 120,
+                    'duration'          => $course->duration ?? '10',
+                    'level'             => $course->level ?? 'Intermedio',
+                    'added_date'        => $item->added_at ? $item->added_at->format('d/m/Y') : '',
+                    'added_at'          => $item->added_at
                 ];
-            });
+            })
+            ->filter()
+            ->values();
     }
 
     // Verificar si un curso está en la lista de deseos
@@ -94,14 +103,16 @@ class Wishlist extends Model
         // Si no hay categorías, devolver cursos populares
         if (empty($userWishlistCategories)) {
             return Course::with('instructor', 'category')
+                ->withCount('enrollments')
                 ->where('is_active', true)
-                ->orderBy('students_count', 'desc')
+                ->orderBy('enrollments_count', 'desc')
                 ->limit($limit)
                 ->get();
         }
 
         // Obtener cursos de las mismas categorías que no están en la lista de deseos
         return Course::with('instructor', 'category')
+            ->withCount('enrollments')
             ->where('is_active', true)
             ->whereIn('category_id', $userWishlistCategories)
             ->whereNotIn('id', function($query) use ($userId) {
@@ -109,7 +120,7 @@ class Wishlist extends Model
                     ->from('wishlists')
                     ->where('user_id', $userId);
             })
-            ->orderBy('students_count', 'desc')
+            ->orderBy('enrollments_count', 'desc')
             ->limit($limit)
             ->get();
     }

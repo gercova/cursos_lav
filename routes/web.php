@@ -39,6 +39,7 @@ use App\Http\Controllers\Student\StudentExamsController;
 use App\Http\Controllers\Student\StudentNotificationController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\Student\StudentProgressController;
+use App\Http\Controllers\Student\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 //ruta webhook 
@@ -92,6 +93,15 @@ Route::middleware(['auth', 'student'])->group(function () {
     
     // Pagos
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+
+    // Lista de Deseos (Wishlist)
+    Route::get('/wishlist',                     [WishlistController::class, 'index'])->name('student.wishlist');
+    Route::post('/wishlist/add',                [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::post('/wishlist/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/remove/{courseId}',[WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::delete('/wishlist/clear',            [WishlistController::class, 'clearAll'])->name('wishlist.clear');
+    Route::get('/wishlist/count',               [WishlistController::class, 'count'])->name('wishlist.count');
+    Route::get('/wishlist/check/{courseId}',    [WishlistController::class, 'check'])->name('wishlist.check');
 
     // si usuario tiene compro un paquete
     Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
@@ -239,6 +249,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/users/get-policy/{user}',      [UserAdminController::class, 'getLimitUser'])->name('admin.user.get-policy');
         Route::get('users/{user}/sales',            [UserAdminController::class, 'getSales'])->name('admin.users.sales');
         Route::get('users/{user}/activity',         [UserAdminController::class, 'getActivities'])->name('admin.users.activity');
+        Route::get('users/courses/search',          [UserAdminController::class, 'searchCourses'])->name('admin.users.courses.search');
+        Route::post('users/{user}/enroll',           [UserAdminController::class, 'enrollCourse'])->name('admin.users.enroll');
 
         // Rutas para asignar permisos a usuarios
         Route::get('/roles/home',               [RoleController::class, 'index'])->name('admin.roles.index');

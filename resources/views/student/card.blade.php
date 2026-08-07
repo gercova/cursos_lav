@@ -82,13 +82,14 @@
                                                     </svg>
                                                     <span class="text-sm font-medium">Eliminar</span>
                                                 </button>
-                                                {{-- <button onclick="addToWishlist({{ $item->course_id }})"
-                                                        class="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                                    </svg>
-                                                    <span class="text-sm font-medium">Mover a favoritos</span>
-                                                </button> --}}
+                                                <button onclick="toggleWishlistInCart({{ $item->course_id }})"
+                                                        id="cart-wishlist-btn-{{ $item->course_id }}"
+                                                        class="flex items-center {{ in_array($item->course_id, $wishlistCourseIds ?? []) ? 'text-red-600 hover:text-red-800' : 'text-blue-600 hover:text-blue-800' }} transition-colors duration-200">
+                                                    <i class="bi {{ in_array($item->course_id, $wishlistCourseIds ?? []) ? 'bi-heart-fill text-red-500' : 'bi-heart' }} mr-1.5 text-base" id="cart-wishlist-icon-{{ $item->course_id }}"></i>
+                                                    <span class="text-sm font-medium" id="cart-wishlist-text-{{ $item->course_id }}">
+                                                        {{ in_array($item->course_id, $wishlistCourseIds ?? []) ? 'En favoritos' : 'Agregar a favoritos' }}
+                                                    </span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -321,38 +322,62 @@
         }
     });
 
-    // Función para agregar a favoritos
-    // async function addToWishlist(courseId) {
-    //     try {
-    //         const response = await axios.post('/api/wishlist/add', {
-    //             course_id: courseId
-    //         }, {
-    //             headers: {
-    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-    //             }
-    //         });
+    // Función para alternar favoritos en el carrito
+    async function toggleWishlistInCart(courseId) {
+        try {
+            const response = await axios.post('/wishlist/toggle', {
+                course_id: courseId
+            }, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
 
-    //         if (response.data.success) {
-    //             showNotification('Curso movido a favoritos', 'success');
+            if (response.data.success) {
+                const btn = document.getElementById(`cart-wishlist-btn-${courseId}`);
+                const icon = document.getElementById(`cart-wishlist-icon-${courseId}`);
+                const text = document.getElementById(`cart-wishlist-text-${courseId}`);
 
-    //             // Actualizar contador de carrito si se elimina del carrito
-    //             setTimeout(() => {
-    //                 window.location.reload();
-    //             }, 1500);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error adding to wishlist:', error);
+                if (response.data.action === 'added') {
+                    if (icon) {
+                        icon.className = 'bi bi-heart-fill text-red-500 mr-1.5 text-base';
+                    }
+                    if (text) {
+                        text.textContent = 'En favoritos';
+                    }
+                    if (btn) {
+                        btn.className = 'flex items-center text-red-600 hover:text-red-800 transition-colors duration-200';
+                    }
+                    showNotification('Curso agregado a tu lista de deseos', 'success');
+                } else {
+                    if (icon) {
+                        icon.className = 'bi bi-heart mr-1.5 text-base';
+                    }
+                    if (text) {
+                        text.textContent = 'Agregar a favoritos';
+                    }
+                    if (btn) {
+                        btn.className = 'flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200';
+                    }
+                    showNotification('Curso eliminado de tu lista de deseos', 'info');
+                }
 
-    //         if (error.response && error.response.status === 401) {
-    //             showNotification('Debes iniciar sesión para usar favoritos', 'warning');
-    //             setTimeout(() => {
-    //                 window.location.href = '/login';
-    //             }, 2000);
-    //         } else {
-    //             showNotification('Error al agregar a favoritos', 'error');
-    //         }
-    //     }
-    // }
+                // Disparar evento para actualizar contadores del header
+                window.dispatchEvent(new CustomEvent('wishlist-updated'));
+            }
+        } catch (error) {
+            console.error('Error toggling wishlist:', error);
+            if (error.response && error.response.status === 401) {
+                showNotification('Debes iniciar sesión para usar la lista de deseos', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+            } else {
+                showNotification('Error al actualizar la lista de deseos', 'error');
+            }
+        }
+    }
 
     // Aplicar cupón
     // document.getElementById('apply-coupon').addEventListener('click', async function() {

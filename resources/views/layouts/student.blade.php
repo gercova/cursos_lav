@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -14,7 +13,6 @@
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/chart.js') }}"></script>
 </head>
-
 <body>
     <div class="app-layout" x-data="dashboardLayout()" x-init="init()">
         <!-- Overlay para móvil -->
@@ -81,6 +79,11 @@
                     class="sidebar-link {{ request()->routeIs('student.my-courses') ? 'active' : '' }}">
                     <i class="bi bi-book mr-2"></i>
                     <span>Mis Cursos</span>
+                </a>
+                <a href="{{ route('student.wishlist') }}"
+                    class="sidebar-link {{ request()->routeIs('student.wishlist') ? 'active' : '' }}">
+                    <i class="bi bi-heart mr-2"></i>
+                    <span>Lista de Deseos</span>
                 </a>
                 <a href="{{ route('student.certificates') }}"
                     class="sidebar-link {{ request()->routeIs('student.certificates') ? 'active' : '' }}">
@@ -185,8 +188,13 @@
                             </a>
                         </div>
                     </div>
+                    <!-- Lista de Deseos -->
+                    <a href="{{ route('student.wishlist') }}" class="action-button" title="Lista de Deseos">
+                        <i class="bi bi-heart"></i>
+                        <span id="wishlist-count" class="notification-badge bg-red-500">0</span>
+                    </a>
                     <!-- Carrito -->
-                    <a href="{{ route('cart') }}" class="action-button">
+                    <a href="{{ route('cart') }}" class="action-button" title="Carrito">
                         <i class="bi bi-cart"></i>
                         <span id="cart-count" class="notification-badge bg-blue-500">0</span>
                     </a>
@@ -276,13 +284,17 @@
                     window.studentDashboard = this;
                     this.checkScreenSize();
                     window.addEventListener('resize', () => this.checkScreenSize());
+                    window.addEventListener('wishlist-updated', () => this.updateWishlistCount());
+                    window.addEventListener('cart-updated', () => this.updateCartCount());
                     this.loadDashboardData();
                     this.loadNotifications();
                     this.updateCartCount();
+                    this.updateWishlistCount();
                     setInterval(() => {
                         this.loadDashboardData();
                         this.loadNotifications();
                         this.updateCartCount();
+                        this.updateWishlistCount();
                     }, 30000);
                 },
 
@@ -392,6 +404,18 @@
                         }
                     } catch (error) {
                         console.error('Error updating cart count:', error);
+                    }
+                },
+
+                async updateWishlistCount() {
+                    try {
+                        const response = await axios.get('/wishlist/count');
+                        const wishlistCount = document.getElementById('wishlist-count');
+                        if (wishlistCount) {
+                            wishlistCount.textContent = response.data.count || 0;
+                        }
+                    } catch (error) {
+                        console.error('Error updating wishlist count:', error);
                     }
                 }
             }

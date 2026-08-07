@@ -29,8 +29,9 @@ class WishlistController extends Controller {
 
         // Obtener cursos populares para estado vacío
         $popularCourses = Course::with('instructor', 'category')
+            ->withCount('enrollments')
             ->where('is_active', true)
-            ->orderBy('students_count', 'desc')
+            ->orderBy('enrollments_count', 'desc')
             ->limit(3)
             ->get();
 

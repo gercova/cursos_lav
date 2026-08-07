@@ -68,7 +68,13 @@
                 <div class="flex items-center space-x-4">
                     @auth
                         @if(auth()->user()->role == 'student')
-                            <a href="{{ route('cart') }}" class="text-gray-500 hover:text-blue-600 relative transition-colors duration-200">
+                            <a href="{{ route('student.wishlist') }}" class="text-gray-500 hover:text-red-500 relative transition-colors duration-200 mr-1" title="Lista de Deseos">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <span id="wishlist-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center transition-all duration-200"></span>
+                            </a>
+                            <a href="{{ route('cart') }}" class="text-gray-500 hover:text-blue-600 relative transition-colors duration-200" title="Carrito de Compras">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
@@ -199,6 +205,9 @@
                                     <a href="{{ route('student.dashboard') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-tachometer-alt w-5 text-gray-400 mr-2"></i> Mi Dashboard
                                     </a>
+                                    <a href="{{ route('student.wishlist') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                        <i class="fas fa-heart w-5 text-red-500 mr-2"></i> Mi Lista de Deseos
+                                    </a>
                                     <a href="{{ route('student.profile') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-user w-5 text-gray-400 mr-2"></i> Mi Perfil
                                     </a>
@@ -321,10 +330,10 @@
                     
                     @php
                         $hasSocials = !empty($enterprise->facebook_link) || 
-                                     !empty($enterprise->linkedin_link) || 
-                                     !empty($enterprise->twitter_link) || 
-                                     !empty($enterprise->instagram_link) || 
-                                     !empty($enterprise->whatsapp_link);
+                            !empty($enterprise->linkedin_link) || 
+                            !empty($enterprise->twitter_link) || 
+                            !empty($enterprise->instagram_link) || 
+                            !empty($enterprise->whatsapp_link);
                     @endphp
 
                     @if($hasSocials)
@@ -382,9 +391,7 @@
                     <a href="{{ route('terminos-y-condiciones') }}" class="hover:text-slate-300 transition-colors duration-200">Términos de servicio</a>
                     <a href="{{ route('politicas-de-uso') }}" class="hover:text-slate-300 transition-colors duration-200">Política de privacidad</a>
                     <a href="{{ route('politicas-de-cookies') }}" class="hover:text-slate-300 transition-colors duration-200">Cookies</a>
-                    <a href="javascript:void(0)" onclick="CookieConsent.openModal()" class="hover:text-slate-300 transition-colors duration-200 flex items-center gap-1">
-                        <i class="fas fa-cookie-bite text-amber-500/80"></i> Preferencias de cookies
-                    </a>
+                    <a href="javascript:void(0)" onclick="CookieConsent.openModal()" class="hover:text-slate-300 transition-colors duration-200 flex items-center gap-1">Preferencias de cookies</a>
                 </div>
             </div>
         </div>
@@ -838,11 +845,56 @@
             }
         }
 
+        window.wishlistState = {
+            isUpdating: false,
+            lastCount: null
+        };
+
+        async function updateWishlistCount() {
+            const wishlistCountEl = document.getElementById('wishlist-count');
+
+            if (!wishlistCountEl) return;
+            if (window.wishlistState.isUpdating) return;
+
+            try {
+                window.wishlistState.isUpdating = true;
+                const response = await axios.get('/wishlist/count');
+                const count = response.data.count;
+
+                if (window.wishlistState.lastCount !== count) {
+                    wishlistCountEl.textContent = count > 0 ? count : '';
+                    if (count === 0) {
+                        wishlistCountEl.style.display = 'none';
+                    } else {
+                        wishlistCountEl.style.display = 'flex';
+                    }
+                    window.wishlistState.lastCount = count;
+
+                    if (count > 0) {
+                        wishlistCountEl.classList.add('animate-pulse');
+                        setTimeout(() => {
+                            const el = document.getElementById('wishlist-count');
+                            if (el) el.classList.remove('animate-pulse');
+                        }, 1000);
+                    }
+                }
+            } catch (error) {
+                if (error.response && error.response.status !== 401) {
+                    console.error('Error al actualizar contador de wishlist:', error);
+                }
+            } finally {
+                window.wishlistState.isUpdating = false;
+            }
+        }
+
         // Escuchador para actualizaciones manuales
         window.addEventListener('cart-updated', updateCartCount);
-        // Cargar categorías
+        window.addEventListener('wishlist-updated', updateWishlistCount);
+
+        // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             updateCartCount();
+            updateWishlistCount();
 
             // Dynamically populate categories in the mobile sidebar if category filter exists
             const categoryFilter = document.getElementById('category-filter');

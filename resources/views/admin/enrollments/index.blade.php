@@ -82,18 +82,78 @@
                         </select>
                     </div>
 
-                    <div>
+                    <!-- Searchable Course Select (Select2 style, no external libraries) -->
+                    <div x-data="{
+                        open: false,
+                        search: '',
+                        selectedId: '{{ request('course', '') }}',
+                        selectedTitle: '{{ request('course') && $courses->firstWhere('id', request('course')) ? addslashes($courses->firstWhere('id', request('course'))->title) : 'Todos los cursos' }}',
+                        courses: {{ $courses->map(fn($c) => ['id' => (string)$c->id, 'title' => $c->title])->values()->toJson() }},
+                        get filteredCourses() {
+                            if (!this.search.trim()) {
+                                return this.courses.slice(0, 5);
+                            }
+                            const q = this.search.toLowerCase();
+                            return this.courses.filter(c => c.title.toLowerCase().includes(q)).slice(0, 5);
+                        },
+                        selectCourse(id, title) {
+                            this.selectedId = id;
+                            this.selectedTitle = title;
+                            this.open = false;
+                            this.search = '';
+                        }
+                    }" class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Curso</label>
-                        <select name="course"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Todos los cursos</option>
-                            @foreach ($courses as $course)
-                                <option value="{{ $course->id }}"
-                                    {{ request('course') == $course->id ? 'selected' : '' }}>
-                                    {{ $course->title }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="course" :value="selectedId">
+
+                        <!-- Trigger Button -->
+                        <button type="button" @click="open = !open; if(open) $nextTick(() => $refs.courseSearchInput.focus())"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-left text-sm flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                            <span class="truncate pr-2" :class="selectedId ? 'text-gray-900 font-medium' : 'text-gray-600'" x-text="selectedTitle"></span>
+                            <i class="bi bi-chevron-down text-gray-400 text-xs transition-transform duration-200" :class="open ? 'rotate-180' : ''"></i>
+                        </button>
+
+                        <!-- Dropdown Panel -->
+                        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden" style="display: none;">
+
+                            <!-- Search Input -->
+                            <div class="p-2 border-b border-gray-100 bg-gray-50">
+                                <div class="relative">
+                                    <i class="bi bi-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                                    <input type="text" x-model="search" x-ref="courseSearchInput" placeholder="Buscar curso..."
+                                        class="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                </div>
+                            </div>
+
+                            <!-- Options List (Limited to max 5 items) -->
+                            <ul class="max-h-60 overflow-y-auto py-1 text-sm text-gray-700">
+                                <!-- Default Option -->
+                                <li @click="selectCourse('', 'Todos los cursos')"
+                                    class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition-colors"
+                                    :class="!selectedId ? 'bg-blue-50/80 font-semibold text-blue-700' : ''">
+                                    <span>Todos los cursos</span>
+                                    <i x-show="!selectedId" class="bi bi-check text-blue-600 font-bold text-base"></i>
+                                </li>
+
+                                <template x-for="course in filteredCourses" :key="course.id">
+                                    <li @click="selectCourse(course.id, course.title)"
+                                        class="px-3 py-2 hover:bg-blue-50 cursor-pointer flex items-center justify-between transition-colors"
+                                        :class="selectedId == course.id ? 'bg-blue-50/80 font-semibold text-blue-700' : ''">
+                                        <span x-text="course.title" class="truncate pr-2"></span>
+                                        <i x-show="selectedId == course.id" class="bi bi-check text-blue-600 font-bold text-base"></i>
+                                    </li>
+                                </template>
+
+                                <!-- Empty results message -->
+                                <li x-show="filteredCourses.length === 0" class="px-3 py-2.5 text-gray-400 text-xs italic text-center">
+                                    No se encontraron cursos
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="flex items-end">

@@ -270,7 +270,8 @@
                                 <div class="sig-name">{{ $enterprise->legal_representative }}</div>
                                 <div class="sig-role">Gerente de Operaciones</div>
                                 @if ($enterprise->colegial_type && $enterprise->colegial)
-                                    <div style="color: #ffffff;" class="sig-cred">{{ $enterprise->colegial_type }}: {{ $enterprise->colegial }}
+                                    <div style="color: #ffffff;" class="sig-cred">{{ $enterprise->colegial_type }}:
+                                        {{ $enterprise->colegial }}
                                     </div>
                                 @endif
                             </td>

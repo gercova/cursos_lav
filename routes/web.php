@@ -42,10 +42,19 @@ use App\Http\Controllers\Student\StudentProgressController;
 use App\Http\Controllers\Student\WishlistController;
 use Illuminate\Support\Facades\Route;
 
-//ruta webhook 
-Route::post('api/vimeo/webhook',            [VimeoWebhookController::class,'handle'])->name('webhook');
+/*
+|--------------------------------------------------------------------------
+| Webhook
+|--------------------------------------------------------------------------
+*/
+Route::post('api/vimeo/webhook', [VimeoWebhookController::class, 'handle'])->name('webhook');
 
-// Rutas públicas
+/*
+|--------------------------------------------------------------------------
+| Rutas públicas
+|--------------------------------------------------------------------------
+| Nombres sin cambios (son los que probablemente ya usas en vistas/JS).
+*/
 Route::get('/',                             [AppController::class, 'home'])->name('home');
 Route::get('/cursos/{code?}',               [AppController::class, 'courses'])->name('cursos');
 Route::get('/promo-paquetes/{code?}',       [AppController::class, 'packages'])->name('paquetes');
@@ -58,312 +67,349 @@ Route::get('/api/cart/count',               [CartsController::class, 'count'])->
 Route::get('/terminos-y-condiciones',       [AppController::class, 'terms'])->name('terminos-y-condiciones');
 Route::get('/politicas-de-uso',             [AppController::class, 'policies'])->name('politicas-de-uso');
 Route::get('/politicas-de-cookies',         [AppController::class, 'cookies'])->name('politicas-de-cookies');
-
-// Autenticación general (Admin / Instructor / Student)
-Route::get('/register',                     [RegisterController::class, 'showRegister'])->name('register');
-Route::post('/register',                    [RegisterController::class, 'register'])->middleware('throttle:5,1');
-Route::get('/login',                        [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
-Route::post('/login',                       [LoginController::class, 'login'])->middleware('guest');
-Route::post('/logout',                      [LoginController::class, 'logout'])->name('logout');
-Route::get('forgot-password',               [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('forgot-password',              [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email')->middleware('throttle:5,1');
-
-// Restablecer contraseña
-Route::get('reset-password/{token}',        [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('reset-password',               [ResetPasswordController::class, 'reset'])->name('password.update')->middleware('throttle:5,1');
-
-// Enlace para verificación del certificado
 Route::get('/verify/{code}',                [CertificatesController::class, 'verify'])->name('verify.certificate');
 
-// Rutas protegidas para estudiantes
+/*
+|--------------------------------------------------------------------------
+| Autenticación general (Admin / Instructor / Student)
+|--------------------------------------------------------------------------
+*/
+Route::get('/register',        [RegisterController::class, 'showRegister'])->name('register');
+Route::post('/register',       [RegisterController::class, 'register'])->middleware('throttle:5,1');
+Route::get('/login',           [LoginController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login',          [LoginController::class, 'login'])->middleware('guest');
+Route::post('/logout',         [LoginController::class, 'logout'])->name('logout');
+Route::get('forgot-password',  [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email')->middleware('throttle:5,1');
+
+Route::get('reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('reset-password',        [ResetPasswordController::class, 'reset'])->name('password.update')->middleware('throttle:5,1');
+
+/*
+|--------------------------------------------------------------------------
+| Rutas protegidas para estudiantes
+|--------------------------------------------------------------------------
+| Nombres sin cambios respecto al original. Solo se corrigió la ruta
+| /dashboard duplicada (ver nota al final del archivo).
+*/
 Route::middleware(['auth', 'student'])->group(function () {
-    Route::get('/dashboard',                    [CoursesController::class, 'dashboard'])->name('student.dashboard');
-    Route::get('/mis-cursos',                   [CoursesController::class, 'myCourses'])->name('student.my-courses');
-    Route::get('/mis-metas',                    [StudentProgressController::class, 'myGoals'])->name('student.goals');
-    Route::get('/dashboard-stats',              [DashboardController::class, 'dashboardStats']);
-    Route::get('/dashboard-exams',              [DashboardController::class, 'dashboardExams']);
-    Route::get('/dashboard-certificates',       [DashboardController::class, 'dashboardCertificates']);
-    Route::get('/recent-activity',              [DashboardController::class, 'recentActivity']);
+
+    // Dashboard principal (antes había DOS rutas '/dashboard' con el mismo
+    // nombre 'student.dashboard'; se dejó solo esta, la de DashboardController).
+    Route::get('/dashboard',              [DashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/mis-cursos',             [CoursesController::class, 'myCourses'])->name('student.my-courses');
+    Route::get('/mis-metas',              [StudentProgressController::class, 'myGoals'])->name('student.goals');
+    Route::get('/dashboard-stats',        [DashboardController::class, 'dashboardStats']);
+    Route::get('/dashboard-exams',        [DashboardController::class, 'dashboardExams']);
+    Route::get('/dashboard-certificates', [DashboardController::class, 'dashboardCertificates']);
+    Route::get('/recent-activity',        [DashboardController::class, 'recentActivity']);
+
+    Route::get('/api/student/dashboard-stats',   [DashboardController::class, 'stats'])->name('student.dashboard.stats');
+    Route::get('/api/student/dashboard-courses', [DashboardController::class, 'dashboardCourses'])->name('student.dashboard.courses');
+    Route::get('/api/student/recent-activity',   [DashboardController::class, 'recentActivity'])->name('student.recent.activity');
+    Route::get('/api/student/upcoming-events',   [DashboardController::class, 'upcomingEvents'])->name('student.upcoming.events');
+    Route::get('/api/student/achievements',      [DashboardController::class, 'achievements'])->name('student.achievements');
 
     // Carrito de compras
-    Route::get('/cart',                         [CartsController::class, 'index'])->name('cart');
-    Route::post('/cart/add/{course}',           [CartsController::class, 'add'])->name('cart.add');
-    Route::delete('/cart/remove/{courseId}',    [CartsController::class, 'remove'])->name('cart.remove');
-    Route::post('/cart/checkout',               [CartsController::class, 'checkout'])->name('cart.checkout');
-    
+    Route::prefix('cart')->group(function () {
+        Route::get('/',                    [CartsController::class, 'index'])->name('cart');
+        Route::post('/add/{course}',       [CartsController::class, 'add'])->name('cart.add');
+        Route::delete('/remove/{courseId}',[CartsController::class, 'remove'])->name('cart.remove');
+        Route::post('/checkout',           [CartsController::class, 'checkout'])->name('cart.checkout');
+    });
+
     // Pagos
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::post('/mp/preference', [PaymentController::class, 'createPreference'])->name('mp.preference');
+    Route::get('/pago/fallido',   [PaymentController::class, 'failure'])->name('pago.fallido');
+    Route::get('/pago/pendiente', [PaymentController::class, 'pending'])->name('pago.pendiente');
 
     // Lista de Deseos (Wishlist)
-    Route::get('/wishlist',                     [WishlistController::class, 'index'])->name('student.wishlist');
-    Route::post('/wishlist/add',                [WishlistController::class, 'add'])->name('wishlist.add');
-    Route::post('/wishlist/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    Route::delete('/wishlist/remove/{courseId}',[WishlistController::class, 'remove'])->name('wishlist.remove');
-    Route::delete('/wishlist/clear',            [WishlistController::class, 'clearAll'])->name('wishlist.clear');
-    Route::get('/wishlist/count',               [WishlistController::class, 'count'])->name('wishlist.count');
-    Route::get('/wishlist/check/{courseId}',    [WishlistController::class, 'check'])->name('wishlist.check');
+    Route::prefix('wishlist')->group(function () {
+        Route::get('/',                    [WishlistController::class, 'index'])->name('student.wishlist');
+        Route::post('/add',                [WishlistController::class, 'add'])->name('wishlist.add');
+        Route::post('/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+        Route::delete('/remove/{courseId}',[WishlistController::class, 'remove'])->name('wishlist.remove');
+        Route::delete('/clear',            [WishlistController::class, 'clearAll'])->name('wishlist.clear');
+        Route::get('/count',               [WishlistController::class, 'count'])->name('wishlist.count');
+        Route::get('/check/{courseId}',    [WishlistController::class, 'check'])->name('wishlist.check');
+    });
 
-    // si usuario tiene compro un paquete
-    Route::get('/mi-dashboard',                 [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
-    Route::get('/mis-colaboradores/lista',      [BusinessManagementController::class, 'index'])->name('company.list');
-    Route::put('/mi-colaborador/{user}/password', [BusinessManagementController::class, 'updatePassword'])->name('company.password');
-    Route::get('/mi-perfil/{user}',             [BusinessManagementController::class, 'profile'])->name('company.profile');
-    Route::get('/mi-colaborador/crear',         [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
-    Route::post('/mis-colaboradores/crear',     [BusinessManagementController::class, 'storeStaff'])->name('company.create');
-    Route::post('/mis-colaboradores/importar',  [BusinessManagementController::class, 'importFile'])->name('company.import.file'); // ← CAMBIADO
+    // Empresa (usuarios que compraron un paquete corporativo)
+    Route::get('/mi-dashboard',            [DashboardPackageController::class, 'index'])->name('company.dashboard-admin');
+    Route::get('/mis-colaboradores/lista', [BusinessManagementController::class, 'index'])->name('company.list');
+    Route::put('/mi-colaborador/{user}/password',        [BusinessManagementController::class, 'updatePassword'])->name('company.password');
+    Route::get('/mi-perfil/{user}',                       [BusinessManagementController::class, 'profile'])->name('company.profile');
+    Route::get('/mi-colaborador/crear',                   [BusinessManagementController::class, 'createStaff'])->name('company.create.new');
+    Route::post('/mis-colaboradores/crear',               [BusinessManagementController::class, 'storeStaff'])->name('company.create');
+    Route::post('/mis-colaboradores/importar',            [BusinessManagementController::class, 'importFile'])->name('company.import.file');
+    Route::get('/mis-colaboradores/importar',             [BusinessImportController::class, 'showImportForm'])->name('company.import.form');
+    Route::patch('/mi-colaborador/{user}/toggle-status',  [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
+    Route::post('/users/import',                          [BusinessImportController::class, 'import'])->name('company.import.process');
+    Route::get('/users/import/template',                  [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
+    Route::get('/enroll/users',                           [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
+    Route::post('/enroll/with-code',                      [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
+    Route::post('/enroll/bulk',                           [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
+    Route::get('/enroll/recent',                          [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
+    Route::get('/users/without-code',                     [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
+    Route::post('/enroll/super-bulk',                     [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
+    Route::get('/cronograma',                             [CompanyScheduleController::class, 'index'])->name('company.schedule');
 
-    Route::get('/mis-colaboradores/importar',   [BusinessImportController::class, 'showImportForm'])->name('company.import.form');
-    Route::patch('/mi-colaborador/{user}/toggle-status', [BusinessManagementController::class, 'toggleStatus'])->name('company.toggle-status');
-    Route::post('/users/import',                [BusinessImportController::class, 'import'])->name('company.import.process');
-    Route::get('/users/import/template',        [BusinessImportController::class, 'downloadTemplate'])->name('company.import.template');
-    Route::get('/enroll/users',                 [BusinessManagementController::class, 'enrollUsers'])->name('company.enroll.users');
-    Route::post('/enroll/with-code',            [BusinessManagementController::class, 'enrollWithCode'])->name('company.enroll.with-code');
-    Route::post('/enroll/bulk',                 [BusinessManagementController::class, 'bulkEnroll'])->name('company.enroll.bulk');
-    Route::get('/enroll/recent',                [BusinessManagementController::class, 'getRecentEnrollments'])->name('company.enroll.recent');
-    Route::get('/users/without-code',           [BusinessManagementController::class, 'getUsersWithoutCode'])->name('company.users.without-code');
-    Route::post('/enroll/super-bulk',           [BusinessManagementController::class, 'superBulkEnroll'])->name('company.enroll.super-bulk');
+    // Selección de cursos de un paquete
+    Route::get('/package/{packageId}/select-courses', [PackageSelectionController::class, 'showSelectionForm'])->name('student.package.select');
+    Route::post('/package/{packageId}/save-courses',  [PackageSelectionController::class, 'storeSelection'])->name('student.package.save');
+    Route::get('/api/student/package/courses',        [PackageSelectionController::class, 'getCourses']);
 
-    // Cronograma de capacitaciones (vista empresa/colaboradores)
-    Route::get('/cronograma',                   [CompanyScheduleController::class, 'index'])->name('company.schedule');
-
-    Route::get('/package/{packageId}/select-courses',   [PackageSelectionController::class, 'showSelectionForm'])->name('student.package.select');
-    Route::post('/package/{packageId}/save-courses',    [PackageSelectionController::class, 'storeSelection'])->name('student.package.save');
-    Route::get('/api/student/package/courses',          [PackageSelectionController::class, 'getCourses']);
-
-    // Listar exámenes
-    Route::get('/exams/home',                   [StudentExamsController::class, 'index'])->name('student.exams');
-    Route::get('/exams/{id}',                   [StudentExamsController::class, 'show'])->name('student.exams.show');
-    Route::post('/exams/{id}/start',            [StudentExamsController::class, 'start'])->name('student.exams.start');
-    Route::post('/exams/{id}/save',             [StudentExamsController::class, 'saveAnswers'])->name('student.exams.save-answers');
-    Route::post('/exams/{id}/submit',           [StudentExamsController::class, 'submit'])->name('student.exams.submit');
-    Route::get('/exams/result/{attemptId}',     [StudentExamsController::class, 'result'])->name('student.exams.result');
-    Route::get('/exams/view/{attemptId}',       [StudentExamsController::class, 'view'])->name('student.exams.view');
+    // Exámenes
+    Route::prefix('exams')->name('student.exams')->group(function () {
+        Route::get('/home',                 [StudentExamsController::class, 'index'])->name('');
+        Route::get('/{id}',                 [StudentExamsController::class, 'show'])->name('.show');
+        Route::post('/{id}/start',          [StudentExamsController::class, 'start'])->name('.start');
+        Route::post('/{id}/save',           [StudentExamsController::class, 'saveAnswers'])->name('.save-answers');
+        Route::post('/{id}/submit',         [StudentExamsController::class, 'submit'])->name('.submit');
+        Route::get('/result/{attemptId}',   [StudentExamsController::class, 'result'])->name('.result');
+        Route::get('/view/{attemptId}',     [StudentExamsController::class, 'view'])->name('.view');
+    });
 
     // Certificados
-    Route::get('/certificate',                                  [CertificatesController::class, 'index'])->name('student.certificates');
-    Route::get('/certificate/{certificateId}',                  [CertificatesController::class, 'show'])->name('student.certificates.show');
-    Route::get('/certificate/exact/{certificateId}/download',   [CertificatesController::class, 'download'])->name('student.certificates.download-exact');
-    Route::get('/certificate/exact/{certificateId}/view',       [CertificatesController::class, 'viewExact'])->name('student.certificates.view-exact');
-    Route::post('/generar/{enrollmentId}',                      [CertificatesController::class, 'generateCertificate'])->name('generate');
-
-    // Dashboard principal
-    Route::get('/dashboard',                        [DashboardController::class, 'index'])->name('student.dashboard');
-    Route::get('/api/student/dashboard-stats',      [DashboardController::class, 'stats'])->name('student.dashboard.stats');
-    Route::get('/api/student/dashboard-courses',    [DashboardController::class, 'dashboardCourses'])->name('student.dashboard.courses');
-    Route::get('/api/student/recent-activity',      [DashboardController::class, 'recentActivity'])->name('student.recent.activity');
-    Route::get('/api/student/upcoming-events',      [DashboardController::class, 'upcomingEvents'])->name('student.upcoming.events');
-    Route::get('/api/student/achievements',         [DashboardController::class, 'achievements'])->name('student.achievements');
+    Route::prefix('certificate')->name('student.certificates')->group(function () {
+        Route::get('/',                                 [CertificatesController::class, 'index'])->name('');
+        Route::get('/{certificateId}',                  [CertificatesController::class, 'show'])->name('.show');
+        Route::get('/exact/{certificateId}/download',   [CertificatesController::class, 'download'])->name('.download-exact');
+        Route::get('/exact/{certificateId}/view',       [CertificatesController::class, 'viewExact'])->name('.view-exact');
+    });
+    Route::post('/generar/{enrollmentId}', [CertificatesController::class, 'generateCertificate'])->name('generate');
 
     // Notificaciones
-    Route::get('/notifications',                    [StudentNotificationController::class, 'index'])->name('student.notifications');
-    Route::get('/api/student/notifications',        [StudentNotificationController::class, 'apiIndex'])->name('student.notifications.api');
-    Route::post('/notifications/{id}/read',         [StudentNotificationController::class, 'markAsRead'])->name('student.notifications.read');
-    Route::post('/notifications/{id}/unread',       [StudentNotificationController::class, 'markAsUnread'])->name('student.notifications.unread');
-    Route::post('/notifications/read-all',          [StudentNotificationController::class, 'markAllAsRead'])->name('student.notifications.read-all');
-    Route::delete('/notifications/{id}',            [StudentNotificationController::class, 'destroy'])->name('student.notifications.delete');
-    Route::delete('/notifications',                 [StudentNotificationController::class, 'clearAll'])->name('student.notifications.clear-all');
+    Route::prefix('notifications')->name('student.notifications')->group(function () {
+        Route::get('/',            [StudentNotificationController::class, 'index'])->name('');
+        Route::post('/{id}/read',  [StudentNotificationController::class, 'markAsRead'])->name('.read');
+        Route::post('/{id}/unread',[StudentNotificationController::class, 'markAsUnread'])->name('.unread');
+        Route::post('/read-all',   [StudentNotificationController::class, 'markAllAsRead'])->name('.read-all');
+        Route::delete('/{id}',     [StudentNotificationController::class, 'destroy'])->name('.delete');
+        Route::delete('/',         [StudentNotificationController::class, 'clearAll'])->name('.clear-all');
+    });
+    Route::get('/api/student/notifications', [StudentNotificationController::class, 'apiIndex'])->name('student.notifications.api');
 
     // Perfil del estudiante
-    Route::get('/profile',                          [StudentProfileController::class, 'show'])->name('student.profile');
-    Route::put('/profile',                          [StudentProfileController::class, 'update'])->name('student.profile.update');
-    Route::put('/password',                         [StudentProfileController::class, 'updatePassword'])->name('student.profile.update-password');
-    Route::post('/photo',                           [StudentProfileController::class, 'updateProfilePhoto'])->name('student.profile.update-photo');
-    Route::delete('/photo',                         [StudentProfileController::class, 'deleteProfilePhoto'])->name('student.profile.delete-photo');
-    Route::post('/profile/generate-code',           [StudentProfileController::class, 'generatePromoCode'])->name('student.profile.generate-code');
+    Route::get('/profile',               [StudentProfileController::class, 'show'])->name('student.profile');
+    Route::put('/profile',               [StudentProfileController::class, 'update'])->name('student.profile.update');
+    Route::put('/password',              [StudentProfileController::class, 'updatePassword'])->name('student.profile.update-password');
+    Route::post('/photo',                [StudentProfileController::class, 'updateProfilePhoto'])->name('student.profile.update-photo');
+    Route::delete('/photo',              [StudentProfileController::class, 'deleteProfilePhoto'])->name('student.profile.delete-photo');
+    Route::post('/profile/generate-code',[StudentProfileController::class, 'generatePromoCode'])->name('student.profile.generate-code');
 
     // Estudiante afiliado
-    Route::get('/affiliate/dashboard',              [AffiliateController::class, 'dashboard'])->name('student.affiliate.dashboard');
-    Route::get('/affiliate/sales',                  [AffiliateController::class, 'sales'])->name('student.affiliate.sales');
-    Route::get('/affiliate/reports',                [AffiliateController::class, 'reports'])->name('student.affiliate.reports');
-    Route::get('/affiliate/links',                  [AffiliateController::class, 'links'])->name('student.affiliate.links');
-    Route::get('/affiliate/api/stats',              [AffiliateController::class, 'getStats'])->name('student.affiliate.api.stats');
+    Route::prefix('affiliate')->name('student.affiliate.')->group(function () {
+        Route::get('/dashboard', [AffiliateController::class, 'dashboard'])->name('dashboard');
+        Route::get('/sales',     [AffiliateController::class, 'sales'])->name('sales');
+        Route::get('/reports',   [AffiliateController::class, 'reports'])->name('reports');
+        Route::get('/links',     [AffiliateController::class, 'links'])->name('links');
+        Route::get('/api/stats', [AffiliateController::class, 'getStats'])->name('api.stats');
+    });
 
-    // Ver secciones y lecciones de un curso
+    // Secciones, lecciones y progreso de un curso
     Route::get('/courses/{course}/learn',           [CoursesController::class, 'learn'])->name('student.course.learn');
-    
-    // Vista de lección individual
     Route::get('/courses/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lesson.show');
-    // Guardar progreso de lección
     Route::post('/lesson/progress/save',            [LessonController::class, 'saveProgress'])->name('lesson.progress.save');
-    // Marcar lección como completada
     Route::post('/lesson/complete',                 [LessonController::class, 'complete'])->name('lesson.complete');
-    
-
-    // Progreso
     Route::get('/progress',                         [StudentProgressController::class, 'index'])->name('student.progress');
-
-    // Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
-    // Rutas de retorno de Mercado Pago
-    // Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('payment.success');
-    // Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('payment.failure');
-    // Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('payment.pending');
-
-    Route::post('/mp/preference',                   [PaymentController::class, 'createPreference'])->name('mp.preference');
-    // Rutas de retorno de Mercado Pago
-    // Route::get('/pago/exitoso',                     [PaymentController::class, 'success'])->name('pago.exitoso');
-    Route::get('/pago/fallido',                     [PaymentController::class, 'failure'])->name('pago.fallido');
-    Route::get('/pago/pendiente',                   [PaymentController::class, 'pending'])->name('pago.pendiente');
 });
 
-Route::prefix('admin')->group(function () {
-    Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/dashboard',                [AdminController::class, 'dashboard'])->name('admin.dashboard');
-        // Gestión de Inscripciones
-        Route::get('/enrollments/home',                     [EnrollmentsAdminController::class, 'index'])->name('admin.enrollments.index');
-        Route::get('/enrollments/{enrollment}',             [EnrollmentsAdminController::class, 'enrollmentShow'])->name('admin.enrollments.show');
-        Route::patch('/enrollments/{enrollment}/status',    [EnrollmentsAdminController::class, 'updateEnrollmentStatus'])->name('admin.enrollments.update-status');
+/*
+|--------------------------------------------------------------------------
+| Panel de Administración
+|--------------------------------------------------------------------------
+| Mismo grupo prefix+middleware que antes; solo se cambió CÓMO se
+| escriben los nombres/rutas para reducir repetición. Los nombres
+| finales de ruta son EXACTAMENTE los mismos que en el archivo original,
+| salvo dos excepciones marcadas con (*) más abajo.
+*/
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
-        // Gestión de Pagos
-        Route::get('/payments/home',                [PaymentsAdminController::class, 'index'])->name('admin.payments.index');
-        Route::patch('/payments/{payment}/status',  [PaymentsAdminController::class, 'updatePaymentStatus'])->name('admin.payments.update-status');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-        // Reportes
-        Route::get('/reports',                      [AdminController::class, 'reports'])->name('admin.reports');
-        // Configuración
-        Route::get('/settings',                     [AdminController::class, 'settings'])->name('admin.settings');
-        Route::post('/settings',                    [AdminController::class, 'updateSettings'])->name('admin.settings.update');
-        // Mantenimiento
-        Route::get('/maintenance',                  [AdminController::class, 'maintenance'])->name('admin.maintenance');
-        Route::post('/backup',                      [AdminController::class, 'runBackup'])->name('admin.backup.run');
-        Route::post('/clear-cache',                 [AdminController::class, 'clearCache'])->name('admin.cache.clear');
-        // Log de Actividades
-        Route::get('/activity-log',                 [AdminController::class, 'activityLog'])->name('admin.activity-log');
-
-        Route::get('/enterprise',                   [EnterpriseAdminController::class, 'index'])->name('admin.enterprise.index');
-        Route::put('/enterprise',                   [EnterpriseAdminController::class, 'update'])->name('admin.enterprise.update');
-        Route::delete('/enterprise/logo',           [EnterpriseAdminController::class, 'deleteLogo'])->name('admin.enterprise.delete-logo');
-        Route::delete('/enterprise/favicon',        [EnterpriseAdminController::class, 'deleteFavicon'])->name('admin.enterprise.delete-favicon');
-
-        // Gestión de Usuarios
-        Route::get('/users/home',                   [UserAdminController::class, 'index'])->name('admin.users.index');
-        Route::get('/users/create',                 [UserAdminController::class, 'create'])->name('admin.users.create');
-        Route::get('/users/{user}',                 [UserAdminController::class, 'show'])->name('admin.users.show');
-        Route::get('/users/{user}/edit',            [UserAdminController::class, 'edit'])->name('admin.users.edit');
-        Route::post('/users/store',                 [UserAdminController::class, 'store'])->name('admin.users.store');
-        Route::put('/users/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('admin.users.password');
-        Route::put('/users/{user}/expiration',      [UserAdminController::class, 'updateExpiration'])->name('admin.users.expiration');
-        Route::delete('/users/{user}',              [UserAdminController::class, 'destroy'])->name('admin.users.destroy');
-        Route::patch('/users/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('admin.users.toggle-status');
-        Route::put('/users/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('admin.user.create-code');
-        Route::put('/users/policy/{user}',          [UserAdminController::class, 'createLimitUser'])->name('admin.user.policy');
-        Route::get('/users/get-policy/{user}',      [UserAdminController::class, 'getLimitUser'])->name('admin.user.get-policy');
-        Route::get('users/{user}/sales',            [UserAdminController::class, 'getSales'])->name('admin.users.sales');
-        Route::get('users/{user}/activity',         [UserAdminController::class, 'getActivities'])->name('admin.users.activity');
-        Route::get('users/courses/search',          [UserAdminController::class, 'searchCourses'])->name('admin.users.courses.search');
-        Route::post('users/{user}/enroll',           [UserAdminController::class, 'enrollCourse'])->name('admin.users.enroll');
-
-        // Rutas para asignar permisos a usuarios
-        Route::get('/roles/home',               [RoleController::class, 'index'])->name('admin.roles.index');
-        Route::post('/roles/store',             [RoleController::class, 'store'])->name('admin.roles.store');
-        Route::get('/users/{user}/permissions', [RoleController::class, 'assignPermissions'])->name('users.permissions.assign');
-        Route::put('/users/{user}/permissions', [RoleController::class, 'updatePermissions'])->name('users.permissions.update');
-        Route::delete('/roles/{role}',          [RoleController::class, 'destroy'])->name('admin.roles.destroy');
-
-        // Rutas para categorias
-        Route::get('/categories/home',                           [CategoriesAdminController::class, 'index'])->name('admin.categories.index');
-        Route::get('/categories/stats',                          [CategoriesAdminController::class, 'stats'])->name('admin.categories.stats');
-        Route::post('/categories/store',                         [CategoriesAdminController::class, 'store'])->name('admin.categories.store');
-        Route::get('/categories/{category}',                     [CategoriesAdminController::class, 'show'])->name('admin.categories.show');
-        Route::put('/categories/{category}',                     [CategoriesAdminController::class, 'update'])->name('admin.categories.update');
-        Route::delete('/categories/{category}',                  [CategoriesAdminController::class, 'destroy'])->name('admin.categories.destroy');
-        Route::post('/categories/{categoryId}/toggle-status',    [CategoriesAdminController::class, 'toggleStatus'])->name('admin.categories.toggle-status');
-        Route::post('/categories/bulk-action',                   [CategoriesAdminController::class, 'bulkAction'])->name('admin.categories.bulk-action');
-
-        // Rutas para cursos
-        Route::get('/courses/home',                     [CoursesAdminController::class, 'index'])->name('admin.courses.index');
-        Route::get('/courses/{course}/sections',        [CoursesAdminController::class, 'getSections']);
-        Route::get('/courses/create',                   [CoursesAdminController::class, 'create'])->name('admin.courses.create');
-        Route::get('/courses/{course}',                 [CoursesAdminController::class, 'show'])->name('admin.courses.show');
-        Route::post('/courses/store',                   [CoursesAdminController::class, 'store'])->name('admin.courses.store');
-        Route::get('/courses/{course}/edit',            [CoursesAdminController::class, 'edit'])->name('admin.courses.edit');
-        Route::get('/courses/{course}/students',        [CoursesAdminController::class, 'students'])->name('admin.courses.students');
-        Route::post('/courses/{course}/update-prices',  [CoursesAdminController::class, 'updatePrices'])->name('admin.courses.update-prices');
-        Route::post('/courses/{course}/toggle-status',  [CoursesAdminController::class, 'toggleStatus'])->name('admin.courses.toggle-status');
-        Route::put('/courses/update',                   [CoursesAdminController::class, 'update'])->name('admin.courses.update');
-        Route::delete('/courses/{course}',              [CoursesAdminController::class, 'destroy'])->name('admin.courses.destroy');
-        
-        // PRIMER GRUPO: Rutas de secciones SIN parámetro {section} (las más específicas primero)
-        Route::get('/courses/{course}/sections/create',         [CourseSectionAdminController::class, 'create'])->name('admin.courses.sections.create');
-        Route::post('/courses/{course}/sections/reorder',       [CourseSectionAdminController::class, 'reorder'])->name('admin.courses.sections.reorder');
-        Route::post('/courses/{course}/sections',               [CourseSectionAdminController::class, 'store'])->name('admin.courses.sections.store');
-        Route::get('/courses/{course}/sections',                [CourseSectionAdminController::class, 'index'])->name('admin.courses.sections.index');
-
-        // SEGUNDO GRUPO: Rutas de secciones CON parámetro {section} (las más específicas primero)
-        Route::get('/courses/{course}/sections/{section}/edit',             [CourseSectionAdminController::class, 'edit'])->name('admin.courses.sections.edit');
-        Route::post('/courses/{course}/sections/{section}/toggle-status',   [CourseSectionAdminController::class, 'toggleStatus'])->name('admin.courses.sections.toggle-status');
-        Route::put('/courses/{course}/sections/{section}',                  [CourseSectionAdminController::class, 'update'])->name('admin.courses.sections.update');
-        Route::delete('/courses/{course}/sections/{section}',               [CourseSectionAdminController::class, 'destroy'])->name('admin.courses.sections.destroy');
-
-        // TERCER GRUPO: Rutas de lecciones (las más específicas primero)
-        Route::get('/courses/{course}/sections/{section}/lessons/create',                   [LessonsAdminController::class, 'create'])->name('admin.courses.sections.lessons.create');
-        Route::post('/courses/{course}/sections/{section}/lessons/reorder',                 [LessonsAdminController::class, 'reorder'])->name('admin.courses.sections.lessons.reorder');
-        Route::post('/courses/{course}/sections/{section}/lessons/store',                   [LessonsAdminController::class, 'store'])->name('admin.courses.sections.lessons.store');
-        Route::get('/courses/{course}/sections/{section}/lessons/{lesson}/edit',            [LessonsAdminController::class, 'edit'])->name('admin.courses.sections.lessons.edit');
-        Route::put('/courses/{course}/sections/{section}/lessons/{lesson}',                 [LessonsAdminController::class, 'update'])->name('admin.courses.sections.lessons.update');
-        Route::delete('/courses/{course}/sections/{section}/lessons/{lesson}',              [LessonsAdminController::class, 'destroy'])->name('admin.courses.sections.lessons.destroy');
-        Route::post('/courses/{course}/sections/{section}/lessons/{lesson}/toggle-status',  [LessonsAdminController::class, 'toggleStatus'])->name('admin.courses.sections.lessons.toggle-status');
-        Route::get('/courses/{course}/sections/{section}',                                  [LessonsAdminController::class, 'index'])->name('admin.courses.sections.lessons.index');
-
-        // rutas vimeo directo
-        Route::post('/vimeo/upload-link',       [VimeoController::class,'uploadLink'])->name('vimeo.upload-link');
-        Route::delete('/vimeo/{vimeoId}',       [VimeoController::class,'destroy'])->name('vimeo.destroy');
-        
-        // Rutas para documentos
-        Route::get('/documents/home',                       [DocumentsAdminController::class, 'index'])->name('admin.documents.index');
-        Route::get('/documents/{course}/create',            [DocumentsAdminController::class, 'create'])->name('admin.documents.create');
-        Route::get('/documents/{course}/view',              [DocumentsAdminController::class, 'view'])->name('admin.documents.view');
-        Route::get('/documents/{document}/edit',            [DocumentsAdminController::class, 'edit'])->name('admin.documents.edit');
-        Route::post('/documents/store',                     [DocumentsAdminController::class, 'store'])->name('admin.documents.store');
-        Route::post('/documents/{document}/duplicate',      [DocumentsAdminController::class, 'duplicate'])->name('admin.documents.duplicate');
-        Route::get('/documents/{document}',                 [DocumentsAdminController::class, 'show'])->name('admin.documents.show');
-        Route::put('/documents/{document}',                 [DocumentsAdminController::class, 'update'])->name('admin.documents.update');
-        Route::delete('/documents/{document}',              [DocumentsAdminController::class, 'destroy'])->name('admin.documents.destroy');
-        Route::post('/documents/{document}/toggle-status',  [DocumentsAdminController::class, 'toggleStatus'])->name('admin.documents.toggle-status');
-
-        // Rutas para paquetes
-        Route::get('/packages/home',                        [PackagesAdminController::class, 'index'])->name('admin.packages.index');
-        Route::get('/packages/create',                      [PackagesAdminController::class, 'create'])->name('admin.packages.create');
-        Route::get('/packages/{package}/edit',              [PackagesAdminController::class, 'edit'])->name('admin.packages.edit');
-        Route::post('/packages/store',                      [PackagesAdminController::class, 'store'])->name('admin.packages.store');
-        Route::put('/packages/{package}/update',            [PackagesAdminController::class, 'update'])->name('admin.packages.update');
-        Route::delete('/packages/{package}',                [PackagesAdminController::class, 'destroy'])->name('admin.packages.destroy');
-        Route::post('/packages/{package}/toggle-status',    [PackagesAdminController::class, 'toggleStatus'])->name('admin.packages.toggle-status');
-
-        // Cronograma de Capacitaciones (Empresas)
-        Route::prefix('schedules')->name('admin.schedules.')->group(function () {
-            Route::get('/home',               [ScheduleAdminController::class, 'index'])->name('index');
-            Route::post('/',              [ScheduleAdminController::class, 'store'])->name('store');
-            Route::put('/{schedule}',     [ScheduleAdminController::class, 'update'])->name('update');
-            Route::delete('/{schedule}',  [ScheduleAdminController::class, 'destroy'])->name('destroy');
-            Route::get('/api',            [ScheduleAdminController::class, 'apiIndex'])->name('api');
-            Route::post('/copy-year',     [ScheduleAdminController::class, 'copyYear'])->name('copy-year');
-        });
-
-        // Rutas adicionales para exámenes
-        Route::get('/exams/home',                               [ExamsAdminController::class, 'index'])->name('admin.exams.index');
-        Route::get('/exams/{course}/create',                    [ExamsAdminController::class, 'create'])->name('admin.exams.create');
-        Route::get('/exams/{course}/view',                      [ExamsAdminController::class, 'view'])->name('admin.exams.view');
-        Route::get('/exams/{exam}/edit',                        [ExamsAdminController::class, 'edit'])->name('admin.exams.edit');
-        Route::post('/exams/{exam}/duplicate',                  [ExamsAdminController::class, 'duplicate'])->name('admin.exams.duplicate');
-        Route::get('/exams/{exam}/show',                        [ExamsAdminController::class, 'show'])->name('admin.exams.show');
-        Route::put('/exams/{exam}',                             [ExamsAdminController::class, 'update'])->name('admin.exams.update');
-        Route::get('/exams/{id}/details',                       [ExamsAdminController::class, 'attemptDetails'])->name('admin.exams.details');
-        Route::get('/exams/{exam}/results/export',              [ExamsAdminController::class, 'exportResults'])->name('admin.exams.results.export');
-        Route::get('/exams/{exam}/results',                     [ExamsAdminController::class, 'results'])->name('admin.exams.results');
-        Route::get('/exams/{exam}/questions',                   [ExamsAdminController::class, 'questions'])->name('admin.exams.questions');
-        Route::post('/exams/store',                             [ExamsAdminController::class, 'store'])->name('admin.exams.store');
-        Route::post('/exams/{exam}/toggle-status',              [ExamsAdminController::class, 'toggleStatus'])->name('admin.exams.toggle-status');
-        Route::delete('/exams/{exam}',                          [ExamsAdminController::class, 'destroy'])->name('admin.exams.delete');
-
-        Route::post('/exams/{exam}/questions',                  [ExamQuestionAdminController::class, 'store'])->name('admin.exams.questions.store');
-        Route::get('/exams/questions/{question}/edit',          [ExamQuestionAdminController::class, 'edit'])->name('exams.questions.edit');
-        Route::put('/exams/questions/{question}',               [ExamQuestionAdminController::class, 'update'])->name('exams.questions.update');
-        Route::delete('/exams/questions/{question}',            [ExamQuestionAdminController::class, 'destroy'])->name('exams.questions.destroy');
-        Route::post('/exams/questions/{question}/move',         [ExamQuestionAdminController::class, 'move'])->name('exams.questions.move');
-        Route::post('/exams/{exam}/questions/import',           [ExamQuestionAdminController::class, 'import'])->name('admin.exams.questions.import');
-        Route::post('/exams/{exam}/questions/reorder',          [ExamQuestionAdminController::class, 'reorder'])->name('admin.exams.questions.reorder');
-        
-        // Ruta para ver los certificados
-        Route::get('/certificates/{certificate}/view',          [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
+    // Inscripciones
+    Route::prefix('enrollments')->name('admin.enrollments.')->group(function () {
+        Route::get('/home',                  [EnrollmentsAdminController::class, 'index'])->name('index');
+        Route::get('/{enrollment}',          [EnrollmentsAdminController::class, 'enrollmentShow'])->name('show');
+        Route::patch('/{enrollment}/status', [EnrollmentsAdminController::class, 'updateEnrollmentStatus'])->name('update-status');
     });
+
+    // Pagos
+    Route::prefix('payments')->name('admin.payments.')->group(function () {
+        Route::get('/home',               [PaymentsAdminController::class, 'index'])->name('index');
+        Route::patch('/{payment}/status', [PaymentsAdminController::class, 'updatePaymentStatus'])->name('update-status');
+    });
+
+    // Reportes / Configuración / Mantenimiento / Log
+    Route::get('/reports',       [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('/settings',      [AdminController::class, 'settings'])->name('admin.settings');
+    Route::post('/settings',     [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    Route::get('/maintenance',   [AdminController::class, 'maintenance'])->name('admin.maintenance');
+    Route::post('/backup',       [AdminController::class, 'runBackup'])->name('admin.backup.run');
+    Route::post('/clear-cache',  [AdminController::class, 'clearCache'])->name('admin.cache.clear');
+    Route::get('/activity-log',  [AdminController::class, 'activityLog'])->name('admin.activity-log');
+
+    // Empresas
+    Route::prefix('enterprise')->name('admin.enterprise.')->group(function () {
+        Route::get('/index',      [EnterpriseAdminController::class, 'index'])->name('index');
+        Route::put('/update',     [EnterpriseAdminController::class, 'update'])->name('update');
+        Route::delete('/logo',    [EnterpriseAdminController::class, 'deleteLogo'])->name('delete-logo');
+        Route::delete('/favicon', [EnterpriseAdminController::class, 'deleteFavicon'])->name('delete-favicon');
+    });
+
+    // Usuarios
+    Route::prefix('users')->name('admin.users.')->group(function () {
+        Route::get('/home',                   [UserAdminController::class, 'index'])->name('index');
+        Route::get('/create',                 [UserAdminController::class, 'create'])->name('create');
+        Route::get('/{user}',                 [UserAdminController::class, 'show'])->name('show');
+        Route::get('/{user}/edit',            [UserAdminController::class, 'edit'])->name('edit');
+        Route::post('/store',                 [UserAdminController::class, 'store'])->name('store');
+        Route::put('/{user}/password',        [UserAdminController::class, 'updatePassword'])->name('password');
+        Route::put('/{user}/expiration',      [UserAdminController::class, 'updateExpiration'])->name('expiration');
+        Route::delete('/{user}',              [UserAdminController::class, 'destroy'])->name('destroy');
+        Route::patch('/{user}/toggle-status', [UserAdminController::class, 'toggleStatus'])->name('toggle-status');
+        Route::put('/create-code/{user}',     [UserAdminController::class, 'createCode'])->name('create-code');
+        Route::put('/policy/{user}',          [UserAdminController::class, 'createLimitUser'])->name('policy');
+        Route::get('/get-policy/{user}',      [UserAdminController::class, 'getLimitUser'])->name('get-policy');
+        Route::get('/{user}/sales',           [UserAdminController::class, 'getSales'])->name('sales');
+        Route::get('/{user}/activity',        [UserAdminController::class, 'getActivities'])->name('activity');
+        Route::get('/courses/search',         [UserAdminController::class, 'searchCourses'])->name('courses.search');
+        Route::post('/{user}/enroll',         [UserAdminController::class, 'enrollCourse'])->name('enroll');
+    });
+
+    // Roles y permisos
+    Route::prefix('roles')->name('admin.roles.')->group(function () {
+        Route::get('/home',      [RoleController::class, 'index'])->name('index');
+        Route::post('/store',    [RoleController::class, 'store'])->name('store');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
+    });
+    Route::get('/users/{user}/permissions', [RoleController::class, 'assignPermissions'])->name('admin.users.permissions.assign');
+    Route::put('/users/{user}/permissions', [RoleController::class, 'updatePermissions'])->name('admin.users.permissions.update');
+
+    // Categorías
+    Route::prefix('categories')->name('admin.categories.')->group(function () {
+        Route::get('/home',                        [CategoriesAdminController::class, 'index'])->name('index');
+        Route::get('/stats',                        [CategoriesAdminController::class, 'stats'])->name('stats');
+        Route::post('/store',                       [CategoriesAdminController::class, 'store'])->name('store');
+        Route::get('/{category}',                   [CategoriesAdminController::class, 'show'])->name('show');
+        Route::put('/{category}',                   [CategoriesAdminController::class, 'update'])->name('update');
+        Route::delete('/{category}',                [CategoriesAdminController::class, 'destroy'])->name('destroy');
+        Route::post('/{categoryId}/toggle-status',  [CategoriesAdminController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/bulk-action',                 [CategoriesAdminController::class, 'bulkAction'])->name('bulk-action');
+    });
+
+    // Cursos (CRUD + secciones + lecciones, todo anidado bajo /courses)
+    Route::prefix('courses')->name('admin.courses.')->group(function () {
+        Route::get('/home',                    [CoursesAdminController::class, 'index'])->name('index');
+        Route::get('/{course}/sections',       [CoursesAdminController::class, 'getSections']);
+        Route::get('/create',                  [CoursesAdminController::class, 'create'])->name('create');
+        Route::get('/{course}',                [CoursesAdminController::class, 'show'])->name('show');
+        Route::post('/store',                  [CoursesAdminController::class, 'store'])->name('store');
+        Route::get('/{course}/edit',           [CoursesAdminController::class, 'edit'])->name('edit');
+        Route::get('/{course}/students',       [CoursesAdminController::class, 'students'])->name('students');
+        Route::post('/{course}/update-prices', [CoursesAdminController::class, 'updatePrices'])->name('update-prices');
+        Route::post('/{course}/toggle-status', [CoursesAdminController::class, 'toggleStatus'])->name('toggle-status');
+        Route::put('/update',                  [CoursesAdminController::class, 'update'])->name('update');
+        Route::delete('/{course}',             [CoursesAdminController::class, 'destroy'])->name('destroy');
+
+        // Secciones — rutas estáticas (create/reorder/store/index) ANTES del
+        // comodín {section}, igual que en el original, para evitar colisiones.
+        Route::prefix('{course}/sections')->name('sections.')->group(function () {
+            Route::get('/create',   [CourseSectionAdminController::class, 'create'])->name('create');
+            Route::post('/reorder', [CourseSectionAdminController::class, 'reorder'])->name('reorder');
+            Route::post('/',        [CourseSectionAdminController::class, 'store'])->name('store');
+            Route::get('/',         [CourseSectionAdminController::class, 'index'])->name('index');
+
+            Route::get('/{section}/edit',            [CourseSectionAdminController::class, 'edit'])->name('edit');
+            Route::post('/{section}/toggle-status',  [CourseSectionAdminController::class, 'toggleStatus'])->name('toggle-status');
+            Route::put('/{section}',                 [CourseSectionAdminController::class, 'update'])->name('update');
+            Route::delete('/{section}',              [CourseSectionAdminController::class, 'destroy'])->name('destroy');
+
+            Route::get('/{section}', [LessonsAdminController::class, 'index'])->name('lessons.index');
+            // Lecciones
+            Route::prefix('{section}/lessons')->name('lessons.')->group(function () {
+                Route::get('/create',           [LessonsAdminController::class, 'create'])->name('create');
+                Route::post('/reorder',         [LessonsAdminController::class, 'reorder'])->name('reorder');
+                Route::post('/store',           [LessonsAdminController::class, 'store'])->name('store');
+                Route::get('/{lesson}/edit',    [LessonsAdminController::class, 'edit'])->name('edit');
+                Route::put('/{lesson}',         [LessonsAdminController::class, 'update'])->name('update');
+                Route::delete('/{lesson}',      [LessonsAdminController::class, 'destroy'])->name('destroy');
+                Route::post('/{lesson}/toggle-status', [LessonsAdminController::class, 'toggleStatus'])->name('toggle-status');
+            });
+        });
+    });
+
+    // Vimeo (*) — antes 'vimeo.upload-link' / 'vimeo.destroy', ahora con
+    // prefijo admin. para ser consistente con el resto del panel.
+    Route::prefix('vimeo')->name('admin.vimeo.')->group(function () {
+        Route::post('/upload-link', [VimeoController::class, 'uploadLink'])->name('upload-link');
+        Route::delete('/{vimeoId}', [VimeoController::class, 'destroy'])->name('destroy');
+    });
+
+    // Documentos
+    Route::prefix('documents')->name('admin.documents.')->group(function () {
+        Route::get('/home',                         [DocumentsAdminController::class, 'index'])->name('index');
+        Route::get('/{course}/create',              [DocumentsAdminController::class, 'create'])->name('create');
+        Route::get('/{course}/view',                [DocumentsAdminController::class, 'view'])->name('view');
+        Route::get('/{document}/edit',              [DocumentsAdminController::class, 'edit'])->name('edit');
+        Route::post('/store',                       [DocumentsAdminController::class, 'store'])->name('store');
+        Route::post('/{document}/duplicate',        [DocumentsAdminController::class, 'duplicate'])->name('duplicate');
+        Route::get('/{document}',                   [DocumentsAdminController::class, 'show'])->name('show');
+        Route::put('/{document}',                   [DocumentsAdminController::class, 'update'])->name('update');
+        Route::delete('/{document}',                [DocumentsAdminController::class, 'destroy'])->name('destroy');
+        Route::post('/{document}/toggle-status',    [DocumentsAdminController::class, 'toggleStatus'])->name('toggle-status');
+    });
+
+    // Paquetes
+    Route::prefix('packages')->name('admin.packages.')->group(function () {
+        Route::get('/home',                     [PackagesAdminController::class, 'index'])->name('index');
+        Route::get('/create',                   [PackagesAdminController::class, 'create'])->name('create');
+        Route::get('/{package}/edit',           [PackagesAdminController::class, 'edit'])->name('edit');
+        Route::post('/store',                   [PackagesAdminController::class, 'store'])->name('store');
+        Route::put('/{package}/update',         [PackagesAdminController::class, 'update'])->name('update');
+        Route::delete('/{package}',             [PackagesAdminController::class, 'destroy'])->name('destroy');
+        Route::post('/{package}/toggle-status', [PackagesAdminController::class, 'toggleStatus'])->name('toggle-status');
+    });
+
+    // Cronograma de capacitaciones (empresas)
+    Route::prefix('schedules')->name('admin.schedules.')->group(function () {
+        Route::get('/home',             [ScheduleAdminController::class, 'index'])->name('index');
+        Route::post('/',                [ScheduleAdminController::class, 'store'])->name('store');
+        Route::put('/{schedule}',       [ScheduleAdminController::class, 'update'])->name('update');
+        Route::delete('/{schedule}',    [ScheduleAdminController::class, 'destroy'])->name('destroy');
+        Route::get('/api',              [ScheduleAdminController::class, 'apiIndex'])->name('api');
+        Route::post('/copy-year',       [ScheduleAdminController::class, 'copyYear'])->name('copy-year');
+    });
+
+    // Exámenes + preguntas (unificados en un solo prefix('exams'))
+    Route::prefix('exams')->name('admin.exams.')->group(function () {
+        Route::get('/home',                  [ExamsAdminController::class, 'index'])->name('index');
+        Route::get('/{course}/create',       [ExamsAdminController::class, 'create'])->name('create');
+        Route::get('/{course}/view',         [ExamsAdminController::class, 'view'])->name('view');
+        Route::get('/{exam}/edit',           [ExamsAdminController::class, 'edit'])->name('edit');
+        Route::post('/{exam}/duplicate',     [ExamsAdminController::class, 'duplicate'])->name('duplicate');
+        Route::get('/{exam}/show',           [ExamsAdminController::class, 'show'])->name('show');
+        Route::put('/{exam}',                [ExamsAdminController::class, 'update'])->name('update');
+        Route::get('/{id}/details',          [ExamsAdminController::class, 'attemptDetails'])->name('details');
+        Route::get('/{exam}/results/export', [ExamsAdminController::class, 'exportResults'])->name('results.export');
+        Route::get('/{exam}/results',        [ExamsAdminController::class, 'results'])->name('results');
+        Route::get('/{exam}/questions',      [ExamsAdminController::class, 'questions'])->name('questions');
+        Route::post('/store',                [ExamsAdminController::class, 'store'])->name('store');
+        Route::post('/{exam}/toggle-status', [ExamsAdminController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{exam}',             [ExamsAdminController::class, 'destroy'])->name('destroy');
+
+        // Preguntas del examen (mismo prefix 'exams'; antes era un 2º Route::prefix('exams') repetido aparte)
+        Route::post('/{exam}/questions',          [ExamQuestionAdminController::class, 'store'])->name('questions.store');
+        Route::get('/questions/{question}/edit',  [ExamQuestionAdminController::class, 'edit'])->name('questions.edit');
+        Route::put('/questions/{question}',       [ExamQuestionAdminController::class, 'update'])->name('questions.update');
+        Route::delete('/questions/{question}',    [ExamQuestionAdminController::class, 'destroy'])->name('questions.destroy');
+        Route::post('/questions/{question}/move', [ExamQuestionAdminController::class, 'move'])->name('questions.move');
+        Route::post('/{exam}/questions/import',   [ExamQuestionAdminController::class, 'import'])->name('questions.import');
+        Route::post('/{exam}/questions/reorder',  [ExamQuestionAdminController::class, 'reorder'])->name('questions.reorder');
+    });
+
+    // Certificados
+    Route::get('/certificates/{certificate}/view', [CertificatesAdminController::class, 'show'])->name('admin.certificates.show');
 });

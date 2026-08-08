@@ -7,8 +7,19 @@
 <div class="space-y-6 mb-6 p-4">
     <!-- Información Básica -->
     <input type="hidden" name="id" id="id" value="{{ $course->id ?? '' }}">
-    <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-white">
+            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-800">Información Básica</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Datos principales del curso</p>
+            </div>
+        </div>
+        <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Título -->
             <div class="col-span-2">
@@ -18,7 +29,7 @@
                     id="title"
                     value="{{ old('title', $course->title ?? '') }}"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900">
                 @error('title')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -26,13 +37,19 @@
 
             <!-- Slug (se puede generar automáticamente) -->
             <div class="col-span-2">
-                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">Slug (URL amigable)</label>
-                <input type="text"
-                    name="slug"
-                    id="slug"
-                    value="{{ old('slug', $course->slug ?? '') }}"
-                    placeholder="Se genera automáticamente"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">
+                    Slug (URL amigable)
+                    <span class="ml-1 text-xs font-normal text-gray-400">— se genera automáticamente</span>
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">/</span>
+                    <input type="text"
+                        name="slug"
+                        id="slug"
+                        value="{{ old('slug', $course->slug ?? '') }}"
+                        placeholder="mi-curso-ejemplo"
+                        class="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900 font-mono text-sm">
+                </div>
                 @error('slug')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -40,17 +57,28 @@
 
             <!-- Meta-description (SEO) -->
             <div class="col-span-2">
-                <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-1">Meta-description (SEO)</label>
-                <input type="text" name="meta_description" id="meta_description" value="{{ old('meta_description', $course->meta_description ?? '') }}" placeholder="Se genera automáticamente" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" required>
+                <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-1">
+                    Meta-description
+                    <span class="ml-1 text-xs font-normal text-gray-400">SEO</span>
+                </label>
+                <input type="text" name="meta_description" id="meta_description"
+                       value="{{ old('meta_description', $course->meta_description ?? '') }}"
+                       placeholder="Breve descripción para motores de búsqueda (150-160 caracteres)"
+                       class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900" required>
                 @error('meta_description')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- keywords (SEO) -->
+            <!-- Keywords (SEO) -->
             <div class="col-span-2">
-                <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-1">keywords (SEO)</label>
-                <textarea type="text" name="meta_keywords" id="meta_keywords" placeholder="Se genera automáticamente" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200" required>{{ old('meta_keywords', $course->meta_keywords ?? '') }}</textarea>
+                <label for="meta_keywords" class="block text-sm font-medium text-gray-700 mb-1">
+                    Palabras clave
+                    <span class="ml-1 text-xs font-normal text-gray-400">SEO keywords</span>
+                </label>
+                <textarea name="meta_keywords" id="meta_keywords" rows="2"
+                          placeholder="palabra1, palabra2, palabra3"
+                          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900 resize-none" required>{{ old('meta_keywords', $course->meta_keywords ?? '') }}</textarea>
                 @error('meta_keywords')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -59,7 +87,7 @@
             <!-- Categoría -->
             <div>
                 <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-                <select name="category_id" id="category_id" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <select name="category_id" id="category_id" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-gray-900">
                     <option value="">Seleccionar categoría</option>
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}"
@@ -79,7 +107,7 @@
                 <select name="instructor_id"
                     id="instructor_id"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-gray-900">
                     <option value="">Seleccionar instructor</option>
                     @foreach($instructors as $instructor)
                         <option value="{{ $instructor->id }}"
@@ -96,26 +124,43 @@
             <!-- Duración -->
             <div>
                 <label for="duration" class="block text-sm font-medium text-gray-700 mb-1">Duración (horas) *</label>
-                <input type="number" name="duration" id="duration" value="{{ old('duration', $course->duration ?? '') }}" min="1" step="0.5" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                <div class="relative">
+                    <input type="number" name="duration" id="duration" value="{{ old('duration', $course->duration ?? '') }}" min="1" step="0.5" required
+                           class="w-full px-4 py-3 pr-14 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-gray-900">
+                    <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">hrs</span>
+                </div>
                 @error('duration')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
         </div>
+        </div><!-- /p-6 -->
     </div>
 
     <!-- Información de Precios -->
-    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-        <h3 class="text-lg font-semibold text-blue-900 mb-4">Información de Precios</h3>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white">
+            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-800">Información de Precios</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Precio regular y promociones</p>
+            </div>
+        </div>
+        <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Precio Regular -->
             <div>
-                <label for="price" class="block text-sm font-medium text-blue-800 mb-1">
+                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">
                     Precio Regular *
                 </label>
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/</span>
-                    <input type="number" name="price" id="price" value="{{ old('price', $course->price ?? '0') }}" min="0" step="0.01" required class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">S/</span>
+                    <input type="number" name="price" id="price" value="{{ old('price', $course->price ?? '0') }}" min="0" step="0.01" required
+                           class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-gray-900">
                 </div>
                 @error('price')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -124,12 +169,14 @@
 
             <!-- Precio en Promoción -->
             <div>
-                <label for="promotion_price" class="block text-sm font-medium text-blue-800 mb-1">
+                <label for="promotion_price" class="block text-sm font-medium text-gray-700 mb-1">
                     Precio en Promoción
+                    <span class="ml-1 text-xs font-normal text-gray-400">opcional</span>
                 </label>
                 <div class="relative">
-                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">S/</span>
-                    <input type="number" name="promotion_price" id="promotion_price" value="{{ old('promotion_price', $course->promotion_price ?? '') }}" min="0" step="0.01" placeholder="Opcional" class="w-full pl-10 pr-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-medium text-sm">S/</span>
+                    <input type="number" name="promotion_price" id="promotion_price" value="{{ old('promotion_price', $course->promotion_price ?? '') }}" min="0" step="0.01" placeholder="0.00"
+                           class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-gray-900">
                 </div>
                 @error('promotion_price')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -153,18 +200,30 @@
                 </div>
             </div>
         </div>
+        </div><!-- /p-6 -->
     </div>
 
     <!-- Descripción y Contenido -->
-    <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Descripción y Contenido</h3>
-
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-violet-50 to-white">
+            <div class="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h8"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-800">Descripción y Contenido</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Qué aprenderán y requisitos del curso</p>
+            </div>
+        </div>
+        <div class="p-6">
         <!-- Descripción -->
         <div class="mb-6">
             <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
                 Descripción del Curso *
             </label>
-            <textarea name="description" id="description" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('description', $course->description ?? '') }}</textarea>
+            <textarea name="description" id="description" rows="4" required
+                      class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900 resize-y">{{ old('description', $course->description ?? '') }}</textarea>
             @error('description')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -175,7 +234,8 @@
             <label for="learning_outcomes" class="block text-sm font-medium text-gray-700 mb-1">
                 Resultados del Aprendizaje *
             </label>
-            <textarea name="learning_outcomes" id="learning_outcomes" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">{{ old('learning_outcomes', $course->learning_outcomes ?? '') }}</textarea>
+            <textarea name="learning_outcomes" id="learning_outcomes" rows="4" required
+                      class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900 resize-y">{{ old('learning_outcomes', $course->learning_outcomes ?? '') }}</textarea>
             @error('learning_outcomes')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
@@ -195,7 +255,7 @@
                 @foreach($learnItems as $index => $item)
                     <div class="flex items-center gap-3">
                         <div class="flex-1">
-                            <input type="text" name="what_you_learn[]" value="{{ $item }}" placeholder="Ej: Crear aplicaciones web modernas" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            <input type="text" name="what_you_learn[]" value="{{ $item }}" placeholder="Ej: Crear aplicaciones web modernas" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900">
                         </div>
                         @if($index > 0)
                             <button type="button" @click="removeItem($event)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
@@ -207,7 +267,7 @@
                     </div>
                 @endforeach
             </div>
-            <button type="button" @click="addItem('what_you_learn_container')" class="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <button type="button" @click="addItem('what_you_learn_container')" class="mt-3 inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium text-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -232,7 +292,7 @@
                 @foreach($requirements as $index => $requirement)
                     <div class="flex items-center gap-3">
                         <div class="flex-1">
-                            <input type="text" name="requirements[]" value="{{ $requirement }}" placeholder="Ej: Conocimientos básicos de programación" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                            <input type="text" name="requirements[]" value="{{ $requirement }}" placeholder="Ej: Conocimientos básicos de programación" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900">
                         </div>
                         @if($index > 0)
                             <button type="button" @click="removeItem($event)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition duration-200">
@@ -244,7 +304,7 @@
                     </div>
                 @endforeach
             </div>
-            <button type="button" @click="addItem('requirements_container')" class="mt-3 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <button type="button" @click="addItem('requirements_container')" class="mt-3 inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium text-sm">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -254,10 +314,23 @@
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
+        </div><!-- /p-6 -->
     </div>
 
     <!-- Imagen y Estado -->
-    <div class="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200">
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
+            <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-sm font-semibold text-gray-800">Imagen y Configuración</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Portada del curso y opciones de visibilidad</p>
+            </div>
+        </div>
+        <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Imagen del Curso -->
             <div>
@@ -271,22 +344,19 @@
                     </div>
                 @endif
 
-                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-blue-400 transition duration-200">
+                <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-indigo-400 hover:bg-indigo-50/30 transition-all duration-200 group">
                     <input type="file" name="image" id="image" accept="image/*" class="hidden" onchange="previewImage(event)">
-
-                    <label for="image" class="cursor-pointer">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <p class="mt-2 text-sm text-gray-600">
-                            <span class="font-medium text-blue-600 hover:text-blue-500">
-                                Sube una imagen
-                            </span>
-                            o arrastra y suelta
+                    <label for="image" class="cursor-pointer block">
+                        <div class="w-12 h-12 bg-gray-100 group-hover:bg-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-3 transition-colors duration-200">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-indigo-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            <span class="font-medium text-indigo-600 group-hover:text-indigo-700">Selecciona una imagen</span>
+                            <span class="text-gray-400"> o arrastra y suelta</span>
                         </p>
-                        <p class="text-xs text-gray-500 mt-1">
-                            PNG, JPG, GIF hasta 5MB
-                        </p>
+                        <p class="text-xs text-gray-400 mt-1">PNG, JPG, GIF — máx. 5MB</p>
                     </label>
                 </div>
 
@@ -421,24 +491,34 @@
                 </div>
             </div>
         </div>
+        </div><!-- /p-6 -->
     </div>
 
     <!-- Botones de acción -->
-    <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+    <div class="flex items-center justify-between pt-6 border-t border-gray-100 mt-2">
         <div>
             <a href="{{ route('admin.courses.index') }}"
-               class="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+               class="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-medium transition-all duration-200 text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
                 Cancelar
             </a>
         </div>
-        <div class="flex items-center gap-4">
-            <button type="button" onclick="window.location.reload()" class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition duration-200">
+        <div class="flex items-center gap-3">
+            <button type="button" onclick="window.location.reload()"
+                    class="px-5 py-2.5 border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 rounded-xl font-medium transition-all duration-200 text-sm shadow-sm">
                 Reiniciar
             </button>
-            <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+            <button type="submit"
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-2.5 px-7 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    @if(isset($course))
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    @else
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    @endif
+                </svg>
                 {{ isset($course) ? 'Actualizar Curso' : 'Crear Curso' }}
             </button>
         </div>
@@ -453,7 +533,7 @@
                 newItem.className = 'flex items-center gap-3';
                 newItem.innerHTML = `
                     <div class="flex-1">
-                        <input type="text" name="${containerId.replace('_container', '')}[]" placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200">
+                        <input type="text" name="${containerId.replace('_container', '')}[]" placeholder="${containerId.includes('what_you_learn') ? 'Ej: Crear aplicaciones web modernas' : 'Ej: Conocimientos básicos de programación'}" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all duration-200 bg-gray-50 focus:bg-white placeholder-gray-400 text-gray-900">
                     </div>
                     <button type="button"
                         onclick="this.parentElement.remove()"

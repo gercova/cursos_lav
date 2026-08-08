@@ -64,6 +64,7 @@
         });
     </script>
     <script src="{{ asset('js/chart.js') }}"></script>
+    @stack('styles')
 </head>
 
 <body class="bg-gray-100">
@@ -213,6 +214,7 @@
         </div>
     </div>
     @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>

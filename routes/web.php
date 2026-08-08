@@ -220,10 +220,6 @@ Route::middleware(['auth', 'student'])->group(function () {
 |--------------------------------------------------------------------------
 | Panel de Administración
 |--------------------------------------------------------------------------
-| Mismo grupo prefix+middleware que antes; solo se cambió CÓMO se
-| escriben los nombres/rutas para reducir repetición. Los nombres
-| finales de ruta son EXACTAMENTE los mismos que en el archivo original,
-| salvo dos excepciones marcadas con (*) más abajo.
 */
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
 
@@ -279,12 +275,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::post('/{user}/enroll',         [UserAdminController::class, 'enrollCourse'])->name('enroll');
     });
 
-    // Roles y permisos
+    // Roles
     Route::prefix('roles')->name('admin.roles.')->group(function () {
         Route::get('/home',      [RoleController::class, 'index'])->name('index');
         Route::post('/store',    [RoleController::class, 'store'])->name('store');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
     });
+
+    // Permisos
     Route::get('/users/{user}/permissions', [RoleController::class, 'assignPermissions'])->name('admin.users.permissions.assign');
     Route::put('/users/{user}/permissions', [RoleController::class, 'updatePermissions'])->name('admin.users.permissions.update');
 
@@ -314,8 +312,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         Route::put('/update',                  [CoursesAdminController::class, 'update'])->name('update');
         Route::delete('/{course}',             [CoursesAdminController::class, 'destroy'])->name('destroy');
 
-        // Secciones — rutas estáticas (create/reorder/store/index) ANTES del
-        // comodín {section}, igual que en el original, para evitar colisiones.
+        // Secciones — rutas estáticas (create/reorder/store/index)
         Route::prefix('{course}/sections')->name('sections.')->group(function () {
             Route::get('/create',   [CourseSectionAdminController::class, 'create'])->name('create');
             Route::post('/reorder', [CourseSectionAdminController::class, 'reorder'])->name('reorder');

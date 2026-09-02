@@ -1,861 +1,928 @@
 @extends('layouts.app')
-@section('title', $enterprise->trade_name.' - Inicio')
+@section('title', $enterprise->trade_name . ' - Inicio')
 @section('meta')
-    <meta name="description" content="Aprende y certifícate en Seguridad y Salud en el Trabajo (SST), Calidad y Medio Ambiente. Cursos profesionales, diplomados y capacitación empresarial en Perú con {{ $enterprise->trade_name }}.">
-    <meta name="keywords" content="capacitación SST Perú, certificación SST, cursos seguridad y salud en el trabajo, gestión de calidad, medio ambiente, ISO 9001, ISO 14001, ISO 45001, prevención de riesgos laborales, auditoría SST">
+    <meta name="description"
+        content="Aprende y certifícate en Seguridad y Salud en el Trabajo (SST), Calidad y Medio Ambiente. Cursos profesionales, diplomados y capacitación empresarial en Perú con {{ $enterprise->trade_name }}.">
+    <meta name="keywords"
+        content="capacitación SST Perú, certificación SST, cursos seguridad y salud en el trabajo, gestión de calidad, medio ambiente, ISO 9001, ISO 14001, ISO 45001, prevención de riesgos laborales, auditoría SST">
     <meta name="author" content="{{ $enterprise->trade_name }}">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="{{ $enterprise->trade_name }} - Expertos en Capacitación SST">
-    <meta property="og:description" content="Impulsa tu carrera con nuestros cursos y certificaciones en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente en Perú.">
+    <meta property="og:description"
+        content="Impulsa tu carrera con nuestros cursos y certificaciones en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente en Perú.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    @if(isset($enterprise->logo_path))
+    @if (isset($enterprise->logo_path))
         <meta property="og:image" content="{{ asset($enterprise->logo_path) }}">
     @endif
 @endsection
 @section('content')
-<!-- Hero Section con Carousel Full Width -->
-<div class="relative w-full">
-    <!-- Carousel Container Full Width -->
-    <div class="relative h-96 sm:h-[500px] lg:h-[600px] xl:h-[700px] w-full overflow-hidden">
-        <!-- Slide 1 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100" id="slide-1">
-            <div class="absolute inset-0 bg-black opacity-40"></div>
-            <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Aprende desde cualquier lugar" class="w-full h-full object-cover">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 animate-fade-in">
-                        Aprende Sin Límites
-                    </h1>
-                    <p class="text-xl sm:text-2xl lg:text-3xl mb-8 animate-slide-up">
-                        Cursos profesionales desde la comodidad de tu hogar
-                    </p>
-                    <a href="#cursos" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 animate-pulse inline-block">
-                        Explorar Cursos
-                    </a>
+    <!-- Hero Section con Carousel Full Width -->
+    <div class="relative w-full">
+        <!-- Carousel Container Full Width -->
+        <div class="relative h-96 sm:h-[500px] lg:h-[600px] xl:h-[700px] w-full overflow-hidden">
+            <!-- Slide 1 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100" id="slide-1">
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+                <img src="https://images.unsplash.com/photo-1497636577773-f1231844b336?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Aprende desde cualquier lugar" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 animate-fade-in">
+                            Aprende Sin Límites
+                        </h1>
+                        <p class="text-xl sm:text-2xl lg:text-3xl mb-8 animate-slide-up">
+                            Cursos profesionales desde la comodidad de tu hogar
+                        </p>
+                        <a href="#cursos"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 animate-pulse inline-block">
+                            Explorar Cursos
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 2 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-2">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="Cursos profesionales" class="w-full h-full object-cover">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
-                        Educación de Calidad
-                    </h1>
-                    <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
-                        Impartida por expertos en la industria
-                    </p>
-                    <a href="#cursos" class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
-                        Ver Catálogo
-                    </a>
+            <!-- Slide 2 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-2">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-purple-900/70"></div>
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
+                    alt="Cursos profesionales" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
+                            Educación de Calidad
+                        </h1>
+                        <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
+                            Impartida por expertos en la industria
+                        </p>
+                        <a href="#cursos"
+                            class="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+                            Ver Catálogo
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 3 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-3">
-            <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Certificaciones reconocidas" class="w-full h-full object-cover">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
-                        Certificaciones
-                    </h1>
-                    <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
-                        Obtén certificados válidos y verificables
-                    </p>
-                    <a href="#cursos" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
-                        Obtener Certificado
-                    </a>
+            <!-- Slide 3 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-3">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-900/70 to-pink-900/70"></div>
+                <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Certificaciones reconocidas" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
+                            Certificaciones
+                        </h1>
+                        <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
+                            Obtén certificados válidos y verificables
+                        </p>
+                        <a href="#cursos"
+                            class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+                            Obtener Certificado
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 4 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-4">
-            <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-red-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Comunidad de aprendizaje" class="w-full h-full object-cover">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
-                        Comunidad Activa
-                    </h1>
-                    <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
-                        Conecta con otros estudiantes y profesionales
-                    </p>
-                    <a href="{{ route('register') }}" class="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
-                        Unirse Ahora
-                    </a>
+            <!-- Slide 4 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-4">
+                <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-red-900/70"></div>
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Comunidad de aprendizaje" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
+                            Comunidad Activa
+                        </h1>
+                        <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
+                            Conecta con otros estudiantes y profesionales
+                        </p>
+                        <a href="{{ route('register') }}"
+                            class="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+                            Unirse Ahora
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 5 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-5">
-            <div class="absolute inset-0 bg-gradient-to-r from-teal-900/70 to-blue-900/70"></div>
-            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Flexibilidad de horarios" class="w-full h-full object-cover">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
-                        A Tu Ritmo
-                    </h1>
-                    <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
-                        Estudia cuando quieras, donde quieras
-                    </p>
-                    <a href="#cursos" class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
-                        Comenzar Hoy
-                    </a>
+            <!-- Slide 5 -->
+            <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide-5">
+                <div class="absolute inset-0 bg-gradient-to-r from-teal-900/70 to-blue-900/70"></div>
+                <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                    alt="Flexibilidad de horarios" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="text-center text-white px-4 w-full max-w-7xl mx-auto">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
+                            A Tu Ritmo
+                        </h1>
+                        <p class="text-xl sm:text-2xl lg:text-3xl mb-8">
+                            Estudia cuando quieras, donde quieras
+                        </p>
+                        <a href="#cursos"
+                            class="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 transform hover:scale-105 inline-block">
+                            Comenzar Hoy
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Navigation Buttons -->
-        <button id="prev-slide" class="absolute left-4 sm:left-6 lg:left-8 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-3 sm:p-4 rounded-full transition-all duration-300 backdrop-blur-sm z-20">
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
-        <button id="next-slide" class="absolute right-4 sm:right-6 lg:right-8 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-3 sm:p-4 rounded-full transition-all duration-300 backdrop-blur-sm z-20">
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
+            <!-- Navigation Buttons -->
+            <button id="prev-slide"
+                class="absolute left-4 sm:left-6 lg:left-8 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-3 sm:p-4 rounded-full transition-all duration-300 backdrop-blur-sm z-20">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button id="next-slide"
+                class="absolute right-4 sm:right-6 lg:right-8 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-3 sm:p-4 rounded-full transition-all duration-300 backdrop-blur-sm z-20">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
 
-        <!-- Indicators -->
-        <div class="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20">
-            <button class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-100 hover:opacity-100" data-slide="0"></button>
-            <button class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100" data-slide="1"></button>
-            <button class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100" data-slide="2"></button>
-            <button class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100" data-slide="3"></button>
-            <button class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100" data-slide="4"></button>
+            <!-- Indicators -->
+            <div
+                class="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20">
+                <button
+                    class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-100 hover:opacity-100"
+                    data-slide="0"></button>
+                <button
+                    class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100"
+                    data-slide="1"></button>
+                <button
+                    class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100"
+                    data-slide="2"></button>
+                <button
+                    class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100"
+                    data-slide="3"></button>
+                <button
+                    class="carousel-indicator w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full transition-all duration-300 opacity-50 hover:opacity-100"
+                    data-slide="4"></button>
+            </div>
         </div>
     </div>
-</div>
+    <!-- Cursos Destacados Section -->
+    <div id="cursos" class="py-14 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<!-- Stats Section -->
-<div class="bg-white py-12 sm:py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
-            <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600 mb-2">{{ $totalCourses->where('type', 'course')->count() * 2 }}+</div>
-                <div class="text-gray-600 text-sm sm:text-base">Cursos Disponibles</div>
-            </div>
-            <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-600 mb-2">{{ $users->where('role', 'student')->count() * 10 }}+</div>
-                <div class="text-gray-600 text-sm sm:text-base">Estudiantes Activos</div>
-            </div>
-            <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-600 mb-2">{{ $users->where('role', 'instructor')->count() * 9 }}+</div>
-                <div class="text-gray-600 text-sm sm:text-base">Instructores Expertos</div>
-            </div>
-            <div class="p-4">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-600 mb-2">{{ $totalCourses->where('type', 'package')->count() }}+</div>
-                <div class="text-gray-600 text-sm sm:text-base">Paquetes para empresas</div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Cursos Destacados Section -->
-<div id="cursos" class="py-14 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <!-- Section Header -->
-        <div class="text-center mb-10">
-            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-widest px-4 py-1 rounded-full mb-3">Catálogo</span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Cursos Destacados</h2>
-            <p class="text-gray-500 text-lg max-w-xl mx-auto">Encuentra el curso perfecto para impulsar tu carrera profesional</p>
-        </div>
-
-        <!-- Filter Bar (server-side GET form) -->
-        <form id="filter-form" method="GET" action="{{ route('home') }}" class="mb-8">
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-
-                <!-- Search Input -->
-                <div class="relative flex-1 min-w-0">
-                    <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/>
-                        </svg>
-                    </span>
-                    <input
-                        id="search-input"
-                        type="text"
-                        name="search"
-                        value="{{ $currentSearch ?? '' }}"
-                        placeholder="Buscar por nombre, categoría o instructor…"
-                        autocomplete="off"
-                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 transition"
-                    >
-                </div>
-
-                <!-- Category Filter -->
-                <div class="relative">
-                    <select id="category-filter" name="category"
-                        onchange="document.getElementById('filter-form').submit()"
-                        class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
-                        <option value="">Todas las categorías</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ ($currentCategory ?? '') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </span>
-                </div>
-
-                <!-- Sort Filter -->
-                <div class="relative">
-                    <select id="sort-filter" name="sort"
-                        onchange="document.getElementById('filter-form').submit()"
-                        class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
-                        <option value="newest"    {{ ($currentSort ?? 'newest') === 'newest'   ? 'selected' : '' }}>Más recientes</option>
-                        <option value="popular"   {{ ($currentSort ?? '') === 'popular'        ? 'selected' : '' }}>Más populares</option>
-                        <option value="price_low"  {{ ($currentSort ?? '') === 'price_low'    ? 'selected' : '' }}>Precio: menor a mayor</option>
-                        <option value="price_high" {{ ($currentSort ?? '') === 'price_high'   ? 'selected' : '' }}>Precio: mayor a menor</option>
-                        <option value="name_asc"   {{ ($currentSort ?? '') === 'name_asc'     ? 'selected' : '' }}>Nombre A–Z</option>
-                        <option value="name_desc"  {{ ($currentSort ?? '') === 'name_desc'    ? 'selected' : '' }}>Nombre Z–A</option>
-                    </select>
-                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </span>
-                </div>
-
-                <!-- Search Button -->
-                <button type="submit"
-                    class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/>
-                    </svg>
-                    Buscar
-                </button>
-
-                @if(!empty($currentSearch) || !empty($currentCategory) || (!empty($currentSort) && $currentSort !== 'newest'))
-                    <a href="{{ route('home') }}"
-                        class="flex items-center justify-center gap-2 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800 px-4 py-2.5 rounded-xl text-sm font-medium transition whitespace-nowrap">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Limpiar
-                    </a>
-                @endif
+            <!-- Section Header -->
+            <div class="text-center mb-10">
+                <span
+                    class="inline-block bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-widest px-4 py-1 rounded-full mb-3">Catálogo</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">Cursos Destacados</h2>
+                <p class="text-gray-500 text-lg max-w-xl mx-auto">Encuentra el curso perfecto para impulsar tu carrera
+                    profesional</p>
             </div>
 
-            @if(!empty($currentSearch) || !empty($currentCategory))
-                <div class="flex flex-wrap gap-2 mt-3 px-1 items-center">
-                    @if(!empty($currentSearch))
-                        <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/></svg>
-                            "{{ $currentSearch }}"
+            <!-- Filter Bar (server-side GET form) -->
+            <form id="filter-form" method="GET" action="{{ route('home') }}" class="mb-8">
+                <div
+                    class="bg-white border border-gray-200 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+
+                    <!-- Search Input -->
+                    <div class="relative flex-1 min-w-0">
+                        <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z" />
+                            </svg>
                         </span>
+                        <input id="search-input" type="text" name="search" value="{{ $currentSearch ?? '' }}"
+                            placeholder="Buscar por nombre, categoría o instructor…" autocomplete="off"
+                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 placeholder-gray-400 transition">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="relative">
+                        <select id="category-filter" name="category"
+                            onchange="document.getElementById('filter-form').submit()"
+                            class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
+                            <option value="">Todas las categorías</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    {{ ($currentCategory ?? '') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </span>
+                    </div>
+
+                    <!-- Sort Filter -->
+                    <div class="relative">
+                        <select id="sort-filter" name="sort"
+                            onchange="document.getElementById('filter-form').submit()"
+                            class="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-700 bg-white transition cursor-pointer w-full sm:w-auto">
+                            <option value="newest" {{ ($currentSort ?? 'newest') === 'newest' ? 'selected' : '' }}>Más
+                                recientes</option>
+                            <option value="popular" {{ ($currentSort ?? '') === 'popular' ? 'selected' : '' }}>Más
+                                populares</option>
+                            <option value="price_low" {{ ($currentSort ?? '') === 'price_low' ? 'selected' : '' }}>
+                                Precio: menor a mayor</option>
+                            <option value="price_high" {{ ($currentSort ?? '') === 'price_high' ? 'selected' : '' }}>
+                                Precio: mayor a menor</option>
+                            <option value="name_asc" {{ ($currentSort ?? '') === 'name_asc' ? 'selected' : '' }}>
+                                Nombre A–Z</option>
+                            <option value="name_desc" {{ ($currentSort ?? '') === 'name_desc' ? 'selected' : '' }}>
+                                Nombre Z–A</option>
+                        </select>
+                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </span>
+                    </div>
+
+                    <!-- Search Button -->
+                    <button type="submit"
+                        class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z" />
+                        </svg>
+                        Buscar
+                    </button>
+
+                    @if (!empty($currentSearch) || !empty($currentCategory) || (!empty($currentSort) && $currentSort !== 'newest'))
+                        <a href="{{ route('home') }}"
+                            class="flex items-center justify-center gap-2 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-800 px-4 py-2.5 rounded-xl text-sm font-medium transition whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Limpiar
+                        </a>
                     @endif
-                    @if(!empty($currentCategory))
-                        @php $activeCat = $categories->firstWhere('id', $currentCategory); @endphp
-                        @if($activeCat)
-                            <span class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                                {{ $activeCat->name }}
+                </div>
+
+                @if (!empty($currentSearch) || !empty($currentCategory))
+                    <div class="flex flex-wrap gap-2 mt-3 px-1 items-center">
+                        @if (!empty($currentSearch))
+                            <span
+                                class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z" />
+                                </svg>
+                                "{{ $currentSearch }}"
                             </span>
                         @endif
-                    @endif
-                    <span class="text-xs text-gray-400">{{ $courses->total() }} resultado(s)</span>
-                </div>
-            @endif
-        </form>
-
-        <!-- Course Grid -->
-        <div id="courses-container">
-            @if($courses->count() > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    @foreach($courses as $course)
-                        @php
-                            $finalPrice  = $course->promotion_price ?? $course->price;
-                            $hasPromo    = $course->promotion_price && $course->promotion_price < $course->price;
-                            $discount    = $hasPromo ? round((($course->price - $course->promotion_price) / $course->price) * 100) : 0;
-                            $levelColors = ['basico' => 'bg-emerald-500', 'intermedio' => 'bg-amber-500', 'avanzado' => 'bg-red-500'];
-                            $levelColor  = $levelColors[strtolower($course->level ?? '')] ?? 'bg-slate-500';
-                        @endphp
-                        <div class="course-card group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
-                             data-category="{{ $course->category_id }}"
-                             data-price="{{ $finalPrice }}"
-                             data-date="{{ $course->created_at->timestamp }}"
-                             data-popularity="{{ $course->enrollments_count ?? 0 }}">
-
-                            <!-- Thumbnail -->
-                            <a href="{{ route('course.show', $course->slug) }}" class="block relative overflow-hidden" style="padding-top:56.25%">
-                                @if($course->image_url)
-                                    <img src="{{ $course->image_url }}"
-                                         alt="{{ $course->title }}"
-                                         loading="lazy"
-                                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                @else
-                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
-                                        <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                                @if($course->level)
-                                    <span class="absolute top-3 left-3 {{ $levelColor }} text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md shadow">
-                                        {{ ucfirst($course->level) }}
-                                    </span>
-                                @endif
-
-                                @if($hasPromo)
-                                    <span class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
-                                        -{{ $discount }}%
-                                    </span>
-                                @endif
-
-                                <span class="absolute bottom-3 left-3 bg-blue-600/90 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow">
-                                    {{ $course->category->name ?? '-' }}
+                        @if (!empty($currentCategory))
+                            @php $activeCat = $categories->firstWhere('id', $currentCategory); @endphp
+                            @if ($activeCat)
+                                <span
+                                    class="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    </svg>
+                                    {{ $activeCat->name }}
                                 </span>
-
-                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <span class="bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
-                                        Ver curso &rarr;
-                                    </span>
-                                </div>
-                            </a>
-
-                            <!-- Body -->
-                            <div class="flex flex-col flex-1 p-5">
-                                <h3 class="font-bold text-gray-900 text-base leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
-                                    <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
-                                </h3>
-
-                                <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">
-                                    {{ $course->short_description ?: Str::limit($course->description, 100) }}
-                                </p>
-
-                                <div class="flex items-center gap-2.5 mb-4 pb-4 border-b border-gray-100">
-                                    <img class="h-8 w-8 rounded-full object-cover ring-2 ring-blue-100 flex-shrink-0"
-                                         src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}"
-                                         alt="{{ $course->instructor->names }}">
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-semibold text-gray-800 truncate">{{ $course->instructor->names }}</p>
-                                        <p class="text-[11px] text-gray-400 truncate">{{ $course->instructor->profession ?? 'Instructor' }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between gap-3">
-                                    <div class="flex flex-col leading-none">
-                                        @if($hasPromo)
-                                            <span class="text-xl font-extrabold text-blue-600">S/ {{ number_format($course->promotion_price, 2) }}</span>
-                                            <span class="text-xs text-gray-400 line-through mt-0.5">S/ {{ number_format($course->price, 2) }}</span>
-                                        @else
-                                            <span class="text-xl font-extrabold text-gray-900">S/ {{ number_format($course->price, 2) }}</span>
-                                        @endif
-                                    </div>
-
-                                    <button onclick="addToCart({{ $course->id }}, event)"
-                                        class="add-to-cart-btn flex-shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                        </svg>
-                                        Agregar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                @if($courses->hasPages())
-                    <div class="mt-10 flex justify-center">
-                        <div class="bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
-                            {{ $courses->links() }}
-                        </div>
+                            @endif
+                        @endif
+                        <span class="text-xs text-gray-400">{{ $courses->total() }} resultado(s)</span>
                     </div>
                 @endif
+            </form>
 
-            @else
-                <div class="text-center py-20">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-5">
-                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <!-- Course Grid -->
+            <div id="courses-container">
+                @if ($courses->count() > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        @foreach ($courses as $course)
+                            @php
+                                $finalPrice = $course->promotion_price ?? $course->price;
+                                $hasPromo = $course->promotion_price && $course->promotion_price < $course->price;
+                                $discount = $hasPromo
+                                    ? round((($course->price - $course->promotion_price) / $course->price) * 100)
+                                    : 0;
+                                $levelColors = [
+                                    'basico' => 'bg-emerald-500',
+                                    'intermedio' => 'bg-amber-500',
+                                    'avanzado' => 'bg-red-500',
+                                ];
+                                $levelColor = $levelColors[strtolower($course->level ?? '')] ?? 'bg-slate-500';
+                            @endphp
+                            <div class="course-card group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1"
+                                data-category="{{ $course->category_id }}" data-price="{{ $finalPrice }}"
+                                data-date="{{ $course->created_at->timestamp }}"
+                                data-popularity="{{ $course->enrollments_count ?? 0 }}">
+
+                                <!-- Thumbnail -->
+                                <a href="{{ route('course.show', $course->slug) }}"
+                                    class="block relative overflow-hidden" style="padding-top:56.25%">
+                                    @if ($course->image_url)
+                                        <img src="{{ $course->image_url }}" alt="{{ $course->title }}" loading="lazy"
+                                            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    @else
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
+                                            <svg class="w-16 h-16 text-white/30" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    </div>
+
+                                    @if ($course->level)
+                                        <span
+                                            class="absolute top-3 left-3 {{ $levelColor }} text-white text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md shadow">
+                                            {{ ucfirst($course->level) }}
+                                        </span>
+                                    @endif
+
+                                    @if ($hasPromo)
+                                        <span
+                                            class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg">
+                                            -{{ $discount }}%
+                                        </span>
+                                    @endif
+
+                                    <span
+                                        class="absolute bottom-3 left-3 bg-blue-600/90 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow">
+                                        {{ $course->category->name ?? '-' }}
+                                    </span>
+
+                                    <div
+                                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span
+                                            class="bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
+                                            Ver curso &rarr;
+                                        </span>
+                                    </div>
+                                </a>
+
+                                <!-- Body -->
+                                <div class="flex flex-col flex-1 p-5">
+                                    <h3
+                                        class="font-bold text-gray-900 text-base leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+                                        <a href="{{ route('course.show', $course->slug) }}">{{ $course->title }}</a>
+                                    </h3>
+
+                                    <p class="text-gray-500 text-sm line-clamp-2 mb-4 flex-1">
+                                        {{ $course->short_description ?: Str::limit($course->description, 100) }}
+                                    </p>
+
+                                    <div class="flex items-center gap-2.5 mb-4 pb-4 border-b border-gray-100">
+                                        <img class="h-8 w-8 rounded-full object-cover ring-2 ring-blue-100 flex-shrink-0"
+                                            src="{{ $course->instructor->profile_photo ? Storage::url($course->instructor->profile_photo) : asset('storage/instructors/instructor-default.png') }}"
+                                            alt="{{ $course->instructor->names }}">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-semibold text-gray-800 truncate">
+                                                {{ $course->instructor->names }}</p>
+                                            <p class="text-[11px] text-gray-400 truncate">
+                                                {{ $course->instructor->profession ?? 'Instructor' }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div class="flex flex-col leading-none">
+                                            @if ($hasPromo)
+                                                <span class="text-xl font-extrabold text-blue-600">S/
+                                                    {{ number_format($course->promotion_price, 2) }}</span>
+                                                <span class="text-xs text-gray-400 line-through mt-0.5">S/
+                                                    {{ number_format($course->price, 2) }}</span>
+                                            @else
+                                                <span class="text-xl font-extrabold text-gray-900">S/
+                                                    {{ number_format($course->price, 2) }}</span>
+                                            @endif
+                                        </div>
+
+                                        <button onclick="addToCart({{ $course->id }}, event)"
+                                            class="add-to-cart-btn flex-shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                            Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if ($courses->hasPages())
+                        <div class="mt-10 flex justify-center">
+                            <div class="bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
+                                {{ $courses->links() }}
+                            </div>
+                        </div>
+                    @endif
+                @else
+                    <div class="text-center py-20">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-5">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">No se encontraron cursos</h3>
+                        <p class="text-gray-500 mb-6">Intenta con otros términos de búsqueda o filtra por otra categoría.
+                        </p>
+                        <a href="{{ route('home') }}"
+                            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Limpiar filtros
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="bg-gray-900 text-white py-12 sm:py-16 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8 sm:mb-12">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">¿Por qué elegirnos?</h2>
+                <p class="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">La mejor experiencia de aprendizaje online
+                    con resultados comprobados</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                <div class="text-center p-6 sm:p-8">
+                    <div
+                        class="bg-blue-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                        <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">No se encontraron cursos</h3>
-                    <p class="text-gray-500 mb-6">Intenta con otros términos de búsqueda o filtra por otra categoría.</p>
-                    <a href="{{ route('home') }}"
-                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Acceso Ilimitado</h3>
+                    <p class="text-gray-300 text-sm sm:text-base">Aprende a tu propio ritmo con acceso 24/7 a todos los
+                        cursos desde cualquier dispositivo</p>
+                </div>
+
+                <div class="text-center p-6 sm:p-8">
+                    <div
+                        class="bg-green-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                        <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        Limpiar filtros
-                    </a>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Certificados Válidos</h3>
+                    <p class="text-gray-300 text-sm sm:text-base">Obtén certificados verificables con código QR que
+                        respaldan tus conocimientos</p>
                 </div>
-            @endif
-        </div>
-    </div>
-</div>
 
-<!-- Features Section -->
-<div class="bg-gray-900 text-white py-12 sm:py-16 lg:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-8 sm:mb-12">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">¿Por qué elegirnos?</h2>
-            <p class="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">La mejor experiencia de aprendizaje online con resultados comprobados</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div class="text-center p-6 sm:p-8">
-                <div class="bg-blue-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
+                <div class="text-center p-6 sm:p-8">
+                    <div
+                        class="bg-purple-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                        <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Soporte 24/7</h3>
+                    <p class="text-gray-300 text-sm sm:text-base">Nuestro equipo de expertos está siempre disponible para
+                        resolver tus dudas</p>
                 </div>
-                <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Acceso Ilimitado</h3>
-                <p class="text-gray-300 text-sm sm:text-base">Aprende a tu propio ritmo con acceso 24/7 a todos los cursos desde cualquier dispositivo</p>
-            </div>
-
-            <div class="text-center p-6 sm:p-8">
-                <div class="bg-green-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Certificados Válidos</h3>
-                <p class="text-gray-300 text-sm sm:text-base">Obtén certificados verificables con código QR que respaldan tus conocimientos</p>
-            </div>
-
-            <div class="text-center p-6 sm:p-8">
-                <div class="bg-purple-600 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">Soporte 24/7</h3>
-                <p class="text-gray-300 text-sm sm:text-base">Nuestro equipo de expertos está siempre disponible para resolver tus dudas</p>
             </div>
         </div>
     </div>
-</div>
 
-<!-- CTA Section -->
-<div class="bg-blue-600 py-12 sm:py-16 lg:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">¿Listo para comenzar?</h2>
-        <p class="text-lg sm:text-xl text-blue-100 mb-8 max-w-3xl mx-auto">Únete a miles de estudiantes que ya están transformando sus carreras y alcanzando sus metas profesionales</p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{{ route('register') }}" class="bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg inline-block">
-                Crear Cuenta Gratis
-            </a>
-            <a href="#cursos" class="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-white hover:text-blue-600 inline-block">
-                Explorar Cursos
-            </a>
+    <!-- CTA Section -->
+    <div class="bg-blue-600 py-12 sm:py-16 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">¿Listo para comenzar?</h2>
+            <p class="text-lg sm:text-xl text-blue-100 mb-8 max-w-3xl mx-auto">Únete a miles de estudiantes que ya están
+                transformando sus carreras y alcanzando sus metas profesionales</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ route('register') }}"
+                    class="bg-white text-blue-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg inline-block">
+                    Crear Cuenta Gratis
+                </a>
+                <a href="#cursos"
+                    class="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-white hover:text-blue-600 inline-block">
+                    Explorar Cursos
+                </a>
+            </div>
         </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
-<script>
-    class HomeCarousel {
-        constructor() {
-            this.currentSlide = 0;
-            this.totalSlides = 5;
-            this.autoPlayInterval = null;
-            this.init();
-        }
-
-        init() {
-            this.setupEventListeners();
-            this.startAutoPlay();
-        }
-
-        setupEventListeners() {
-            // Navigation buttons
-            document.getElementById('next-slide').addEventListener('click', () => this.nextSlide());
-            document.getElementById('prev-slide').addEventListener('click', () => this.prevSlide());
-
-            // Indicators
-            document.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
-                indicator.addEventListener('click', () => this.goToSlide(index));
-                indicator.addEventListener('mouseenter', () => this.pauseAutoPlay());
-                indicator.addEventListener('mouseleave', () => this.startAutoPlay());
-            });
-
-            // Pause autoplay on hover
-            const carousel = document.querySelector('.relative.w-full');
-            carousel.addEventListener('mouseenter', () => this.pauseAutoPlay());
-            carousel.addEventListener('mouseleave', () => this.startAutoPlay());
-
-            // Keyboard navigation
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') this.prevSlide();
-                if (e.key === 'ArrowRight') this.nextSlide();
-                if (e.key === ' ') {
-                    this.pauseAutoPlay();
-                    setTimeout(() => this.startAutoPlay(), 5000);
-                }
-            });
-
-            // Touch events for mobile
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            carousel.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-
-            carousel.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                this.handleSwipe();
-            });
-        }
-
-        handleSwipe() {
-            const swipeThreshold = 50;
-            const diff = touchStartX - touchEndX;
-
-            if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0) {
-                    this.nextSlide();
-                } else {
-                    this.prevSlide();
-                }
-            }
-        }
-
-        showSlide(index) {
-            // Hide all slides
-            for (let i = 0; i < this.totalSlides; i++) {
-                const slide = document.getElementById(`slide-${i + 1}`);
-                const indicator = document.querySelector(`.carousel-indicator[data-slide="${i}"]`);
-
-                if (slide) {
-                    slide.style.opacity = '0';
-                    slide.style.zIndex = '0';
-                }
-                if (indicator) {
-                    indicator.style.opacity = '0.5';
-                    indicator.style.transform = 'scale(1)';
-                }
-            }
-
-            // Show current slide
-            const currentSlide = document.getElementById(`slide-${index + 1}`);
-            const currentIndicator = document.querySelector(`.carousel-indicator[data-slide="${index}"]`);
-
-            if (currentSlide) {
-                currentSlide.style.opacity = '1';
-                currentSlide.style.zIndex = '10';
-
-                // Add animation class for entrance
-                currentSlide.querySelector('h1')?.classList.add('animate-fade-in');
-                currentSlide.querySelector('p')?.classList.add('animate-slide-up');
-
-                // Remove animation after completion
-                setTimeout(() => {
-                    currentSlide.querySelector('h1')?.classList.remove('animate-fade-in');
-                    currentSlide.querySelector('p')?.classList.remove('animate-slide-up');
-                }, 1000);
-            }
-
-            if (currentIndicator) {
-                currentIndicator.style.opacity = '1';
-                currentIndicator.style.transform = 'scale(1.2)';
-            }
-
-            this.currentSlide = index;
-        }
-
-        nextSlide() {
-            this.showSlide((this.currentSlide + 1) % this.totalSlides);
-        }
-
-        prevSlide() {
-            this.showSlide((this.currentSlide - 1 + this.totalSlides) % this.totalSlides);
-        }
-
-        goToSlide(index) {
-            this.showSlide(index);
-        }
-
-        startAutoPlay() {
-            if (this.autoPlayInterval) {
-                clearInterval(this.autoPlayInterval);
-            }
-            this.autoPlayInterval = setInterval(() => this.nextSlide(), 5000);
-        }
-
-        pauseAutoPlay() {
-            if (this.autoPlayInterval) {
-                clearInterval(this.autoPlayInterval);
+    <script>
+        class HomeCarousel {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = 5;
                 this.autoPlayInterval = null;
-            }
-        }
-    }
-
-    // Clase para manejar los filtros de cursos
-    class CourseFilters {
-        constructor() {
-            this.courseCards = Array.from(document.querySelectorAll('.course-card'));
-            this.categoryFilter = document.getElementById('category-filter');
-            this.sortFilter = document.getElementById('sort-filter');
-            this.noResultsElement = document.getElementById('no-results');
-            this.resetFiltersBtn = document.getElementById('reset-filters');
-            this.init();
-        }
-
-        init() {
-            this.setupEventListeners();
-            this.saveFiltersToUrl();
-        }
-
-        setupEventListeners() {
-            // Filtro por categoría
-            this.categoryFilter.addEventListener('change', () => {
-                this.applyFilters();
-                this.updateUrl();
-            });
-
-            // Filtro de ordenación
-            this.sortFilter.addEventListener('change', () => {
-                this.sortCourses();
-                this.updateUrl();
-            });
-
-            // Botón para resetear filtros
-            this.resetFiltersBtn?.addEventListener('click', () => {
-                this.resetFilters();
-            });
-
-            // Cargar filtros desde la URL al cargar la página
-            window.addEventListener('load', () => {
-                this.loadFiltersFromUrl();
-            });
-        }
-
-        applyFilters() {
-            const selectedCategory = this.categoryFilter.value;
-            let visibleCount = 0;
-
-            this.courseCards.forEach(card => {
-                const categoryId = card.getAttribute('data-category');
-                let shouldShow = true;
-
-                // Filtrar por categoría
-                if (selectedCategory && categoryId !== selectedCategory) {
-                    shouldShow = false;
-                }
-
-                if (shouldShow) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Mostrar u ocultar mensaje de no resultados
-            if (visibleCount === 0) {
-                this.noResultsElement.classList.remove('hidden');
-                document.querySelector('#courses-container > .grid').classList.add('hidden');
-            } else {
-                this.noResultsElement.classList.add('hidden');
-                document.querySelector('#courses-container > .grid').classList.remove('hidden');
-                this.sortCourses(); // Reordenar los cursos visibles
-            }
-        }
-
-        sortCourses() {
-            const sortMethod = this.sortFilter.value;
-            const visibleCards = this.courseCards.filter(card => card.style.display !== 'none');
-            const grid = document.querySelector('#courses-container > .grid');
-
-            visibleCards.sort((a, b) => {
-                switch (sortMethod) {
-                    case 'newest':
-                        return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
-
-                    case 'popular':
-                        return parseInt(b.getAttribute('data-popularity')) - parseInt(a.getAttribute('data-popularity'));
-
-                    case 'price_low':
-                        return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
-
-                    case 'price_high':
-                        return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
-
-                    default:
-                        return 0;
-                }
-            });
-
-            // Reordenar los elementos en el DOM
-            visibleCards.forEach(card => {
-                grid.appendChild(card);
-            });
-
-            // Añadir animación de reordenamiento
-            this.animateSort();
-        }
-
-        animateSort() {
-            const cards = document.querySelectorAll('.course-card');
-            cards.forEach(card => {
-                card.style.transform = 'translateY(20px)';
-                card.style.opacity = '0';
-
-                setTimeout(() => {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.transform = 'translateY(0)';
-                    card.style.opacity = '1';
-                }, 50);
-            });
-        }
-
-        resetFilters() {
-            this.categoryFilter.value = '';
-            this.sortFilter.value = 'newest';
-            this.applyFilters();
-            this.updateUrl();
-
-            // Desplazar suavemente a la sección de cursos
-            document.getElementById('cursos').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        updateUrl() {
-            const params = new URLSearchParams();
-
-            if (this.categoryFilter.value) {
-                params.set('category', this.categoryFilter.value);
+                this.init();
             }
 
-            if (this.sortFilter.value !== 'newest') {
-                params.set('sort', this.sortFilter.value);
+            init() {
+                this.setupEventListeners();
+                this.startAutoPlay();
             }
 
-            const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
-            window.history.replaceState({}, '', newUrl);
-        }
+            setupEventListeners() {
+                // Navigation buttons
+                document.getElementById('next-slide').addEventListener('click', () => this.nextSlide());
+                document.getElementById('prev-slide').addEventListener('click', () => this.prevSlide());
 
-        loadFiltersFromUrl() {
-            const urlParams = new URLSearchParams(window.location.search);
+                // Indicators
+                document.querySelectorAll('.carousel-indicator').forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => this.goToSlide(index));
+                    indicator.addEventListener('mouseenter', () => this.pauseAutoPlay());
+                    indicator.addEventListener('mouseleave', () => this.startAutoPlay());
+                });
 
-            const category = urlParams.get('category');
-            const sort = urlParams.get('sort');
+                // Pause autoplay on hover
+                const carousel = document.querySelector('.relative.w-full');
+                carousel.addEventListener('mouseenter', () => this.pauseAutoPlay());
+                carousel.addEventListener('mouseleave', () => this.startAutoPlay());
 
-            if (category) {
-                this.categoryFilter.value = category;
-            }
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') this.prevSlide();
+                    if (e.key === 'ArrowRight') this.nextSlide();
+                    if (e.key === ' ') {
+                        this.pauseAutoPlay();
+                        setTimeout(() => this.startAutoPlay(), 5000);
+                    }
+                });
 
-            if (sort) {
-                this.sortFilter.value = sort;
-            }
+                // Touch events for mobile
+                let touchStartX = 0;
+                let touchEndX = 0;
 
-            if (category || sort) {
-                this.applyFilters();
-            }
-        }
+                carousel.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
 
-        saveFiltersToUrl() {
-            // Guardar estado inicial en el historial
-            this.updateUrl();
-        }
-    }
-
-    // Inicializar cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', function() {
-        window.homeCarousel = new HomeCarousel();
-        window.courseFilters = new CourseFilters();
-
-        // También inicializar la plataforma de cursos si existe
-        if (typeof coursePlatform !== 'undefined') {
-            coursePlatform.init();
-        }
-    });
-
-    // Smooth scroll para los enlaces internos
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+                carousel.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    this.handleSwipe();
                 });
             }
-        });
-    });
 
-    // Función global para agregar al carrito
-    async function addToCart(courseId, event) {
-        const btn = event?.currentTarget ?? event?.target;
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin inline-block">⏳</span>';
+            handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.prevSlide();
+                    }
+                }
+            }
+
+            showSlide(index) {
+                // Hide all slides
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const slide = document.getElementById(`slide-${i + 1}`);
+                    const indicator = document.querySelector(`.carousel-indicator[data-slide="${i}"]`);
+
+                    if (slide) {
+                        slide.style.opacity = '0';
+                        slide.style.zIndex = '0';
+                    }
+                    if (indicator) {
+                        indicator.style.opacity = '0.5';
+                        indicator.style.transform = 'scale(1)';
+                    }
+                }
+
+                // Show current slide
+                const currentSlide = document.getElementById(`slide-${index + 1}`);
+                const currentIndicator = document.querySelector(`.carousel-indicator[data-slide="${index}"]`);
+
+                if (currentSlide) {
+                    currentSlide.style.opacity = '1';
+                    currentSlide.style.zIndex = '10';
+
+                    // Add animation class for entrance
+                    currentSlide.querySelector('h1')?.classList.add('animate-fade-in');
+                    currentSlide.querySelector('p')?.classList.add('animate-slide-up');
+
+                    // Remove animation after completion
+                    setTimeout(() => {
+                        currentSlide.querySelector('h1')?.classList.remove('animate-fade-in');
+                        currentSlide.querySelector('p')?.classList.remove('animate-slide-up');
+                    }, 1000);
+                }
+
+                if (currentIndicator) {
+                    currentIndicator.style.opacity = '1';
+                    currentIndicator.style.transform = 'scale(1.2)';
+                }
+
+                this.currentSlide = index;
+            }
+
+            nextSlide() {
+                this.showSlide((this.currentSlide + 1) % this.totalSlides);
+            }
+
+            prevSlide() {
+                this.showSlide((this.currentSlide - 1 + this.totalSlides) % this.totalSlides);
+            }
+
+            goToSlide(index) {
+                this.showSlide(index);
+            }
+
+            startAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                }
+                this.autoPlayInterval = setInterval(() => this.nextSlide(), 5000);
+            }
+
+            pauseAutoPlay() {
+                if (this.autoPlayInterval) {
+                    clearInterval(this.autoPlayInterval);
+                    this.autoPlayInterval = null;
+                }
+            }
         }
 
-        try {
-            const response = await fetch(`/cart/add/${courseId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                    'X-Requested-With': 'XMLHttpRequest'
+        // Clase para manejar los filtros de cursos
+        class CourseFilters {
+            constructor() {
+                this.courseCards = Array.from(document.querySelectorAll('.course-card'));
+                this.categoryFilter = document.getElementById('category-filter');
+                this.sortFilter = document.getElementById('sort-filter');
+                this.noResultsElement = document.getElementById('no-results');
+                this.resetFiltersBtn = document.getElementById('reset-filters');
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.saveFiltersToUrl();
+            }
+
+            setupEventListeners() {
+                // Filtro por categoría
+                this.categoryFilter.addEventListener('change', () => {
+                    this.applyFilters();
+                    this.updateUrl();
+                });
+
+                // Filtro de ordenación
+                this.sortFilter.addEventListener('change', () => {
+                    this.sortCourses();
+                    this.updateUrl();
+                });
+
+                // Botón para resetear filtros
+                this.resetFiltersBtn?.addEventListener('click', () => {
+                    this.resetFilters();
+                });
+
+                // Cargar filtros desde la URL al cargar la página
+                window.addEventListener('load', () => {
+                    this.loadFiltersFromUrl();
+                });
+            }
+
+            applyFilters() {
+                const selectedCategory = this.categoryFilter.value;
+                let visibleCount = 0;
+
+                this.courseCards.forEach(card => {
+                    const categoryId = card.getAttribute('data-category');
+                    let shouldShow = true;
+
+                    // Filtrar por categoría
+                    if (selectedCategory && categoryId !== selectedCategory) {
+                        shouldShow = false;
+                    }
+
+                    if (shouldShow) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Mostrar u ocultar mensaje de no resultados
+                if (visibleCount === 0) {
+                    this.noResultsElement.classList.remove('hidden');
+                    document.querySelector('#courses-container > .grid').classList.add('hidden');
+                } else {
+                    this.noResultsElement.classList.add('hidden');
+                    document.querySelector('#courses-container > .grid').classList.remove('hidden');
+                    this.sortCourses(); // Reordenar los cursos visibles
+                }
+            }
+
+            sortCourses() {
+                const sortMethod = this.sortFilter.value;
+                const visibleCards = this.courseCards.filter(card => card.style.display !== 'none');
+                const grid = document.querySelector('#courses-container > .grid');
+
+                visibleCards.sort((a, b) => {
+                    switch (sortMethod) {
+                        case 'newest':
+                            return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute(
+                            'data-date'));
+
+                        case 'popular':
+                            return parseInt(b.getAttribute('data-popularity')) - parseInt(a.getAttribute(
+                                'data-popularity'));
+
+                        case 'price_low':
+                            return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute(
+                                'data-price'));
+
+                        case 'price_high':
+                            return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute(
+                                'data-price'));
+
+                        default:
+                            return 0;
+                    }
+                });
+
+                // Reordenar los elementos en el DOM
+                visibleCards.forEach(card => {
+                    grid.appendChild(card);
+                });
+
+                // Añadir animación de reordenamiento
+                this.animateSort();
+            }
+
+            animateSort() {
+                const cards = document.querySelectorAll('.course-card');
+                cards.forEach(card => {
+                    card.style.transform = 'translateY(20px)';
+                    card.style.opacity = '0';
+
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.transform = 'translateY(0)';
+                        card.style.opacity = '1';
+                    }, 50);
+                });
+            }
+
+            resetFilters() {
+                this.categoryFilter.value = '';
+                this.sortFilter.value = 'newest';
+                this.applyFilters();
+                this.updateUrl();
+
+                // Desplazar suavemente a la sección de cursos
+                document.getElementById('cursos').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+
+            updateUrl() {
+                const params = new URLSearchParams();
+
+                if (this.categoryFilter.value) {
+                    params.set('category', this.categoryFilter.value);
+                }
+
+                if (this.sortFilter.value !== 'newest') {
+                    params.set('sort', this.sortFilter.value);
+                }
+
+                const newUrl = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location
+                    .pathname;
+                window.history.replaceState({}, '', newUrl);
+            }
+
+            loadFiltersFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+
+                const category = urlParams.get('category');
+                const sort = urlParams.get('sort');
+
+                if (category) {
+                    this.categoryFilter.value = category;
+                }
+
+                if (sort) {
+                    this.sortFilter.value = sort;
+                }
+
+                if (category || sort) {
+                    this.applyFilters();
+                }
+            }
+
+            saveFiltersToUrl() {
+                // Guardar estado inicial en el historial
+                this.updateUrl();
+            }
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            window.homeCarousel = new HomeCarousel();
+            window.courseFilters = new CourseFilters();
+
+            // También inicializar la plataforma de cursos si existe
+            if (typeof coursePlatform !== 'undefined') {
+                coursePlatform.init();
+            }
+        });
+
+        // Smooth scroll para los enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             });
+        });
 
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification('✓ Curso agregado al carrito', 'success');
-                updateCartCount();
-            } else if(data.success == false) {
-                showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
-            } else {
-                throw new Error(data.message || 'Error al agregar el curso');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-
-            if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
-                showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-            } else {
-                showNotification('Error al agregar el curso al carrito', 'error');
-            }
-        } finally {
+        // Función global para agregar al carrito
+        async function addToCart(courseId, event) {
+            const btn = event?.currentTarget ?? event?.target;
             if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Agregar';
+                btn.disabled = true;
+                btn.innerHTML = '<span class="animate-spin inline-block">⏳</span>';
+            }
+
+            try {
+                const response = await fetch(`/cart/add/${courseId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('✓ Curso agregado al carrito', 'success');
+                    updateCartCount();
+                } else if (data.success == false) {
+                    showNotification('El Curso ya se encuentra agregado en el carrito', 'error');
+                } else {
+                    throw new Error(data.message || 'Error al agregar el curso');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+
+                if (error.message.includes('401') || error.message.includes('Unauthenticated')) {
+                    showNotification('Debes iniciar sesión para agregar cursos al carrito', 'warning');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    showNotification('Error al agregar el curso al carrito', 'error');
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML =
+                        '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Agregar';
+                }
             }
         }
-    }
 
-    function showNotification(message, type = 'info') {
-        // Remover notificaciones existentes
-        const existing = document.querySelectorAll('.custom-notification');
-        existing.forEach(n => n.remove());
+        function showNotification(message, type = 'info') {
+            // Remover notificaciones existentes
+            const existing = document.querySelectorAll('.custom-notification');
+            existing.forEach(n => n.remove());
 
-        const colors = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            warning: 'bg-yellow-500',
-            info: 'bg-blue-500'
-        };
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
 
-        const notification = document.createElement('div');
-        notification.className = `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
-        notification.innerHTML = `
+            const notification = document.createElement('div');
+            notification.className =
+                `custom-notification fixed top-4 right-4 ${colors[type]} text-white px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in-right flex items-center gap-3 max-w-md`;
+            notification.innerHTML = `
             <span class="text-lg">${message}</span>
             <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -864,155 +931,165 @@
             </button>
         `;
 
-        document.body.appendChild(notification);
+            document.body.appendChild(notification);
 
-        setTimeout(() => {
-            notification.classList.add('animate-fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
+            setTimeout(() => {
+                notification.classList.add('animate-fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
 
-    async function updateCartCount() {
-        try {
-            const response = await fetch('/api/cart/count', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/api/cart/count', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = await response.json();
+
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount && data.count !== undefined) {
+                    cartCount.textContent = data.count;
+
+                    // Animación del contador
+                    cartCount.classList.add('animate-bounce');
+                    setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
                 }
-            });
-            const data = await response.json();
-
-            const cartCount = document.getElementById('cart-count');
-            if (cartCount && data.count !== undefined) {
-                cartCount.textContent = data.count;
-
-                // Animación del contador
-                cartCount.classList.add('animate-bounce');
-                setTimeout(() => cartCount.classList.remove('animate-bounce'), 500);
+            } catch (error) {
+                console.error('Error updating cart count:', error);
             }
-        } catch (error) {
-            console.error('Error updating cart count:', error);
         }
-    }
-</script>
+    </script>
 
-<style>
-    @keyframes fade-in {
-        from {
-            opacity: 0;
-            transform: translateY(30px) scale(0.95);
+    <style>
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-    }
 
-    @keyframes slide-up {
-        from {
-            opacity: 0;
-            transform: translateY(40px);
+        @keyframes slide-in-right {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
         }
-    }
 
-    @keyframes slide-in-right {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
+        .animate-fade-in {
+            animation: fade-in 1s ease-out;
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
+
+        .animate-slide-up {
+            animation: slide-up 1s ease-out 0.3s both;
         }
-    }
 
-    @keyframes fade-out {
-        from {
-            opacity: 1;
+        .animate-slide-in-right {
+            animation: slide-in-right 0.3s ease-out;
         }
-        to {
-            opacity: 0;
+
+        .animate-fade-out {
+            animation: fade-out 0.3s ease-out forwards;
         }
-    }
 
-    .animate-fade-in {
-        animation: fade-in 1s ease-out;
-    }
-
-    .animate-slide-up {
-        animation: slide-up 1s ease-out 0.3s both;
-    }
-
-    .animate-slide-in-right {
-        animation: slide-in-right 0.3s ease-out;
-    }
-
-    .animate-fade-out {
-        animation: fade-out 0.3s ease-out forwards;
-    }
-
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .card-hover {
-        transition: all 0.3s ease;
-    }
-
-    .card-hover:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Mejoras para el carousel full width */
-    .carousel-indicator {
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .carousel-indicator:hover {
-        opacity: 0.8 !important;
-        transform: scale(1.1);
-    }
-
-    /* Estilos para los filtros */
-    select:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Animación para spin */
-    .animate-spin {
-        animation: spin 1s linear infinite;
-        display: inline-block;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    /* Asegurar que las imágenes ocupen todo el ancho */
-    .carousel-image {
-        width: 100vw;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Responsive improvements */
-    @media (max-width: 640px) {
-        .carousel-content h1 {
-            font-size: 2rem;
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .carousel-content p {
-            font-size: 1.125rem;
+
+        .card-hover {
+            transition: all 0.3s ease;
         }
-    }
-</style>
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Mejoras para el carousel full width */
+        .carousel-indicator {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .carousel-indicator:hover {
+            opacity: 0.8 !important;
+            transform: scale(1.1);
+        }
+
+        /* Estilos para los filtros */
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Animación para spin */
+        .animate-spin {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Asegurar que las imágenes ocupen todo el ancho */
+        .carousel-image {
+            width: 100vw;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 640px) {
+            .carousel-content h1 {
+                font-size: 2rem;
+            }
+
+            .carousel-content p {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
 @endsection

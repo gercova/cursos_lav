@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,7 @@ class Certificate extends Model
         'certificate_number',
         'issue_date',
         'expiry_date',
+        'expiration_date',
         'total_hours',
         'download_count',
     ];
@@ -27,6 +29,29 @@ class Certificate extends Model
         'expiry_date'   => 'datetime',
         'total_hours'   => 'decimal:1',
     ];
+
+    protected $appends = [
+        'verification_url',
+        'expiration_date',
+        'is_expired',
+        'is_valid',
+    ];
+
+    protected static function booted()
+    {
+        static::creating(function (Certificate $certificate) {
+            if (empty($certificate->issue_date)) {
+                $certificate->issue_date = now();
+            }
+
+            if (empty($certificate->expiry_date)) {
+                $issueDate = $certificate->issue_date instanceof \Carbon\CarbonInterface
+                    ? $certificate->issue_date
+                    : Carbon::parse($certificate->issue_date);
+                $certificate->expiry_date = $issueDate->copy()->addYear();
+            }
+        });
+    }
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
@@ -60,9 +85,64 @@ class Certificate extends Model
         return url('/verify/' . $this->certificate_code); // Cambiado a ruta más simple
     }
 
-    // En el modelo Certificate, agrega este método
+    public function getExpiryDateAttribute($value)
+    {
+        if ($value) {
+            return $this->asDateTime($value);
+        }
+
+        if ($this->issue_date) {
+            return $this->asDateTime($this->issue_date)->copy()->addYear();
+        }
+
+        return null;
+    }
+
+    public function getExpirationDateAttribute()
+    {
+        return $this->expiry_date;
+    }
+
+    public function setExpirationDateAttribute($value)
+    {
+        $this->attributes['expiry_date'] = $value;
+    }
+
+    public function isExpired(): bool
+    {
+        return (bool) ($this->expiry_date && $this->expiry_date->isPast());
+    }
+
+    public function isValid(): bool
+    {
+        return !$this->isExpired();
+    }
+
+    public function getIsExpiredAttribute(): bool
+    {
+        return $this->isExpired();
+    }
+
+    public function getIsValidAttribute(): bool
+    {
+        return $this->isValid();
+    }
+
+    public function getDaysRemainingAttribute(): ?int
+    {
+        if (!$this->expiry_date) {
+            return null;
+        }
+
+        return (int) now()->diffInDays($this->expiry_date, false);
+    }
+
+    // En el modelo Certificate, formatea la fecha de emisión en español
     public function getFormattedIssueDate() {
-        // Traducir meses al español
+        if (!$this->issue_date) {
+            return '';
+        }
+
         $months = [
             'January'   => 'enero',
             'February'  => 'febrero',
@@ -78,7 +158,35 @@ class Certificate extends Model
             'December'  => 'diciembre'
         ];
 
-        $month = $months[$this->issue_date->format('F')];
+        $monthName = $this->issue_date->format('F');
+        $month = $months[$monthName] ?? $monthName;
         return $this->issue_date->format('d') . ' de ' . $month . ' del ' . $this->issue_date->format('Y');
+    }
+
+    // Formatea la fecha de expiración en español
+    public function getFormattedExpiryDate(): ?string
+    {
+        if (!$this->expiry_date) {
+            return null;
+        }
+
+        $months = [
+            'January'   => 'enero',
+            'February'  => 'febrero',
+            'March'     => 'marzo',
+            'April'     => 'abril',
+            'May'       => 'mayo',
+            'June'      => 'junio',
+            'July'      => 'julio',
+            'August'    => 'agosto',
+            'September' => 'septiembre',
+            'October'   => 'octubre',
+            'November'  => 'noviembre',
+            'December'  => 'diciembre'
+        ];
+
+        $monthName = $this->expiry_date->format('F');
+        $month = $months[$monthName] ?? $monthName;
+        return $this->expiry_date->format('d') . ' de ' . $month . ' del ' . $this->expiry_date->format('Y');
     }
 }

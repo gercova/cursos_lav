@@ -67,7 +67,7 @@ Route::get('/api/cart/count',               [CartsController::class, 'count'])->
 Route::get('/terminos-y-condiciones',       [AppController::class, 'terms'])->name('terminos-y-condiciones');
 Route::get('/politicas-de-uso',             [AppController::class, 'policies'])->name('politicas-de-uso');
 Route::get('/politicas-de-cookies',         [AppController::class, 'cookies'])->name('politicas-de-cookies');
-Route::get('/verify/{code}',                [CertificatesController::class, 'verify'])->name('verify.certificate');
+Route::get('/verify/{code?}',               [CertificatesController::class, 'verify'])->name('verify.certificate');
 
 /*
 |--------------------------------------------------------------------------

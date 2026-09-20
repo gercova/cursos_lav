@@ -129,12 +129,14 @@ class CertificatesController extends Controller {
         }
 
         // Crear nuevo certificado
+        $issueDate = now();
         $certificate = Certificate::create([
             'user_id'            => Auth::id(),
             'course_id'          => $enrollment->course_id,
             'certificate_code'   => Certificate::generateVerificationCode(),
             'certificate_number' => Certificate::generateCertificateNumber(),
-            'issue_date'         => now(),
+            'issue_date'         => $issueDate,
+            'expiry_date'        => $issueDate->copy()->addYear(),
             'total_hours'        => $enrollment->course->duration ?? 4.0,
         ]);
 
@@ -142,30 +144,56 @@ class CertificatesController extends Controller {
             ->with('success', 'Certificado generado exitosamente.');
     }
 
-    public function verify(string $code): View {
-        $certificate = Certificate::with(['user', 'course'])->where('certificate_code', $code)->first();
+    public function verify(?string $code = null): View {
+        $searchCode = trim((string) ($code ?: request('code')));
         $enterprise  = Enterprise::first();
+
+        if (empty($searchCode)) {
+            return view('student.certificates.verify', [
+                'enterprise'        => $enterprise,
+                'certificate'       => null,
+                'status'            => 'search',
+                'valid'             => false,
+                'isExpired'         => false,
+                'searchCode'        => '',
+                'message'           => 'Ingresa un código de verificación para consultar la autenticidad y vigencia del certificado.',
+                'verification_date' => now()->format('d/m/Y H:i:s'),
+            ]);
+        }
+
+        $certificate = Certificate::with(['user', 'course.instructor'])->where('certificate_code', $searchCode)->first();
 
         if (!$certificate) {
             return view('student.certificates.verify', [
-                'enterprise' => $enterprise,
-                'valid'      => false,
-                'message'    => 'Certificado no encontrado o código inválido',
+                'enterprise'        => $enterprise,
+                'certificate'       => null,
+                'status'            => 'not_found',
+                'valid'             => false,
+                'isExpired'         => false,
+                'searchCode'        => $searchCode,
+                'message'           => 'Certificado no encontrado o código de verificación inválido.',
+                'verification_date' => now()->format('d/m/Y H:i:s'),
             ]);
         }
 
-        if ($certificate->expiry_date && $certificate->expiry_date->isPast()) {
-            return view('student.certificates.verify', [
-                'enterprise' => $enterprise,
-                'valid'      => false,
-                'message'    => 'Certificado expirado',
-            ]);
+        // Si no tuviera fecha de expiración, se garantiza el cálculo a 1 año desde emisión
+        if (!$certificate->expiry_date && $certificate->issue_date) {
+            $certificate->expiry_date = $certificate->issue_date->copy()->addYear();
         }
+
+        $isExpired = $certificate->isExpired();
+        $status    = $isExpired ? 'expired' : 'valid';
 
         return view('student.certificates.verify', [
             'enterprise'        => $enterprise,
-            'valid'             => true,
             'certificate'       => $certificate,
+            'status'            => $status,
+            'valid'             => !$isExpired,
+            'isExpired'         => $isExpired,
+            'searchCode'        => $searchCode,
+            'message'           => $isExpired
+                ? 'Certificado auténtico pero con vigencia de 1 año expirada.'
+                : 'Certificado oficial válido y vigente.',
             'verification_date' => now()->format('d/m/Y H:i:s'),
         ]);
     }

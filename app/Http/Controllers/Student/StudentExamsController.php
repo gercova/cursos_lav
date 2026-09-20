@@ -475,8 +475,8 @@ class StudentExamsController extends Controller {
                 'exam_attempt_id'       => $attempt->id,
                 'certificate_code'      => $this->createCertificateCode($attempt->user_id),
                 'certificate_number'    => $this->createCertificateNumber($attempt->user_id),
-                'issue_date'            => now()->format('Y-m-d H:i:s'),
-                'expiry_date'           => null,
+                'issue_date'            => now(),
+                'expiry_date'           => now()->addYear(),
                 'total_hours'           => $exam->course->duration,
                 'download_count'        => 0,
             ]);

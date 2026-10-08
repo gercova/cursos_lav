@@ -173,7 +173,7 @@ Route::middleware(['auth', 'student'])->group(function () {
 
     // Certificados
     Route::prefix('certificate')->name('student.certificates')->group(function () {
-        Route::get('/',                                 [CertificatesController::class, 'index'])->name('');
+        Route::get('/',                                 [CertificatesController::class, 'index'])->name('.index');
         Route::get('/{certificateId}',                  [CertificatesController::class, 'show'])->name('.show');
         Route::get('/exact/{certificateId}/download',   [CertificatesController::class, 'download'])->name('.download-exact');
         Route::get('/exact/{certificateId}/view',       [CertificatesController::class, 'viewExact'])->name('.view-exact');

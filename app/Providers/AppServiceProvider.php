@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Category;
 use App\Models\Enterprise;
-use App\Models\User;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 

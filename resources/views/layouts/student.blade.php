@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -13,6 +14,7 @@
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/chart.js') }}"></script>
 </head>
+
 <body>
     <div class="app-layout" x-data="dashboardLayout()" x-init="init()">
         <!-- Overlay para móvil -->
@@ -34,7 +36,8 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="{{ route('student.dashboard') }}" class="sidebar-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('student.dashboard') }}"
+                    class="sidebar-link {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer mr-2"></i>
                     <span>Dashboard</span>
                 </a>

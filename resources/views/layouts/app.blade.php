@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +8,19 @@
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta name="description" content="Plataforma líder en capacitación y certificación en Seguridad y Salud en el Trabajo (SST), Gestión de Calidad y Medio Ambiente en Perú. Estudia con {{ $enterprise->trade_name ?? 'nosotros' }}.">
-        <meta name="keywords" content="cursos SST Perú, capacitación seguridad y salud en el trabajo, certificación normas ISO, gestión de calidad, medio ambiente, prevención de riesgos, auditoría SST">
+        <meta name="description"
+            content="Plataforma líder en capacitación y certificación en Seguridad y Salud en el Trabajo (SST), Gestión de Calidad y Medio Ambiente en Perú. Estudia con {{ $enterprise->trade_name ?? 'nosotros' }}.">
+        <meta name="keywords"
+            content="cursos SST Perú, capacitación seguridad y salud en el trabajo, certificación normas ISO, gestión de calidad, medio ambiente, prevención de riesgos, auditoría SST">
         <meta name="author" content="{{ $enterprise->trade_name ?? 'Plataforma de Capacitación' }}">
         <meta name="robots" content="index, follow">
-        <meta property="og:title" content="{{ $enterprise->trade_name ?? 'Capacitación Especializada en SST y Calidad' }}">
-        <meta property="og:description" content="Impulsa tu carrera profesional con nuestros cursos y diplomados en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente.">
+        <meta property="og:title"
+            content="{{ $enterprise->trade_name ?? 'Capacitación Especializada en SST y Calidad' }}">
+        <meta property="og:description"
+            content="Impulsa tu carrera profesional con nuestros cursos y diplomados en Seguridad, Salud Ocupacional, Calidad y Medio Ambiente.">
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
-        @if(isset($enterprise->logo_path))
+        @if (isset($enterprise->logo_path))
             <meta property="og:image" content="{{ asset($enterprise->logo_path) }}">
         @endif
     @endif
@@ -28,8 +33,9 @@
     <script src="{{ asset('js/tailwindcss.js') }}"></script>
     <script src="{{ asset('js/alpine.js') }}" defer></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
-    <meta name="google-site-verification" content="aMGrxQTlV-Zasf1Z3OoKmkT-u9prEHoNoUzhQ6zS0hc" />
+    <meta name="google-site-verification" content="1wfkyfBfBTV0cCoPIZ_G0cxRmniNJN81VNhCJNybjlA" />
 </head>
+
 <body class="bg-gray-50" x-data="{ mobileMenuOpen: false, mobileSidebarOpen: false }" @close-mobile-sidebar.window="mobileSidebarOpen = false">
     <!-- Header Fijo -->
     <header class="header-fixed bg-white shadow-sm w-full">
@@ -42,69 +48,104 @@
                     </a>
 
                     <!-- Botón hamburguesa para móviles -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden ml-4 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors duration-200">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="md:hidden ml-4 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-colors duration-200">
                         <span class="sr-only">Abrir menú principal</span>
                         <!-- Icono hamburguesa -->
-                        <svg x-show="!mobileMenuOpen" class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        <svg x-show="!mobileMenuOpen" class="block h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                         <!-- Icono X (cerrar) -->
-                        <svg x-show="mobileMenuOpen" class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <svg x-show="mobileMenuOpen" class="block h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
 
                     <!-- Navegación para desktop -->
                     <nav class="hidden md:ml-6 md:flex space-x-4">
-                        <a href="{{ url('/') }}" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Inicio</a>
-                        <a href="{{ route('cursos') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Cursos</a>
-                        <a href="{{ route('paquetes') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Servicios para empresas</a>
-                        <a href="{{ url('nosotros') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Nosotros</a>
-                        <a href="{{ url('contacto') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contacto</a>
+                        <a href="{{ url('/') }}"
+                            class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Inicio</a>
+                        <a href="{{ route('cursos') }}"
+                            class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Cursos</a>
+                        <a href="{{ route('paquetes') }}"
+                            class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Servicios
+                            para empresas</a>
+                        <a href="{{ url('nosotros') }}"
+                            class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Nosotros</a>
+                        <a href="{{ url('contacto') }}"
+                            class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Contacto</a>
                     </nav>
                 </div>
 
                 <!-- Menú de usuario -->
                 <div class="flex items-center space-x-4">
                     @auth
-                        @if(auth()->user()->role == 'student')
-                            <a href="{{ route('student.wishlist') }}" class="text-gray-500 hover:text-red-500 relative transition-colors duration-200 mr-1" title="Lista de Deseos">
+                        @if (auth()->user()->role == 'student')
+                            <a href="{{ route('student.wishlist') }}"
+                                class="text-gray-500 hover:text-red-500 relative transition-colors duration-200 mr-1"
+                                title="Lista de Deseos">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                    </path>
                                 </svg>
-                                <span id="wishlist-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center transition-all duration-200"></span>
+                                <span id="wishlist-count"
+                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center transition-all duration-200"></span>
                             </a>
-                            <a href="{{ route('cart') }}" class="text-gray-500 hover:text-blue-600 relative transition-colors duration-200" title="Carrito de Compras">
+                            <a href="{{ route('cart') }}"
+                                class="text-gray-500 hover:text-blue-600 relative transition-colors duration-200"
+                                title="Carrito de Compras">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
                                 </svg>
-                                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center transition-all duration-200"></span>
+                                <span id="cart-count"
+                                    class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center transition-all duration-200"></span>
                             </a>
                         @endif
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none transition-colors duration-200">
+                            <button @click="open = !open"
+                                class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none transition-colors duration-200">
                                 {{ auth()->user()->names }}
-                                <svg class="ml-1 w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <svg class="ml-1 w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': open }"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             @include('layouts.partials.student-profile')
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Iniciar Sesión</a>
-                        <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md">Registrarse</a>
+                        <a href="{{ route('login') }}"
+                            class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">Iniciar
+                            Sesión</a>
+                        <a href="{{ route('register') }}"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 shadow-sm hover:shadow-md">Registrarse</a>
                     @endauth
                 </div>
             </div>
 
             <!-- Menú móvil (se muestra al hacer clic en el botón hamburguesa) -->
-            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="md:hidden" id="mobile-menu">
+            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95" class="md:hidden" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 mt-2">
-                    <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Inicio</a>
-                    <a href="{{ route('cursos') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Cursos</a>
-                    <a href="{{ route('paquetes') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios para empresas</a>
-                    <a href="{{ route('nosotros') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
-                    <a href="{{ route('contacto') }}" @click="mobileMenuOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
+                    <a href="{{ url('/') }}" @click="mobileMenuOpen = false"
+                        class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Inicio</a>
+                    <a href="{{ route('cursos') }}" @click="mobileMenuOpen = false"
+                        class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Cursos</a>
+                    <a href="{{ route('paquetes') }}" @click="mobileMenuOpen = false"
+                        class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Servicios
+                        para empresas</a>
+                    <a href="{{ route('nosotros') }}" @click="mobileMenuOpen = false"
+                        class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Nosotros</a>
+                    <a href="{{ route('contacto') }}" @click="mobileMenuOpen = false"
+                        class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200">Contacto</a>
                 </div>
             </div>
         </div>
@@ -113,49 +154,43 @@
     <div class="flex content-with-fixed-header">
         <!-- Mobile sidebar toggle -->
         <div class="lg:hidden fixed bottom-4 right-4 z-40">
-            <button id="sidebar-toggle" @click="mobileSidebarOpen = !mobileSidebarOpen" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200">
+            <button id="sidebar-toggle" @click="mobileSidebarOpen = !mobileSidebarOpen"
+                class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors duration-200">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
         </div>
 
         <!-- Mobile sidebar (Modal) -->
-        <div id="mobile-sidebar" 
-            x-show="mobileSidebarOpen" 
-            class="lg:hidden fixed inset-0 z-50" 
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:leave="transition ease-in duration-200"
+        <div id="mobile-sidebar" x-show="mobileSidebarOpen" class="lg:hidden fixed inset-0 z-50"
+            x-transition:enter="transition ease-out duration-300" x-transition:leave="transition ease-in duration-200"
             x-cloak>
             <!-- Backdrop overlay -->
-            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
-                x-show="mobileSidebarOpen"
-                x-transition:enter="ease-out duration-300"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" x-show="mobileSidebarOpen"
+                x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                 @click="mobileSidebarOpen = false"></div>
-            
+
             <!-- Panel content -->
             <div class="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col z-50 transform transition-transform duration-300"
-                x-show="mobileSidebarOpen"
-                x-transition:enter="ease-out duration-300"
-                x-transition:enter-start="-translate-x-full"
-                x-transition:enter-end="translate-x-0"
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="translate-x-0"
+                x-show="mobileSidebarOpen" x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+                x-transition:leave="ease-in duration-200" x-transition:leave-start="translate-x-0"
                 x-transition:leave-end="-translate-x-full">
-                
+
                 <!-- Header -->
                 <div class="p-5 border-b border-gray-100 flex items-center justify-between">
                     <a href="{{ url('/') }}" class="flex items-center gap-2">
                         <img class="h-8 w-auto" src="{{ $enterprise->logo_path }}" alt="Logo">
                     </a>
-                    <button @click="mobileSidebarOpen = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                    <button @click="mobileSidebarOpen = false"
+                        class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
@@ -166,19 +201,24 @@
                     <div class="space-y-4">
                         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Menú Principal</h3>
                         <nav class="flex flex-col space-y-1">
-                            <a href="{{ url('/') }}" @click="mobileSidebarOpen = false" class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                            <a href="{{ url('/') }}" @click="mobileSidebarOpen = false"
+                                class="text-gray-900 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
                                 <i class="fas fa-home w-6 text-gray-400 mr-2 text-lg"></i> Inicio
                             </a>
-                            <a href="{{ route('cursos') }}" @click="mobileSidebarOpen = false" class="text-gray-905 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                            <a href="{{ route('cursos') }}" @click="mobileSidebarOpen = false"
+                                class="text-gray-905 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
                                 <i class="fas fa-book w-6 text-gray-400 mr-2 text-lg"></i> Cursos
                             </a>
-                            <a href="{{ route('paquetes') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                            <a href="{{ route('paquetes') }}" @click="mobileSidebarOpen = false"
+                                class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
                                 <i class="fas fa-cubes w-6 text-gray-400 mr-2 text-lg"></i> Servicios Empresas
                             </a>
-                            <a href="{{ url('nosotros') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                            <a href="{{ url('nosotros') }}" @click="mobileSidebarOpen = false"
+                                class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
                                 <i class="fas fa-info-circle w-6 text-gray-400 mr-2 text-lg"></i> Nosotros
                             </a>
-                            <a href="{{ url('contacto') }}" @click="mobileSidebarOpen = false" class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
+                            <a href="{{ url('contacto') }}" @click="mobileSidebarOpen = false"
+                                class="text-gray-500 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2.5 rounded-lg text-base font-medium transition-colors duration-200">
                                 <i class="fas fa-envelope w-6 text-gray-400 mr-2 text-lg"></i> Contacto
                             </a>
                         </nav>
@@ -186,7 +226,8 @@
 
                     <!-- Categories section (dynamic or static if available) -->
                     <div id="sidebar-categories-section" class="space-y-4 hidden">
-                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías de Cursos</h3>
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorías de Cursos
+                        </h3>
                         <ul class="space-y-1.5" id="mobile-categories-list">
                             <!-- Populated dynamically via Javascript from #category-filter -->
                         </ul>
@@ -201,39 +242,49 @@
                                 <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                             </div>
                             <nav class="flex flex-col space-y-1">
-                                @if(auth()->user()->role == 'student')
-                                    <a href="{{ route('student.dashboard') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                @if (auth()->user()->role == 'student')
+                                    <a href="{{ route('student.dashboard') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-tachometer-alt w-5 text-gray-400 mr-2"></i> Mi Dashboard
                                     </a>
-                                    <a href="{{ route('student.wishlist') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <a href="{{ route('student.wishlist') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-heart w-5 text-red-500 mr-2"></i> Mi Lista de Deseos
                                     </a>
-                                    <a href="{{ route('student.profile') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <a href="{{ route('student.profile') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-user w-5 text-gray-400 mr-2"></i> Mi Perfil
                                     </a>
-                                    <a href="{{ route('student.my-courses') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <a href="{{ route('student.my-courses') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-play-circle w-5 text-gray-400 mr-2"></i> Mis Cursos
                                     </a>
                                 @elseif(auth()->user()->role == 'admin' || auth()->user()->role == 'instructor')
-                                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <a href="{{ route('admin.dashboard') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-tachometer-alt w-5 text-gray-400 mr-2"></i> Dashboard Admin
                                     </a>
                                 @elseif(auth()->user()->role == 'business')
-                                    <a href="{{ route('company.list') }}" class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <a href="{{ route('company.list') }}"
+                                        class="text-gray-700 hover:text-blue-600 hover:bg-gray-50 flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-building w-5 text-gray-400 mr-2"></i> Panel Empresa
                                     </a>
                                 @endif
                                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                                     @csrf
-                                    <button type="submit" class="w-full text-left text-red-600 hover:bg-red-50 flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200">
+                                    <button type="submit"
+                                        class="w-full text-left text-red-600 hover:bg-red-50 flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200">
                                         <i class="fas fa-sign-out-alt w-5 text-red-500 mr-2"></i> Cerrar Sesión
                                     </button>
                                 </form>
                             </nav>
                         @else
                             <div class="grid grid-cols-2 gap-2">
-                                <a href="{{ route('login') }}" class="text-center py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Iniciar Sesión</a>
-                                <a href="{{ route('register') }}" class="text-center py-2.5 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors">Registrarse</a>
+                                <a href="{{ route('login') }}"
+                                    class="text-center py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Iniciar
+                                    Sesión</a>
+                                <a href="{{ route('register') }}"
+                                    class="text-center py-2.5 bg-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors">Registrarse</a>
                             </div>
                         @endauth
                     </div>
@@ -253,15 +304,17 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-slate-900">
                 <!-- Columna 1: Info e Imagen -->
                 <div class="md:col-span-4 space-y-6">
-                    @if($enterprise->logo_path)
-                        <img src="{{ $enterprise->logo_path }}" alt="{{ $enterprise->trade_name }}" class="h-10 w-auto filter brightness-100 drop-shadow-sm hover:scale-[1.02] transition-transform duration-300">
+                    @if ($enterprise->logo_path)
+                        <img src="{{ $enterprise->logo_path }}" alt="{{ $enterprise->trade_name }}"
+                            class="h-10 w-auto filter brightness-100 drop-shadow-sm hover:scale-[1.02] transition-transform duration-300">
                     @else
                         <span class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
                             <i class="fas fa-graduation-cap text-blue-500"></i> {{ $enterprise->trade_name }}
                         </span>
                     @endif
                     <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
-                        Ofrecemos capacitación de alto nivel con cursos especializados en Seguridad y Salud en el Trabajo, Medio Ambiente y Calidad para potenciar tu crecimiento profesional.
+                        Ofrecemos capacitación de alto nivel con cursos especializados en Seguridad y Salud en el
+                        Trabajo, Medio Ambiente y Calidad para potenciar tu crecimiento profesional.
                     </p>
                 </div>
 
@@ -270,32 +323,42 @@
                     <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4">Enlaces Rápidos</h3>
                     <ul class="space-y-3 text-xs sm:text-sm">
                         <li>
-                            <a href="{{ url('/') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
-                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                            <a href="{{ url('/') }}"
+                                class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i
+                                    class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
                                 Inicio
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('cursos') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
-                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                            <a href="{{ route('cursos') }}"
+                                class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i
+                                    class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
                                 Cursos
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('paquetes') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
-                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                            <a href="{{ route('paquetes') }}"
+                                class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i
+                                    class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
                                 Servicios para empresas
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('nosotros') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
-                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                            <a href="{{ route('nosotros') }}"
+                                class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i
+                                    class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
                                 Nosotros
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('contacto') }}" class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
-                                <i class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
+                            <a href="{{ route('contacto') }}"
+                                class="hover:text-white transition-all duration-200 inline-flex items-center hover:translate-x-1 group">
+                                <i
+                                    class="fas fa-chevron-right text-[8px] text-blue-500 opacity-0 group-hover:opacity-100 group-hover:mr-1.5 transition-all"></i>
                                 Contacto
                             </a>
                         </li>
@@ -308,16 +371,18 @@
                     <ul class="space-y-3.5 text-xs sm:text-sm">
                         <li class="flex items-start gap-3">
                             <i class="fas fa-envelope text-blue-500 mt-1 flex-shrink-0"></i>
-                            <a href="mailto:{{ $enterprise->email }}" class="hover:text-white transition-colors duration-200 break-all">{{ $enterprise->email }}</a>
+                            <a href="mailto:{{ $enterprise->email }}"
+                                class="hover:text-white transition-colors duration-200 break-all">{{ $enterprise->email }}</a>
                         </li>
                         <li class="flex items-start gap-3">
                             <i class="fas fa-phone-alt text-blue-500 mt-1 flex-shrink-0"></i>
                             <span class="text-slate-300">+51 {{ $enterprise->phone_number_1 }}</span>
                         </li>
-                        @if($enterprise->address)
+                        @if ($enterprise->address)
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-map-marker-alt text-blue-500 mt-1 flex-shrink-0"></i>
-                                <span class="text-slate-300 leading-relaxed">{{ $enterprise->address }}, {{ $enterprise->city }}</span>
+                                <span class="text-slate-300 leading-relaxed">{{ $enterprise->address }},
+                                    {{ $enterprise->city }}</span>
                             </li>
                         @endif
                     </ul>
@@ -326,54 +391,56 @@
                 <!-- Columna 4: Redes Sociales -->
                 <div class="md:col-span-3 space-y-4">
                     <h3 class="text-xs font-semibold text-slate-200 uppercase tracking-wider">Síguenos</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Mantente conectado a nuestras novedades y noticias del sector educativo.</p>
-                    
+                    <p class="text-xs text-slate-500 leading-relaxed">Mantente conectado a nuestras novedades y
+                        noticias del sector educativo.</p>
+
                     @php
-                        $hasSocials = !empty($enterprise->facebook_link) || 
-                            !empty($enterprise->linkedin_link) || 
-                            !empty($enterprise->twitter_link) || 
-                            !empty($enterprise->instagram_link) || 
+                        $hasSocials =
+                            !empty($enterprise->facebook_link) ||
+                            !empty($enterprise->linkedin_link) ||
+                            !empty($enterprise->twitter_link) ||
+                            !empty($enterprise->instagram_link) ||
                             !empty($enterprise->whatsapp_link);
                     @endphp
 
-                    @if($hasSocials)
+                    @if ($hasSocials)
                         <div class="flex flex-wrap gap-2.5 pt-1">
-                            @if(!empty($enterprise->facebook_link))
-                                <a href="{{ $enterprise->facebook_link }}" target="_blank" rel="noopener noreferrer" 
-                                   title="Facebook" aria-label="Facebook"
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#1877F2] hover:bg-[#1877F2]/10 hover:border-[#1877F2]/20 hover:scale-105 transition-all duration-200">
+                            @if (!empty($enterprise->facebook_link))
+                                <a href="{{ $enterprise->facebook_link }}" target="_blank" rel="noopener noreferrer"
+                                    title="Facebook" aria-label="Facebook"
+                                    class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#1877F2] hover:bg-[#1877F2]/10 hover:border-[#1877F2]/20 hover:scale-105 transition-all duration-200">
                                     <i class="fab fa-facebook-f text-sm"></i>
                                 </a>
                             @endif
 
-                            @if(!empty($enterprise->linkedin_link))
-                                <a href="{{ $enterprise->linkedin_link }}" target="_blank" rel="noopener noreferrer" 
-                                   title="LinkedIn" aria-label="LinkedIn"
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#0A66C2] hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/20 hover:scale-105 transition-all duration-200">
+                            @if (!empty($enterprise->linkedin_link))
+                                <a href="{{ $enterprise->linkedin_link }}" target="_blank" rel="noopener noreferrer"
+                                    title="LinkedIn" aria-label="LinkedIn"
+                                    class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#0A66C2] hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/20 hover:scale-105 transition-all duration-200">
                                     <i class="fab fa-linkedin-in text-sm"></i>
                                 </a>
                             @endif
 
-                            @if(!empty($enterprise->twitter_link))
-                                <a href="{{ $enterprise->twitter_link }}" target="_blank" rel="noopener noreferrer" 
-                                   title="Twitter" aria-label="Twitter"
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all duration-200">
+                            @if (!empty($enterprise->twitter_link))
+                                <a href="{{ $enterprise->twitter_link }}" target="_blank" rel="noopener noreferrer"
+                                    title="Twitter" aria-label="Twitter"
+                                    class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/20 hover:scale-105 transition-all duration-200">
                                     <i class="fab fa-twitter text-sm"></i>
                                 </a>
                             @endif
 
-                            @if(!empty($enterprise->instagram_link))
-                                <a href="{{ $enterprise->instagram_link }}" target="_blank" rel="noopener noreferrer" 
-                                   title="Instagram" aria-label="Instagram"
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#E1306C] hover:bg-[#E1306C]/10 hover:border-[#E1306C]/20 hover:scale-105 transition-all duration-200">
+                            @if (!empty($enterprise->instagram_link))
+                                <a href="{{ $enterprise->instagram_link }}" target="_blank"
+                                    rel="noopener noreferrer" title="Instagram" aria-label="Instagram"
+                                    class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#E1306C] hover:bg-[#E1306C]/10 hover:border-[#E1306C]/20 hover:scale-105 transition-all duration-200">
                                     <i class="fab fa-instagram text-sm"></i>
                                 </a>
                             @endif
 
-                            @if(!empty($enterprise->whatsapp_link))
-                                <a href="{{ $enterprise->whatsapp_link }}" target="_blank" rel="noopener noreferrer" 
-                                   title="WhatsApp" aria-label="WhatsApp"
-                                   class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/10 hover:border-[#25D366]/20 hover:scale-105 transition-all duration-200">
+                            @if (!empty($enterprise->whatsapp_link))
+                                <a href="{{ $enterprise->whatsapp_link }}" target="_blank" rel="noopener noreferrer"
+                                    title="WhatsApp" aria-label="WhatsApp"
+                                    class="inline-flex items-center justify-center w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-[#25D366] hover:bg-[#25D366]/10 hover:border-[#25D366]/20 hover:scale-105 transition-all duration-200">
                                     <i class="fab fa-whatsapp text-sm"></i>
                                 </a>
                             @endif
@@ -388,18 +455,25 @@
             <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
                 <p>&copy; {{ date('Y') }} {{ $enterprise->trade_name }}. Todos los derechos reservados.</p>
                 <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
-                    <a href="{{ route('terminos-y-condiciones') }}" class="hover:text-slate-300 transition-colors duration-200">Términos de servicio</a>
-                    <a href="{{ route('politicas-de-uso') }}" class="hover:text-slate-300 transition-colors duration-200">Política de privacidad</a>
-                    <a href="{{ route('politicas-de-cookies') }}" class="hover:text-slate-300 transition-colors duration-200">Cookies</a>
-                    <a href="javascript:void(0)" onclick="CookieConsent.openModal()" class="hover:text-slate-300 transition-colors duration-200 flex items-center gap-1">Preferencias de cookies</a>
+                    <a href="{{ route('terminos-y-condiciones') }}"
+                        class="hover:text-slate-300 transition-colors duration-200">Términos de servicio</a>
+                    <a href="{{ route('politicas-de-uso') }}"
+                        class="hover:text-slate-300 transition-colors duration-200">Política de privacidad</a>
+                    <a href="{{ route('politicas-de-cookies') }}"
+                        class="hover:text-slate-300 transition-colors duration-200">Cookies</a>
+                    <a href="javascript:void(0)" onclick="CookieConsent.openModal()"
+                        class="hover:text-slate-300 transition-colors duration-200 flex items-center gap-1">Preferencias
+                        de cookies</a>
                 </div>
             </div>
         </div>
     </footer>
 
- 
+
     {{-- Banner principal --}}
-    <div id="cookie-consent-banner" class="fixed bottom-0 left-0 right-0 z-[9998] transform translate-y-full transition-transform duration-500 ease-in-out" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
+    <div id="cookie-consent-banner"
+        class="fixed bottom-0 left-0 right-0 z-[9998] transform translate-y-full transition-transform duration-500 ease-in-out"
+        role="dialog" aria-label="Aviso de cookies" aria-live="polite">
         <div class="bg-gray-900 border-t-2 border-amber-500 shadow-2xl">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -415,9 +489,11 @@
                                 Usamos cookies para mejorar tu experiencia
                             </h4>
                             <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
-                                Utilizamos cookies propias y de terceros para el funcionamiento del sitio, analizar el tráfico y personalizar contenido.
+                                Utilizamos cookies propias y de terceros para el funcionamiento del sitio, analizar el
+                                tráfico y personalizar contenido.
                                 Puedes aceptarlas, rechazarlas o gestionar tus preferencias.
-                                <a href="{{ route('politicas-de-cookies') }}" class="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+                                <a href="{{ route('politicas-de-cookies') }}"
+                                    class="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
                                     Más información
                                 </a>
                             </p>
@@ -425,13 +501,16 @@
                     </div>
                     <!-- Botones de acción -->
                     <div class="flex flex-wrap items-center gap-2 w-full md:w-auto flex-shrink-0">
-                        <button id="cookie-reject-banner" class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-200 whitespace-nowrap">
+                        <button id="cookie-reject-banner"
+                            class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-200 whitespace-nowrap">
                             Rechazar
                         </button>
-                        <button id="cookie-settings-banner" class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-amber-400 border border-amber-600 rounded-lg hover:bg-amber-900/40 transition-colors duration-200 whitespace-nowrap">
+                        <button id="cookie-settings-banner"
+                            class="flex-1 md:flex-none px-3 py-2 text-xs sm:text-sm font-medium text-amber-400 border border-amber-600 rounded-lg hover:bg-amber-900/40 transition-colors duration-200 whitespace-nowrap">
                             <i class="fas fa-sliders-h mr-1"></i> Personalizar
                         </button>
-                        <button id="cookie-accept-banner" class="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors duration-200 whitespace-nowrap shadow-md">
+                        <button id="cookie-accept-banner"
+                            class="flex-1 md:flex-none px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-lg transition-colors duration-200 whitespace-nowrap shadow-md">
                             <i class="fas fa-check mr-1"></i> Aceptar todas
                         </button>
                     </div>
@@ -439,17 +518,21 @@
             </div>
         </div>
     </div>
- 
+
     {{-- Modal de preferencias granulares --}}
-    <div id="cookie-preferences-modal" class="fixed inset-0 z-[9999] hidden" role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title">
+    <div id="cookie-preferences-modal" class="fixed inset-0 z-[9999] hidden" role="dialog" aria-modal="true"
+        aria-labelledby="cookie-modal-title">
         {{-- Overlay --}}
-        <div id="cookie-modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+        <div id="cookie-modal-overlay"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
         {{-- Panel --}}
         <div class="relative flex items-end sm:items-center justify-center min-h-screen p-0 sm:p-4">
-            <div id="cookie-modal-panel" class="relative bg-white w-full sm:max-w-lg sm:rounded-2xl shadow-2xl transform transition-all duration-300 translate-y-full sm:translate-y-4 sm:scale-95 opacity-0 max-h-screen sm:max-h-[90vh] overflow-y-auto">
- 
+            <div id="cookie-modal-panel"
+                class="relative bg-white w-full sm:max-w-lg sm:rounded-2xl shadow-2xl transform transition-all duration-300 translate-y-full sm:translate-y-4 sm:scale-95 opacity-0 max-h-screen sm:max-h-[90vh] overflow-y-auto">
+
                 {{-- Header --}}
-                <div class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
+                <div
+                    class="sticky top-0 bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between z-10">
                     <div class="flex items-center gap-3">
                         <div class="bg-amber-100 p-2 rounded-lg">
                             <i class="fas fa-cookie-bite text-amber-600 text-lg"></i>
@@ -461,23 +544,28 @@
                             <p class="text-xs text-gray-500">Activa o desactiva cada categoría</p>
                         </div>
                     </div>
-                    <button id="cookie-modal-close" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors" aria-label="Cerrar">
+                    <button id="cookie-modal-close"
+                        class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                        aria-label="Cerrar">
                         <i class="fas fa-times text-lg"></i>
                     </button>
                 </div>
- 
+
                 {{-- Body --}}
                 <div class="px-5 py-5 space-y-4">
- 
+
                     {{-- Cookies necesarias (siempre activas) --}}
                     <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-sm font-semibold text-gray-900">Cookies necesarias</span>
-                                <span class="text-xs font-medium text-white bg-gray-500 px-2 py-0.5 rounded-full">Siempre activas</span>
+                                <span
+                                    class="text-xs font-medium text-white bg-gray-500 px-2 py-0.5 rounded-full">Siempre
+                                    activas</span>
                             </div>
                             <p class="text-xs text-gray-500 leading-relaxed">
-                                Imprescindibles para el funcionamiento básico del sitio: sesión, seguridad (CSRF), carrito de compras.
+                                Imprescindibles para el funcionamiento básico del sitio: sesión, seguridad (CSRF),
+                                carrito de compras.
                             </p>
                         </div>
                         <div class="flex-shrink-0 mt-0.5">
@@ -486,7 +574,7 @@
                             </div>
                         </div>
                     </div>
- 
+
                     {{-- Cookies funcionales --}}
                     <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div class="flex-1">
@@ -494,16 +582,18 @@
                                 <span class="text-sm font-semibold text-gray-900">Cookies funcionales</span>
                             </div>
                             <p class="text-xs text-gray-500 leading-relaxed">
-                                Recuerdan tus preferencias de idioma, región y configuración de visualización para personalizar tu experiencia.
+                                Recuerdan tus preferencias de idioma, región y configuración de visualización para
+                                personalizar tu experiencia.
                             </p>
                         </div>
                         <div class="flex-shrink-0 mt-0.5">
-                            <button id="toggle-functional" role="switch" aria-checked="true" data-pref="functional" class="cookie-toggle cookie-switch active">
+                            <button id="toggle-functional" role="switch" aria-checked="true" data-pref="functional"
+                                class="cookie-toggle cookie-switch active">
                                 <span class="cookie-switch__thumb"></span>
                             </button>
                         </div>
                     </div>
- 
+
                     {{-- Cookies analíticas --}}
                     <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div class="flex-1">
@@ -511,16 +601,18 @@
                                 <span class="text-sm font-semibold text-gray-900">Cookies analíticas</span>
                             </div>
                             <p class="text-xs text-gray-500 leading-relaxed">
-                                Nos ayudan a entender cómo los usuarios interactúan con el sitio (páginas visitadas, tiempo de sesión, errores). No se comparten con terceros.
+                                Nos ayudan a entender cómo los usuarios interactúan con el sitio (páginas visitadas,
+                                tiempo de sesión, errores). No se comparten con terceros.
                             </p>
                         </div>
                         <div class="flex-shrink-0 mt-0.5">
-                            <button id="toggle-analytics" role="switch" aria-checked="true" data-pref="analytics" class="cookie-toggle cookie-switch active">
+                            <button id="toggle-analytics" role="switch" aria-checked="true" data-pref="analytics"
+                                class="cookie-toggle cookie-switch active">
                                 <span class="cookie-switch__thumb"></span>
                             </button>
                         </div>
                     </div>
- 
+
                     {{-- Cookies de marketing --}}
                     <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <div class="flex-1">
@@ -528,61 +620,72 @@
                                 <span class="text-sm font-semibold text-gray-900">Cookies de marketing</span>
                             </div>
                             <p class="text-xs text-gray-500 leading-relaxed">
-                                Permiten mostrarte publicidad relevante y medir la efectividad de nuestras campañas dentro y fuera del sitio.
+                                Permiten mostrarte publicidad relevante y medir la efectividad de nuestras campañas
+                                dentro y fuera del sitio.
                             </p>
                         </div>
                         <div class="flex-shrink-0 mt-0.5">
-                            <button id="toggle-marketing" role="switch" aria-checked="false" data-pref="marketing" class="cookie-toggle cookie-switch">
+                            <button id="toggle-marketing" role="switch" aria-checked="false" data-pref="marketing"
+                                class="cookie-toggle cookie-switch">
                                 <span class="cookie-switch__thumb"></span>
                             </button>
                         </div>
                     </div>
- 
+
                     {{-- Nota legal --}}
                     <p class="text-xs text-gray-400 text-center leading-relaxed px-2">
-                        Tu elección se guarda en este navegador durante 1 año. Puedes cambiarla en cualquier momento desde
-                        <a href="{{ route('politicas-de-cookies') }}" class="text-amber-500 hover:text-amber-600 underline underline-offset-1">nuestra política de cookies</a>.
+                        Tu elección se guarda en este navegador durante 1 año. Puedes cambiarla en cualquier momento
+                        desde
+                        <a href="{{ route('politicas-de-cookies') }}"
+                            class="text-amber-500 hover:text-amber-600 underline underline-offset-1">nuestra política
+                            de cookies</a>.
                     </p>
                 </div>
- 
+
                 {{-- Footer del modal --}}
-                <div class="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-4 flex flex-col sm:flex-row gap-2">
-                    <button id="cookie-reject-modal" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                <div
+                    class="sticky bottom-0 bg-white border-t border-gray-100 px-5 py-4 flex flex-col sm:flex-row gap-2">
+                    <button id="cookie-reject-modal"
+                        class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                         Rechazar opcionales
                     </button>
-                    <button id="cookie-save-preferences" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-xl transition-colors duration-200 shadow">
+                    <button id="cookie-save-preferences"
+                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-500 rounded-xl transition-colors duration-200 shadow">
                         <i class="fas fa-save mr-1.5"></i> Guardar preferencias
                     </button>
-                    <button id="cookie-accept-all-modal" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors duration-200 shadow">
+                    <button id="cookie-accept-all-modal"
+                        class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors duration-200 shadow">
                         <i class="fas fa-check-double mr-1.5"></i> Aceptar todas
                     </button>
                 </div>
             </div>
         </div>
     </div>
- 
+
     {{-- Botón flotante para reabrir preferencias (visible solo después de haber dado consentimiento) --}}
-    <button id="cookie-reopen-btn" onclick="CookieConsent.openModal()" title="Gestionar preferencias de cookies" aria-label="Gestionar preferencias de cookies" class="hidden fixed bottom-4 left-4 z-[9990] bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
+    <button id="cookie-reopen-btn" onclick="CookieConsent.openModal()" title="Gestionar preferencias de cookies"
+        aria-label="Gestionar preferencias de cookies"
+        class="hidden fixed bottom-4 left-4 z-[9990] bg-gray-800 hover:bg-gray-700 text-white p-2.5 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
         <i class="fas fa-cookie-bite text-amber-400 text-base"></i>
     </button>
- 
+
     {{-- SCRIPT GLOBAL DE CONSENTIMIENTO DE COOKIES --}}
     <script>
-        window.CookieConsent = (function () {
-    
+        window.CookieConsent = (function() {
+
             // ── Configuración ────────────────────────────────────────────────────
-            const STORAGE_KEY    = 'cookie_consent';
-            const POLICY_VERSION = '1.0';           
-            const EXPIRY_DAYS    = 365;
-    
+            const STORAGE_KEY = 'cookie_consent';
+            const POLICY_VERSION = '1.0';
+            const EXPIRY_DAYS = 365;
+
             // ── Elementos del DOM ────────────────────────────────────────────────
-            const banner    = document.getElementById('cookie-consent-banner');
-            const modal     = document.getElementById('cookie-preferences-modal');
-            const overlay   = document.getElementById('cookie-modal-overlay');
-            const panel     = document.getElementById('cookie-modal-panel');
+            const banner = document.getElementById('cookie-consent-banner');
+            const modal = document.getElementById('cookie-preferences-modal');
+            const overlay = document.getElementById('cookie-modal-overlay');
+            const panel = document.getElementById('cookie-modal-panel');
             const reopenBtn = document.getElementById('cookie-reopen-btn');
-            const toggles   = document.querySelectorAll('.cookie-toggle');
-    
+            const toggles = document.querySelectorAll('.cookie-toggle');
+
             // ── Helpers de almacenamiento ────────────────────────────────────────
             function _save(data) {
                 try {
@@ -591,26 +694,26 @@
                     console.warn('[CookieConsent] No se pudo guardar en localStorage:', e);
                 }
             }
-    
+
             function _load() {
                 try {
                     const raw = localStorage.getItem(STORAGE_KEY);
                     if (!raw) return null;
                     const data = JSON.parse(raw);
-    
+
                     // Invalida si es una versión de política distinta
                     if (data.version !== POLICY_VERSION) return null;
-    
+
                     // Invalida si han pasado más de EXPIRY_DAYS días
                     const ageMs = Date.now() - (data.timestamp || 0);
                     if (ageMs > EXPIRY_DAYS * 24 * 60 * 60 * 1000) return null;
-    
+
                     return data;
                 } catch (e) {
                     return null;
                 }
             }
-    
+
             // ── Lógica del banner ────────────────────────────────────────────────
             function _showBanner() {
                 // Espera un tick para que la transición CSS sea visible
@@ -619,41 +722,43 @@
                 }, 50);
                 reopenBtn.classList.add('hidden');
             }
-    
+
             function _hideBanner() {
                 banner.classList.add('translate-y-full');
             }
-    
+
             function _showReopenButton() {
                 reopenBtn.classList.remove('hidden');
             }
-    
+
             // ── Lógica del modal ─────────────────────────────────────────────────
             function _openModal() {
                 _hideBanner();
                 _syncTogglesToStorage();
-    
+
                 modal.classList.remove('hidden');
                 // Trigger reflow para que las transiciones funcionen
                 requestAnimationFrame(() => {
                     requestAnimationFrame(() => {
                         overlay.classList.remove('opacity-0');
                         overlay.classList.add('opacity-100');
-                        panel.classList.remove('translate-y-full', 'sm:translate-y-4', 'sm:scale-95', 'opacity-0');
-                        panel.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
+                        panel.classList.remove('translate-y-full', 'sm:translate-y-4',
+                            'sm:scale-95', 'opacity-0');
+                        panel.classList.add('translate-y-0', 'sm:translate-y-0', 'sm:scale-100',
+                            'opacity-100');
                     });
                 });
-    
+
                 // Foco accesible
                 setTimeout(() => panel.querySelector('button')?.focus(), 300);
             }
-    
+
             function _closeModal(showBannerAgainIfNoConsent) {
                 overlay.classList.remove('opacity-100');
                 overlay.classList.add('opacity-0');
                 panel.classList.add('translate-y-full', 'sm:translate-y-4', 'sm:scale-95', 'opacity-0');
                 panel.classList.remove('translate-y-0', 'sm:translate-y-0', 'sm:scale-100', 'opacity-100');
-    
+
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     if (showBannerAgainIfNoConsent && !_load()) {
@@ -661,19 +766,23 @@
                     }
                 }, 300);
             }
-    
+
             // ── Sincronización de toggles con estado guardado ────────────────────
             function _syncTogglesToStorage() {
                 const consent = _load();
-                const prefs   = consent?.preferences ?? { functional: true, analytics: true, marketing: false };
-    
+                const prefs = consent?.preferences ?? {
+                    functional: true,
+                    analytics: true,
+                    marketing: false
+                };
+
                 toggles.forEach(btn => {
-                    const pref    = btn.dataset.pref;
+                    const pref = btn.dataset.pref;
                     const isActive = prefs[pref] !== false; // default true excepto marketing
                     _setToggle(btn, isActive);
                 });
             }
-    
+
             function _setToggle(btn, active) {
                 btn.setAttribute('aria-checked', active ? 'true' : 'false');
                 if (active) {
@@ -682,102 +791,119 @@
                     btn.classList.remove('active');
                 }
             }
-    
+
             function _readToggles() {
-                const prefs = { necessary: true };
+                const prefs = {
+                    necessary: true
+                };
                 toggles.forEach(btn => {
                     prefs[btn.dataset.pref] = btn.getAttribute('aria-checked') === 'true';
                 });
                 return prefs;
             }
-    
+
             // ── Acciones principales ─────────────────────────────────────────────
             function _acceptAll() {
                 _save({
-                    version     : POLICY_VERSION,
-                    status      : 'accepted',
-                    preferences : { necessary: true, functional: true, analytics: true, marketing: true },
-                    timestamp   : Date.now()
+                    version: POLICY_VERSION,
+                    status: 'accepted',
+                    preferences: {
+                        necessary: true,
+                        functional: true,
+                        analytics: true,
+                        marketing: true
+                    },
+                    timestamp: Date.now()
                 });
                 _hideBanner();
                 _closeModal(false);
                 _showReopenButton();
                 _dispatchEvent('accepted');
             }
-    
+
             function _rejectAll() {
                 _save({
-                    version     : POLICY_VERSION,
-                    status      : 'rejected',
-                    preferences : { necessary: true, functional: false, analytics: false, marketing: false },
-                    timestamp   : Date.now()
+                    version: POLICY_VERSION,
+                    status: 'rejected',
+                    preferences: {
+                        necessary: true,
+                        functional: false,
+                        analytics: false,
+                        marketing: false
+                    },
+                    timestamp: Date.now()
                 });
                 _hideBanner();
                 _closeModal(false);
                 _showReopenButton();
                 _dispatchEvent('rejected');
             }
-    
+
             function _saveCustom() {
                 const prefs = _readToggles();
                 _save({
-                    version     : POLICY_VERSION,
-                    status      : 'custom',
-                    preferences : prefs,
-                    timestamp   : Date.now()
+                    version: POLICY_VERSION,
+                    status: 'custom',
+                    preferences: prefs,
+                    timestamp: Date.now()
                 });
                 _closeModal(false);
                 _showReopenButton();
                 _dispatchEvent('custom', prefs);
             }
-    
+
             function _revokeConsent() {
-                try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (e) {}
                 reopenBtn.classList.add('hidden');
                 _showBanner();
                 _dispatchEvent('revoked');
             }
-    
+
             // ── Evento personalizado para integraciones externas ─────────────────
             function _dispatchEvent(action, prefs) {
                 window.dispatchEvent(new CustomEvent('cookieConsentUpdated', {
-                    detail: { action, preferences: prefs ?? _load()?.preferences }
+                    detail: {
+                        action,
+                        preferences: prefs ?? _load()?.preferences
+                    }
                 }));
             }
-    
+
             // ── Inicialización ───────────────────────────────────────────────────
             function _init() {
                 const consent = _load();
-    
+
                 if (consent) {
                     _showReopenButton();
                 } else {
                     setTimeout(_showBanner, 1500);
                 }
-    
+
                 // ── Event listeners ──────────────────────────────────────────────
-    
+
                 // Banner
-                document.getElementById('cookie-accept-banner') ?.addEventListener('click', _acceptAll);
-                document.getElementById('cookie-reject-banner') ?.addEventListener('click', _rejectAll);
-                document.getElementById('cookie-settings-banner') ?.addEventListener('click', _openModal);
-    
+                document.getElementById('cookie-accept-banner')?.addEventListener('click', _acceptAll);
+                document.getElementById('cookie-reject-banner')?.addEventListener('click', _rejectAll);
+                document.getElementById('cookie-settings-banner')?.addEventListener('click', _openModal);
+
                 // Modal — botones
-                document.getElementById('cookie-accept-all-modal') ?.addEventListener('click', _acceptAll);
-                document.getElementById('cookie-reject-modal') ?.addEventListener('click', _rejectAll);
-                document.getElementById('cookie-save-preferences') ?.addEventListener('click', _saveCustom);
-                document.getElementById('cookie-modal-close') ?.addEventListener('click', () => _closeModal(true));
-    
+                document.getElementById('cookie-accept-all-modal')?.addEventListener('click', _acceptAll);
+                document.getElementById('cookie-reject-modal')?.addEventListener('click', _rejectAll);
+                document.getElementById('cookie-save-preferences')?.addEventListener('click', _saveCustom);
+                document.getElementById('cookie-modal-close')?.addEventListener('click', () => _closeModal(true));
+
                 // Modal — overlay (clic fuera cierra)
                 overlay?.addEventListener('click', () => _closeModal(true));
-    
+
                 // Modal — tecla Escape
                 document.addEventListener('keydown', e => {
                     if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
                         _closeModal(true);
                     }
                 });
-    
+
                 // Toggles individuales
                 toggles.forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -786,22 +912,22 @@
                     });
                 });
             }
-    
+
             // ── API pública ──────────────────────────────────────────────────────
             return {
-                init          : _init,
-                hasConsent    : () => !!_load(),
-                getConsent    : _load,
-                allows        : (category) => _load()?.preferences?.[category] ?? false,
-                openModal     : _openModal,
-                acceptAll     : _acceptAll,
-                revokeConsent : _revokeConsent,
+                init: _init,
+                hasConsent: () => !!_load(),
+                getConsent: _load,
+                allows: (category) => _load()?.preferences?.[category] ?? false,
+                openModal: _openModal,
+                acceptAll: _acceptAll,
+                revokeConsent: _revokeConsent,
             };
-    
+
         })();
-    
+
         // Iniciar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             CookieConsent.init();
         });
     </script>
@@ -907,7 +1033,8 @@
                     const li = document.createElement('li');
                     const a = document.createElement('a');
                     a.href = '#';
-                    a.className = 'block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors';
+                    a.className =
+                        'block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-lg transition-colors';
                     a.textContent = option.text;
                     a.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -962,72 +1089,76 @@
     <style>
         /* ── Track ─────────────────────────────────────────────────────────── */
         .cookie-switch {
-            position:        relative;
-            display:         inline-flex;
-            align-items:     center;
-            width:           48px;
-            height:          26px;
-            border-radius:   9999px;
-            background:      #d1d5db;         /* gray-300  — estado OFF */
-            border:          none;
-            cursor:          pointer;
-            padding:         0;
-            transition:      background 0.25s ease, box-shadow 0.2s ease;
-            outline:         none;
-            flex-shrink:     0;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            width: 48px;
+            height: 26px;
+            border-radius: 9999px;
+            background: #d1d5db;
+            /* gray-300  — estado OFF */
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.25s ease, box-shadow 0.2s ease;
+            outline: none;
+            flex-shrink: 0;
         }
- 
+
         /* Estado ON */
         .cookie-switch.active {
-            background: #f59e0b;              /* amber-500 */
+            background: #f59e0b;
+            /* amber-500 */
         }
- 
+
         /* Focus ring accesible */
         .cookie-switch:focus-visible {
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.45);
         }
- 
+
         /* Hover ligero */
         .cookie-switch:not(.disabled):hover {
             filter: brightness(1.08);
         }
- 
+
         /* Disabled (cookies necesarias) */
         .cookie-switch.disabled {
-            background: #9ca3af;             /* gray-400 */
-            cursor:     not-allowed;
-            opacity:    0.55;
+            background: #9ca3af;
+            /* gray-400 */
+            cursor: not-allowed;
+            opacity: 0.55;
         }
- 
+
         /* ── Thumb ──────────────────────────────────────────────────────────── */
         .cookie-switch__thumb {
-            position:         absolute;
-            top:              3px;
-            left:             3px;
-            width:            20px;
-            height:           20px;
-            border-radius:    9999px;
-            background:       #ffffff;
-            box-shadow:       0 1px 4px rgba(0, 0, 0, 0.22),
-                              0 0 0 0.5px rgba(0, 0, 0, 0.06);
-            transition:       transform 0.25s cubic-bezier(0.34, 1.3, 0.64, 1),
-                              box-shadow 0.2s ease;
-            pointer-events:   none;
-            display:          block;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 9999px;
+            background: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22),
+                0 0 0 0.5px rgba(0, 0, 0, 0.06);
+            transition: transform 0.25s cubic-bezier(0.34, 1.3, 0.64, 1),
+                box-shadow 0.2s ease;
+            pointer-events: none;
+            display: block;
         }
- 
+
         /* Thumb posición ON: 48 - 3 - 3 - 20 = 22px */
-        .cookie-switch.active     .cookie-switch__thumb,
-        .cookie-switch.disabled   .cookie-switch__thumb {
+        .cookie-switch.active .cookie-switch__thumb,
+        .cookie-switch.disabled .cookie-switch__thumb {
             transform: translateX(22px);
         }
- 
+
         /* Pequeño scale al hacer clic */
         .cookie-switch:active:not(.disabled) .cookie-switch__thumb {
-            width:     24px;
+            width: 24px;
             box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
         }
     </style>
     @yield('scripts')
 </body>
+
 </html>
